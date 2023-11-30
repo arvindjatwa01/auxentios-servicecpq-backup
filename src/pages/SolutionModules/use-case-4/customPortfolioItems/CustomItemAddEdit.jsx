@@ -9,7 +9,10 @@ import Select from "react-select";
 import { FormControlLabel, FormGroup, Switch } from "@mui/material";
 import { Link } from "react-router-dom";
 import { errorMessage } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/toastMessage";
-import { isEmpty, isEmptySelect } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/textUtilities";
+import {
+  isEmpty,
+  isEmptySelect,
+} from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/textUtilities";
 import $ from "jquery";
 import { useAppSelector } from "../../../../app/hooks";
 
@@ -22,12 +25,8 @@ import {
   taskActions,
 } from "pages/PortfolioAndBundle/customerSegment/strategySlice";
 import {
-  createItemPriceData,
-  getItemDataById,
-  getItemPriceData,
   getSearchKitId,
   getSearchStandardJobId,
-  updateItemPriceData,
 } from "../../../../services/index";
 import { STANDARD_JOB_DETAIL } from "navigation/CONSTANTS";
 import { useHistory } from "react-router-dom";
@@ -45,7 +44,15 @@ import // createItemPriceData,
 // import { useHistory } from "react-router-dom";
 // import { defaultItemObj, usageTypeKeyValuePair, itemPriceDefaultObj } from "../itemConstant"
 import { getApiCall } from "services/searchQueryService";
-import { GET_SEARCH_COVERAGE, GET_SEARCH_KIT_ID } from "services/CONSTANTS";
+import {
+  CREATE_CUSTOM_PORTFOLIO_ITEM,
+  CREATE_CUSTOM_PRICE,
+  GET_CUSTOM_PORTFOLIO_ITEM_PRICE_DATA,
+  GET_SEARCH_COVERAGE,
+  GET_SEARCH_KIT_ID,
+} from "services/CONSTANTS";
+import { callGetApi, callPostApi, callPutApi } from "services/ApiCaller";
+import { API_SUCCESS } from "services/ResponseCode";
 
 const itemRequestDefaultObj = {
   itemId: 0,
@@ -75,7 +82,7 @@ const itemRequestDefaultObj = {
   branch: "",
   offerValidity: "",
   withBundleService: true,
-  itemPriceId: null,
+  customItemPriceDataId: null,
   bundleServiceNeed: true,
 };
 
@@ -86,16 +93,13 @@ const CustomItemAddEdit = (props) => {
     isPortfolioItem,
     bundleServiceNeed,
     handleBundleServiceNeed,
-    frequencyKeyValuePairs,
-    unitKeyValuePairs,
+    frequencyKeyValuePairs = [],
+    unitKeyValuePairs = [],
     componentDataTabShow,
     handleGetPortfolioItemsData,
     itemId,
     portfolioId,
     hideItemAddUpdateModel = null,
-    // itemHeaderModelObj,
-    // itemBodyModelObj,
-    // itemRequestObj
   } = props;
   const dispatch = useDispatch();
   const history = useHistory();
@@ -120,7 +124,7 @@ const CustomItemAddEdit = (props) => {
   const [editItemData, setEditItemData] = useState(isEditable ? true : false);
 
   // const [itemRequestObj, setItemRequestObj] = useState({ ...defaultReqObj })
-  const [itemPriceDataId, setItemPriceDataId] = useState(0);
+  const [customItemPriceDataId, setCustomItemPriceDataId] = useState(0);
 
   const [itemRequestObj, setItemRequestObj] = useState({
     ...itemRequestDefaultObj,
@@ -143,73 +147,15 @@ const CustomItemAddEdit = (props) => {
   });
 
   useEffect(() => {
+    // initFetch();
+    dispatch(taskActions.fetchTaskList());
+  }, [dispatch]);
+
+  useEffect(() => {
     if (itemId) {
       handleGetItemDetails(itemId);
     }
   }, [itemId]);
-
-  // get Select Bundle/Service Item Details
-  const handleGetItemDetails = async (itemId) => {
-    const itemDetails = await getItemDataById(itemId);
-    if (itemDetails.status === 200) {
-      const { itemId, itemName, itemHeaderModel, itemBodyModel } =
-        itemDetails.data;
-
-      const _usageIn = usageInKeyValuePair.find(
-        (obj) => obj.value === itemBodyModel.usageIn
-      );
-      const _strategyTask = strategyTaskKeyValuePair.find(
-        (obj) => obj.value === itemHeaderModel.itemHeaderStrategy
-      );
-      const _taskType = taskTypeKeyValuePair.find(
-        (obj) => obj.value === itemBodyModel.taskType[0]
-      );
-      const _usageType = usageTypeKeyValuePair.find(
-        (obj) => obj.value === itemBodyModel.usage
-      );
-
-      setItemRequestObj({
-        ...itemRequestObj,
-        name: itemName,
-        description: itemBodyModel.itemBodyDescription,
-        usageIn: _usageIn || "",
-        strategyTask: _strategyTask,
-        taskType: _taskType,
-        usageType: _usageType,
-      });
-
-      if (itemBodyModel.itemPrices.length !== 0) {
-        const itemPriceDetails = await getItemPriceData(
-          itemBodyModel.itemPrices[itemBodyModel.itemPrices.length - 1]
-            .itemPriceDataId
-        );
-        if (itemPriceDetails.status === 200) {
-          let _frequency = frequencyKeyValuePairs.find(
-            (obj) => obj.value === itemPriceDetails.data.frequency
-          );
-
-          // set unit key value
-          let _usageUnit = unitKeyValuePairs.find(
-            (obj) => obj.value === itemPriceDetails.data.usageUnit
-          );
-
-          setItemPriceRequestObj({
-            ...itemPriceDetails.data,
-            numberOfEvents: itemPriceDetails.data.numberOfEvents,
-            itemPriceId: itemPriceDetails.data.itemPriceDataId,
-            year: isEmpty(itemPriceDetails.data.year)
-              ? ""
-              : {
-                  label: itemPriceDetails.data.year,
-                  value: itemPriceDetails.data.year,
-                },
-            frequency: _frequency || "",
-            usageUnit: _usageUnit || "",
-          });
-        }
-      }
-    }
-  };
 
   useEffect(() => {
     var yearsOptionArr = [];
@@ -219,10 +165,112 @@ const CustomItemAddEdit = (props) => {
     seYearsKeyValuePairs(yearsOptionArr);
   }, [itemRequestObj.noOfYear]);
 
-  useEffect(() => {
-    // initFetch();
-    dispatch(taskActions.fetchTaskList());
-  }, [dispatch]);
+  // get Select Bundle/Service Item Details
+  const handleGetItemDetails = async (itemId) => {
+    const itemDetailsReqUrl = `${CREATE_CUSTOM_PORTFOLIO_ITEM()}/${itemId}`;
+    callGetApi(null, itemDetailsReqUrl, (response) => {
+      if (response.status === API_SUCCESS) {
+        const {
+          customItemId,
+          itemName,
+          customItemHeaderModel,
+          customItemBodyModel,
+        } = response.data;
+
+        const _usageIn = usageInKeyValuePair.find(
+          (obj) => obj.value === customItemBodyModel.usageIn
+        );
+
+        dispatch(taskActions.updateList(customItemBodyModel.usageIn));
+        const _strategyTask = strategyTaskKeyValuePair.find(
+          (obj) => obj.value === customItemHeaderModel.itemHeaderStrategy
+        );
+
+        dispatch(
+          taskActions.updateTask(customItemHeaderModel.itemHeaderStrategy)
+        );
+        const _taskType = taskTypeKeyValuePair.find(
+          (obj) => obj.value === customItemBodyModel.taskType[0]
+        );
+        const _usageType = usageTypeKeyValuePair.find(
+          (obj) => obj.value === customItemBodyModel.usage
+        );
+
+        setItemRequestObj({
+          ...itemRequestObj,
+          name: itemName,
+          description: customItemBodyModel.itemBodyDescription,
+          usageIn: _usageIn || "",
+          strategyTask: _strategyTask,
+          taskType: _taskType,
+          usageType: _usageType,
+        });
+
+        if (customItemBodyModel.customItemPrices.length !== 0) {
+          handleGetItemPriceDetails(
+            customItemBodyModel.customItemPrices[
+              customItemBodyModel.customItemPrices.length - 1
+            ].customItemPriceDataId
+          ).then((res) => {
+            if (res.apiSuccess) {
+              let _frequency = frequencyKeyValuePairs.find(
+                (obj) => obj.value === res.responseData.frequency
+              );
+
+              // set unit key value
+              let _usageUnit = unitKeyValuePairs.find(
+                (obj) => obj.value === res.responseData.usageUnit
+              );
+
+              setItemPriceRequestObj({
+                ...res.responseData,
+                numberOfEvents: res.responseData.numberOfEvents,
+                customItemPriceDataId: res.responseData.customItemPriceDataId,
+                year: isEmpty(res.responseData.year)
+                  ? ""
+                  : {
+                      label: res.responseData.year,
+                      value: res.responseData.year,
+                    },
+                frequency: _frequency || "",
+                usageUnit: _usageUnit || "",
+              });
+            }
+          });
+        }
+      }
+    });
+  };
+
+  // get te Item Price details
+  const handleGetItemPriceDetails = (priceId) => {
+    return new Promise((resolve, reject) => {
+      const itemPriceReqUrl = `${GET_CUSTOM_PORTFOLIO_ITEM_PRICE_DATA}/${priceId}`;
+      callGetApi(
+        null,
+        itemPriceReqUrl,
+        (response) => {
+          if (response.status === API_SUCCESS) {
+            resolve({
+              apiSuccess: true,
+              responseData: response.data,
+            });
+          } else {
+            resolve({
+              apiSuccess: false,
+              responseData: null,
+            });
+          }
+        },
+        (error) => {
+          resolve({
+            apiSuccess: false,
+            responseData: null,
+          });
+        }
+      );
+    });
+  };
 
   // handle input text change
   const handleInputTextChange = (e) => {
@@ -250,14 +298,19 @@ const CustomItemAddEdit = (props) => {
 
   // handle Select change
   const handleSelectChange = (e, keyName) => {
-    setItemRequestObj((prev) => ({ ...prev, [keyName]: e }));
     if (keyName === "usageIn") {
       dispatch(taskActions.updateList(e.value));
-      setItemRequestObj((prev) => ({ ...prev, [keyName]: e, strategyTask: "", taskType: "" }));
-    }
-    if (keyName === "strategyTask") {
+      setItemRequestObj((prev) => ({
+        ...prev,
+        [keyName]: e,
+        strategyTask: "",
+        taskType: "",
+      }));
+    } else if (keyName === "strategyTask") {
       dispatch(taskActions.updateTask(e.value));
       setItemRequestObj((prev) => ({ ...prev, [keyName]: e, taskType: "" }));
+    } else {
+      setItemRequestObj((prev) => ({ ...prev, [keyName]: e }));
     }
   };
 
@@ -423,7 +476,7 @@ const CustomItemAddEdit = (props) => {
   const checkInputValidation = (isItem) => {
     if (itemActiveTab === "itemSummary") {
       if (isItem && isPortfolioItem && isEmpty(portfolioId)) {
-        errorMessage("Create Portfolio First, then you can add Items,");
+        errorMessage("Create Solution First, then you can add Items,");
         hideItemAddUpdateModel();
         return false;
       } else if (isItem && isPortfolioItem && isEmpty(itemRequestObj.name)) {
@@ -522,14 +575,16 @@ const CustomItemAddEdit = (props) => {
           editItemData
         );
       } else {
-        handleAddUpdateItemPrice(false).then((itemPriceData) => {
-          handleGetPortfolioItemsData(
-            editItemData,
-            itemRequestObj,
-            itemPriceData,
-            isPortfolioItem,
-            editItemData
-          );
+        handleAddUpdateItemPrice(false).then((itemPriceResponse) => {
+          if (itemPriceResponse.apiSuccess) {
+            handleGetPortfolioItemsData(
+              editItemData,
+              itemRequestObj,
+              itemPriceResponse.responseData,
+              isPortfolioItem,
+              editItemData
+            );
+          }
         });
       }
     } catch (error) {
@@ -577,7 +632,7 @@ const CustomItemAddEdit = (props) => {
 
   // common function for Item Price Update/Create
   const handleAddUpdateItemPrice = async (isCalculated) => {
-    try {
+    return new Promise((resolve, reject) => {
       let priceReqObj = {
         ...itemPriceRequestObj,
         recommendedUnit:
@@ -607,120 +662,169 @@ const CustomItemAddEdit = (props) => {
         discountType: !isEmpty(itemPriceRequestObj.discountType)
           ? itemPriceRequestObj.discountType
           : "PORTFOLIO_DISCOUNT",
+        customPortfolio: isEmpty(portfolioId)
+          ? null
+          : {
+              portfolioId: portfolioId,
+            },
       };
-      if (!itemPriceDataId || itemPriceDataId === "") {
-        const updateItemPrice = await createItemPriceData(priceReqObj);
-        if (updateItemPrice.status === 200) {
-          // set frequency key-value
-          let _frequency = frequencyKeyValuePairs.find(
-            (obj) => obj.value === updateItemPrice.data.frequency
-          );
+      let itemPriceReqUrl = CREATE_CUSTOM_PRICE();
+      if (!customItemPriceDataId || customItemPriceDataId === "") {
+        callPostApi(
+          null,
+          itemPriceReqUrl,
+          priceReqObj,
+          (response) => {
+            if (response.status === API_SUCCESS) {
+              const result = response.data;
 
-          // set unit key value
-          let _usageUnit = unitKeyValuePairs.find(
-            (obj) => obj.value === updateItemPrice.data.usageUnit
-          );
+              setCustomItemPriceDataId(result.customItemPriceDataId);
 
-          setItemPriceRequestObj({
-            ...updateItemPrice.data,
-            year: isEmpty(updateItemPrice.data.year)
-              ? ""
-              : {
-                  label: updateItemPrice.data.year,
-                  value: updateItemPrice.data.year,
-                },
+              // set frequency key-value
+              let _frequency = frequencyKeyValuePairs.find(
+                (obj) => obj.value === result.frequency
+              );
 
-            frequency: _frequency || "",
-            usageUnit: _usageUnit || "",
-          });
-          setItemRequestObj({
-            ...itemRequestObj,
-            numberOfEvents: updateItemPrice.data.numberOfEvents,
-            itemPriceId: updateItemPrice.data.itemPriceDataId,
-            year: isEmpty(updateItemPrice.data.year)
-              ? ""
-              : {
-                  label: updateItemPrice.data.year,
-                  value: updateItemPrice.data.year,
-                },
-            frequency: _frequency || "",
-            usageUnit: _usageUnit || "",
-          });
-          if (!isCalculated) {
-            return {
-              ...updateItemPrice.data,
-              year: isEmpty(updateItemPrice.data.year)
-                ? ""
-                : {
-                    label: updateItemPrice.data.year,
-                    value: updateItemPrice.data.year,
+              // set unit key value
+              let _usageUnit = unitKeyValuePairs.find(
+                (obj) => obj.value === result.usageUnit
+              );
+
+              setItemPriceRequestObj({
+                ...result,
+                year: isEmpty(result.year)
+                  ? ""
+                  : {
+                      label: result.year,
+                      value: result.year,
+                    },
+
+                frequency: _frequency || "",
+                usageUnit: _usageUnit || "",
+              });
+              setItemRequestObj({
+                ...itemRequestObj,
+                numberOfEvents: result.numberOfEvents,
+                customItemPriceDataId: result.customItemPriceDataId,
+                year: isEmpty(result.year)
+                  ? ""
+                  : {
+                      label: result.year,
+                      value: result.year,
+                    },
+                frequency: _frequency || "",
+                usageUnit: _usageUnit || "",
+              });
+              if (!isCalculated) {
+                resolve({
+                  apiSuccess: true,
+                  responseData: {
+                    ...result,
+                    year: isEmpty(result.year)
+                      ? ""
+                      : {
+                          label: result.year,
+                          value: result.year,
+                        },
+
+                    frequency: _frequency || "",
+                    usageUnit: _usageUnit || "",
                   },
-
-              frequency: _frequency || "",
-              usageUnit: _usageUnit || "",
-            };
+                });
+              }
+            } else {
+              resolve({
+                apiSuccess: false,
+                responseData: { ...itemPriceRequestObj },
+              });
+            }
+          },
+          (error) => {
+            resolve({
+              apiSuccess: false,
+              responseData: { ...itemPriceRequestObj },
+            });
           }
-        }
-      } else {
-        const createItemPrice = await updateItemPriceData(
-          itemPriceDataId,
-          priceReqObj
         );
-        if (createItemPrice.status === 200) {
-          // set frequency key-value
-          let _frequency = frequencyKeyValuePairs.find(
-            (obj) => obj.value === createItemPrice.data.frequency
-          );
+      } else {
+        callPutApi(
+          null,
+          `${itemPriceReqUrl}/${customItemPriceDataId}`,
+          priceReqObj,
+          (response) => {
+            if (response.status === API_SUCCESS) {
+              const priceUpdateResult = response.data;
+              // set frequency key-value
+              let _frequency = frequencyKeyValuePairs.find(
+                (obj) => obj.value === priceUpdateResult.frequency
+              );
 
-          // set unit key value
-          let _usageUnit = unitKeyValuePairs.find(
-            (obj) => obj.value === createItemPrice.data.usageUnit
-          );
+              // set unit key value
+              let _usageUnit = unitKeyValuePairs.find(
+                (obj) => obj.value === priceUpdateResult.usageUnit
+              );
 
-          setItemPriceDataId(createItemPrice.data.itemPriceDataId);
-          setItemPriceRequestObj({
-            ...createItemPrice.data,
-            year: isEmpty(createItemPrice.data.year)
-              ? ""
-              : {
-                  label: createItemPrice.data.year,
-                  value: createItemPrice.data.year,
-                },
+              setItemPriceRequestObj({
+                ...priceUpdateResult,
+                year: isEmpty(priceUpdateResult.year)
+                  ? ""
+                  : {
+                      label: priceUpdateResult.year,
+                      value: priceUpdateResult.year,
+                    },
 
-            frequency: _frequency || "",
-            usageUnit: _usageUnit || "",
-          });
-          setItemRequestObj({
-            ...itemRequestObj,
-            numberOfEvents: createItemPrice.data.numberOfEvents,
-            itemPriceId: createItemPrice.data.itemPriceDataId,
-            year: isEmpty(createItemPrice.data.year)
-              ? ""
-              : {
-                  label: createItemPrice.data.year,
-                  value: createItemPrice.data.year,
-                },
+                frequency: _frequency || "",
+                usageUnit: _usageUnit || "",
+              });
+              setItemRequestObj({
+                ...itemRequestObj,
+                numberOfEvents: priceUpdateResult.numberOfEvents,
+                customItemPriceDataId: priceUpdateResult.customItemPriceDataId,
+                year: isEmpty(priceUpdateResult.year)
+                  ? ""
+                  : {
+                      label: priceUpdateResult.year,
+                      value: priceUpdateResult.year,
+                    },
 
-            frequency: _frequency || "",
-            usageUnit: _usageUnit || "",
-          });
+                frequency: _frequency || "",
+                usageUnit: _usageUnit || "",
+              });
 
-          if (!isCalculated) {
-            return {
-              ...createItemPrice.data,
-              year: isEmpty(createItemPrice.data.year)
-                ? ""
-                : {
-                    label: createItemPrice.data.year,
-                    value: createItemPrice.data.year,
+              if (!isCalculated) {
+                resolve({
+                  apiSuccess: true,
+                  responseData: {
+                    ...priceUpdateResult,
+                    year: isEmpty(priceUpdateResult.year)
+                      ? ""
+                      : {
+                          label: priceUpdateResult.year,
+                          value: priceUpdateResult.year,
+                        },
+
+                    frequency: _frequency || "",
+                    usageUnit: _usageUnit || "",
                   },
-
-              frequency: _frequency || "",
-              usageUnit: _usageUnit || "",
-            };
+                });
+              }
+            } else {
+              resolve({
+                apiSuccess: false,
+                responseData: { ...itemPriceRequestObj },
+              });
+            }
+          },
+          (error) => {
+            resolve({
+              apiSuccess: false,
+              responseData: { ...itemPriceRequestObj },
+            });
           }
-        }
+        );
       }
+    });
+    try {
     } catch (error) {
       return;
     }
@@ -1075,7 +1179,7 @@ const CustomItemAddEdit = (props) => {
                       <Select
                         options={yearsKeyValuePairs}
                         className="text-primary"
-                        value={itemRequestObj.year}
+                        value={itemPriceRequestObj.year}
                         onChange={(e) => handlePriceSelectChange(e, "year")}
                       />
                     </div>

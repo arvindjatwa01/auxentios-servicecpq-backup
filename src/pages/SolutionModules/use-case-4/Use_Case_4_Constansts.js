@@ -98,8 +98,8 @@ export const defaultCustomPortfolioObj = {
   customCoverages: [],
   portfolioPrice: null,
   template: false,
-  visibleInCommerce: false
-}
+  visibleInCommerce: false,
+};
 
 export const defaultCustomItemHeaderModel = {
   customItemHeaderId: 0,
@@ -160,7 +160,7 @@ export const defaultCustomItemBodyModel = {
 
 // default data for item Price Add/Update
 export const defaultCustomItemPriceObj = {
-  itemPriceDataId: 0,
+  customItemPriceDataId: 0,
   quantity: 0,
   standardJobId: "",
   repairKitId: "",
@@ -199,19 +199,19 @@ export const defaultCustomItemPriceObj = {
   labourEscalation: 0,
   miscEscalation: 0,
   serviceEscalation: 0,
+  withBundleService: true,
   sparePartsNOE: 0,
   labourNOE: 0,
   miscNOE: 0,
   recommendedUnit: "",
   usageUnit: "",
-  withBundleService: true,
-  portfolio: null,
+  customPortfolio: null,
   tenantId: 0,
   inclusionExclusion: true,
   partsRequired: true,
   labourRequired: true,
-  serviceRequired: false,
   miscRequired: true,
+  serviceRequired: false,
 };
 
 // usage Type key Value Pair list
@@ -220,3 +220,19 @@ export const usageTypeKeyValuePair = [
   { value: "Recommended usage", label: "Recommended usage" },
 ];
 
+// Additional Price Type Key Value Pair List
+export const additionalPriceKeyValuePair = [
+  { label: "Surcharge %", value: "PERCENTAGE" },
+  { label: "Surcharge $", value: "ABSOLUTE" },
+];
+
+// discount Type Key Value Pair List
+export const discountTypeKeyValuePair = [
+  { value: "PROGRAM_DISCOUNT", label: "Program" },
+  { value: "CUSTOMER_DISCOUNT", label: "Customer" },
+  { value: "PORTFOLIO_DISCOUNT", label: "Portfolio" },
+];
+
+export const SEARCH_FLAG_CUSTOMER_SEARCH = "CUSTOMER_SEARCH";
+export const SEARCH_FLAG_COMPONENT_CODE_SEARCH = "COMPONENT_CODE";
+export const SEARCH_FLAG_MODEL_SEARCH = "MODEL";

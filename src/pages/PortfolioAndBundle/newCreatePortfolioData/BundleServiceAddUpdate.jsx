@@ -66,6 +66,7 @@ const BundleServiceAddUpdate = (props) => {
     priceTypeKeyValuePair,
     priceMethodKeyValuePair,
     currencyKeyValuePair,
+    reviewModeActive = false,
   } = props;
 
   const [activeTab, setActiveTab] = useState("bundleServiceHeader");
@@ -228,10 +229,12 @@ const BundleServiceAddUpdate = (props) => {
     //     ? !bundleServiceEdit.bundleServiceHeader
     //     : false,
     // });
-    setBundleServiceEdit({
-      ...bundleServiceEdit,
-      [keyName]: itemId ? !bundleServiceEdit[keyName] : false,
-    });
+    if (!reviewModeActive) {
+      setBundleServiceEdit({
+        ...bundleServiceEdit,
+        [keyName]: itemId ? !bundleServiceEdit[keyName] : false,
+      });
+    }
   };
 
   // search model
@@ -522,14 +525,16 @@ const BundleServiceAddUpdate = (props) => {
     isPortfolioItem,
     isEditable
   ) => {
-
     const _itemPrice = [...bundleServiceItemBody.itemPrices];
-    console.log("itemPriceData ==== ::", itemPriceData)
-    console.log("_itemPrice first ==== ::", _itemPrice)
-    console.log("first check ==== :: ", _itemPrice.some(
-      (obj) => obj.itemPriceDataId === itemPriceData.itemPriceDataId
-    ))
-    console.log("second check === ::", isEmpty(itemPriceData.itemPriceDataId))
+    console.log("itemPriceData ==== ::", itemPriceData);
+    console.log("_itemPrice first ==== ::", _itemPrice);
+    console.log(
+      "first check ==== :: ",
+      _itemPrice.some(
+        (obj) => obj.itemPriceDataId === itemPriceData.itemPriceDataId
+      )
+    );
+    console.log("second check === ::", isEmpty(itemPriceData.itemPriceDataId));
     if (
       !_itemPrice.some(
         (obj) => obj.itemPriceDataId === itemPriceData.itemPriceDataId
@@ -538,7 +543,7 @@ const BundleServiceAddUpdate = (props) => {
     ) {
       _itemPrice.push({ itemPriceDataId: itemPriceData.itemPriceDataId });
     }
-    console.log("_itemPrice second ==== ::", _itemPrice)
+    console.log("_itemPrice second ==== ::", _itemPrice);
 
     const _bundleServiceItemHeader = {
       ...bundleServiceItemHeader,
@@ -1234,6 +1239,7 @@ const BundleServiceAddUpdate = (props) => {
                 unitKeyValuePairs={unitKeyValuePairs}
                 itemId={itemId}
                 handleGetPortfolioItemsData={handleBundleServiceItems}
+                reviewModeActive={reviewModeActive}
               />
             </TabPanel>
             <TabPanel value="bundleServicePrice">
@@ -1250,6 +1256,7 @@ const BundleServiceAddUpdate = (props) => {
                 itemId={itemId}
                 handleSavePriceChanges={handleSaveItemPriceChanges}
                 isEditable={bundleServiceEdit.bundleServicePrice}
+                reviewModeActive={reviewModeActive}
               />
             </TabPanel>
             <TabPanel value="bundleServiceAdministrative">

@@ -27,12 +27,13 @@ import {
   createPortfolio,
   getPortfolioCommonConfig,
   getSolutionPriceCommonConfig,
+  getTypeKeyValue,
   getValidityKeyValue,
   portfolioPriceAgreementCreation,
   portfolioPriceCreation,
   updatePortfolio,
   updatePortfolioPrice,
-} from "../../..//services/index";
+} from "../../../services/index";
 import { FONT_STYLE_SELECT } from "../../Repair/CONSTANTS";
 import { isEmpty, isEmptySelect } from "./utilities/textUtilities";
 import { errorMessage, successMessage } from "./utilities/toastMessage";
@@ -143,6 +144,8 @@ export const CreatePortfolio = (props) => {
     []
   );
   const [validityKeyValuePair, setValidityKeyValuePair] = useState([]);
+  const [machineComponentKeyValuePair, setMachineComponentKeyValuePair] =
+    useState([]);
 
   const [loading, setLoading] = useState(false);
 
@@ -272,6 +275,22 @@ export const CreatePortfolio = (props) => {
       })
       .catch((err) => {
         toast.error(err);
+      });
+
+    // get machine component key value Pair
+    getTypeKeyValue()
+      .then((res) => {
+        const options = [];
+        res.length !== 0 &&
+          res.map((d) => {
+            if (d.key !== "EMPTY") {
+              options.push({ value: d.key, label: d.value });
+            }
+          });
+        setMachineComponentKeyValuePair(options);
+      })
+      .catch((error) => {
+        return;
       });
 
     // get Validity Key-Value Pair list
@@ -405,8 +424,7 @@ export const CreatePortfolio = (props) => {
 
   // map and set Selected Portfolio details
   const intilisePortfolioDetails = (recordData) => {
-
-    // set Portfolio Support Level 
+    // set Portfolio Support Level
     const _portfolioSupportLevel = supportLevelKeyValuePair.find(
       (obj) => obj.value === recordData.supportLevel
     );
@@ -2200,11 +2218,7 @@ export const CreatePortfolio = (props) => {
                     name="preparedBy"
                     value={administrativeTabData.preparedBy}
                     onChange={(e) =>
-                      handleAdministrativeTabTextChange(
-                        e,
-                        "preparedBy",
-                        "text"
-                      )
+                      handleAdministrativeTabTextChange(e, "preparedBy", "text")
                     }
                     placeholder="Required (ex-abc@gmail.com)"
                   />
@@ -2224,11 +2238,7 @@ export const CreatePortfolio = (props) => {
                     name="approvedBy"
                     value={administrativeTabData.approvedBy}
                     onChange={(e) =>
-                      handleAdministrativeTabTextChange(
-                        e,
-                        "approvedBy",
-                        "text"
-                      )
+                      handleAdministrativeTabTextChange(e, "approvedBy", "text")
                     }
                   />
                 </div>
@@ -2274,11 +2284,7 @@ export const CreatePortfolio = (props) => {
                     name="revisedBy"
                     value={administrativeTabData.revisedBy}
                     onChange={(e) =>
-                      handleAdministrativeTabTextChange(
-                        e,
-                        "revisedBy",
-                        "text"
-                      )
+                      handleAdministrativeTabTextChange(e, "revisedBy", "text")
                     }
                   />
                 </div>
@@ -3104,6 +3110,10 @@ export const CreatePortfolio = (props) => {
                 selectedService={selectedService}
                 setSelectedService={setSelectedService}
                 handleUpdatePortfolio={handleUpdatePortfolioOnItem}
+                supportLevelKeyValuePair={supportLevelKeyValuePair}
+                portfolioStatusKeyValuePair={portfolioStatusKeyValuePair}
+                customerSegmentKeyValuePair={customerSegmentKeyValuePair}
+                machineComponentKeyValuePair={machineComponentKeyValuePair}
               />
             </div>
           </>

@@ -38,6 +38,9 @@ const ItemPriceCalculator = (props) => {
     itemId,
     isEditable,
     handleSavePriceChanges,
+    reviewModeActive = false,
+    priceModalView = false,
+    hidePriceViewModal = null,
   } = props;
 
   const [itemPriceRecordObj, setItemPriceRecordObj] = useState({
@@ -118,6 +121,22 @@ const ItemPriceCalculator = (props) => {
       handleGetItemDetails(itemId);
     }
   }, [itemId]);
+
+  // Year Options change on noOfYear value Change
+  useEffect(() => {
+    var yearsOptionArr = [];
+    for (let i = 1; i <= itemPriceRequestObj.noOfYear; i++) {
+      yearsOptionArr.push({ value: i, label: i });
+    }
+    seYearsKeyValuePairs(yearsOptionArr);
+  }, [itemPriceRequestObj.noOfYear]);
+
+  // price edit mode enable
+  const handleEnableEditMode = () => {
+    if (!reviewModeActive) {
+      setEditItemPrice(false);
+    }
+  };
 
   // get Select Bundle/Service/Portfolio Item Details
   const handleGetItemDetails = async (itemId) => {
@@ -284,15 +303,6 @@ const ItemPriceCalculator = (props) => {
     }
   };
 
-  // Year Options change on noOfYear value Change
-  useEffect(() => {
-    var yearsOptionArr = [];
-    for (let i = 1; i <= itemPriceRequestObj.noOfYear; i++) {
-      yearsOptionArr.push({ value: i, label: i });
-    }
-    seYearsKeyValuePairs(yearsOptionArr);
-  }, [itemPriceRequestObj.noOfYear]);
-
   // text value change
   const handlePriceTextChange = (e, keyName, type, isPrice = false) => {
     try {
@@ -427,110 +437,114 @@ const ItemPriceCalculator = (props) => {
 
   // save changes
   const handleSaveItemPriceChanges = async () => {
-    if (!editItemPrice && !checkInputValidation()) {
-      return;
-    }
-
-    const requestObj = {
-      ...itemPriceRequestObj,
-      priceMethod: itemPriceRequestObj.priceMethod?.value || "LIST_PRICE",
-      priceType: itemPriceRequestObj.priceType?.value || "EVENT_BASED",
-      additionalPriceType:
-        itemPriceRequestObj.additionalPriceType?.value || "ABSOLUTE",
-      priceEscalation: itemPriceRequestObj.priceEscalation?.value || "",
-      sparePartsEscalation: priceEscalationValues.sparePartsEscalation || 0,
-      labourEscalation: priceEscalationValues.labourEscalation || 0,
-      miscEscalation: priceEscalationValues.miscEscalation || 0,
-      serviceEscalation: priceEscalationValues.serviceEscalation || 0,
-      flatPrice: itemPriceRequestObj.flatPrice || 0,
-      discountType:
-        itemPriceRequestObj.discountType?.value || "PORTFOLIO_DISCOUNT",
-      discountValue: itemPriceRequestObj.discountValue || 0,
-      sparePartsPriceBreakDownPercentage:
-        priceBrackdownValues.sparePartsPriceBreakDownPercentage || 0,
-      labourPriceBreakDownPercentage:
-        priceBrackdownValues.labourPriceBreakDownPercentage || 0,
-      miscPriceBreakDownPercentage:
-        priceBrackdownValues.miscPriceBreakDownPercentage || 0,
-      year: itemPriceRequestObj.year?.value || "1",
-      noOfYear: itemPriceRequestObj.noOfYear || 1,
-      startUsage: itemPriceRequestObj.startUsage,
-      endUsage: itemPriceRequestObj.endUsage,
-      frequency: itemPriceRequestObj.frequency?.value || "CYCLIC",
-      usageUnit: itemPriceRequestObj.usageUnit?.value || "",
-      recommendedUnit:
-        itemPriceRequestObj.usageUnit?.value === "YEAR"
-          ? "MONTH"
-          : itemPriceRequestObj.usageUnit?.value || "",
-      recommendedValue: itemPriceRequestObj.recommendedValue,
-      portfolio:
-        itemPriceRequestObj.portfolio?.portfolioId === 0
-          ? null
-          : itemPriceRequestObj.portfolio,
-    };
-
-    const _itemBodyModelObj = {
-      ...itemBodyModelObj,
-      usage: itemPriceRecordObj.usageType,
-      year: itemPriceRequestObj.year,
-    };
-
-    const _itemHeaderModelObj = {
-      ...itemHeaderModelObj,
-      currency: itemPriceRecordObj.currency,
-      usage: itemPriceRecordObj.usageType,
-    };
-
-    let rUrl = PORTFOLIO_ITEM_PRICE_BY_ITEM_ID();
-    if (!editItemPrice) {
-      if (!isEmpty(requestObj.itemPriceDataId)) {
-        rUrl = rUrl + "/" + requestObj.itemPriceDataId;
-      }
-      if (!isEmpty(requestObj.itemPriceDataId)) {
-        callPutApi(null, rUrl, requestObj, (response) => {
-          if (response.status === API_SUCCESS) {
-            updateItemPriceSjRkId({
-              standardJobId: itemPriceRequestObj.standardJobId,
-              repairKitId: itemPriceRequestObj.repairKitId,
-              itemId: itemId,
-              itemPriceDataId: itemPriceRequestObj.itemPriceDataId,
-            });
-            handleSavePriceChanges(
-              itemRequestObj,
-              _itemHeaderModelObj,
-              _itemBodyModelObj,
-              editItemPrice
-            );
-          }
-        });
-      } else {
-        callPostApi(null, rUrl, requestObj, (response) => {
-          if (response.status === API_SUCCESS) {
-            updateItemPriceSjRkId({
-              standardJobId: itemPriceRequestObj.standardJobId,
-              repairKitId: itemPriceRequestObj.repairKitId,
-              itemId: itemId,
-              itemPriceDataId: response.data?.itemPriceDataId,
-            });
-            _itemBodyModelObj["itemPrices"].push({
-              itemPriceDataId: response.data?.itemPriceDataId,
-            });
-            handleSavePriceChanges(
-              itemRequestObj,
-              _itemHeaderModelObj,
-              _itemBodyModelObj,
-              editItemPrice
-            );
-          }
-        });
-      }
+    if (priceModalView) {
+      hidePriceViewModal();
     } else {
-      handleSavePriceChanges(
-        itemRequestObj,
-        _itemHeaderModelObj,
-        _itemBodyModelObj,
-        editItemPrice
-      );
+      if (!editItemPrice && !checkInputValidation()) {
+        return;
+      }
+
+      const requestObj = {
+        ...itemPriceRequestObj,
+        priceMethod: itemPriceRequestObj.priceMethod?.value || "LIST_PRICE",
+        priceType: itemPriceRequestObj.priceType?.value || "EVENT_BASED",
+        additionalPriceType:
+          itemPriceRequestObj.additionalPriceType?.value || "ABSOLUTE",
+        priceEscalation: itemPriceRequestObj.priceEscalation?.value || "",
+        sparePartsEscalation: priceEscalationValues.sparePartsEscalation || 0,
+        labourEscalation: priceEscalationValues.labourEscalation || 0,
+        miscEscalation: priceEscalationValues.miscEscalation || 0,
+        serviceEscalation: priceEscalationValues.serviceEscalation || 0,
+        flatPrice: itemPriceRequestObj.flatPrice || 0,
+        discountType:
+          itemPriceRequestObj.discountType?.value || "PORTFOLIO_DISCOUNT",
+        discountValue: itemPriceRequestObj.discountValue || 0,
+        sparePartsPriceBreakDownPercentage:
+          priceBrackdownValues.sparePartsPriceBreakDownPercentage || 0,
+        labourPriceBreakDownPercentage:
+          priceBrackdownValues.labourPriceBreakDownPercentage || 0,
+        miscPriceBreakDownPercentage:
+          priceBrackdownValues.miscPriceBreakDownPercentage || 0,
+        year: itemPriceRequestObj.year?.value || "1",
+        noOfYear: itemPriceRequestObj.noOfYear || 1,
+        startUsage: itemPriceRequestObj.startUsage,
+        endUsage: itemPriceRequestObj.endUsage,
+        frequency: itemPriceRequestObj.frequency?.value || "CYCLIC",
+        usageUnit: itemPriceRequestObj.usageUnit?.value || "",
+        recommendedUnit:
+          itemPriceRequestObj.usageUnit?.value === "YEAR"
+            ? "MONTH"
+            : itemPriceRequestObj.usageUnit?.value || "",
+        recommendedValue: itemPriceRequestObj.recommendedValue,
+        portfolio:
+          itemPriceRequestObj.portfolio?.portfolioId === 0
+            ? null
+            : itemPriceRequestObj.portfolio,
+      };
+
+      const _itemBodyModelObj = {
+        ...itemBodyModelObj,
+        usage: itemPriceRecordObj.usageType,
+        year: itemPriceRequestObj.year,
+      };
+
+      const _itemHeaderModelObj = {
+        ...itemHeaderModelObj,
+        currency: itemPriceRecordObj.currency,
+        usage: itemPriceRecordObj.usageType,
+      };
+
+      let rUrl = PORTFOLIO_ITEM_PRICE_BY_ITEM_ID();
+      if (!editItemPrice) {
+        if (!isEmpty(requestObj.itemPriceDataId)) {
+          rUrl = rUrl + "/" + requestObj.itemPriceDataId;
+        }
+        if (!isEmpty(requestObj.itemPriceDataId)) {
+          callPutApi(null, rUrl, requestObj, (response) => {
+            if (response.status === API_SUCCESS) {
+              updateItemPriceSjRkId({
+                standardJobId: itemPriceRequestObj.standardJobId,
+                repairKitId: itemPriceRequestObj.repairKitId,
+                itemId: itemId,
+                itemPriceDataId: itemPriceRequestObj.itemPriceDataId,
+              });
+              handleSavePriceChanges(
+                itemRequestObj,
+                _itemHeaderModelObj,
+                _itemBodyModelObj,
+                editItemPrice
+              );
+            }
+          });
+        } else {
+          callPostApi(null, rUrl, requestObj, (response) => {
+            if (response.status === API_SUCCESS) {
+              updateItemPriceSjRkId({
+                standardJobId: itemPriceRequestObj.standardJobId,
+                repairKitId: itemPriceRequestObj.repairKitId,
+                itemId: itemId,
+                itemPriceDataId: response.data?.itemPriceDataId,
+              });
+              _itemBodyModelObj["itemPrices"].push({
+                itemPriceDataId: response.data?.itemPriceDataId,
+              });
+              handleSavePriceChanges(
+                itemRequestObj,
+                _itemHeaderModelObj,
+                _itemBodyModelObj,
+                editItemPrice
+              );
+            }
+          });
+        }
+      } else {
+        handleSavePriceChanges(
+          itemRequestObj,
+          _itemHeaderModelObj,
+          _itemBodyModelObj,
+          editItemPrice
+        );
+      }
     }
   };
 
@@ -546,20 +560,19 @@ const ItemPriceCalculator = (props) => {
             <div>
               <span
                 className="mr-3 cursor"
-                onClick={() => setEditItemPrice(false)}
-                // onClick={() => setPortfolioItemPriceEditable(!portfolioItemPriceEditable)}
+                onClick={handleEnableEditMode}
               >
                 <i className="fa fa-pencil font-size-12" aria-hidden="true"></i>
                 <span className="ml-2">Edit</span>
               </span>
-              <span className="mr-3">
+              {/* <span className="mr-3">
                 <MonetizationOnOutlinedIcon className=" font-size-16" />
                 <span className="ml-2"> Adjust price</span>
               </span>
               <span>
                 <SellOutlinedIcon className=" font-size-16" />
                 <span className="ml-2">Split price</span>
-              </span>
+              </span> */}
             </div>
           </div>
           <div className="mt-3">
@@ -1511,7 +1524,11 @@ const ItemPriceCalculator = (props) => {
                   onClick={handleSaveItemPriceChanges}
                   // onClick={handleItemPriceCalculatorSave}
                 >
-                  Next
+                  {priceModalView
+                    ? "Close"
+                    : editItemPrice
+                    ? "Next"
+                    : "Save & Next"}
                   {/* {portfolioItemPriceEditable ? "Next" : "Save & Next"} */}
                 </a>
               </div>

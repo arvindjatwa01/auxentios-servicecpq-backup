@@ -95,6 +95,7 @@ const ItemAddEdit = (props) => {
     itemId,
     portfolioId,
     hideItemAddUpdateModel = null,
+    reviewModeActive = false,
     // itemHeaderModelObj,
     // itemBodyModelObj,
     // itemRequestObj
@@ -160,9 +161,13 @@ const ItemAddEdit = (props) => {
       const _usageIn = usageInKeyValuePair.find(
         (obj) => obj.value === itemBodyModel.usageIn
       );
+
+      dispatch(taskActions.updateList(itemBodyModel.usageIn));
       const _strategyTask = strategyTaskKeyValuePair.find(
         (obj) => obj.value === itemHeaderModel.itemHeaderStrategy
       );
+
+      dispatch(taskActions.updateTask(itemHeaderModel.itemHeaderStrategy));
       const _taskType = taskTypeKeyValuePair.find(
         (obj) => obj.value === itemBodyModel.taskType[0]
       );
@@ -252,12 +257,19 @@ const ItemAddEdit = (props) => {
 
   // handle Select change
   const handleSelectChange = (e, keyName) => {
-    setItemRequestObj((prev) => ({ ...prev, [keyName]: e }));
     if (keyName === "usageIn") {
       dispatch(taskActions.updateList(e.value));
-    }
-    if (keyName === "strategyTask") {
+      setItemRequestObj((prev) => ({
+        ...prev,
+        [keyName]: e,
+        strategyTask: "",
+        taskType: "",
+      }));
+    } else if (keyName === "strategyTask") {
       dispatch(taskActions.updateTask(e.value));
+      setItemRequestObj((prev) => ({ ...prev, [keyName]: e, taskType: "" }));
+    } else {
+      setItemRequestObj((prev) => ({ ...prev, [keyName]: e }));
     }
   };
 
@@ -402,7 +414,9 @@ const ItemAddEdit = (props) => {
 
   // handle Item Edit flag
   const handleItemDataEdit = () => {
-    setEditItemData(false);
+    if (!reviewModeActive) {
+      setEditItemData(false);
+    }
   };
 
   // handle Template Editable
@@ -1083,7 +1097,7 @@ const ItemAddEdit = (props) => {
                       <Select
                         options={yearsKeyValuePairs}
                         className="text-primary"
-                        value={itemRequestObj.year}
+                        value={itemPriceRequestObj.year}
                         onChange={(e) => handlePriceSelectChange(e, "year")}
                       />
                     </div>

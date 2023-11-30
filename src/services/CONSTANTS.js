@@ -132,6 +132,7 @@ export const DELETE_CUSTOM_PORTFOLIO_ITEM = SOLUTION_BUILDER_URI + "item/custom/
 export const GET_CUSTOM_PORTFOLIO_ITEM_PRICE_DATA = SOLUTION_BUILDER_URI + "item/custom/price/";
 export const GET_CUSTOM_PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE = SOLUTION_BUILDER_URI + "item/custom/portfolio-service-bundle-item-prices?";
 export const LINK_CUSTOM_ITEM_TO_PORTFOLIO = CREATE_CUSTOM_PORTFOLIO_ITEM() + "/link-item-to-portfolio?";
+export const CONVERT_LINK_ITEM_TO_PORTFOLIO = CREATE_CUSTOM_PORTFOLIO_ITEM() + "/convert-link-item-to-portfolio?";
 
 export const COPY_PORTFOLIO_ITEMS_TO_CUSTOM_PORTFOLIO = SOLUTION_BUILDER_URI + "portfolio/custom/copy-portfolios-items-to-custom-portfolio?"
 export const COPY_MASTER_TO_CUSTOM_PORTFOLIO = SOLUTION_BUILDER_URI + "portfolio/custom/copy-master-to-custom-portfolio?"

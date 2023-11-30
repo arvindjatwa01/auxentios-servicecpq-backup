@@ -77,9 +77,11 @@ import {
 } from "services/ApiCaller";
 import {
   CREATE_PORTFOLIO_ITEM,
+  LINK_ITEM_TO_PORTFOLIO,
   PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE,
 } from "services/CONSTANTS";
 import { updateItemPriceSjRkId } from "./SJRKIdUpdate";
+import BundleServiceAddUpdate from "../BundleServiceAddUpdate";
 
 const fileTypes = ["JPG", "PNG", "GIF"];
 
@@ -228,6 +230,10 @@ const PortfolioItemsList = (props) => {
     selectedService,
     setSelectedService,
     handleUpdatePortfolio,
+    supportLevelKeyValuePair,
+    portfolioStatusKeyValuePair,
+    customerSegmentKeyValuePair,
+    machineComponentKeyValuePair,
   } = props;
 
   const dispatch = useDispatch();
@@ -251,6 +257,12 @@ const PortfolioItemsList = (props) => {
   const [reviewTabItemList, setReviewTabItemList] = useState([]);
 
   const [showInclusionExclusionModal, setShowInclusionExclusionModal] =
+    useState(false);
+
+  const [showBundleServiceModel, setShowBundleServiceModel] = useState(false);
+  const [bunleServiceItemFlag, setBunleServiceItemFlag] = useState("");
+  const [bundleServiceItemId, setBundleServiceItemId] = useState(null);
+  const [showBundleServicePriceModel, setShowBundleServicePriceModel] =
     useState(false);
 
   const [recorItemId, setRecorItemId] = useState(null);
@@ -310,6 +322,13 @@ const PortfolioItemsList = (props) => {
       setEditItem(false);
     }
   }, [showAddItemModal]);
+
+  useEffect(() => {
+    if (!showBundleServiceModel && !showBundleServicePriceModel) {
+      setBundleServiceItemId(null);
+      setBunleServiceItemFlag("");
+    }
+  }, [showBundleServiceModel, showBundleServicePriceModel]);
 
   // bundle service Items columns
   const bundleServiceItemsColumns = [
@@ -694,7 +713,6 @@ const PortfolioItemsList = (props) => {
 
   // get selected Bundle|Service item details
   const handleGetBundleServiceItemData = async (bundleServiceItemId) => {
-    console.log("bundleServiceItemId ", bundleServiceItemId);
     const rUrl = CREATE_PORTFOLIO_ITEM() + "/" + bundleServiceItemId;
     await callGetApi(
       null,
@@ -718,7 +736,6 @@ const PortfolioItemsList = (props) => {
             },
           };
 
-          console.log("============ requestObj ", requestObj);
           handleUpdateBundleServiceItem(bundleServiceItemId, requestObj)
             .then((res) => {
               return true;
@@ -742,6 +759,27 @@ const PortfolioItemsList = (props) => {
     // return new Promise((resolve, reject) => {
     //   const rUrl = CREATE_PORTFOLIO_ITEM() + "/" + bundleServiceItemId;
     // });
+  };
+
+  // handle Connect(Link) the item to Portfolio item and create a relation(Portfolio Items Realtion)
+  const handleLinkItemToPortfolio = (rUrlEndPath) => {
+    return new Promise((resolve, reject) => {
+      const rUrl = `${LINK_ITEM_TO_PORTFOLIO + rUrlEndPath}`;
+      callGetApi(
+        null,
+        rUrl,
+        (response) => {
+          if (response.status === API_SUCCESS) {
+            // ToDo** Success
+          } else {
+            // ToDo** Failed
+          }
+        },
+        (error) => {
+          // ToDo** api failed.
+        }
+      );
+    });
   };
 
   // update selected Bundle|Service item
@@ -774,22 +812,40 @@ const PortfolioItemsList = (props) => {
     try {
       if (isEmpty(portfolioRecordId)) {
         errorMessage("Create Portfolio First, then you can Add Items");
+        return;
+      }
+
+      if (isEmpty(recorItemId)) {
+        errorMessage("Create Item First, then you can Add Items.");
+        return;
       }
 
       const selectedItemsLength = bundleServiceItemsList.length;
       const existItemsLength = existBundleServiceItems.length;
       const _portfolioItemsIds = [...portfolioItemsIds];
 
-      console.log("selectedItemsLength ==== ", bundleServiceItemsList);
+      // connect bundle|Service to Portfolio request url
+      let linkItemReqUrl = bundleServiceItemsList
+        .map((item) => `itemIds=${item.itemId}`)
+        .join("&");
+      linkItemReqUrl = `${linkItemReqUrl}&portfolio_item_id=${recorItemId}&portfolio_id=${portfolioRecordId}`;
+
+      handleLinkItemToPortfolio(linkItemReqUrl).then((res) => {});
+
       for (let i = 0; i < selectedItemsLength; i++) {
-        handleGetBundleServiceItemData(bundleServiceItemsList[i].itemId).then(
-          (res) => {
-            _portfolioItemsIds.push({
-              itemId: bundleServiceItemsList[i].itemId,
-            });
-          }
-        );
+        _portfolioItemsIds.push({
+          itemId: bundleServiceItemsList[i].itemId,
+        });
       }
+      // for (let i = 0; i < selectedItemsLength; i++) {
+      //   handleGetBundleServiceItemData(bundleServiceItemsList[i].itemId).then(
+      //     (res) => {
+      //       _portfolioItemsIds.push({
+      //         itemId: bundleServiceItemsList[i].itemId,
+      //       });
+      //     }
+      //   );
+      // }
 
       const removeDuplicateIds = _portfolioItemsIds.filter((obj, i, self) => {
         return (
@@ -917,8 +973,6 @@ const PortfolioItemsList = (props) => {
         },
       };
 
-      console.log("item request obj ======= ", requestObj);
-
       if (isEditable) {
         callPutApi(
           null,
@@ -942,7 +996,6 @@ const PortfolioItemsList = (props) => {
           rUrl,
           requestObj,
           (response) => {
-            console.log(" item creation response :: ", response);
             if (response.status === API_SUCCESS) {
               const res = response.data;
               const _portfolioItemsIds = [...portfolioItemsIds];
@@ -1411,7 +1464,7 @@ const PortfolioItemsList = (props) => {
                         className="btn bg-primary text-white"
                         onClick={handleContinueWithSelectebundleService}
                       >
-                        Save & Continue
+                        {existBundleServiceItems.length === bundleServiceItemsList.length ? "Next" : "Save & Continue"}
                       </button>
                     </div>
                   </>
@@ -1789,7 +1842,7 @@ const PortfolioItemsList = (props) => {
   const handleAddReviewTabItem = () => {
     setPortfolioItemsList([...reviewTabItemList]);
     hideItemAddUpdateModel();
-  }
+  };
 
   //
   const handleAddItem = () => {
@@ -2171,6 +2224,7 @@ const PortfolioItemsList = (props) => {
           <div>{row?.calculatedPrice}</div>
           <div
             className="funds-grey cursor"
+            onClick={() => handleReviewBundleServiceItemPrice(row)}
             //   onClick={() => showPriceDataOfBundleOrService(row)}
           >
             <svg
@@ -2275,6 +2329,7 @@ const PortfolioItemsList = (props) => {
           <Tooltip title="View">
             <Link
               className="px-1 cursor"
+              onClick={() => handleReviewBundleServiceItem(row)}
               //   onClick={() => handleExpendedBundleServiceUpdate(i, row)}
             >
               <VisibilityOutlinedIcon />
@@ -2299,6 +2354,23 @@ const PortfolioItemsList = (props) => {
       />
     </div>
   );
+
+  // Review expended Bundle|Service Item
+  const handleReviewBundleServiceItem = (row) => {
+    setBundleServiceItemId(row.itemId);
+    setBunleServiceItemFlag(
+      row.bundleFlag === "SERVICE" ? "SERVICE" : "BUNDLE"
+    );
+    setShowBundleServiceModel(true);
+  };
+
+  const handleReviewBundleServiceItemPrice = (row) => {
+    setBundleServiceItemId(row.itemId);
+    setBunleServiceItemFlag(
+      row.bundleFlag === "SERVICE" ? "SERVICE" : "BUNDLE"
+    );
+    setShowBundleServicePriceModel(true);
+  };
 
   // Handle Delete Item
   const handleItemDelete = (row) => {
@@ -2337,6 +2409,32 @@ const PortfolioItemsList = (props) => {
   //Item Inclusion|Exclusion Modal show
   const handleItemInclusinExclusion = (row) => {
     setShowInclusionExclusionModal(true);
+  };
+
+  const viewBundleServiceItemPriceDetails = () => {
+    return (
+      <Modal size="xl" show={showBundleServicePriceModel} onHide={() => setShowBundleServicePriceModel(false)}>
+        <Modal.Body>
+          <ItemPriceCalculator
+            priceMethodKeyValuePair={priceMethodKeyValuePair}
+            priceTypeKeyValuePair={priceTypeKeyValuePair}
+            priceHeadTypeKeyValuePair={priceHeadTypeKeyValuePair}
+            unitKeyValuePairs={unitKeyValuePairs}
+            frequencyKeyValuePairs={frequencyKeyValuePairs}
+            currencyKeyValuePair={currencyKeyValuePair}
+            additionalPriceKeyValuePair={additionalPriceKeyValuePair}
+            discountTypeKeyValuePair={discountTypeKeyValuePair}
+            usageTypeKeyValuePair={usageTypeKeyValuePair}
+            itemId={bundleServiceItemId}
+            isEditable={true}
+            handleSavePriceChanges={handleSaveItemPriceChanges}
+            reviewModeActive={true}
+            priceModalView={true}
+            hidePriceViewModal={() => setShowBundleServicePriceModel(false)}
+          />
+        </Modal.Body>
+      </Modal>
+    );
   };
 
   return (
@@ -2436,6 +2534,29 @@ const PortfolioItemsList = (props) => {
           setSelectedService={setSelectedService}
         />
       )}
+      {showBundleServiceModel && (
+        <BundleServiceAddUpdate
+          show={showBundleServiceModel}
+          hideModel={() => setShowBundleServiceModel(false)}
+          itemFlag={bunleServiceItemFlag}
+          customerSegmentKeyValuePair={customerSegmentKeyValuePair}
+          machineComponentKeyValuePair={machineComponentKeyValuePair}
+          itemVersionKeyValuePairs={supportLevelKeyValuePair}
+          itemStatusKeyValuePairs={portfolioStatusKeyValuePair}
+          itemId={bundleServiceItemId}
+          setItemId={setBundleServiceItemId}
+          itemEditModeOn={true}
+          frequencyKeyValuePairs={frequencyKeyValuePairs}
+          unitKeyValuePairs={unitKeyValuePairs}
+          priceHeadTypeKeyValuePair={priceHeadTypeKeyValuePair}
+          priceTypeKeyValuePair={priceTypeKeyValuePair}
+          priceMethodKeyValuePair={priceMethodKeyValuePair}
+          currencyKeyValuePair={currencyKeyValuePair}
+          reviewModeActive={true}
+        />
+      )}
+      {showBundleServicePriceModel && viewBundleServiceItemPriceDetails()}
+
       {/* {showAddItemModal && <PortfolioItemTabsModal
                 show={showAddItemModal}
                 hideModal={() => setShowAddItemModal(false)}

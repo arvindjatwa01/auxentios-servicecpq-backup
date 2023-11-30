@@ -1,22 +1,36 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import ModeEditOutlineOutlinedIcon from "@mui/icons-material/ModeEditOutlineOutlined";
 import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import AddIcon from "@mui/icons-material/Add";
+import Tooltip from "@mui/material/Tooltip";
+import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
+import { TabContext, TabList, TabPanel } from "@mui/lab";
+import { Box, Tab } from "@mui/material";
 
+import { Modal, Dropdown, DropdownButton } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import DataTable from "react-data-table-component";
 import Select from "react-select";
+
+import cpqIcon from "../../../../assets/icons/svg/CPQ.svg";
+
 import {
   IS_PORTFOLIO,
   IS_SOLUTION,
   PORTFOLIO_SEARCH,
   PORTFOLIO_SEARCH_OPTIONS,
+  additionalPriceKeyValuePair,
   dataTableCustomStyles,
+  defaultCustomItemBodyModel,
+  defaultCustomItemHeaderModel,
+  discountTypeKeyValuePair,
+  usageTypeKeyValuePair,
 } from "../Use_Case_4_Constansts";
-import { Link } from "react-router-dom";
+
 import PortfolioSolutionSearch from "./PortfolioSolutionSearch";
 import CustomItemTabsModal from "./CustomItemTabsModal";
-import DataTable from "react-data-table-component";
 import { isEmpty } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/textUtilities";
 import { callGetApi } from "services/ApiCaller";
 import { API_SUCCESS } from "services/ResponseCode";
@@ -25,13 +39,35 @@ import {
   GET_CUSTOM_PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE,
 } from "services/CONSTANTS";
 
+import CustomItemAddEdit from "./CustomItemAddEdit";
+import PortfolioCoverageSearch from "pages/PortfolioAndBundle/newCreatePortfolioData/PortfolioCoverageSearch";
+import ComponentCodeAddEdit from "./ComponentCodeAddEdit";
+import CustomItemPriceCalculator from "./CustomItemPriceCalculator";
+import { getPortfolioAndSolutionCommonConfig } from "services";
+import CustomItemInclusionExclusionModel from "../useCase4Common/CustomItemInclusionExclusionModel";
+import BundleServiceItemsModel from "../useCase4Common/BundleServiceItemsModel";
+import CustomBundleServiceComponentCodeUpdate from "../useCase4Common/CustomBundleServiceComponentCodeUpdate";
+
 const CustomPortfolioItemsList = (props) => {
   const {
     customPortfolioId,
     customItemsTableList,
     setCustomItemsTableList,
+    setCustomItemReviewTabItemList,
+    customItemReviewTabItemList,
     customItemIds,
     setCustomItemIds,
+    priceMethodKeyValuePair,
+    priceTypeKeyValuePair,
+    priceHeadTypeKeyValuePair,
+    currencyKeyValuePair,
+    handleUpdateSolutionHeader,
+    showOptionalServicesModal,
+    handleOptionalServiceModal,
+    checkedService,
+    setCheckedService,
+    selectedService,
+    setSelectedService,
   } = props;
 
   const [searchPortfolioSolutionItems, setSearchPortfolioSolutionItems] =
@@ -42,11 +78,104 @@ const CustomPortfolioItemsList = (props) => {
   const [searchBySolutionOrPortlio, setSearchBySolutionOrPortlio] =
     useState("");
 
+  const [activeTab, setActiveTab] = useState(1);
+  const [bundleServiceNeed, setBundleServiceNeed] = useState(true);
+
+  const [frequencyKeyValuePairs, setFrequencyKeyValuePairs] = useState([]);
+  const [unitKeyValuePairs, setUnitKeyValuePairs] = useState([]);
+
+  const [recordCustomItemId, setRecordCustomItemId] = useState(null);
+  const [editItem, setEditItem] = useState(false);
+  const [itemRequestObj, setItemRequestObj] = useState({
+    customItemId: 0,
+    itemName: "",
+  });
+
+  const [customItemHeaderModelObj, setCustomItemHeaderModelObj] = useState({
+    ...defaultCustomItemHeaderModel,
+  });
+
+  const [customItemBodyModelObj, setCustomItemBodyModelObj] = useState({
+    ...defaultCustomItemBodyModel,
+  });
+
+  const [showInclusionExclusionModal, setShowInclusionExclusionModal] =
+    useState(false);
+  const [inclusionExclusionItemId, setInclusionExclusionItemId] =
+    useState(null);
+
   // Search Bundle || Servicec items state data
   const [searchBundleServiceItem, setSearchBundleServiceItem] = useState([]);
   const [selectedSearchedItems, setSelectedSearchedItems] = useState([]);
   const [bundleServiceItemsList, setBundleServiceItemsList] = useState([]);
   const [existBundleServiceItems, setExistBundleServiceItems] = useState([]);
+  const [reviewTabItemList, setReviewTabItemList] = useState([]);
+  const [expendCustomItemRow, setExpendCustomItemRow] = useState(null);
+  const [expendeCustomItemBundleService, setExpendeCustomItemBundleService] =
+    useState([]);
+  const [
+    expendCustomItemBundleServiceRow,
+    setExpendCustomItemBundleServiceRow,
+  ] = useState(null);
+
+  const [showBundleServiceSearchModal, setShowBundleServiceSearchModal] =
+    useState(false);
+
+  const [
+    showBundleServiceComponentDataModal,
+    setShowBundleServiceComponentDataModal,
+  ] = useState(false);
+
+  useEffect(() => {
+    // get frequency key-value pair
+    getPortfolioAndSolutionCommonConfig("frequency")
+      .then((res) => {
+        if (res.status === 200) {
+          const options = [];
+          res.data.map((d) => {
+            if (d.key !== "EMPTY") {
+              options.push({ value: d.key, label: d.value });
+            }
+          });
+          setFrequencyKeyValuePairs(options);
+        }
+      })
+      .catch((err) => {
+        return;
+      });
+
+    // get unit key-value pairs
+    getPortfolioAndSolutionCommonConfig("unit")
+      .then((res) => {
+        if (res.status === 200) {
+          const options = [];
+          res.data.map((d) => {
+            if (d.key !== "EMPTY" && d.key !== "MONTH") {
+              options.push({ value: d.key, label: d.value });
+            }
+          });
+          setUnitKeyValuePairs(options);
+        }
+      })
+      .catch((err) => {
+        return;
+      });
+  }, []);
+
+  useEffect(() => {
+    if (!showCustomItemModal) {
+      setRecordCustomItemId(null);
+      setEditItem(false);
+      setSearchBundleServiceItem([]);
+      setSelectedSearchedItems([]);
+      setBundleServiceItemsList([]);
+      setExistBundleServiceItems([]);
+    }
+
+    if (!showInclusionExclusionModal) {
+      setInclusionExclusionItemId(null);
+    }
+  }, [showCustomItemModal, showInclusionExclusionModal]);
 
   const handleShowItemCreateModal = () => {
     setShowCustomItemModal(true);
@@ -187,6 +316,64 @@ const CustomPortfolioItemsList = (props) => {
     },
   ];
 
+  // Search Bundle||Service item Columns
+  const bundleServiceItemsColumns = [
+    {
+      id: "itemName",
+      name: "Name",
+      selector: (row) => row.itemName,
+      sortable: false,
+      wrap: true,
+    },
+    {
+      id: "itemDescription",
+      name: "Description",
+      selector: (row) => row.itemDescription,
+      sortable: false,
+      wrap: true,
+    },
+    {
+      id: "itemHeaderStrategy",
+      name: "Strategy",
+      selector: (row) => row.itemHeaderStrategy,
+      sortable: false,
+      wrap: true,
+    },
+    {
+      id: "taskType",
+      name: "Task Type",
+      selector: (row) => row.taskType,
+      sortable: false,
+      wrap: true,
+    },
+    {
+      id: "quantity",
+      name: "Quantity",
+      selector: (row) => (isEmpty(row.quantity) ? 1 : row.quantity),
+      sortable: false,
+      wrap: true,
+    },
+    {
+      id: "recommendedValue",
+      name: "Recommended Value",
+      selector: (row) => row.recommendedValue,
+      sortable: false,
+      wrap: true,
+    },
+    {
+      id: "templateKitId",
+      name: "Template/Kit ID",
+      selector: (row) =>
+        !isEmpty(row?.standardJobId)
+          ? row?.standardJobId
+          : !isEmpty(row?.repairKitId)
+          ? row?.repairKitId
+          : "NA",
+      sortable: false,
+      wrap: true,
+    },
+  ];
+
   // Expended bundle|Service items
   const expendSearchItemRowForBundleService = (
     bundelServiceItems,
@@ -218,6 +405,7 @@ const CustomPortfolioItemsList = (props) => {
                 <a
                   style={{ whiteSpace: "pre" }}
                   className="btn-sm cursor"
+                  onClick={handleAddMoreBundleService}
                   // onClick={showAddBundleServiceItemPopup}
                 >
                   <span className="mr-2">
@@ -234,11 +422,17 @@ const CustomPortfolioItemsList = (props) => {
               data={bundelServiceItems.associatedServiceOrBundle}
               columns={searchBundleServiceItemColumns}
               expandableRows
+              expandableRowExpanded={(row) =>
+                row === expendCustomItemBundleServiceRow
+              }
               expandableRowsComponent={(componentData) =>
                 expendSearchItemBundleServiceForComponentData(
                   componentData.data,
                   searchFlag
                 )
+              }
+              onRowExpandToggled={(bool, row) =>
+                setExpendCustomItemBundleServiceRow(row)
               }
               pagination={true}
             />
@@ -269,14 +463,11 @@ const CustomPortfolioItemsList = (props) => {
                     <ShareOutlinedIcon />
                   </span>
                 </a>
-                {/* <a className="cursor">
-                <span><SearchIcon /></span>
-              </a> */}
               </div>
             </div>
             {!searchFlag && (
               <div className="border-left d-flex align-items-center">
-                <a style={{ whiteSpace: "pre" }} className="btn-sm cursor">
+                <a style={{ whiteSpace: "pre" }} className="btn-sm cursor" onClick={handleUpdateBundleServiceComponentData}>
                   <span className="mr-2">
                     <AddIcon />
                   </span>
@@ -362,6 +553,7 @@ const CustomPortfolioItemsList = (props) => {
             }
           });
         setCustomItemsTableList(_customItemsTableList);
+        setCustomItemReviewTabItemList(_customItemsTableList);
       }
     });
   };
@@ -369,6 +561,7 @@ const CustomPortfolioItemsList = (props) => {
   // Add selected Items data for items table List
   const handleAddSelecteItems = async () => {
     if (searchBySolutionOrPortlio === IS_PORTFOLIO) {
+      const _customItemIdsArray = [...customItemIds];
       for (const rowData of selectedSearchSolutionItems) {
         if ("portfolioId" in rowData) {
           const rUrl = `${COPY_MASTER_TO_CUSTOM_PORTFOLIO}portfolio_id=${rowData.portfolioId}&custom_portfolio_id=${customPortfolioId}`;
@@ -379,6 +572,9 @@ const CustomPortfolioItemsList = (props) => {
               const itemArray = [];
               if (res.responsePacket.itemRelations.length !== 0) {
                 res.responsePacket.itemRelations.map((itemData) => {
+                  _customItemIdsArray.push({
+                    customItemId: itemData.portfolioItemId,
+                  });
                   _customItemIds.push({
                     customItemId: itemData.portfolioItemId,
                   });
@@ -388,12 +584,14 @@ const CustomPortfolioItemsList = (props) => {
 
                   itemData.bundles.length !== 0 &&
                     itemData.bundles.map((bundleItem) => {
+                      _customItemIdsArray.push({ customItemId: bundleItem });
                       _customItemIds.push({ customItemId: bundleItem });
                       itemArray.push({ customItemId: bundleItem });
                     });
 
                   itemData.services.length !== 0 &&
                     itemData.services.map((serviceItem) => {
+                      _customItemIdsArray.push({ customItemId: serviceItem });
                       _customItemIds.push({ customItemId: serviceItem });
                       itemArray.push({ customItemId: serviceItem });
                     });
@@ -412,6 +610,7 @@ const CustomPortfolioItemsList = (props) => {
       }
       setSelectedSearchSolutionItems([]);
       setSearchPortfolioSolutionItems([]);
+      handleUpdateSolutionHeader([..._customItemIdsArray]);
     } else if (searchBySolutionOrPortlio === IS_SOLUTION) {
       const _customItemsTableList = [...customItemsTableList];
       const _customItemIds = [...customItemIds];
@@ -425,6 +624,7 @@ const CustomPortfolioItemsList = (props) => {
         }
       });
       setCustomItemsTableList(_customItemsTableList);
+      setCustomItemReviewTabItemList(_customItemsTableList);
 
       // get Filter item id's from selected Items from add into Solution(Custom Portfolio)
       const customItemIdsFromSelectedRow = selectedSearchSolutionItems
@@ -439,11 +639,57 @@ const CustomPortfolioItemsList = (props) => {
             !_customItemIds.some((item) => item.customItemId === itemId)
         ) // Include only not exists itemIds
         .map((customItemId) => ({ customItemId }));
+
       setCustomItemIds([..._customItemIds, ...customItemIdsFromSelectedRow]);
 
       setSelectedSearchSolutionItems([]);
       setSearchPortfolioSolutionItems([]);
+      handleUpdateSolutionHeader([
+        ..._customItemIds,
+        ...customItemIdsFromSelectedRow,
+      ]);
     }
+  };
+
+  // cancel Search Bundle|Serice items
+  const handleCancelSearchBundleService = () => {
+    setSelectedSearchedItems([]);
+    setSearchBundleServiceItem([]);
+  };
+
+  // view Selected Custom Item(Solution Item{Portfolio}) Details
+  const handleViewCustomItemDetails = (row) => {
+    setEditItem(true);
+    setBundleServiceItemsList(row.associatedServiceOrBundle);
+    setExistBundleServiceItems(row.associatedServiceOrBundle);
+    setRecordCustomItemId(row.itemId);
+    setShowCustomItemModal(true);
+  };
+
+  //Item Inclusion|Exclusion Modal show
+  const handleItemInclusinExclusion = (row) => {
+    setInclusionExclusionItemId(row.itemId);
+    setShowInclusionExclusionModal(true);
+  };
+
+  // add more bundle|service Item in reference to expeded Custom Portfolio Item
+  const handleAddMoreBundleService = () => {
+    setExpendeCustomItemBundleService([
+      ...expendCustomItemRow.associatedServiceOrBundle,
+    ]);
+    setShowBundleServiceSearchModal(true);
+  };
+
+  // update the Bundle|Service Item component data as reference to expended Bundle|Serivce
+  const handleUpdateBundleServiceComponentData = () => {
+    setShowBundleServiceComponentDataModal(true);
+  }
+
+  // Hide Portfolio Item Tabs Model
+  const hideItemAddUpdateModel = () => {
+    setShowCustomItemModal(false);
+    setBundleServiceNeed(true);
+    setActiveTab(1);
   };
 
   return (
@@ -530,11 +776,93 @@ const CustomPortfolioItemsList = (props) => {
             {customItemsTableList.length !== 0 && (
               <DataTable
                 data={customItemsTableList}
-                columns={searchItemsColumns}
+                columns={[
+                  ...searchItemsColumns,
+                  {
+                    id: "customItemAction",
+                    name: <div>Action</div>,
+                    cell: (row) => (
+                      <div
+                        className="d-flex justify-content-center align-items-center row-svg-div"
+                        style={{ minWidth: "180px !important" }}
+                      >
+                        <div>
+                          <Tooltip title="View">
+                            <Link
+                              className="px-1 cursor"
+                              onClick={() => handleViewCustomItemDetails(row)}
+                            >
+                              <VisibilityOutlinedIcon />
+                            </Link>
+                          </Tooltip>
+                        </div>
+                        <div>
+                          <DropdownButton
+                            className="customDropdown ml-2 width-p"
+                            id="dropdown-item-button"
+                          >
+                            <Dropdown.Item className=" cursor">
+                              <Tooltip title="Inclusion">
+                                <Link
+                                  className="px-1 cursor"
+                                  onClick={() =>
+                                    handleItemInclusinExclusion(row)
+                                  }
+                                >
+                                  <img src={cpqIcon}></img>
+                                  <span className="ml-2">
+                                    Inclusion/Exclusion
+                                  </span>
+                                </Link>
+                              </Tooltip>
+                            </Dropdown.Item>
+                            <Dropdown.Item
+                              className=""
+                              // onClick={(e) => handleServiceItemDelete(e, row)}
+                            >
+                              <Tooltip title="Delete">
+                                <Link to="#" className="px-1">
+                                  <svg
+                                    data-name="Layer 41"
+                                    id="Layer_41"
+                                    viewBox="0 0 50 50"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                  >
+                                    <title />
+                                    <path
+                                      className="cls-1"
+                                      d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
+                                    />
+                                    <path
+                                      className="cls-1"
+                                      d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
+                                    />
+                                    <path
+                                      className="cls-1"
+                                      d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
+                                    />
+                                  </svg>
+                                  <span className="ml-2">Delete</span>
+                                </Link>
+                              </Tooltip>
+                            </Dropdown.Item>
+                          </DropdownButton>
+                        </div>
+                      </div>
+                    ),
+                    wrap: true,
+                    sortable: false,
+                  },
+                ]}
                 expandableRows
+                expandableRowExpanded={(row) => row === expendCustomItemRow}
                 expandableRowsComponent={(itemData) =>
                   expendSearchItemRowForBundleService(itemData.data, false)
                 }
+                onRowExpandToggled={(bool, row) => {
+                  setExpendCustomItemRow(row);
+                  setExpendCustomItemBundleServiceRow(null);
+                }}
                 customStyles={dataTableCustomStyles}
                 pagination={true}
               />
@@ -551,6 +879,73 @@ const CustomPortfolioItemsList = (props) => {
           setSearchBundleServiceItem={setSearchBundleServiceItem}
           selectedSearchedItems={selectedSearchedItems}
           setSelectedSearchedItems={setSelectedSearchedItems}
+          isPortfolioItem={true}
+          frequencyKeyValuePairs={frequencyKeyValuePairs}
+          unitKeyValuePairs={unitKeyValuePairs}
+          editItem={editItem}
+          recordCustomItemId={recordCustomItemId}
+          setRecordCustomItemId={setRecordCustomItemId}
+          customItemIds={customItemIds}
+          setCustomItemIds={setCustomItemIds}
+          bundleServiceItemsList={bundleServiceItemsList}
+          existBundleServiceItems={existBundleServiceItems}
+          setBundleServiceItemsList={setBundleServiceItemsList}
+          priceMethodKeyValuePair={priceMethodKeyValuePair}
+          priceTypeKeyValuePair={priceTypeKeyValuePair}
+          priceHeadTypeKeyValuePair={priceHeadTypeKeyValuePair}
+          currencyKeyValuePair={currencyKeyValuePair}
+          additionalPriceKeyValuePair={additionalPriceKeyValuePair}
+          discountTypeKeyValuePair={discountTypeKeyValuePair}
+          usageTypeKeyValuePair={usageTypeKeyValuePair}
+          customItemsTableList={customItemsTableList}
+          setCustomItemsTableList={setCustomItemsTableList}
+          handleUpdateSolutionHeader={handleUpdateSolutionHeader}
+          setCustomItemReviewTabItemList={setCustomItemReviewTabItemList}
+          customItemReviewTabItemList={customItemReviewTabItemList}
+        />
+      )}
+      {showInclusionExclusionModal && (
+        <CustomItemInclusionExclusionModel
+          show={showInclusionExclusionModal}
+          hideModal={() => setShowInclusionExclusionModal(false)}
+          showOptionalServicesModal={showOptionalServicesModal}
+          handleOptionalServiceModal={handleOptionalServiceModal}
+          checkedService={checkedService}
+          setCheckedService={setCheckedService}
+          selectedService={selectedService}
+          setSelectedService={setSelectedService}
+          customPortfolioId={customPortfolioId}
+          inclusionExclusionItemId={inclusionExclusionItemId}
+        />
+      )}
+
+      {showBundleServiceSearchModal && (
+        <BundleServiceItemsModel
+          show={showBundleServiceSearchModal}
+          hideModal={() => setShowBundleServiceSearchModal(false)}
+          customPortfolioId={customPortfolioId}
+          customItemIds={customItemIds}
+          setCustomItemIds={setCustomItemIds}
+          expendedCustomItemRow={expendCustomItemRow}
+          bundleServiceItemsList={expendeCustomItemBundleService}
+          setBundleServiceItemsList={setExpendeCustomItemBundleService}
+          existingBundleService={expendCustomItemRow.associatedServiceOrBundle}
+          handleUpdateSolutionHeader={handleUpdateSolutionHeader}
+          setCustomItemsTableList={setCustomItemsTableList}
+          setCustomItemReviewTabItemList={setCustomItemReviewTabItemList}
+          priceMethodKeyValuePair={priceMethodKeyValuePair}
+          priceTypeKeyValuePair={priceTypeKeyValuePair}
+          frequencyKeyValuePairs={frequencyKeyValuePairs}
+          unitKeyValuePairs={unitKeyValuePairs}
+        />
+      )}
+
+      {showBundleServiceComponentDataModal && (
+        <CustomBundleServiceComponentCodeUpdate
+          show={showBundleServiceComponentDataModal}
+          hideModal={() => setShowBundleServiceComponentDataModal(false)}
+          customPortfolioId={customPortfolioId}
+          expendedBundleServiceRow={expendCustomItemBundleServiceRow}
         />
       )}
     </>

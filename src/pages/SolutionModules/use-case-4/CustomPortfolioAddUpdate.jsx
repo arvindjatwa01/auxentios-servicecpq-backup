@@ -73,8 +73,12 @@ import { callGetApi, callPostApi, callPutApi } from "services/ApiCaller";
 import { API_SUCCESS } from "services/ResponseCode";
 import { Switch } from "@material-ui/core";
 import CustomPortfolioItemsList from "./customPortfolioItems/CustomPortfolioItemsList";
-import { defaultCustomPortfolioObj } from "./Use_Case_4_Constansts";
+import {
+  SEARCH_FLAG_CUSTOMER_SEARCH,
+  defaultCustomPortfolioObj,
+} from "./Use_Case_4_Constansts";
 import LoadingProgress from "pages/Repair/components/Loader";
+import CustomOptionalServicesModel from "./useCase4Common/CustomOptionalServicesModel";
 
 const CustomPortfolioAddUpdate = (props) => {
   const {
@@ -126,7 +130,19 @@ const CustomPortfolioAddUpdate = (props) => {
   const [customPortfolioRecordId, setCustomPortfolioRecordId] = useState(null);
 
   const [customItemsTableList, setCustomItemsTableList] = useState([]);
+  const [customItemReviewTabItemList, setCustomItemReviewTabItemList] =
+    useState([]);
   const [customItemIds, setCustomItemIds] = useState([]);
+
+  // Optional Service
+  const [checkedService, setCheckedService] = useState([]);
+  const [selectedService, setSelectedService] = useState([]);
+  const [inclusionService, setInclusionService] = useState([]);
+
+  const [showOptionalServicesModal, setShowOptionalServicesModal] =
+    useState(false);
+  const [showSelectedServicesModal, setShowSelectedServicesModal] =
+    useState(false);
 
   const [portfolioHeaderActiveTab, setPortfolioHeaderActiveTab] =
     useState("general");
@@ -414,10 +430,6 @@ const CustomPortfolioAddUpdate = (props) => {
       administrativeTabEdit: true,
     });
 
-    console.log(
-      "customerSegmentKeyValuePair ====== ",
-      customerSegmentKeyValuePair
-    );
     // set General Tab data
     setGeneralTabData({
       ...generalTabData,
@@ -435,7 +447,7 @@ const CustomPortfolioAddUpdate = (props) => {
 
     // fetch and set the Custom Details
     if (!isEmpty(recordData.customerId)) {
-      handleFetchExistingCustomDetails(recordData.customerId);
+      handleFetchExistingCustomerDetails(recordData.customerId);
     }
 
     // set Validity Tab data
@@ -467,12 +479,16 @@ const CustomPortfolioAddUpdate = (props) => {
     );
     // Solution Type
     const _solutionType = solutionTypeKeyValuePair.find(
-      (obj) => obj.value === recordData.solutionType && recordData.solutionType !== "EMPTY"
+      (obj) =>
+        obj.value === recordData.solutionType &&
+        recordData.solutionType !== "EMPTY"
     );
 
     // Solution Value
     const _solutionValue = solutionLevelKeyValuePair.find(
-      (obj) => obj.value === recordData.solutionLevel && recordData.solutionLevel !== "EMPTY"
+      (obj) =>
+        obj.value === recordData.solutionLevel &&
+        recordData.solutionLevel !== "EMPTY"
     );
 
     // Set Strategy Tab data
@@ -576,7 +592,7 @@ const CustomPortfolioAddUpdate = (props) => {
   };
 
   // fetch the existing customer Details
-  const handleFetchExistingCustomDetails = async (customerId) => {
+  const handleFetchExistingCustomerDetails = async (customerId) => {
     const rUrl = SEARCH_CUSTOMER(`customerId~${customerId}`);
     callGetApi(null, rUrl, (response) => {
       if (response.status === API_SUCCESS) {
@@ -642,6 +658,7 @@ const CustomPortfolioAddUpdate = (props) => {
             }
           });
           setCustomItemsTableList(_portfolioItems);
+          setCustomItemReviewTabItemList(_portfolioItems);
         }
       });
     }
@@ -985,6 +1002,7 @@ const CustomPortfolioAddUpdate = (props) => {
                       searchResult={customerSearchResult}
                       handleSelectSearchResult={handleCutomerSelect}
                       noOptions={customerSearchNoOptions}
+                      searchFlag={SEARCH_FLAG_CUSTOMER_SEARCH}
                     />
                   </div>
                 </div>
@@ -2162,11 +2180,7 @@ const CustomPortfolioAddUpdate = (props) => {
                     name="preparedBy"
                     value={administrativeTabData.preparedBy}
                     onChange={(e) =>
-                      handleAdministrativeTabTextChange(
-                        e,
-                        "preparedBy",
-                        "text"
-                      )
+                      handleAdministrativeTabTextChange(e, "preparedBy", "text")
                     }
                     placeholder="Required (ex-abc@gmail.com)"
                   />
@@ -2186,11 +2200,7 @@ const CustomPortfolioAddUpdate = (props) => {
                     name="approvedBy"
                     value={administrativeTabData.approvedBy}
                     onChange={(e) =>
-                      handleAdministrativeTabTextChange(
-                        e,
-                        "approvedBy",
-                        "text"
-                      )
+                      handleAdministrativeTabTextChange(e, "approvedBy", "text")
                     }
                   />
                 </div>
@@ -2236,11 +2246,7 @@ const CustomPortfolioAddUpdate = (props) => {
                     name="revisedBy"
                     value={administrativeTabData.revisedBy}
                     onChange={(e) =>
-                      handleAdministrativeTabTextChange(
-                        e,
-                        "revisedBy",
-                        "text"
-                      )
+                      handleAdministrativeTabTextChange(e, "revisedBy", "text")
                     }
                   />
                 </div>
@@ -2631,6 +2637,16 @@ const CustomPortfolioAddUpdate = (props) => {
     setPriceAgreementIds(_priceAgreementIds);
   };
 
+  // Optional Services Modal Show|Hide
+  const handleOptionalServiceModal = () => {
+    setShowOptionalServicesModal(!showOptionalServicesModal);
+  };
+
+  // Select Optional Services Modal Show|Hide
+  const handleSelectedServiceModal = () => {
+    setShowSelectedServicesModal(!showSelectedServicesModal);
+  };
+
   // check custom portfolio tab Input Validation
   const checkInputValidation = (activeTab) => {
     if (activeTab == "general" && !portfolioTabsEditView.generalViewOnly) {
@@ -2900,6 +2916,68 @@ const CustomPortfolioAddUpdate = (props) => {
     }
   };
 
+  // update the Solution header(Custom Portfolio) on item Level
+  const handleUpdateSolutionHeader = (_customItemIds = []) => {
+    const requestObj = {
+      ...defaultCustomPortfolioObj,
+      customPortfolioId: customPortfolioRecordId,
+      name: generalTabData.name,
+      description: generalTabData.description,
+      externalReference: generalTabData.externalReference,
+      customerSegment: generalTabData.customerSegment?.value || "",
+      template: generalTabData.flagTemplate,
+      visibleInCommerce: generalTabData.flagCommerce,
+
+      customerId: parseInt(generalTabCustomerData.customerID),
+      customerGroup: generalTabCustomerData.customerGroup,
+
+      validFrom: validityTabData.fromDate,
+      validTo: validityTabData.toDate,
+      startUsage: validityTabData.fromInput,
+      endUsage: validityTabData.toInput,
+      unit: validityTabData.from?.value || "EMPTY",
+
+      usageCategory: strategyTabData.categoryUsage?.value || "EMPTY",
+      strategyTask: strategyTabData.strategyTask?.value || "EMPTY",
+      taskType: strategyTabData.taskType?.value || "EMPTY",
+      // optionalServices: _optionalServices,
+      optionalServices: "",
+      responseTime: strategyTabData.responseTime?.value || "EMPTY",
+      productHierarchy: strategyTabData.productHierarchy?.value || "EMPTY",
+      geographic: strategyTabData.geographic?.value || "EMPTY",
+      solutionType: strategyTabData.solutionType?.value || "EMPTY",
+      solutionLevel: strategyTabData.solutionLevel?.value || "EMPTY",
+
+      portfolioPrice: isEmpty(priceTabData.portfolioPriceId)
+        ? null
+        : {
+            portfolioPriceId: priceTabData.portfolioPriceId,
+          },
+
+      preparedBy: administrativeTabData.preparedBy,
+      approvedBy: administrativeTabData.approvedBy,
+      preparedOn: administrativeTabData.preparedOn,
+      revisedBy: administrativeTabData.revisedBy,
+      revisedOn: administrativeTabData.revisedOn,
+      salesOffice: administrativeTabData.salesOffice?.value || "",
+      offerValidity: administrativeTabData.preparedBy?.value || "",
+
+      customItems: _customItemIds.length !== 0 ? _customItemIds : customItemIds,
+      customCoverages: customPortfolioCoverageIds,
+
+      status: portfolioStatus?.value,
+      supportLevel: portfolioSupportLevel?.value,
+    };
+
+    handleUpdateCustomPortfolio(requestObj).then((res) => {
+      if (res.apiSuccess) {
+        // successMessage(
+        //   `Solution ${generalTabData.name} Updated Successfully`
+        // );
+      }
+    });
+  };
+
   return (
     <>
       <div className="content-body" style={{ minHeight: "884px" }}>
@@ -2991,16 +3069,40 @@ const CustomPortfolioAddUpdate = (props) => {
               </Box>
             </div>
             <CustomPortfolioItemsList
-              // customPortfolioId={customPortfolioRecordId}
-              customPortfolioId={816}
+              customPortfolioId={customPortfolioRecordId}
               customItemsTableList={customItemsTableList}
               setCustomItemsTableList={setCustomItemsTableList}
+              setCustomItemReviewTabItemList={setCustomItemReviewTabItemList}
+              customItemReviewTabItemList={customItemReviewTabItemList}
               customItemIds={customItemIds}
               setCustomItemIds={setCustomItemIds}
+              priceMethodKeyValuePair={priceMethodKeyValuePair}
+              priceTypeKeyValuePair={priceTypeKeyValuePair}
+              priceHeadTypeKeyValuePair={priceHeadTypeKeyValuePair}
+              currencyKeyValuePair={currencyKeyValuePair}
+              handleUpdateSolutionHeader={handleUpdateSolutionHeader}
+              showOptionalServicesModal={showOptionalServicesModal}
+              handleOptionalServiceModal={handleOptionalServiceModal}
+              checkedService={checkedService}
+              setCheckedService={setCheckedService}
+              selectedService={selectedService}
+              setSelectedService={setSelectedService}
             />
           </div>
         )}
       </div>
+      {(showOptionalServicesModal || showSelectedServicesModal) && (
+        <CustomOptionalServicesModel
+          showOptionalServicesModal={showOptionalServicesModal}
+          handleOptionalServiceModal={handleOptionalServiceModal}
+          checkedService={checkedService}
+          setCheckedService={setCheckedService}
+          selectedService={selectedService}
+          setSelectedService={setSelectedService}
+          showSelectedServicesModal={showSelectedServicesModal}
+          handleSelectedServiceModal={handleSelectedServiceModal}
+        />
+      )}
     </>
   );
 };

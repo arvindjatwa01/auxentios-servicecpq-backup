@@ -1,18 +1,18 @@
-import LoadingProgress from "pages/Repair/components/Loader";
-import React from "react";
-import { useCallback } from "react";
-import { useEffect } from "react";
-import { useState } from "react";
-import { Button, Modal } from "react-bootstrap";
-import { callGetApi } from "services/ApiCaller";
+import { useState,  useEffect, useCallback, } from "react";
+
 import Pagination from "@mui/material/Pagination";
-import { CREATE_PORTFOLIO_ITEM } from "services/CONSTANTS";
-import { errorMessage } from "../utilities/toastMessage";
 import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
+
+import { Button, Modal } from "react-bootstrap";
+
+import { callGetApi } from "services/ApiCaller";
+import { CREATE_CUSTOM_PORTFOLIO_ITEM } from "services/CONSTANTS";
+import LoadingProgress from "pages/Repair/components/Loader";
+import { errorMessage } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/toastMessage";
 
 const pageSize = 6;
 
-const OptionalServiceModal = ({
+const CustomOptionalServicesModel = ({
   showOptionalServicesModal,
   handleOptionalServiceModal,
   checkedService,
@@ -39,7 +39,7 @@ const OptionalServiceModal = ({
     (pageNo = null) => {
       setLoading(true);
       const rUrl =
-        CREATE_PORTFOLIO_ITEM() +
+        CREATE_CUSTOM_PORTFOLIO_ITEM() +
         "/services?pageNumber=" +
         (pageNo ? pageNo : 0) +
         "&pageSize=" +
@@ -57,7 +57,6 @@ const OptionalServiceModal = ({
             }
             setOptionalServicesList(res.data);
             setLoading(false);
-            console.log("response optional service ======== ", response);
           } else {
             setLoading(false);
           }
@@ -85,7 +84,7 @@ const OptionalServiceModal = ({
         _checkedService.push({ ...obj, checked: true });
       } else {
         const index = _checkedService.findIndex(
-          (checkdObj) => checkdObj.itemId === obj.itemId
+          (checkdObj) => checkdObj.customItemId === obj.customItemId
         );
         _checkedService.splice(index, 1);
       }
@@ -109,13 +108,13 @@ const OptionalServiceModal = ({
   const handleRemoveService = (serviceObj) => {
       // remove from selected list
     const _selectedService = [...selectedService];
-    const serviceIndex = _selectedService.findIndex(obj => obj.itemId === serviceObj.itemId);
+    const serviceIndex = _selectedService.findIndex(obj => obj.customItemId === serviceObj.customItemId);
     _selectedService.splice(serviceIndex, 1);
     setSelectedService(_selectedService);
     
     // remove from checked list
     const _checkedService = [...checkedService];
-    const checkedServiceIndex = _checkedService.findIndex(obj => obj.itemId === serviceObj.itemId);
+    const checkedServiceIndex = _checkedService.findIndex(obj => obj.customItemId === serviceObj.customItemId);
     _checkedService.splice(checkedServiceIndex, 1);
     setCheckedService(_checkedService);
   }
@@ -140,7 +139,6 @@ const OptionalServiceModal = ({
           <h4>
             <b>Select Optional Services</b>
           </h4>
-          {/* <button className="btn btn-primary mr-2" onClick={handleSelectCheckedServices} disabled={checkedService.length === 0}> + Add Selected</button> */}
           <button
             className="btn btn-primary mr-2"
             onClick={handleAddCheckedServices}
@@ -171,7 +169,7 @@ const OptionalServiceModal = ({
                                     type="checkbox"
                                     id={serviceObj.itemName + "-" + i}
                                     checked={checkedService.some(
-                                      (obj) => obj.itemId === serviceObj.itemId
+                                      (obj) => obj.customItemId === serviceObj.customItemId
                                     )}
                                     onChange={(e) =>
                                       handleServiceCheckbox(e, serviceObj)
@@ -198,7 +196,6 @@ const OptionalServiceModal = ({
                       <Pagination
                         count={totalPages}
                         page={currentPage}
-                        //   onChange={handleOptionalServicePageClick}
                         onChange={handlePageChange}
                         shape="rounded"
                         hidePrevButton
@@ -265,4 +262,4 @@ const OptionalServiceModal = ({
   );
 };
 
-export default OptionalServiceModal;
+export default CustomOptionalServicesModel;
