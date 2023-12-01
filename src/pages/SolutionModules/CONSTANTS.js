@@ -7,7 +7,9 @@ import BuildIcon from '@mui/icons-material/Build';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ConstructionIcon from '@mui/icons-material/Construction';
 import EngineeringTwoToneIcon from '@mui/icons-material/EngineeringTwoTone';
-
+import Portfoliosicon from '../../assets/icons/svg/Portfolios-icon.svg'
+import contract from '../../assets/icons/svg/contract.svg'
+import DesignServicesOutlinedIcon from '@mui/icons-material/DesignServicesOutlined';
 export const INITIAL_PAGE_NO = 0;
 export const INITIAL_PAGE_SIZE = 5;
 export const PARTS_TAG_OPTIONS = [
@@ -490,3 +492,9 @@ export const UPLOAD_OPTIONS = [
   { label: 'Microsoft Excel', value: 'excel', icon: <TextSnippetTwoToneIcon sx={{ mx: 2, color: "blue" }} /> },
   { label: 'Google Sheets', value: 'gsheet', icon: <GridOnIcon sx={{ mx: 2 }} /> },
   { label: 'Paste Table Data', value: 'paste', icon: <ContentCopyTwoToneIcon sx={{ mx: 2 }} /> }]
+
+  export const TEMPLATE_OPTIONS = [
+    { label: 'Maintenance Solutions', value: "mainsol", icon: <img src={Portfoliosicon} width="34px" height="25px" /> },
+    { label: 'Repair Solutions', value: 'repsol', icon: <img src={contract} width="34px" height="25px" /> },
+    { label: 'Routine Maintenance Tasks', value: 'routsol', icon: <DesignServicesOutlinedIcon sx={{ mx: 1 }} /> },
+    { label: 'Equipment Solutions', value: 'pastesol', icon: <DesignServicesOutlinedIcon sx={{ mx: 1 }} /> }]
