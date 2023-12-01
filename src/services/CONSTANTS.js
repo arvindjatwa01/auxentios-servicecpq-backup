@@ -319,6 +319,14 @@ export const FETCH_GAP_TO_ENTITLEMENT = `https://yr2btg0lie.execute-api.us-east-
 export const FETCH_PARTS_SEGMENT_DETAILS = (cluster) => `https://eoa6truj1j.execute-api.us-east-2.amazonaws.com/parts_segmentation?cluster=${cluster}`;
 export const FETCH_PARTS_SEGMENT = "https://hzrle4s7xi.execute-api.us-east-2.amazonaws.com/parts_segmentation_analysis";
 export const FETCH_DISCOUNT_GUIDANCE = (filter) => `https://ymnnwbr1ch.execute-api.us-east-2.amazonaws.com/discount?${filter}`
+export const FETCH_DISCOUNT_COLUMNS = () => `https://3mvbvq7ywj.execute-api.us-east-2.amazonaws.com/discount_columnNames`
+//Analytics
+export const FETCH_QUOTE_PERFORMANCE = () => QUOTE_REST_SERVICE + "/quote-performance";
+export const FETCH_QUOTE_WIN_LOSS = () => QUOTE_REST_SERVICE + "/quote-win-loss";
+export const FETCH_QUOTE_LIFE_CYCLE = () => QUOTE_REST_SERVICE + "/quote-life-cycle-status";
+export const FETCH_TOP_TEN = () => QUOTE_REST_SERVICE + "/top-10-quotes";
+export const FETCH_BOTTOM_TEN = () => QUOTE_REST_SERVICE + "/bottom-10-quotes";
+
 // Master Equipment 
 export const validate_Coverage_Get_Url = DATA_SERVICE_URI + "equipment/validate-coverage"
 export const DATA_SVC_EQUIPMENT = () => DATA_SERVICE_URI + "equipment";
