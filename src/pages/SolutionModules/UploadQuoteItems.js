@@ -8,7 +8,7 @@ export const UploadQuoteItems = (props) => {
             <h5 className="d-flex align-items-center mb-0">
                 <div className="" style={{ display: "contents" }}>
                     <span className="mr-3" style={{ whiteSpace: "pre" }}>
-                        Import From Excel
+                        Import
                     </span>
                     <a href="#" className="btn-sm">
                         <i className="fa fa-bookmark-o" aria-hidden="true"></i>

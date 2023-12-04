@@ -1907,7 +1907,7 @@ export function SolutionServicePortfolio(props) {
   //     id: 1,
   //     payerName: customerData.customerName,
   //     billingSplit: 100,
-  //     price: "",
+  //     price: "",<
   // }])
 
   const addPayerColumns = [
@@ -5656,6 +5656,8 @@ export function SolutionServicePortfolio(props) {
                         <div className="my-3">
                           <SolutionQuotePriceEstimate
                             rows={billingDetail.priceEstimates}
+                            quoteId={quoteIdIs}
+                            handleSnack={handleSnack}
                             setRows={(rows) =>
                               setBillingDetail({
                                 ...billingDetail,

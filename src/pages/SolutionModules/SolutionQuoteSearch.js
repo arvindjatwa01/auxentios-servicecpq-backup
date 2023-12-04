@@ -28,7 +28,148 @@ import { QUOTE_REPAIR_CREATE, SOLUTION_QUOTE_CREATE } from "navigation/CONSTANTS
 import SearchComponent from "pages/Repair/components/SearchComponent";
 import { quoteRepairSearch } from "services/repairQuoteServices";
 import { QUOTE_SEARCH_Q_OPTIONS } from "pages/Repair/CONSTANTS";
-
+export const solutionQuoteColumns = [
+  // {
+  //     name: (
+  //         <>
+  //             <div>Select</div>
+  //         </>
+  //     ),
+  //     // selector: (row) => row.check1,
+  //     wrap: true,
+  //     sortable: true,
+  //     maxWidth: "50px",
+  //     minWidth: "50px",
+  //     cell: (row) => (
+  //         <Checkbox
+  //             className="text-black"
+  //         // checked={row.check1}
+  //         // onChange={(e) => handleCheckboxData(e, row)}
+  //         />
+  //     ),
+  // },
+  {
+    name: (
+      <>
+        <div>Quote ID</div>
+      </>
+    ),
+    selector: (row) => row.quoteId,
+    wrap: true,
+    sortable: true,
+    format: (row) => row.quoteId,
+  },
+  {
+    name: (
+      <>
+        <div>Description</div>
+      </>
+    ),
+    selector: (row) => row.description,
+    wrap: true,
+    sortable: true,
+    format: (row) => row.description,
+  },
+  {
+    name: (
+      <>
+        <div>Customer ID</div>
+      </>
+    ),
+    selector: (row) => row.customerId,
+    wrap: true,
+    sortable: true,
+    format: (row) => row.customerId,
+  },
+  {
+    name: (
+      <>
+        <div>Reference</div>
+      </>
+    ),
+    selector: (row) => row.reference,
+    wrap: true,
+    sortable: true,
+    format: (row) => row.reference,
+  },
+  {
+    name: (
+      <>
+        <div>Total Amount</div>
+      </>
+    ),
+    selector: (row) => row.netPrice,
+    wrap: true,
+    sortable: true,
+    format: (row) => row.netPrice,
+  },
+  {
+    name: (
+      <>
+        <div>Serial #</div>
+      </>
+    ),
+    selector: (row) => row.serialNumber,
+    wrap: true,
+    sortable: true,
+    format: (row) => row.serialNumber,
+  },
+  {
+    name: (
+      <>
+        <div>Model</div>
+      </>
+    ),
+    selector: (row) => row.model,
+    wrap: true,
+    sortable: true,
+    format: (row) => row.model,
+  },
+  {
+    name: (
+      <>
+        <div>Currency</div>
+      </>
+    ),
+    selector: (row) => row.currency,
+    wrap: true,
+    sortable: true,
+    format: (row) => row.currency,
+  },
+  {
+    name: (
+      <>
+        <div>Created By</div>
+      </>
+    ),
+    selector: (row) => row.preparedBy,
+    wrap: true,
+    sortable: true,
+    format: (row) => row.preparedBy,
+  },
+  {
+    name: (
+      <>
+        <div>Created On</div>
+      </>
+    ),
+    selector: (row) => row.preparedOn,
+    wrap: true,
+    sortable: true,
+    format: (row) => row.preparedOn,
+  },
+  {
+    name: (
+      <>
+        <div>Status</div>
+      </>
+    ),
+    selector: (row) => row.status,
+    wrap: true,
+    sortable: true,
+    format: (row) => row.status,
+  },
+];
 const SolutionQuoteSearch = () => {
   const history = useHistory();
   const [age, setAge] = React.useState('5');
@@ -351,148 +492,7 @@ const SolutionQuoteSearch = () => {
   ];
 
 
-  const masterColumns = [
-    // {
-    //     name: (
-    //         <>
-    //             <div>Select</div>
-    //         </>
-    //     ),
-    //     // selector: (row) => row.check1,
-    //     wrap: true,
-    //     sortable: true,
-    //     maxWidth: "50px",
-    //     minWidth: "50px",
-    //     cell: (row) => (
-    //         <Checkbox
-    //             className="text-black"
-    //         // checked={row.check1}
-    //         // onChange={(e) => handleCheckboxData(e, row)}
-    //         />
-    //     ),
-    // },
-    {
-      name: (
-        <>
-          <div>Quote ID</div>
-        </>
-      ),
-      selector: (row) => row.quoteId,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.quoteId,
-    },
-    {
-      name: (
-        <>
-          <div>Description</div>
-        </>
-      ),
-      selector: (row) => row.description,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.description,
-    },
-    {
-      name: (
-        <>
-          <div>Customer ID</div>
-        </>
-      ),
-      selector: (row) => row.customerId,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.customerId,
-    },
-    {
-      name: (
-        <>
-          <div>Reference</div>
-        </>
-      ),
-      selector: (row) => row.reference,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.reference,
-    },
-    {
-      name: (
-        <>
-          <div>Total Amount</div>
-        </>
-      ),
-      selector: (row) => row.netPrice,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.netPrice,
-    },
-    {
-      name: (
-        <>
-          <div>Serial #</div>
-        </>
-      ),
-      selector: (row) => row.serialNumber,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.serialNumber,
-    },
-    {
-      name: (
-        <>
-          <div>Model</div>
-        </>
-      ),
-      selector: (row) => row.model,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.model,
-    },
-    {
-      name: (
-        <>
-          <div>Currency</div>
-        </>
-      ),
-      selector: (row) => row.currency,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.currency,
-    },
-    {
-      name: (
-        <>
-          <div>Created By</div>
-        </>
-      ),
-      selector: (row) => row.preparedBy,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.preparedBy,
-    },
-    {
-      name: (
-        <>
-          <div>Created On</div>
-        </>
-      ),
-      selector: (row) => row.preparedOn,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.preparedOn,
-    },
-    {
-      name: (
-        <>
-          <div>Status</div>
-        </>
-      ),
-      selector: (row) => row.status,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.status,
-    },
-  ];
+  
 
   const rows = [
     { id: 1, GroupNumber: 'Snow', Type: 'Jon', Partnumber: 35, PriceExtended: 'pending', Pricecurrency: 'Open', Usage: 'Inconsistent', TotalPrice: 'Inconsistent', Comments: 'Inconsistent', Actions: 'Inconsistent', },
@@ -628,7 +628,7 @@ const SolutionQuoteSearch = () => {
               <DataTable
                 className=""
                 title=""
-                columns={masterColumns}
+                columns={solutionQuoteColumns}
                 data={searchQuoteMasterData}
                 customStyles={customStyles}
                 pagination

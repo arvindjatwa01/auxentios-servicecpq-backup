@@ -1,7 +1,7 @@
 import axios from "axios";
 import { SYSTEM_ERROR } from "config/CONSTANTS";
 import Cookies from "js-cookie";
-import { ADD_PL_QUOTE_ITEM, ADD_QUOTE_PRICE_SUMMARY, ADD_REPAIR_QUOTE_ITEM, CREATE_PART_QUOTE_FROM_KIT, CREATE_QUOTE_PAYER, CREATE_QUOTE_VERSION, CREATE_QUOTE_VERSION_WITHOUT_NEW_VERSION, CREATE_REPAIR_QUOTE, CREATE_REPAIR_QUOTE_FROM_SJ, CREATE_SPARE_PART_QUOTE, FETCH_BILLING_FREQ, FETCH_BILLING_TYPE, FETCH_DEL_PRIORITY, FETCH_DEL_TYPE, FETCH_PAYMENT_TERMS, FETCH_QUOTE_SUMMARY, FETCH_REPAIR_QUOTE_DETAILS, FETCH_REPAIR_QUOTE_VERSIONS, RECENT_QUOTES, SEARCH_REPAIR_QUOTES, UPDATE_PL_QUOTE_ITEM, UPDATE_QUOTE_PAYER, UPDATE_QUOTE_PRICE_SUMMARY, UPDATE_REPAIR_QUOTE, UPDATE_REPAIR_QUOTE_ITEM, UPLOAD_ITEMS_TO_PARTS_QUOTE, UPLOAD_ITEMS_TO_REP_QUOTE } from "./CONSTANTS";
+import { ADD_PL_QUOTE_ITEM, ADD_QUOTE_PRICE_SUMMARY, ADD_REPAIR_QUOTE_ITEM, ADD_SOLUTION_QUOTE_PRICE_SUMMARY, CREATE_PART_QUOTE_FROM_KIT, CREATE_QUOTE_PAYER, CREATE_QUOTE_VERSION, CREATE_QUOTE_VERSION_WITHOUT_NEW_VERSION, CREATE_REPAIR_QUOTE, CREATE_REPAIR_QUOTE_FROM_SJ, CREATE_SPARE_PART_QUOTE, FETCH_BILLING_FREQ, FETCH_BILLING_TYPE, FETCH_DEL_PRIORITY, FETCH_DEL_TYPE, FETCH_PAYMENT_TERMS, FETCH_QUOTE_SUMMARY, FETCH_REPAIR_QUOTE_DETAILS, FETCH_REPAIR_QUOTE_VERSIONS, RECENT_QUOTES, SEARCH_REPAIR_QUOTES, UPDATE_PL_QUOTE_ITEM, UPDATE_QUOTE_PAYER, UPDATE_QUOTE_PRICE_SUMMARY, UPDATE_REPAIR_QUOTE, UPDATE_REPAIR_QUOTE_ITEM, UPDATE_SOLUTION_QUOTE_PRICE_SUMMARY, UPLOAD_ITEMS_TO_PARTS_QUOTE, UPLOAD_ITEMS_TO_REP_QUOTE } from "./CONSTANTS";
 var CookiesSetData = Cookies.get("loginTenantDtl");
 var getCookiesJsonData;
 if (CookiesSetData != undefined) {
@@ -359,6 +359,60 @@ export const updateQuotePriceSummary = (quotePriceSumId, priceSummaryData) => {
     try {
       axios
         .put(UPDATE_QUOTE_PRICE_SUMMARY(quotePriceSumId), priceSummaryData, config)
+        .then((res) => {
+          console.log("updateQuotePriceSummary > axios res=", res);
+          if (res.status === 200) {
+            resolve(res);
+          } else {
+            console.log("Status:", res.status);
+            reject("Error in updateQuotePriceSummary axios!");
+          }
+        })
+        .catch((err) => {
+          console.log("updateQuotePriceSummary axios err :", err);
+          reject("Error in updateQuotePriceSummary axios!");
+        });
+    } catch (error) {
+      console.error("Genreal Exception updateQuotePriceSummary : ", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+//Add Quote Price Summary item
+export const addSolutionQuotePriceSummary = (quoteId, priceSummaryData) => {
+  console.log("Quote > addQuotePriceSummary called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .post(ADD_SOLUTION_QUOTE_PRICE_SUMMARY(quoteId), priceSummaryData, config)
+        .then((res) => {
+          console.log("addQuotePriceSummary > axios res=", res);
+          if (res.status === 200) {
+            resolve(res.data);
+          } else {
+            console.log("Status:", res.status);
+            reject("Error in addQuotePriceSummary axios!");
+          }
+        })
+        .catch((err) => {
+          console.log("addQuotePriceSummary axios err :", err);
+          reject("Error in addQuotePriceSummary axios!");
+        });
+    } catch (error) {
+      console.error("Genreal Exception addQuotePriceSummary : ", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+//Update Quote Price Summary
+export const updateSolutionQuotePriceSummary = (quotePriceSumId, priceSummaryData) => {
+  console.log("Quote > updateQuotePriceSummary called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .put(UPDATE_SOLUTION_QUOTE_PRICE_SUMMARY(quotePriceSumId), priceSummaryData, config)
         .then((res) => {
           console.log("updateQuotePriceSummary > axios res=", res);
           if (res.status === 200) {

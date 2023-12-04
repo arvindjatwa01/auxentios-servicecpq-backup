@@ -269,6 +269,8 @@ export const CREATE_QUOTE_PAYER = (quoteId) => QUOTE_REST_SERVICE + `/payer?quot
 export const UPDATE_QUOTE_PAYER = (quotePayerId) => QUOTE_REST_SERVICE + `/payer/${quotePayerId}`;
 export const ADD_QUOTE_PRICE_SUMMARY = (quoteId) => QUOTE_REST_SERVICE + `/rbpe?quote_id=${quoteId}`;
 export const UPDATE_QUOTE_PRICE_SUMMARY = (priceSummaryId) => QUOTE_REST_SERVICE + `/rbpe/${priceSummaryId}`;
+export const ADD_SOLUTION_QUOTE_PRICE_SUMMARY = (quoteId) => QUOTE_REST_SERVICE + `/sbpe?quote_id=${quoteId}`;
+export const UPDATE_SOLUTION_QUOTE_PRICE_SUMMARY = (priceSummaryId) => QUOTE_REST_SERVICE + `/sbpe/${priceSummaryId}`;
 
 export const FETCH_BILLING_TYPE = () => QUOTE_COMMON_REST_SERVICE + `/common-config/billing-type`;
 export const FETCH_BILLING_FREQ = () => QUOTE_COMMON_REST_SERVICE + `/common-config/billing-frequency`;

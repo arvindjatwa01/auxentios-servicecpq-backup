@@ -17,8 +17,9 @@ import {
 } from "@mui/x-data-grid";
 import { GRID_STYLE } from "pages/Repair/CONSTANTS";
 import { Tooltip } from "@mui/material";
-import { addQuotePayer } from "services/repairQuoteServices";
+import { addQuotePayer, addSolutionQuotePriceSummary, updateSolutionQuotePriceSummary } from "services/repairQuoteServices";
 import { useState } from "react";
+import { addQuotePriceSummary } from "services/solutionQuoteServices";
 
 function SummaryAdjustedPrice(params) {
     const { id, field } = params;
@@ -63,9 +64,9 @@ function EditToolbar(props) {
                 className="row col-md-6 col-lg-4"
                 style={{ justifyContent: "right" }}
             >
-                {/* <Button color="primary" startIcon={<AddIcon />} onClick={handleClick}>
-          Add Price Summary
-        </Button> */}
+                <Button color="primary" startIcon={<AddIcon />} onClick={handleClick}>
+                    Add Price Summary
+                </Button>
             </div>
         </GridToolbarContainer>
     );
@@ -126,33 +127,44 @@ export default function SolutionQuotePriceEstimate(props) {
     const processRowUpdate = React.useCallback(
         (newRow, oldRow) =>
             new Promise((resolve, reject) => {
-                const updatedRow = { ...newRow, isNew: false };
+                const updatedRow = { ...newRow, isNew: true };
                 if (updatedRow.sbPriceEstimateId === "new") {
                     console.log(oldRow, newRow, rows);
-                    addQuotePayer(props.quoteId, {
+                    addSolutionQuotePriceSummary(props.quoteId, {
                         ...updatedRow,
                         id: undefined,
                         isNew: undefined,
                     })
                         .then((savedPayer) => {
-                            props.handleSnack("success", `Payer has been added!`);
+                            props.handleSnack("success", `Quote summary has been added!`);
                             setRows(
                                 rows.map((row) => (row.sbPriceEstimateId === newRow.sbPriceEstimateId ? savedPayer : row))
                             );
                             resolve(savedPayer);
                         })
                         .catch((e) => {
-                            props.handleSnack("error", "Payer details could not be added");
+                            props.handleSnack("error", "Quote summary could not be added");
                             resolve(oldRow);
                         });
                 } else {
-                    setRows(
-                        rows.map((row) =>
-                            row.sbPriceEstimateId === updatedRow.sbPriceEstimateId
-                                ? { ...updatedRow, isNew: undefined }
-                                : row
-                        )
-                    );
+                    updateSolutionQuotePriceSummary(newRow.sbPriceEstimateId, updatedRow)
+                        .then((savedSummary) => {
+                            props.handleSnack("success", "Quote summary has been updated!");
+                            setRows(
+                                rows.map((row) =>
+                                    row.sbPriceEstimateId === updatedRow.sbPriceEstimateId
+                                        ? { ...updatedRow, isNew: undefined }
+                                        : row
+                                )
+                            );
+
+                            resolve(savedSummary.data);
+                        })
+                        .catch((e) => {
+                            props.handleSnack("error", "Quote summary details could not be updated");
+                            resolve(oldRow);
+                        });
+
 
                     resolve(updatedRow);
                 }
