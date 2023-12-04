@@ -165,7 +165,7 @@ const ItemPriceCalculator = (props) => {
 
       // set item header request obj
       const _itemHeaderModelObj = {
-        ...itemHeaderModelObj,
+        ...itemHeaderModel,
         usage: _usageType || "",
         currency: _currency || "",
       };
@@ -173,7 +173,7 @@ const ItemPriceCalculator = (props) => {
 
       // set item body request obj
       const _itemBodyModelObj = {
-        ...itemBodyModelObj,
+        ...itemBodyModel,
         usage: _usageType || "",
         year: _itemYear,
       };
@@ -190,6 +190,7 @@ const ItemPriceCalculator = (props) => {
       //   });
 
       if (itemBodyModel.itemPrices.length !== 0) {
+        setLoading(true);
         const itemId =
           itemBodyModel.itemPrices[itemBodyModel.itemPrices.length - 1]
             .itemPriceDataId;
@@ -259,6 +260,18 @@ const ItemPriceCalculator = (props) => {
                   res.sparePartsPriceBreakDownPercentage || 0,
                 servicePriceBreakDownPercentage:
                   res.servicePriceBreakDownPercentage || 0,
+                priceBrackdownselectValue:
+                  priceHeadTypeKeyValuePair[
+                    !isEmpty(res.sparePartsPriceBreakDownPercentage)
+                      ? 0
+                      : !isEmpty(res.labourPriceBreakDownPercentage)
+                      ? 1
+                      : !isEmpty(res.miscPriceBreakDownPercentage)
+                      ? 2
+                      : !isEmpty(res.servicePriceBreakDownPercentage)
+                      ? 3
+                      : 0
+                  ],
               });
 
               setItemPriceRecordObj({
@@ -290,14 +303,19 @@ const ItemPriceCalculator = (props) => {
                 discountType: _discountType || "",
                 currency: _currency || "",
               });
+              setLoading(false);
+            } else {
+              setLoading(false);
             }
           },
           (error) => {
+            setLoading(false);
             return;
           }
         );
+      }else{
+        setLoading(false);
       }
-      setLoading(false);
     } else {
       setLoading(false);
     }
@@ -558,10 +576,7 @@ const ItemPriceCalculator = (props) => {
         <>
           <div className="ligt-greey-bg p-3">
             <div>
-              <span
-                className="mr-3 cursor"
-                onClick={handleEnableEditMode}
-              >
+              <span className="mr-3 cursor" onClick={handleEnableEditMode}>
                 <i className="fa fa-pencil font-size-12" aria-hidden="true"></i>
                 <span className="ml-2">Edit</span>
               </span>
@@ -613,7 +628,7 @@ const ItemPriceCalculator = (props) => {
                       </p>
                       <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                         {isEmpty(itemPriceRequestObj.priceDate)
-                          ? "NA"
+                          ? getFormatDateTime(new Date(), false)
                           : getFormatDateTime(
                               itemPriceRequestObj.priceDate,
                               false
@@ -685,7 +700,7 @@ const ItemPriceCalculator = (props) => {
                         FLAT RATE INDICATOR
                       </p>
                       <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                        {itemPriceRecordObj.flatRateIndicator ? "YES" : "NO"}
+                        {!isEmpty(itemPriceRequestObj.flatPrice) ? "YES" : "NO"}
                       </h6>
                     </div>
                   </div>

@@ -45,6 +45,7 @@ import {
 } from "./itemConstant";
 import { callGetApi, getApiCall } from "services/searchQueryService";
 import { GET_SEARCH_COVERAGE } from "services/CONSTANTS";
+import LoadingProgress from "pages/Repair/components/Loader";
 
 const activityOptions = ["None", "Atria", "Callisto"];
 
@@ -128,6 +129,8 @@ const BundleServiceAddUpdate = (props) => {
   const [prefixKeyValuePair, setPrefixKeyValuePair] = useState([]);
   const [itemPriceDataId, setItemPriceDataId] = useState(null);
 
+  const [showLoader, setShowLoader] = useState(false);
+
   useEffect(() => {
     if (itemId && itemEditModeOn) {
       handleGetItemDetails(itemId);
@@ -142,6 +145,7 @@ const BundleServiceAddUpdate = (props) => {
 
   // get Select Bundle/Service Item Details
   const handleGetItemDetails = async (itemId) => {
+    setShowLoader(true);
     const itemDetails = await getItemDataById(itemId);
     if (itemDetails.status === 200) {
       const { itemId, itemName, itemHeaderModel, itemBodyModel } =
@@ -183,7 +187,9 @@ const BundleServiceAddUpdate = (props) => {
         make: itemHeaderModel.itemHeaderMake,
         model: itemHeaderModel.model,
         family: itemHeaderModel.itemHeaderFamily,
-        prefix: itemHeaderModel.prefix,
+        prefix: isEmpty(itemHeaderModel.prefix)
+          ? ""
+          : { label: itemHeaderModel.prefix, value: itemHeaderModel.prefix },
         additional: "",
         estimatedTime: itemHeaderModel.estimatedTime,
         unit: "",
@@ -197,6 +203,10 @@ const BundleServiceAddUpdate = (props) => {
         supportLevel: { value: "STANDARD", label: "Standard (Bronze)" },
         status: _status,
       });
+
+      if (!isEmpty(itemHeaderModel.model)) {
+        handleModelSearch(itemHeaderModel.model);
+      }
 
       setModelSelect(!isEmpty(itemHeaderModel.model));
       setBundleServiceItemHeader({ ...itemHeaderModel });
@@ -218,6 +228,9 @@ const BundleServiceAddUpdate = (props) => {
             .itemPriceDataId
         );
       }
+      setShowLoader(false);
+    } else {
+      setShowLoader(false);
     }
   };
 
@@ -238,9 +251,9 @@ const BundleServiceAddUpdate = (props) => {
   };
 
   // search model
-  const handleModelSearch = (e) => {
+  const handleModelSearch = (modelValue) => {
     setModelSelect(false);
-    var searchStr = "model~" + e.target.value;
+    var searchStr = "model~" + modelValue;
     let loading, data, failure;
     getApiCall(GET_SEARCH_COVERAGE + searchStr, loading, data, failure)
       // getSearchQueryCoverage(searchStr)
@@ -364,8 +377,9 @@ const BundleServiceAddUpdate = (props) => {
       itemId: bundleServiceObj.itemId,
       itemName: bundleServiceObj.name,
       itemHeaderModel: {
-        ...bundleServiceItemHeader,
-        itemHeaderDescription: bundleServiceObj.description,
+        ...itemHeaderData,
+        // ...bundleServiceItemHeader,
+        // itemHeaderDescription: bundleServiceObj.description,
         bundleFlag: itemFlag === "BUNDLE" ? "BUNDLE_ITEM" : "SERVICE",
         reference: bundleServiceObj.reference,
         itemHeaderMake: bundleServiceObj.make,
@@ -374,7 +388,7 @@ const BundleServiceAddUpdate = (props) => {
         prefix: bundleServiceObj.prefix?.value || "",
         type: bundleServiceObj.machineComponent?.value || "EMPTY",
         estimatedTime: bundleServiceObj.estimatedTime,
-        status: "DRAFT",
+        // status: "DRAFT",
         itemHeaderCustomerSegment:
           bundleServiceObj.customerSegment?.value || "",
         preparedBy: administrative.preparedBy,
@@ -391,15 +405,23 @@ const BundleServiceAddUpdate = (props) => {
         ),
       },
       itemBodyModel: {
-        ...bundleServiceItemBody,
+        // ...bundleServqqiceItemBody,
+        ...itemBodyData,
         itemBodyDescription: itemBodyData.itemBodyDescription,
-        taskType: [itemBodyData.taskType?.value || "EMPTY"],
-        usageIn: itemBodyData.usageIn?.value || "",
-        usage: itemBodyData.usage?.value || "",
-        year: itemBodyData.year?.value || "",
+        taskType: [
+          itemBodyData.taskType?.value || itemBodyData.taskType || "EMPTY",
+        ],
+        usageIn: itemBodyData.usageIn?.value || itemBodyData.usageIn || "",
+        usage: itemBodyData.usage?.value || itemBodyData.usage || "",
+        year: itemBodyData.year?.value || itemBodyData.year || "",
         itemPrices: itemBodyData.itemPrices,
       },
     };
+
+    // console.log("itemHeaderData ====== ", itemHeaderData);
+    // console.log("itemBodyData ====== ", itemBodyData);
+    // console.log("itemPriceObj ====== ", itemPriceObj);
+    // console.log("itemReqObj ======= ", itemReqObj);
     if (itemId) {
       const updateItem = await updateItemData(itemId, itemReqObj);
       if (updateItem.status === 200) {
@@ -472,7 +494,7 @@ const BundleServiceAddUpdate = (props) => {
               prefix: bundleServiceObj.prefix?.value || "",
               type: bundleServiceObj.machineComponent?.value || "EMPTY",
               estimatedTime: bundleServiceObj.estimatedTime,
-              status: "DRAFT",
+              status: bundleServiceObj.status?.value || "DRAFT",
               itemHeaderCustomerSegment:
                 bundleServiceObj.customerSegment?.value || "",
               preparedBy: administrative.preparedBy,
@@ -510,7 +532,52 @@ const BundleServiceAddUpdate = (props) => {
           }
         }
       } else {
-        setActiveTab("bundleServiceItems");
+        if (bundleServiceEdit.bundleServiceHeader) {
+          setActiveTab("bundleServiceItems");
+        } else {
+          if (itemId) {
+            let serviceReqObj = {
+              itemId: bundleServiceObj.itemId,
+              itemName: bundleServiceObj.name,
+              itemHeaderModel: {
+                ...bundleServiceItemHeader,
+                itemHeaderDescription: bundleServiceObj.description,
+                bundleFlag: "BUNDLE_ITEM",
+                reference: bundleServiceObj.reference,
+                itemHeaderMake: bundleServiceObj.make,
+                itemHeaderFamily: bundleServiceObj.family,
+                model: bundleServiceObj.model,
+                prefix: bundleServiceObj.prefix?.value || "",
+                type: bundleServiceObj.machineComponent?.value || "EMPTY",
+                estimatedTime: bundleServiceObj.estimatedTime,
+                status: bundleServiceObj.status?.value || "DRAFT",
+                itemHeaderCustomerSegment:
+                  bundleServiceObj.customerSegment?.value || "",
+                preparedBy: administrative.preparedBy,
+                approvedBy: administrative.approvedBy,
+                preparedOn: administrative.preparedOn,
+                revisedBy: administrative.revisedBy,
+                revisedOn: administrative.revisedOn,
+                salesOffice: administrative.salesOffice?.value || "",
+                offerValidity: administrative.offerValidity?.value || "",
+                serviceChargable:
+                  bundleServiceObj.serviceChargable?.value === "chargeable",
+                serviceOptional: !(
+                  bundleServiceObj.serviceChargable?.value === "chargeable"
+                ),
+              },
+              itemBodyModel: { ...bundleServiceItemBody },
+            };
+
+            const updateService = await updateItemData(itemId, serviceReqObj);
+            if (updateService.status === 200) {
+              successMessage(bundleServiceObj.name + " Update Successfully.");
+              setActiveTab("bundleServiceItems");
+            }
+          } else {
+            setActiveTab("bundleServiceItems");
+          }
+        }
       }
     } catch (error) {
       return;
@@ -526,15 +593,6 @@ const BundleServiceAddUpdate = (props) => {
     isEditable
   ) => {
     const _itemPrice = [...bundleServiceItemBody.itemPrices];
-    console.log("itemPriceData ==== ::", itemPriceData);
-    console.log("_itemPrice first ==== ::", _itemPrice);
-    console.log(
-      "first check ==== :: ",
-      _itemPrice.some(
-        (obj) => obj.itemPriceDataId === itemPriceData.itemPriceDataId
-      )
-    );
-    console.log("second check === ::", isEmpty(itemPriceData.itemPriceDataId));
     if (
       !_itemPrice.some(
         (obj) => obj.itemPriceDataId === itemPriceData.itemPriceDataId
@@ -543,11 +601,13 @@ const BundleServiceAddUpdate = (props) => {
     ) {
       _itemPrice.push({ itemPriceDataId: itemPriceData.itemPriceDataId });
     }
-    console.log("_itemPrice second ==== ::", _itemPrice);
-
     const _bundleServiceItemHeader = {
       ...bundleServiceItemHeader,
       usage: itemRequestObj.usageType?.value || "",
+      itemHeaderStrategy:
+        itemRequestObj?.strategyTask?.value ||
+        itemRequestObj?.strategyTask ||
+        "EMPTY",
     };
     const _bundleServiceItemBody = {
       ...bundleServiceItemBody,
@@ -558,6 +618,15 @@ const BundleServiceAddUpdate = (props) => {
       year: itemPriceData.year,
       itemPrices: _itemPrice,
     };
+
+    // console.log("editItemData ", editItemData);
+    // console.log("itemRequestObj ", itemRequestObj);
+    // console.log("itemPriceData ", itemPriceData);
+    // console.log("isPortfolioItem ", isPortfolioItem);
+    // console.log("isEditable ", isEditable);
+    // console.log("_bundleServiceItemBody ", _bundleServiceItemBody);
+    // console.log("_bundleServiceItemHeader ", _bundleServiceItemHeader);
+
     const _bundleServicePriceObj = { ...itemPriceData };
 
     setBundleServiceItemHeader({ ..._bundleServiceItemHeader });
@@ -637,7 +706,7 @@ const BundleServiceAddUpdate = (props) => {
             ...bundleServiceItemBody,
             taskType: [
               bundleServiceItemBody.taskType?.value ||
-                bundleServiceItemBody.taskType ||
+                bundleServiceItemBody.taskType[0] ||
                 "EMPTY",
             ],
             usageIn:
@@ -646,6 +715,7 @@ const BundleServiceAddUpdate = (props) => {
               "EMPTY",
           },
         };
+
         if (itemId) {
           const updateService = await updateItemData(itemId, serviceReqObj);
           if (updateService.status === 200) {
@@ -655,7 +725,9 @@ const BundleServiceAddUpdate = (props) => {
           }
         }
       }
-    } catch (error) {}
+    } catch (error) {
+      return;
+    }
   };
 
   // Save item price changes
@@ -730,461 +802,740 @@ const BundleServiceAddUpdate = (props) => {
   return (
     <Modal size="xl" show={show} onHide={hideModel}>
       <Modal.Body>
-        <Box sx={{ typography: "body1" }}>
-          <TabContext value={activeTab}>
-            <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-              <TabList
-                className="custom-tabs-div"
-                aria-label="lab API tabs example"
-                onChange={(e, tabValue) => setActiveTab(tabValue)}
-                // onChange={(e, newValue) => bundleAndServiceEditAble && setBundleTabs(newValue)}
-              >
-                <Tab label={`${itemFlag} HEADER`} value="bundleServiceHeader" />
-                <div className="align-items-center d-flex justify-content-center">
-                  <ArrowForwardIosIcon />
-                </div>
-                {itemFlag === "BUNDLE" && (
-                  <Tab label={`${itemFlag} ITEMS`} value="bundleServiceItems" />
-                )}
-                {itemFlag === "BUNDLE" && (
+        {showLoader ? (
+          <LoadingProgress />
+        ) : (
+          <Box sx={{ typography: "body1" }}>
+            <TabContext value={activeTab}>
+              <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                <TabList
+                  className="custom-tabs-div"
+                  aria-label="lab API tabs example"
+                  onChange={(e, tabValue) => setActiveTab(tabValue)}
+                  // onChange={(e, newValue) => bundleAndServiceEditAble && setBundleTabs(newValue)}
+                >
+                  <Tab
+                    label={`${itemFlag} HEADER`}
+                    value="bundleServiceHeader"
+                  />
                   <div className="align-items-center d-flex justify-content-center">
                     <ArrowForwardIosIcon />
                   </div>
-                )}
-                <Tab label="PRICE CALCULATOR" value="bundleServicePrice" />
-                <div className="align-items-center d-flex justify-content-center">
-                  <ArrowForwardIosIcon />
-                </div>
-                <Tab
-                  label="ADMINISTRATIVE"
-                  value="bundleServiceAdministrative"
-                />
-              </TabList>
-            </Box>
-            <TabPanel value="bundleServiceHeader">
-              <div className="container-fluid ">
-                <div className="d-flex align-items-center justify-content-between mt-2">
-                  <div className="ml-3 green-custom-btn ">
-                    {itemFlag === "SERVICE" && (
-                      <Select
-                        className={`customselectbtn1 p-${
-                          bundleServiceEdit.bundleServiceHeader ? 0 : 2
-                        } border-radius-10 ${
-                          bundleServiceObj.serviceChargable?.value ==
-                          "chargeable"
-                            ? "bg-gray-light"
-                            : "bg-green-light"
-                        }`}
-                        onChange={(e) =>
-                          handleSelectChange(e, "serviceChargable")
-                        }
-                        options={serviceTypeKeyValuePairs}
-                        value={bundleServiceObj.serviceChargable}
-                        isDisabled={bundleServiceEdit.bundleServiceHeader}
-                      />
-                    )}
+                  {itemFlag === "BUNDLE" && (
+                    <Tab
+                      label={`${itemFlag} ITEMS`}
+                      value="bundleServiceItems"
+                    />
+                  )}
+                  {itemFlag === "BUNDLE" && (
+                    <div className="align-items-center d-flex justify-content-center">
+                      <ArrowForwardIosIcon />
+                    </div>
+                  )}
+                  <Tab label="PRICE CALCULATOR" value="bundleServicePrice" />
+                  <div className="align-items-center d-flex justify-content-center">
+                    <ArrowForwardIosIcon />
                   </div>
-                  <div className="d-flex justify-content-center align-items-center">
-                    <div className="ml-3">
-                      <Select
-                        className="customselectbtn1"
-                        onChange={(e) => handleSelectChange(e, "supportLevel")}
-                        options={itemVersionKeyValuePairs}
-                        value={bundleServiceObj.supportLevel}
-                        isDisabled={bundleServiceEdit.bundleServiceHeader}
-                      />
+                  <Tab
+                    label="ADMINISTRATIVE"
+                    value="bundleServiceAdministrative"
+                  />
+                </TabList>
+              </Box>
+              <TabPanel value="bundleServiceHeader">
+                <div className="container-fluid ">
+                  <div className="d-flex align-items-center justify-content-between mt-2">
+                    <div className="ml-3 green-custom-btn ">
+                      {itemFlag === "SERVICE" && (
+                        <Select
+                          className={`customselectbtn1 p-${
+                            bundleServiceEdit.bundleServiceHeader ? 0 : 2
+                          } border-radius-10 ${
+                            bundleServiceObj.serviceChargable?.value ==
+                            "chargeable"
+                              ? "bg-gray-light"
+                              : "bg-green-light"
+                          }`}
+                          onChange={(e) =>
+                            handleSelectChange(e, "serviceChargable")
+                          }
+                          options={serviceTypeKeyValuePairs}
+                          value={bundleServiceObj.serviceChargable}
+                          isDisabled={bundleServiceEdit.bundleServiceHeader}
+                        />
+                      )}
                     </div>
-                    <div className="ml-3">
-                      <Select
-                        className="customselectbtn"
-                        onChange={(e) => handleSelectChange(e, "status")}
-                        options={itemStatusKeyValuePairs}
-                        value={bundleServiceObj.status}
-                        isOptionDisabled={(option) =>
-                          handleStatusOptionsDisable(option)
-                        }
-                        isDisabled={bundleServiceEdit.bundleServiceHeader}
-                      />
+                    <div className="d-flex justify-content-center align-items-center">
+                      <div className="ml-3">
+                        <Select
+                          className="customselectbtn1"
+                          onChange={(e) =>
+                            handleSelectChange(e, "supportLevel")
+                          }
+                          options={itemVersionKeyValuePairs}
+                          value={bundleServiceObj.supportLevel}
+                          isDisabled={bundleServiceEdit.bundleServiceHeader}
+                        />
+                      </div>
+                      <div className="ml-3">
+                        <Select
+                          className="customselectbtn"
+                          onChange={(e) => handleSelectChange(e, "status")}
+                          options={itemStatusKeyValuePairs}
+                          value={bundleServiceObj.status}
+                          isOptionDisabled={(option) =>
+                            handleStatusOptionsDisable(option)
+                          }
+                          isDisabled={bundleServiceEdit.bundleServiceHeader}
+                        />
+                      </div>
+                      <a className="ml-3 font-size-14 cursor">
+                        <img src={shareIcon} />
+                      </a>
+                      <a className="ml-3 font-size-14 cursor">
+                        <img src={folderaddIcon} />
+                      </a>
+                      <a className="ml-3 font-size-14 cursor">
+                        <img src={uploadIcon} />
+                      </a>
+                      <a className="ml-3 font-size-14 cursor">
+                        {" "}
+                        <img src={cpqIcon} />
+                      </a>
+                      <a className="ml-3 font-size-14 cursor">
+                        <img src={deleteIcon} />
+                      </a>
+                      <a className="ml-3 font-size-14 cursor">
+                        <img src={copyIcon} />
+                      </a>
+                      <a className="ml-2 cursor">
+                        <MuiMenuComponent options={activityOptions} />
+                      </a>
                     </div>
-                    <a className="ml-3 font-size-14 cursor">
-                      <img src={shareIcon} />
-                    </a>
-                    <a className="ml-3 font-size-14 cursor">
-                      <img src={folderaddIcon} />
-                    </a>
-                    <a className="ml-3 font-size-14 cursor">
-                      <img src={uploadIcon} />
-                    </a>
-                    <a className="ml-3 font-size-14 cursor">
-                      {" "}
-                      <img src={cpqIcon} />
-                    </a>
-                    <a className="ml-3 font-size-14 cursor">
-                      <img src={deleteIcon} />
-                    </a>
-                    <a className="ml-3 font-size-14 cursor">
-                      <img src={copyIcon} />
-                    </a>
-                    <a className="ml-2 cursor">
-                      <MuiMenuComponent options={activityOptions} />
-                    </a>
                   </div>
-                </div>
-                <div className="card p-4 mt-5">
-                  <h5 className="d-flex align-items-center mb-0">
-                    <div className="" style={{ display: "contents" }}>
-                      <span className="mr-3">Header</span>
-                      <a
-                        className="btn-sm cursor"
-                        onClick={() =>
-                          handleBundleServiceEditFlag("bundleServiceHeader")
-                        }
-                        // onClick={makeBundleServiceHeaderEditable}
-                      >
-                        <i className="fa fa-pencil" aria-hidden="true" />
-                      </a>
-                      <a className="btn-sm cursor">
-                        <i className="fa fa-bookmark-o" aria-hidden="true" />
-                      </a>
-                      <a className="btn-sm cursor">
-                        <img style={{ width: "14px" }} src={folderaddIcon} />
-                      </a>
-                    </div>
-                    <div className="input-group icons border-radius-10 border">
-                      <div className="input-group-prepend">
-                        <span
-                          className="input-group-text bg-transparent border-0 pr-0 "
-                          id="basic-addon1"
+                  <div className="card p-4 mt-5">
+                    <h5 className="d-flex align-items-center mb-0">
+                      <div className="" style={{ display: "contents" }}>
+                        <span className="mr-3">Header</span>
+                        <a
+                          className="btn-sm cursor"
+                          onClick={() =>
+                            handleBundleServiceEditFlag("bundleServiceHeader")
+                          }
+                          // onClick={makeBundleServiceHeaderEditable}
                         >
-                          <img src={shearchIcon} />
-                        </span>
+                          <i className="fa fa-pencil" aria-hidden="true" />
+                        </a>
+                        <a className="btn-sm cursor">
+                          <i className="fa fa-bookmark-o" aria-hidden="true" />
+                        </a>
+                        <a className="btn-sm cursor">
+                          <img style={{ width: "14px" }} src={folderaddIcon} />
+                        </a>
                       </div>
-                      <input
-                        type="search"
-                        className="form-control search-form-control"
-                        aria-label="Search Dashboard"
-                      />
+                      <div className="input-group icons border-radius-10 border">
+                        <div className="input-group-prepend">
+                          <span
+                            className="input-group-text bg-transparent border-0 pr-0 "
+                            id="basic-addon1"
+                          >
+                            <img src={shearchIcon} />
+                          </span>
+                        </div>
+                        <input
+                          type="search"
+                          className="form-control search-form-control"
+                          aria-label="Search Dashboard"
+                        />
+                      </div>
+                    </h5>
+                    {bundleServiceEdit.bundleServiceHeader ? (
+                      <div className="row mt-4 ">
+                        <div className="col-md-4 col-sm-3">
+                          <div className="form-group">
+                            <p className="text-light-dark font-size-12 font-weight-500 mb-2">
+                              {itemFlag} NAME
+                            </p>
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                              {isEmpty(bundleServiceObj.name)
+                                ? "NA"
+                                : bundleServiceObj.name}
+                            </h6>
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-3">
+                          <div className="form-group">
+                            <p className="text-light-dark font-size-12 font-weight-500 mb-2">
+                              {itemFlag} DESCRIPTION
+                            </p>
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                              {isEmpty(bundleServiceObj.description)
+                                ? "NA"
+                                : bundleServiceObj.description}
+                            </h6>
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-3">
+                          <div className="form-group">
+                            <p className="text-light-dark font-size-12 font-weight-500 mb-2">
+                              BUNDLE/SERVICE
+                            </p>
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                              {itemFlag === "SERVICE"
+                                ? "SERVICE"
+                                : "BUNDLE_ITEM"}
+                            </h6>
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-3">
+                          <div className="form-group">
+                            <p className="text-light-dark font-size-12 font-weight-500 mb-2">
+                              REFERENCE
+                            </p>
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                              {isEmpty(bundleServiceObj.reference)
+                                ? "NA"
+                                : bundleServiceObj.reference}
+                            </h6>
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-3">
+                          <div className="form-group">
+                            <p className="text-light-dark font-size-12 font-weight-500 mb-2">
+                              CUSTOMER SEGMENT
+                            </p>
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                              {isEmptySelect(
+                                bundleServiceObj.customerSegment?.value
+                              )
+                                ? "NA"
+                                : bundleServiceObj.customerSegment?.label}
+                            </h6>
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-3">
+                          <div className="form-group">
+                            <p className="text-light-dark font-size-12 font-weight-500 mb-2">
+                              MACHINE/COMPONENT
+                            </p>
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                              {isEmptySelect(
+                                bundleServiceObj.machineComponent?.value
+                              )
+                                ? "NA"
+                                : bundleServiceObj.machineComponent?.label}
+                            </h6>
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-3">
+                          <div className="form-group customselectmodelSerch">
+                            <p className="text-light-dark font-size-12 font-weight-500 mb-2">
+                              MODEL(S)
+                            </p>
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                              {isEmpty(bundleServiceObj.model)
+                                ? "NA"
+                                : bundleServiceObj.model}
+                            </h6>
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-3">
+                          <div className="form-group">
+                            <p className="text-light-dark font-size-12 font-weight-500 mb-2">
+                              FAMILY
+                            </p>
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                              {isEmpty(bundleServiceObj.family)
+                                ? "NA"
+                                : bundleServiceObj.family}
+                            </h6>
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-3">
+                          <div className="form-group">
+                            <p className="text-light-dark font-size-12 font-weight-500 mb-2">
+                              MAKE
+                            </p>
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                              {isEmpty(bundleServiceObj.make)
+                                ? "NA"
+                                : bundleServiceObj.make}
+                            </h6>
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-3">
+                          <div className="form-group">
+                            <p className="text-light-dark font-size-12 font-weight-500 mb-2">
+                              PREFIX(S)
+                            </p>
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                              {isEmptySelect(bundleServiceObj.prefix?.value)
+                                ? "NA"
+                                : bundleServiceObj.prefix?.label}
+                            </h6>
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-3">
+                          <div className="form-group">
+                            <p className="text-light-dark font-size-12 font-weight-500 mb-2">
+                              ESTIMATED HOURS
+                            </p>
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                              {isEmpty(bundleServiceObj.estimatedTime)
+                                ? "NA"
+                                : bundleServiceObj.estimatedTime}
+                            </h6>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="row mt-4 input-fields">
+                        <div className="col-md-4 col-sm-3">
+                          <div className="form-group">
+                            <label className="text-light-dark font-size-12 font-weight-500">
+                              {itemFlag} NAME
+                            </label>
+                            <input
+                              type="text"
+                              className="form-control text-primary border-radius-10"
+                              name="name"
+                              placeholder="Name (Required*)"
+                              onChange={handleTextChange}
+                              value={bundleServiceObj.name}
+                              disabled={bundleServiceObj.itemId !== 0}
+                            />
+                            <div className="css-w8dmq8">*Mandatory</div>
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-3">
+                          <div className="form-group">
+                            <label className="text-light-dark font-size-12 font-weight-500">
+                              {itemFlag} DESCRIPTION
+                            </label>
+                            <input
+                              type="text"
+                              className="form-control text-primary border-radius-10"
+                              name="description"
+                              placeholder="Description (Required*)"
+                              value={bundleServiceObj.description}
+                              onChange={handleTextChange}
+                            />
+                            <div className="css-w8dmq8">*Mandatory</div>
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-3">
+                          <div className="form-group">
+                            <label className="text-light-dark font-size-12 font-weight-500">
+                              BUNDLE/SERVICE
+                            </label>
+                            <input
+                              type="text"
+                              className="form-control text-primary border-radius-10"
+                              name="bundleFlag"
+                              placeholder="Bundle Flag"
+                              value={
+                                itemFlag === "SERVICE"
+                                  ? "SERVICE"
+                                  : "BUNDLE_ITEM"
+                              }
+                              onChange={handleTextChange}
+                              disabled
+                            />
+                            <div className="css-w8dmq8">*Mandatory</div>
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-3">
+                          <div className="form-group">
+                            <label className="text-light-dark font-size-12 font-weight-500">
+                              REFERENCE
+                            </label>
+                            <input
+                              type="text"
+                              className="form-control text-primary border-radius-10"
+                              name="reference"
+                              placeholder="Reference"
+                              value={bundleServiceObj.reference}
+                              onChange={handleTextChange}
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-3">
+                          <div className="form-group">
+                            <label className="text-light-dark font-size-12 font-weight-500">
+                              CUSTOMER SEGMENT
+                            </label>
+                            <Select
+                              onChange={(e) =>
+                                handleSelectChange(e, "customerSegment")
+                              }
+                              className="text-primary"
+                              value={bundleServiceObj.customerSegment}
+                              options={customerSegmentKeyValuePair}
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-3">
+                          <div className="form-group">
+                            <label className="text-light-dark font-size-12 font-weight-500">
+                              MACHINE/COMPONENT
+                            </label>
+                            <Select
+                              onChange={(e) =>
+                                handleSelectChange(e, "machineComponent")
+                              }
+                              value={bundleServiceObj.machineComponent}
+                              className="text-primary"
+                              options={machineComponentKeyValuePair}
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-3">
+                          <div className="form-group customselectmodelSerch">
+                            <label className="text-light-dark font-size-12 font-weight-500">
+                              MODEL(S)
+                            </label>
+                            <input
+                              type="text"
+                              className="form-control text-primary border-radius-10"
+                              name="model"
+                              placeholder="Model(Required*)"
+                              value={bundleServiceObj.model}
+                              onChange={(e) => {
+                                handleTextChange(e);
+                                handleModelSearch(e.target.value);
+                              }}
+                            />
+                            <div className="css-w8dmq8">*Mandatory</div>
+                            {
+                              <ul
+                                className={`list-group custommodelselectsearch customselectsearch-list scrollbar scrollbar-model style`}
+                                id="style"
+                              >
+                                {modelSearchList.length !== 0 &&
+                                  modelSearchList.map((currentItem, j) => (
+                                    <li
+                                      className="list-group-item text-primary"
+                                      key={j}
+                                      onClick={() =>
+                                        handleSelectModel(currentItem)
+                                      }
+                                    >
+                                      {currentItem.model}
+                                    </li>
+                                  ))}
+                              </ul>
+                            }
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-3">
+                          <div className="form-group">
+                            <label className="text-light-dark font-size-12 font-weight-500">
+                              FAMILY
+                            </label>
+                            <input
+                              type="text"
+                              className="form-control text-primary border-radius-10"
+                              name="make"
+                              placeholder="Auto Fill Search Model...."
+                              value={bundleServiceObj.family}
+                              disabled
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-3">
+                          <div className="form-group">
+                            <label className="text-light-dark font-size-12 font-weight-500">
+                              MAKE
+                            </label>
+                            <input
+                              type="text"
+                              className="form-control text-primary border-radius-10"
+                              name="make"
+                              placeholder="Auto Fill Search Model...."
+                              value={bundleServiceObj.make}
+                              onChange={handleTextChange}
+                              disabled
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-3">
+                          <div className="form-group">
+                            <label className="text-light-dark font-size-12 font-weight-500">
+                              PREFIX(S)
+                            </label>
+                            <Select
+                              onChange={(e) => handleSelectChange(e, "prefix")}
+                              className="text-primary"
+                              value={bundleServiceObj.prefix}
+                              options={prefixKeyValuePair}
+                              noOptionsMessage={() =>
+                                bundleServiceObj.model === 0
+                                  ? "Search Modal First"
+                                  : "No Options"
+                              }
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <label className="text-light-dark font-size-14 font-weight-500">
+                              ESTIMATED HOURS
+                            </label>
+                            <div
+                              className=" d-flex form-control-date"
+                              style={{ overflow: "hidden" }}
+                            >
+                              <input
+                                type="number"
+                                className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
+                                name="estimatedTime"
+                                onChange={handleTextChange}
+                                value={bundleServiceObj.estimatedTime}
+                              />
+                              <span className="hours-div text-primary">
+                                hours/day
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="row" style={{ justifyContent: "right" }}>
+                      <button
+                        type="button"
+                        className="btn text-white bg-primary"
+                        onClick={handleBundleServiceHeader}
+                      >
+                        {bundleServiceEdit.bundleServiceHeader
+                          ? "Next"
+                          : "Save & Next"}
+                      </button>
                     </div>
-                  </h5>
-                  {bundleServiceEdit.bundleServiceHeader ? (
-                    <div className="row mt-4 ">
-                      <div className="col-md-4 col-sm-3">
+                  </div>
+                </div>
+              </TabPanel>
+              <TabPanel value="bundleServiceItems">
+                <ItemAddEdit
+                  itemType="bundleItem"
+                  isEditable={bundleServiceEdit.bundleServiceItems}
+                  isPortfolioItem={false}
+                  // bundleServiceNeed={bundleServiceNeed}
+                  // handleBundleServiceNeed={() => setBundleServiceNeed(!bundleServiceNeed)}
+                  frequencyKeyValuePairs={frequencyKeyValuePairs}
+                  unitKeyValuePairs={unitKeyValuePairs}
+                  itemId={itemId}
+                  handleGetPortfolioItemsData={handleBundleServiceItems}
+                  reviewModeActive={reviewModeActive}
+                />
+              </TabPanel>
+              <TabPanel value="bundleServicePrice">
+                <ItemPriceCalculator
+                  priceMethodKeyValuePair={priceMethodKeyValuePair}
+                  priceTypeKeyValuePair={priceTypeKeyValuePair}
+                  priceHeadTypeKeyValuePair={priceHeadTypeKeyValuePair}
+                  unitKeyValuePairs={unitKeyValuePairs}
+                  frequencyKeyValuePairs={frequencyKeyValuePairs}
+                  currencyKeyValuePair={currencyKeyValuePair}
+                  additionalPriceKeyValuePair={additionalPriceKeyValuePair}
+                  discountTypeKeyValuePair={discountTypeKeyValuePair}
+                  usageTypeKeyValuePair={usageTypeKeyValuePair}
+                  itemId={itemId}
+                  handleSavePriceChanges={handleSaveItemPriceChanges}
+                  isEditable={bundleServiceEdit.bundleServicePrice}
+                  reviewModeActive={reviewModeActive}
+                />
+              </TabPanel>
+              <TabPanel value="bundleServiceAdministrative">
+                <div>
+                  <div className="ligt-greey-bg p-3">
+                    <div>
+                      <span
+                        className="mr-3 cursor"
+                        onClick={() =>
+                          handleBundleServiceEditFlag(
+                            "bundleServiceAdministrative"
+                          )
+                        }
+                      >
+                        <i
+                          className="fa fa-pencil font-size-12"
+                          aria-hidden="true"
+                        />
+                        <span className="ml-2">Edit</span>
+                      </span>
+                    </div>
+                  </div>
+                  {bundleServiceEdit.bundleServiceAdministrative ? (
+                    <div className="row mt-4">
+                      <div className="col-md-4 col-sm-4">
                         <div className="form-group">
                           <p className="text-light-dark font-size-12 font-weight-500 mb-2">
-                            {itemFlag} NAME
+                            PREPARED BY
                           </p>
                           <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                            {isEmpty(bundleServiceObj.name)
+                            {isEmpty(administrative.preparedBy)
                               ? "NA"
-                              : bundleServiceObj.name}
+                              : administrative.preparedBy}
                           </h6>
                         </div>
                       </div>
-                      <div className="col-md-4 col-sm-3">
+                      <div className="col-md-4 col-sm-4">
                         <div className="form-group">
                           <p className="text-light-dark font-size-12 font-weight-500 mb-2">
-                            {itemFlag} DESCRIPTION
+                            APPROVED BY
                           </p>
                           <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                            {isEmpty(bundleServiceObj.description)
+                            {isEmpty(administrative.approvedBy)
                               ? "NA"
-                              : bundleServiceObj.description}
+                              : administrative.preparedBy}
                           </h6>
                         </div>
                       </div>
-                      <div className="col-md-4 col-sm-3">
+                      <div className="col-md-4 col-sm-4">
                         <div className="form-group">
                           <p className="text-light-dark font-size-12 font-weight-500 mb-2">
-                            BUNDLE/SERVICE
+                            PREPARED ON
                           </p>
                           <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                            {itemFlag === "SERVICE" ? "SERVICE" : "BUNDLE_ITEM"}
+                            {isEmpty(administrative.preparedOn)
+                              ? "NA"
+                              : getFormatDateTime(
+                                  administrative.preparedOn,
+                                  false
+                                )}
                           </h6>
                         </div>
                       </div>
-                      <div className="col-md-4 col-sm-3">
+                      <div className="col-md-4 col-sm-4">
                         <div className="form-group">
                           <p className="text-light-dark font-size-12 font-weight-500 mb-2">
-                            REFERENCE
+                            REVISED BY
                           </p>
                           <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                            {isEmpty(bundleServiceObj.reference)
+                            {isEmpty(administrative.revisedBy)
                               ? "NA"
-                              : bundleServiceObj.reference}
+                              : administrative.revisedBy}
                           </h6>
                         </div>
                       </div>
-                      <div className="col-md-4 col-sm-3">
+                      <div className="col-md-4 col-sm-4">
                         <div className="form-group">
                           <p className="text-light-dark font-size-12 font-weight-500 mb-2">
-                            CUSTOMER SEGMENT
+                            REVISED ON
                           </p>
                           <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                            {isEmptySelect(
-                              bundleServiceObj.customerSegment?.value
-                            )
+                            {isEmpty(administrative.revisedOn)
                               ? "NA"
-                              : bundleServiceObj.customerSegment?.label}
+                              : getFormatDateTime(
+                                  administrative.revisedOn,
+                                  false
+                                )}
                           </h6>
                         </div>
                       </div>
-                      <div className="col-md-4 col-sm-3">
+                      <div className="col-md-4 col-sm-4">
                         <div className="form-group">
                           <p className="text-light-dark font-size-12 font-weight-500 mb-2">
-                            MACHINE/COMPONENT
+                            SALES OFFICE / BRANCH
                           </p>
                           <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                            {isEmptySelect(
-                              bundleServiceObj.machineComponent?.value
-                            )
+                            {isEmpty(administrative.salesOffice?.value)
                               ? "NA"
-                              : bundleServiceObj.machineComponent?.label}
+                              : administrative.salesOffice?.label}
                           </h6>
                         </div>
                       </div>
-                      <div className="col-md-4 col-sm-3">
-                        <div className="form-group customselectmodelSerch">
-                          <p className="text-light-dark font-size-12 font-weight-500 mb-2">
-                            MODEL(S)
-                          </p>
-                          <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                            {isEmpty(bundleServiceObj.model)
-                              ? "NA"
-                              : bundleServiceObj.model}
-                          </h6>
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-3">
+                      <div className="col-md-4 col-sm-4">
                         <div className="form-group">
                           <p className="text-light-dark font-size-12 font-weight-500 mb-2">
-                            FAMILY
+                            OFFER VALIDITY
                           </p>
                           <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                            {isEmpty(bundleServiceObj.family)
+                            {isEmpty(administrative.offerValidity?.value)
                               ? "NA"
-                              : bundleServiceObj.family}
-                          </h6>
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-3">
-                        <div className="form-group">
-                          <p className="text-light-dark font-size-12 font-weight-500 mb-2">
-                            MAKE
-                          </p>
-                          <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                            {isEmpty(bundleServiceObj.make)
-                              ? "NA"
-                              : bundleServiceObj.make}
-                          </h6>
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-3">
-                        <div className="form-group">
-                          <p className="text-light-dark font-size-12 font-weight-500 mb-2">
-                            PREFIX(S)
-                          </p>
-                          <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                            {isEmptySelect(bundleServiceObj.prefix?.value)
-                              ? "NA"
-                              : bundleServiceObj.prefix?.label}
-                          </h6>
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-3">
-                        <div className="form-group">
-                          <p className="text-light-dark font-size-12 font-weight-500 mb-2">
-                            ESTIMATED HOURS
-                          </p>
-                          <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                            {isEmpty(bundleServiceObj.estimatedTime)
-                              ? "NA"
-                              : bundleServiceObj.estimatedTime}
+                              : administrative.offerValidity?.label}
                           </h6>
                         </div>
                       </div>
                     </div>
                   ) : (
-                    <div className="row mt-4 input-fields">
-                      <div className="col-md-4 col-sm-3">
+                    <div className="row mt-4  input-fields">
+                      <div className="col-md-4 col-sm-4">
                         <div className="form-group">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            {itemFlag} NAME
+                          <label className="text-light-dark font-size-14 font-weight-500">
+                            PREPARED BY
                           </label>
                           <input
                             type="text"
                             className="form-control text-primary border-radius-10"
-                            name="name"
-                            placeholder="Name (Required*)"
-                            onChange={handleTextChange}
-                            value={bundleServiceObj.name}
-                            disabled={bundleServiceObj.itemId !== 0}
-                          />
-                          <div className="css-w8dmq8">*Mandatory</div>
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-3">
-                        <div className="form-group">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            {itemFlag} DESCRIPTION
-                          </label>
-                          <input
-                            type="text"
-                            className="form-control text-primary border-radius-10"
-                            name="description"
-                            placeholder="Description (Required*)"
-                            value={bundleServiceObj.description}
-                            onChange={handleTextChange}
-                          />
-                          <div className="css-w8dmq8">*Mandatory</div>
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-3">
-                        <div className="form-group">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            BUNDLE/SERVICE
-                          </label>
-                          <input
-                            type="text"
-                            className="form-control text-primary border-radius-10"
-                            name="bundleFlag"
-                            placeholder="Bundle Flag"
-                            value={
-                              itemFlag === "SERVICE" ? "SERVICE" : "BUNDLE_ITEM"
-                            }
-                            onChange={handleTextChange}
-                            disabled
-                          />
-                          <div className="css-w8dmq8">*Mandatory</div>
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-3">
-                        <div className="form-group">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            REFERENCE
-                          </label>
-                          <input
-                            type="text"
-                            className="form-control text-primary border-radius-10"
-                            name="reference"
-                            placeholder="Reference"
-                            value={bundleServiceObj.reference}
-                            onChange={handleTextChange}
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-3">
-                        <div className="form-group">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            CUSTOMER SEGMENT
-                          </label>
-                          <Select
+                            name="preparedBy"
+                            placeholder="Required (ex-abc@gmail.com)"
+                            value={administrative.preparedBy}
                             onChange={(e) =>
-                              handleSelectChange(e, "customerSegment")
+                              handleAdministrativeTextChange(e, "text")
                             }
-                            className="text-primary"
-                            value={bundleServiceObj.customerSegment}
-                            options={customerSegmentKeyValuePair}
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-3">
-                        <div className="form-group">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            MACHINE/COMPONENT
-                          </label>
-                          <Select
-                            onChange={(e) =>
-                              handleSelectChange(e, "machineComponent")
-                            }
-                            value={bundleServiceObj.machineComponent}
-                            className="text-primary"
-                            options={machineComponentKeyValuePair}
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-3">
-                        <div className="form-group customselectmodelSerch">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            MODEL(S)
-                          </label>
-                          <input
-                            type="text"
-                            className="form-control text-primary border-radius-10"
-                            name="model"
-                            placeholder="Model(Required*)"
-                            value={bundleServiceObj.model}
-                            onChange={(e) => {
-                              handleTextChange(e);
-                              handleModelSearch(e);
-                            }}
                           />
                           <div className="css-w8dmq8">*Mandatory</div>
-                          {
-                            <ul
-                              className={`list-group custommodelselectsearch customselectsearch-list scrollbar scrollbar-model style`}
-                              id="style"
-                            >
-                              {modelSearchList.length !== 0 &&
-                                modelSearchList.map((currentItem, j) => (
-                                  <li
-                                    className="list-group-item text-primary"
-                                    key={j}
-                                    onClick={() =>
-                                      handleSelectModel(currentItem)
-                                    }
-                                  >
-                                    {currentItem.model}
-                                  </li>
-                                ))}
-                            </ul>
-                          }
                         </div>
                       </div>
-                      <div className="col-md-4 col-sm-3">
+                      <div className="col-md-4 col-sm-4">
                         <div className="form-group">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            FAMILY
+                          <label className="text-light-dark font-size-14 font-weight-500">
+                            APPROVED BY
                           </label>
                           <input
                             type="text"
                             className="form-control text-primary border-radius-10"
-                            name="make"
-                            placeholder="Auto Fill Search Model...."
-                            value={bundleServiceObj.family}
-                            disabled
+                            name="approvedBy"
+                            placeholder="Optional  (ex-abc@gmail.com)"
+                            value={administrative.approvedBy}
+                            onChange={(e) =>
+                              handleAdministrativeTextChange(e, "text")
+                            }
                           />
                         </div>
                       </div>
-                      <div className="col-md-4 col-sm-3">
+                      <div className="col-md-4 col-sm-4">
+                        <label className="text-light-dark font-size-14 font-weight-500">
+                          PREPARED ON
+                        </label>
+                        <div className="d-flex align-items-center date-box w-100">
+                          <div className="form-group w-100">
+                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                              <DatePicker
+                                variant="inline"
+                                format="dd/MM/yyyy"
+                                className="form-controldate border-radius-10"
+                                label=""
+                                name="preparedOn"
+                                value={administrative.preparedOn}
+                                onChange={(e) =>
+                                  handleAdministrativeTextChange(
+                                    e,
+                                    "date",
+                                    "preparedOn"
+                                  )
+                                }
+                              />
+                            </MuiPickersUtilsProvider>
+                            <div className="css-w8dmq8">*Mandatory</div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-4">
                         <div className="form-group">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            MAKE
+                          <label className="text-light-dark font-size-14 font-weight-500">
+                            REVISED BY
                           </label>
                           <input
                             type="text"
-                            className="form-control text-primary border-radius-10"
-                            name="make"
-                            placeholder="Auto Fill Search Model...."
-                            value={bundleServiceObj.make}
-                            onChange={handleTextChange}
-                            disabled
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-3">
-                        <div className="form-group">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            PREFIX(S)
-                          </label>
-                          <Select
-                            onChange={(e) => handleSelectChange(e, "prefix")}
-                            className="text-primary"
-                            value={bundleServiceObj.prefix}
-                            options={prefixKeyValuePair}
-                            noOptionsMessage={() =>
-                              bundleServiceObj.model === 0
-                                ? "Search Modal First"
-                                : "No Options"
+                            className="form-control border-radius-10 text-primary"
+                            name="revisedBy"
+                            placeholder="Optional  (ex-abc@gmail.com)"
+                            value={administrative.revisedBy}
+                            onChange={(e) =>
+                              handleAdministrativeTextChange(e, "text")
                             }
                           />
                         </div>
@@ -1192,357 +1543,94 @@ const BundleServiceAddUpdate = (props) => {
                       <div className="col-md-4 col-sm-4">
                         <div className="form-group">
                           <label className="text-light-dark font-size-14 font-weight-500">
-                            ESTIMATED HOURS
+                            REVISED ON
                           </label>
-                          <div
-                            className=" d-flex form-control-date"
-                            style={{ overflow: "hidden" }}
-                          >
-                            <input
-                              type="number"
-                              className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
-                              name="estimatedTime"
-                              onChange={handleTextChange}
-                              value={bundleServiceObj.estimatedTime}
-                            />
-                            <span className="hours-div text-primary">
-                              hours/day
-                            </span>
+                          <div className="d-flex align-items-center date-box w-100">
+                            <div className="form-group w-100 m-0">
+                              <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                <DatePicker
+                                  variant="inline"
+                                  format="dd/MM/yyyy"
+                                  className="form-controldate border-radius-10"
+                                  label=""
+                                  name="revisedOn"
+                                  value={administrative.revisedOn}
+                                  onChange={(e) =>
+                                    handleAdministrativeTextChange(
+                                      e,
+                                      "date",
+                                      "revisedOn"
+                                    )
+                                  }
+                                />
+                              </MuiPickersUtilsProvider>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  )}
-
-                  <div className="row" style={{ justifyContent: "right" }}>
-                    <button
-                      type="button"
-                      className="btn text-white bg-primary"
-                      onClick={handleBundleServiceHeader}
-                    >
-                      {bundleServiceEdit.bundleServiceHeader
-                        ? "Next"
-                        : "Save & Next"}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </TabPanel>
-            <TabPanel value="bundleServiceItems">
-              <ItemAddEdit
-                itemType="bundleItem"
-                isEditable={bundleServiceEdit.bundleServiceItems}
-                isPortfolioItem={false}
-                // bundleServiceNeed={bundleServiceNeed}
-                // handleBundleServiceNeed={() => setBundleServiceNeed(!bundleServiceNeed)}
-                frequencyKeyValuePairs={frequencyKeyValuePairs}
-                unitKeyValuePairs={unitKeyValuePairs}
-                itemId={itemId}
-                handleGetPortfolioItemsData={handleBundleServiceItems}
-                reviewModeActive={reviewModeActive}
-              />
-            </TabPanel>
-            <TabPanel value="bundleServicePrice">
-              <ItemPriceCalculator
-                priceMethodKeyValuePair={priceMethodKeyValuePair}
-                priceTypeKeyValuePair={priceTypeKeyValuePair}
-                priceHeadTypeKeyValuePair={priceHeadTypeKeyValuePair}
-                unitKeyValuePairs={unitKeyValuePairs}
-                frequencyKeyValuePairs={frequencyKeyValuePairs}
-                currencyKeyValuePair={currencyKeyValuePair}
-                additionalPriceKeyValuePair={additionalPriceKeyValuePair}
-                discountTypeKeyValuePair={discountTypeKeyValuePair}
-                usageTypeKeyValuePair={usageTypeKeyValuePair}
-                itemId={itemId}
-                handleSavePriceChanges={handleSaveItemPriceChanges}
-                isEditable={bundleServiceEdit.bundleServicePrice}
-                reviewModeActive={reviewModeActive}
-              />
-            </TabPanel>
-            <TabPanel value="bundleServiceAdministrative">
-              <div>
-                <div className="ligt-greey-bg p-3">
-                  <div>
-                    <span
-                      className="mr-3 cursor"
-                      onClick={() =>
-                        handleBundleServiceEditFlag(
-                          "bundleServiceAdministrative"
-                        )
-                      }
-                    >
-                      <i
-                        className="fa fa-pencil font-size-12"
-                        aria-hidden="true"
-                      />
-                      <span className="ml-2">Edit</span>
-                    </span>
-                  </div>
-                </div>
-                {bundleServiceEdit.bundleServiceAdministrative ? (
-                  <div className="row mt-4">
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <p className="text-light-dark font-size-12 font-weight-500 mb-2">
-                          PREPARED BY
-                        </p>
-                        <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                          {isEmpty(administrative.preparedBy)
-                            ? "NA"
-                            : administrative.preparedBy}
-                        </h6>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-14 font-weight-500">
+                            {" "}
+                            SALES OFFICE / BRANCH
+                          </label>
+                          <Select
+                            className="text-primary"
+                            options={salesOfficeKeyValuePairs}
+                            onChange={(e) =>
+                              handleAdministrativeTextChange(
+                                e,
+                                "select",
+                                "salesOffice"
+                              )
+                            }
+                            value={administrative.salesOffice}
+                            styles={FONT_STYLE_SELECT}
+                          />
+                          <div className="css-w8dmq8">*Mandatory</div>
+                        </div>
                       </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <p className="text-light-dark font-size-12 font-weight-500 mb-2">
-                          APPROVED BY
-                        </p>
-                        <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                          {isEmpty(administrative.approvedBy)
-                            ? "NA"
-                            : administrative.preparedBy}
-                        </h6>
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <p className="text-light-dark font-size-12 font-weight-500 mb-2">
-                          PREPARED ON
-                        </p>
-                        <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                          {isEmpty(administrative.preparedOn)
-                            ? "NA"
-                            : getFormatDateTime(
-                                administrative.preparedOn,
-                                false
-                              )}
-                        </h6>
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <p className="text-light-dark font-size-12 font-weight-500 mb-2">
-                          REVISED BY
-                        </p>
-                        <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                          {isEmpty(administrative.revisedBy)
-                            ? "NA"
-                            : administrative.revisedBy}
-                        </h6>
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <p className="text-light-dark font-size-12 font-weight-500 mb-2">
-                          REVISED ON
-                        </p>
-                        <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                          {isEmpty(administrative.revisedOn)
-                            ? "NA"
-                            : getFormatDateTime(
-                                administrative.revisedOn,
-                                false
-                              )}
-                        </h6>
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <p className="text-light-dark font-size-12 font-weight-500 mb-2">
-                          SALES OFFICE / BRANCH
-                        </p>
-                        <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                          {isEmpty(administrative.salesOffice?.value)
-                            ? "NA"
-                            : administrative.salesOffice?.label}
-                        </h6>
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <p className="text-light-dark font-size-12 font-weight-500 mb-2">
-                          OFFER VALIDITY
-                        </p>
-                        <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                          {isEmpty(administrative.offerValidity?.value)
-                            ? "NA"
-                            : administrative.offerValidity?.label}
-                        </h6>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="row mt-4  input-fields">
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label className="text-light-dark font-size-14 font-weight-500">
-                          PREPARED BY
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control text-primary border-radius-10"
-                          name="preparedBy"
-                          placeholder="Required (ex-abc@gmail.com)"
-                          value={administrative.preparedBy}
-                          onChange={(e) =>
-                            handleAdministrativeTextChange(e, "text")
-                          }
-                        />
-                        <div className="css-w8dmq8">*Mandatory</div>
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label className="text-light-dark font-size-14 font-weight-500">
-                          APPROVED BY
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control text-primary border-radius-10"
-                          name="approvedBy"
-                          placeholder="Optional  (ex-abc@gmail.com)"
-                          value={administrative.approvedBy}
-                          onChange={(e) =>
-                            handleAdministrativeTextChange(e, "text")
-                          }
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      <label className="text-light-dark font-size-14 font-weight-500">
-                        PREPARED ON
-                      </label>
-                      <div className="d-flex align-items-center date-box w-100">
-                        <div className="form-group w-100">
-                          <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                            <DatePicker
-                              variant="inline"
-                              format="dd/MM/yyyy"
-                              className="form-controldate border-radius-10"
-                              label=""
-                              name="preparedOn"
-                              value={administrative.preparedOn}
-                              onChange={(e) =>
-                                handleAdministrativeTextChange(
-                                  e,
-                                  "date",
-                                  "preparedOn"
-                                )
-                              }
-                            />
-                          </MuiPickersUtilsProvider>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-14 font-weight-500">
+                            OFFER VALIDITY
+                          </label>
+                          <Select
+                            className="text-primary"
+                            options={offerValidityKeyValuePairs}
+                            onChange={(e) =>
+                              handleAdministrativeTextChange(
+                                e,
+                                "select",
+                                "offerValidity"
+                              )
+                            }
+                            value={administrative.offerValidity}
+                            styles={FONT_STYLE_SELECT}
+                          />
                           <div className="css-w8dmq8">*Mandatory</div>
                         </div>
                       </div>
                     </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label className="text-light-dark font-size-14 font-weight-500">
-                          REVISED BY
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control border-radius-10 text-primary"
-                          name="revisedBy"
-                          placeholder="Optional  (ex-abc@gmail.com)"
-                          value={administrative.revisedBy}
-                          onChange={(e) =>
-                            handleAdministrativeTextChange(e, "text")
-                          }
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label className="text-light-dark font-size-14 font-weight-500">
-                          REVISED ON
-                        </label>
-                        <div className="d-flex align-items-center date-box w-100">
-                          <div className="form-group w-100 m-0">
-                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                              <DatePicker
-                                variant="inline"
-                                format="dd/MM/yyyy"
-                                className="form-controldate border-radius-10"
-                                label=""
-                                name="revisedOn"
-                                value={administrative.revisedOn}
-                                onChange={(e) =>
-                                  handleAdministrativeTextChange(
-                                    e,
-                                    "date",
-                                    "revisedOn"
-                                  )
-                                }
-                              />
-                            </MuiPickersUtilsProvider>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label className="text-light-dark font-size-14 font-weight-500">
-                          {" "}
-                          SALES OFFICE / BRANCH
-                        </label>
-                        <Select
-                          className="text-primary"
-                          options={salesOfficeKeyValuePairs}
-                          onChange={(e) =>
-                            handleAdministrativeTextChange(
-                              e,
-                              "select",
-                              "salesOffice"
-                            )
-                          }
-                          value={administrative.salesOffice}
-                          styles={FONT_STYLE_SELECT}
-                        />
-                        <div className="css-w8dmq8">*Mandatory</div>
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label className="text-light-dark font-size-14 font-weight-500">
-                          OFFER VALIDITY
-                        </label>
-                        <Select
-                          className="text-primary"
-                          options={offerValidityKeyValuePairs}
-                          onChange={(e) =>
-                            handleAdministrativeTextChange(
-                              e,
-                              "select",
-                              "offerValidity"
-                            )
-                          }
-                          value={administrative.offerValidity}
-                          styles={FONT_STYLE_SELECT}
-                        />
-                        <div className="css-w8dmq8">*Mandatory</div>
-                      </div>
-                    </div>
+                  )}
+                  <div className="row" style={{ justifyContent: "right" }}>
+                    <button
+                      type="button"
+                      className="btn text-white bg-primary"
+                      onClick={handleUpateAdministrativeData}
+                      // onClick={editBundleService ? saveAddNewServiceOrBundle : handleUpdateNewServiceOrBundle}
+                    >
+                      {" "}
+                      {bundleServiceEdit.bundleServiceAdministrative
+                        ? "Close"
+                        : "Save & CLose"}
+                    </button>
                   </div>
-                )}
-                <div className="row" style={{ justifyContent: "right" }}>
-                  <button
-                    type="button"
-                    className="btn text-white bg-primary"
-                    onClick={handleUpateAdministrativeData}
-                    // onClick={editBundleService ? saveAddNewServiceOrBundle : handleUpdateNewServiceOrBundle}
-                  >
-                    {" "}
-                    {bundleServiceEdit.bundleServiceAdministrative
-                      ? "Close"
-                      : "Save & CLose"}
-                  </button>
                 </div>
-              </div>
-            </TabPanel>
-          </TabContext>
-        </Box>
+              </TabPanel>
+            </TabContext>
+          </Box>
+        )}
       </Modal.Body>
     </Modal>
   );

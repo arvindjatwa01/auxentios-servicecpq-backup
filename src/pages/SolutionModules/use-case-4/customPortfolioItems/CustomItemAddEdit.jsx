@@ -50,6 +50,7 @@ import {
   GET_CUSTOM_PORTFOLIO_ITEM_PRICE_DATA,
   GET_SEARCH_COVERAGE,
   GET_SEARCH_KIT_ID,
+  GET_SEARCH_STANDARD_JOB_ID,
 } from "services/CONSTANTS";
 import { callGetApi, callPostApi, callPutApi } from "services/ApiCaller";
 import { API_SUCCESS } from "services/ResponseCode";
@@ -321,14 +322,15 @@ const CustomItemAddEdit = (props) => {
 
   // template Id(StandardJobId) search
   const handleSearchStandardJobId = async (e) => {
+    const { value } = e.target;
     setItemRequestObj((prev) => ({
       ...prev,
-      standardJobId: e.target.value,
+      standardJobId: value,
       standardJobIdSearch: true,
     }));
     setItemPriceRequestObj((prev) => ({
       ...prev,
-      standardJobId: e.target.value,
+      standardJobId: value,
       standardJobIdSearch: true,
     }));
     setStandardJobIdDetails({
@@ -336,21 +338,24 @@ const CustomItemAddEdit = (props) => {
       templateType: "",
       templateId: "",
     });
-    if (e.target.value.length === 0) {
+    if (value.length === 0) {
       setSearchedStandardJobIdList([]);
     } else {
-      let loading, data, failure;
-      const result = await getApiCall(
-        GET_SEARCH_COVERAGE + e.target.value,
-        loading,
-        data,
-        failure
+      callGetApi(
+        null,
+        GET_SEARCH_STANDARD_JOB_ID + value,
+        (response) => {
+          if (response.status === API_SUCCESS) {
+            $(`.scrollbar-model`).css("display", "block");
+            setSearchedStandardJobIdList(response.data);
+          } else {
+            setSearchedStandardJobIdList([]);
+          }
+        },
+        (error) => {
+          setSearchedStandardJobIdList([]);
+        }
       );
-      // const result = await getSearchStandardJobId(e.target.value);
-      if (result.status === 200) {
-        $(`.scrollbar-model`).css("display", "block");
-        setSearchedStandardJobIdList(result.data);
-      }
     }
   };
 
@@ -401,31 +406,35 @@ const CustomItemAddEdit = (props) => {
 
   // Related kit Id(RepairKitId) search
   const handleSearchRepairKitId = async (e) => {
+    const { value } = e.target;
     setItemRequestObj((prev) => ({
       ...prev,
-      repairKitId: e.target.value,
+      repairKitId: value,
       repairKitIdSearch: true,
     }));
     setItemPriceRequestObj((prev) => ({
       ...prev,
-      repairKitId: e.target.value,
+      repairKitId: value,
       repairKitIdSearch: true,
     }));
-    if (e.target.value.length === 0) {
+    if (value.length === 0) {
       setSearchedRepairKitIdList([]);
     } else {
-      let loading, data, failure;
-      const result = await getApiCall(
-        GET_SEARCH_KIT_ID + e.target.value,
-        loading,
-        data,
-        failure
+      callGetApi(
+        null,
+        `${GET_SEARCH_KIT_ID + value}`,
+        (response) => {
+          if (response.status === API_SUCCESS) {
+            $(`.scrollbar-model`).css("display", "block");
+            setSearchedRepairKitIdList(response.data);
+          } else {
+            setSearchedRepairKitIdList([]);
+          }
+        },
+        (error) => {
+          setSearchedRepairKitIdList([]);
+        }
       );
-      // const result = await getSearchKitId(e.target.value);
-      if (result.status === 200) {
-        $(`.scrollbar-model`).css("display", "block");
-        setSearchedRepairKitIdList(result.data);
-      }
     }
   };
 
