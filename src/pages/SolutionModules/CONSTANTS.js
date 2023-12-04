@@ -493,8 +493,9 @@ export const UPLOAD_OPTIONS = [
   { label: 'Google Sheets', value: 'gsheet', icon: <GridOnIcon sx={{ mx: 2 }} /> },
   { label: 'Paste Table Data', value: 'paste', icon: <ContentCopyTwoToneIcon sx={{ mx: 2 }} /> }]
 
-  export const TEMPLATE_OPTIONS = [
+ export const TEMPLATE_OPTIONS = [
     { label: 'Maintenance Solutions', value: "ROUTINE_MAINTENANCE_OR_TASK", icon: <img src={Portfoliosicon} width="34px" height="25px" /> },
     { label: 'Repair Solutions', value: 'REPAIR_OR_REPLACE', icon: <img src={contract} width="34px" height="25px" /> },
     { label: 'Routine Maintenance Tasks', value: 'ROUTINE_MAINTENANCE_OR_TASK', icon: <DesignServicesOutlinedIcon sx={{ mx: 1 }} /> },
     { label: 'Equipment Solutions', value: 'NEW_EQUIPMENT_SOLUTION', icon: <DesignServicesOutlinedIcon sx={{ mx: 1 }} /> }]
+

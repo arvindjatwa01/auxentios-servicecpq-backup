@@ -214,7 +214,7 @@ export default function SparepartSegment(props) {
                             </Grid>
                             <Grid item container xs={2} lg={4}>
                             </Grid>
-                            <Grid item xs={4}></Grid>
+                            <Grid item xs={4} ></Grid>
                             <Grid item xs={6} lg={4} sx={{ marginTop: 5 }}>
                                 <Grid container>
                                     <Grid
