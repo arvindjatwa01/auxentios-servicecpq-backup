@@ -212,10 +212,9 @@ export default function SparepartSegment(props) {
                                     ))}
                                 </Grid>
                             </Grid>
-                            <Grid item container xs={4}>
-
+                            <Grid item container xs={2} lg={4}>
                             </Grid>
-                            <Grid item xs={4}></Grid>
+                            <Grid item xs={4} ></Grid>
                             <Grid item xs={6} lg={4} sx={{ marginTop: 5 }}>
                                 <Grid container>
                                     <Grid
@@ -259,7 +258,7 @@ export default function SparepartSegment(props) {
                                     </Grid>
                                 </Grid>
                             </Grid>
-                            <Grid item xs={3}></Grid>
+                            <Grid item xs={2} lg={4}></Grid>
                         </Grid>}
                 </Card>
                 {showSegmentDetails && (

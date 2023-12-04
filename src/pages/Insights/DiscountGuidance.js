@@ -3,7 +3,8 @@ import Typography from "@mui/material/Typography";
 import { Box, Card, Grid } from "@mui/material";
 import { GRID_STYLE } from "pages/Repair/CONSTANTS";
 import { DataGrid } from "@mui/x-data-grid";
-import { getDiscountDetails } from "services/dashboardServices";
+import { getDiscountColumns, getDiscountDetails } from "services/dashboardServices";
+import SelectBox from "./SelectBox";
 
 export default function DiscountGuidance(props) {
     const [isLoading, setIsLoading] = useState(false);
@@ -18,13 +19,27 @@ export default function DiscountGuidance(props) {
     const [machine, setMachine] = useState("");
     const [totalCount, setTotalCount] = useState(0);
     const [sortDetail, setSortDetail] = useState({ sortColumn: "", orderBy: "" });
-
+    const [columns, setColumns] = useState([]);
     useEffect(() => {
-        fetchDiscountGuidance(page, pageSize)
-    }, []);
+        // fetchDiscountGuidanceCol();
+        fetchDiscountGuidance(page, pageSize);
+
+    }, [customerId, order, parts, machine, usage]);
+    // useEffect(() => {
+    // }, [columns])
+    const fetchDiscountGuidanceCol = () => {
+        // setIsLoading(true);
+        // getDiscountColumns().then(discountCols => {
+        //     discountCols.map(indColumn =>
+        //         columns.push({ field: indColumn.fieldName, headerName: indColumn.columnName, flex: 1 })
+        //     )
+        fetchDiscountGuidance(page + 1, pageSize);
+        // }).catch(e => {
+
+        // })
+    }
 
     const fetchDiscountGuidance = async (pageNo, rowsPerPage) => {
-        setIsLoading(true);
         setPage(pageNo);
         setPageSize(rowsPerPage);
         let sort = sortDetail.sortColumn
@@ -32,7 +47,11 @@ export default function DiscountGuidance(props) {
             : "";
         // let filter = filterQuery ? `&search=${filterQuery}` : "";
         // const query = `pageNumber=${pageNo}&pageSize=${rowsPerPage}${sort}${filter}`;
-        const filter = `customer_id=${customerId}`
+        const filter = `customer_id=${customerId}` +
+            (order ? `&order=${order}` : '') +
+            (parts ? `&parts=${parts}` : '') +
+            (usage ? `&usage=${usage}` : '') +
+            (machine ? `&machine=${machine}` : '');
         const query = `${filter}&pagenumber=${pageNo + 1}&pagesize=${rowsPerPage}${sort}`;
 
         await getDiscountDetails(query)
@@ -44,7 +63,7 @@ export default function DiscountGuidance(props) {
                 props.handleSnack("error", "Error occured while fetching discount details");
                 setDiscountData([]);
             });
-        setIsLoading(false);
+        setIsLoading(false)
     };
 
     const customerDetailColumns = [
@@ -60,13 +79,14 @@ export default function DiscountGuidance(props) {
         { field: "machine", headerName: "Machine", flex: 1 },
         { field: "predicted_min_discount", headerName: "Pred. Min Discount", flex: 1 },
         { field: "predicted_max_discount", headerName: "Pred. Max Discount", flex: 1 },
-
     ];
-
+    const orderOptions = ['Planned', 'Breakdown'];
+    const partsOptions = ["Non Captive", "Captive"];
+    const usageOptions = ['Maintenance', 'Iron components (GET)', 'Engine', 'General Repair'];
+    const machineOptions = ['New', 'Old', 'Mid'];
 
     return (
         <div>
-
             <Grid
                 container
                 sx={{
@@ -92,6 +112,11 @@ export default function DiscountGuidance(props) {
                         Discount Guidance
                     </Typography>
                     <Box sx={{ height: 500, marginBottom: 5, marginInline: 2 }}>
+                        <SelectBox label={"Order"} value={order} options={orderOptions} handleChange={e => setOrder(e.target.value)} />
+                        <SelectBox label={"Parts"} value={parts} options={partsOptions} handleChange={e => setParts(e.target.value)} />
+                        <SelectBox label={"Usage"} value={usage} options={usageOptions} handleChange={e => setUsage(e.target.value)} />
+                        <SelectBox label={"Machine"} value={machine} options={machineOptions} handleChange={e => setMachine(e.target.value)} />
+
                         <DataGrid
                             loading={isLoading}
                             sx={GRID_STYLE}
@@ -106,6 +131,7 @@ export default function DiscountGuidance(props) {
                             }
                             rows={discountData}
                             columns={customerDetailColumns}
+                            // columns={columns}
                             // columnVisibilityModel={columnVisibilityModel}
                             // onColumnVisibilityModelChange={(newModel) =>
                             //     setColumnVisibilityModel(newModel)

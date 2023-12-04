@@ -1,5 +1,5 @@
 import Box from "@mui/material/Box";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import penIcon from "../../../assets/images/pen.png";
 
@@ -10,7 +10,6 @@ import { REPAIR_QUOTE_DETAILS, STANDARD_JOB_DETAIL, WITHOUT_SPARE_PARTS_DETAILS,
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import { uploadItemsToRepairQuote } from "services/repairQuoteServices";
 import { templateSearch } from "services/templateService";
-import ManageHistoryIcon from '@mui/icons-material/ManageHistory';
 import {
   APPLICATION_OPTIONS,
   GRID_STYLE,
@@ -21,14 +20,24 @@ import {
   WITH_PARTS,
 } from "../CONSTANTS";
 import SearchComponentTemplate from "../components/SearchComponentTemplate";
-import QuoteWithEvaluation from "./QuoteWithEvaluation";
 import { UploadQuoteItems } from "./UploadQuoteItems";
 import { createBuilder } from "services/repairBuilderServices";
 import SettingsSuggestTwoToneIcon from '@mui/icons-material/SettingsSuggestTwoTone';
 import ManageAccountsTwoToneIcon from '@mui/icons-material/ManageAccountsTwoTone';
 
 const CardWrapper = (props) => <Card sx={{ textAlign: 'center', borderRadius: 5, height: 400, paddingBlock: 3, border: 1, borderColor: '#00000050' }} variant="outlined">{props.children}</Card>
-
+const CardWithEvalWrapper = (props) => <Card variant="outlined"
+  sx={{
+    margin: 'auto',
+    textAlign: 'left',
+    width: "50%",
+    borderRadius: 2,
+    marginBlock: 1,
+    paddingBlock: 1,
+    cursor: 'pointer',
+    ':hover': { borderColor: '#872ff7' },
+  }}
+  onClick={props.onClick}>{props.children}</Card>
 export const CreateRepairQuote = (props) => {
   const history = useHistory();
   const [selectedQuoteOption, setSelectedQuoteOption] = useState("");
@@ -48,7 +57,6 @@ export const CreateRepairQuote = (props) => {
   ]);
 
   const [masterData, setMasterData] = useState([]);
-  const [show, setShow] = React.useState(false);
   const [severity, setSeverity] = useState("");
   const [openSnack, setOpenSnack] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
@@ -381,26 +389,15 @@ export const CreateRepairQuote = (props) => {
                     <Typography variant="body2" paddingY={2}>
                       Create a new quote with an evaluation.
                     </Typography>
-                    <Card variant="outlined"
-                      sx={{
-                        margin: 'auto',
-                        textAlign: 'left',
-                        width: "50%",
-                        borderRadius: 2,
-                        marginBlock: 1,
-                        paddingBlock: 1,
-                        cursor: 'pointer',
-                        ':hover': { borderColor: '#872ff7' },
-                      }}
+                    <CardWithEvalWrapper
                       onClick={() => createNewBuilder("with")}>
                       <SettingsSuggestTwoToneIcon sx={{ mx: 2, color: 'green' }} />Repair Option
-                    </Card>
+                    </CardWithEvalWrapper>
 
-                    <Card variant="outlined"
-                      sx={{ margin: 'auto', textAlign: 'left', width: "40%", borderRadius: 2, marginBlock: 1, paddingBlock: 1, cursor: 'pointer', ':hover': { borderColor: '#872ff7' }, }}
+                    <CardWithEvalWrapper
                       onClick={() => createNewBuilder("without")}>
                       <ManageAccountsTwoToneIcon sx={{ mx: 2, color: 'blue' }} />Service Estimate
-                    </Card>
+                    </CardWithEvalWrapper>
                     <Card variant="outlined"
                       sx={{ margin: 'auto', width: "20%", borderRadius: 5, p: 5, my: 2 }}
                       className="border-primary"

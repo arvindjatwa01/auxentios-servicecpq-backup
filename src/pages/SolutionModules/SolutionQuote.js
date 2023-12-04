@@ -36,6 +36,7 @@ import {
   getRecentSolutionQuotes,
   getRecentQuotes,
 } from "../../services/index";
+import { SOLUTION_QUOTE_SEARCH } from "navigation/CONSTANTS";
 
 const SolutionQuote = () => {
 
@@ -270,7 +271,7 @@ const SolutionQuote = () => {
           <div className="d-flex align-items-center justify-content-between mt-2">
             <h5 className="font-weight-600 mb-0" style={{ fontSize: "18px" }}>Solution Quote</h5>
             <div>
-              <Link to="/SolutionQuoteSearch" style={{ cursor: 'pointer' }} className="btn bg-primary text-white pull-right">
+              <Link to={SOLUTION_QUOTE_SEARCH} style={{ cursor: 'pointer' }} className="btn bg-primary text-white pull-right">
                 Search Quote<ChevronRightIcon className="" />
               </Link>
             </div>

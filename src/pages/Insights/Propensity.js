@@ -271,12 +271,11 @@ export default function Propensity(props) {
                   ))}
                 </Grid>
               </Grid>
-              <Grid item container xs={3} md={4} sx={{ marginTop: 8, marginInline: 5 }}>
+              <Grid item container xs={12} lg={4} sx={{ marginTop: 8, marginInline: 5, justifyContent: 'center' }}>
                 <Grid item xs={12} display="flex">
                   <StopIcon sx={{ color: "#00b8b0", marginInline: 1 }} />
                   <Typography variant="body2">
-                    <strong>Focus Sales Efforts</strong>: On the fence of
-                    buying, but win rates and values are higher
+                    <strong>Focus Sales Efforts</strong>: On the fence of buying, but win rates and values are higher
                   </Typography>
                 </Grid>
                 <Grid item xs={12} display="flex">
