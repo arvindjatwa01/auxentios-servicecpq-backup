@@ -4,8 +4,7 @@ import { Box, Card, Grid } from "@mui/material";
 import { GRID_STYLE } from "pages/Repair/CONSTANTS";
 import { DataGrid } from "@mui/x-data-grid";
 import { getDiscountColumns, getDiscountDetails } from "services/dashboardServices";
-import LoaderComponent from "pages/Common/LoaderComponent";
-import LoadingProgress from "pages/Repair/components/Loader";
+import SelectBox from "./SelectBox";
 
 export default function DiscountGuidance(props) {
     const [isLoading, setIsLoading] = useState(false);
@@ -22,36 +21,24 @@ export default function DiscountGuidance(props) {
     const [sortDetail, setSortDetail] = useState({ sortColumn: "", orderBy: "" });
     const [columns, setColumns] = useState([]);
     useEffect(() => {
-        fetchDiscountGuidanceCol();
-    }, []);
+        // fetchDiscountGuidanceCol();
+        fetchDiscountGuidance(page, pageSize);
 
-    const fetchDiscountGuidanceCol = async () => {
-        setIsLoading(true);
-        let cols = [];
-        await getDiscountColumns().then(discountCols => {
-            discountCols.map(indColumn =>
-                cols.push({ field: indColumn.fieldName, headerName: indColumn.columnName, flex: 1 })
-            )
-            setColumns(cols)
-            fetchDiscountGuidance(page + 1, pageSize);
-            columns?.length > 0 ? setIsLoading(false) : setIsLoading(true);
+    }, [customerId, order, parts, machine, usage]);
+    // useEffect(() => {
+    // }, [columns])
+    const fetchDiscountGuidanceCol = () => {
+        // setIsLoading(true);
+        // getDiscountColumns().then(discountCols => {
+        //     discountCols.map(indColumn =>
+        //         columns.push({ field: indColumn.fieldName, headerName: indColumn.columnName, flex: 1 })
+        //     )
+        fetchDiscountGuidance(page + 1, pageSize);
+        // }).catch(e => {
 
-
-        }).catch(e => {
-            console.log("Error Occurred!")
-        })
+        // })
     }
-    function sortPartsTable(sortEvent) {
-        // console.log("sorting called");
-        if (sortEvent.length > 0) {
-            setSortDetail({
-                sortColumn: sortEvent[0].field,
-                orderBy: sortEvent[0].sort === "asc" ? "ASC" : "DESC",
-            });
-        } else {
-            setSortDetail({ sortColumn: "", orderBy: "" });
-        }
-    }
+
     const fetchDiscountGuidance = async (pageNo, rowsPerPage) => {
         setPage(pageNo);
         setPageSize(rowsPerPage);
@@ -60,7 +47,11 @@ export default function DiscountGuidance(props) {
             : "";
         // let filter = filterQuery ? `&search=${filterQuery}` : "";
         // const query = `pageNumber=${pageNo}&pageSize=${rowsPerPage}${sort}${filter}`;
-        const filter = `customer_id=${customerId}`
+        const filter = `customer_id=${customerId}` +
+            (order ? `&order=${order}` : '') +
+            (parts ? `&parts=${parts}` : '') +
+            (usage ? `&usage=${usage}` : '') +
+            (machine ? `&machine=${machine}` : '');
         const query = `${filter}&pagenumber=${pageNo + 1}&pagesize=${rowsPerPage}${sort}`;
 
         await getDiscountDetails(query)
@@ -72,8 +63,27 @@ export default function DiscountGuidance(props) {
                 props.handleSnack("error", "Error occured while fetching discount details");
                 setDiscountData([]);
             });
+        setIsLoading(false)
     };
 
+    const customerDetailColumns = [
+        { field: "customer_id", headerName: "Customer ID", flex: 1 },
+        { field: "min_discount", headerName: "Min Discount", flex: 1 },
+        { field: "max_discount", headerName: "Max Discount", flex: 1 },
+        { field: "avg_discount", headerName: "Average Discount", flex: 1 },
+        { field: "chances_to_buy", headerName: "Chances To Buy", flex: 1 },
+        { field: "customer_level", headerName: "Customer Level", flex: 1 },
+        { field: "order", headerName: "Order", width: 80 },
+        { field: "parts", headerName: "Parts", width: 80 },
+        { field: "usage", headerName: "Usage", width: 80 },
+        { field: "machine", headerName: "Machine", flex: 1 },
+        { field: "predicted_min_discount", headerName: "Pred. Min Discount", flex: 1 },
+        { field: "predicted_max_discount", headerName: "Pred. Max Discount", flex: 1 },
+    ];
+    const orderOptions = ['Planned', 'Breakdown'];
+    const partsOptions = ["Non Captive", "Captive"];
+    const usageOptions = ['Maintenance', 'Iron components (GET)', 'Engine', 'General Repair'];
+    const machineOptions = ['New', 'Old', 'Mid'];
 
     return (
         <div>
@@ -87,6 +97,8 @@ export default function DiscountGuidance(props) {
                     padding: 2,
                 }}
             >
+
+
                 <Card
                     sx={{
                         borderRadius: 4,
@@ -100,7 +112,12 @@ export default function DiscountGuidance(props) {
                         Discount Guidance
                     </Typography>
                     <Box sx={{ height: 500, marginBottom: 5, marginInline: 2 }}>
-                        {!isLoading ? <DataGrid
+                        <SelectBox label={"Order"} value={order} options={orderOptions} handleChange={e => setOrder(e.target.value)} />
+                        <SelectBox label={"Parts"} value={parts} options={partsOptions} handleChange={e => setParts(e.target.value)} />
+                        <SelectBox label={"Usage"} value={usage} options={usageOptions} handleChange={e => setUsage(e.target.value)} />
+                        <SelectBox label={"Machine"} value={machine} options={machineOptions} handleChange={e => setMachine(e.target.value)} />
+
+                        <DataGrid
                             loading={isLoading}
                             sx={GRID_STYLE}
                             getRowId={(row) => row.index}
@@ -112,19 +129,36 @@ export default function DiscountGuidance(props) {
                             onPageSizeChange={(newPageSize) =>
                                 fetchDiscountGuidance(page, newPageSize)
                             }
-                            onSortModelChange={e => sortPartsTable(e)}
                             rows={discountData}
-                            columns={columns}
+                            columns={customerDetailColumns}
+                            // columns={columns}
+                            // columnVisibilityModel={columnVisibilityModel}
+                            // onColumnVisibilityModelChange={(newModel) =>
+                            //     setColumnVisibilityModel(newModel)
+                            // }
                             rowsPerPageOptions={[10, 20, 50]}
                             paginationMode="server"
                             rowCount={totalCount}
+                            // components={{
+                            //     Toolbar: CustomToolbar,
+                            // }}
+                            // componentsProps={{
+                            //     panel: {
+                            //         anchorEl: columnButtonEl,
+                            //         placement: "bottom-end"
+                            //     },
+                            //     toolbar: {
+                            //         setColumnButtonEl
+                            //     }
+                            // }}
+                            // localeText={{ toolbarColumns: "Select Columns" }}
                             checkboxSelection={true}
                             keepNonExistentRowsSelected
                             onSelectionModelChange={(newRowSelectionModel) => {
                                 setRowSelectionModel(newRowSelectionModel);
                             }}
                             selectionModel={rowSelectionModel}
-                        /> : <LoadingProgress />}
+                        />
                     </Box>
                 </Card>
             </Grid>
