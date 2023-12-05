@@ -26678,18 +26678,7 @@ onChange={handleAdministrativreChange}
                         <i className="fa fa-pencil font-size-12" aria-hidden="true"></i>
                         <span className="ml-2">Edit</span>
                       </span>
-                      <span className="mr-3">
-                        <SellOutlinedIcon className=" font-size-16" />
-                        <span className="ml-2">Related repair option</span>
-                      </span>
-                      <span className="mr-3">
-                        <FormatListBulletedOutlinedIcon className=" font-size-16" />
-                        <span className="ml-2">Related Standard Job</span>
-                      </span>
-                      <span className="mr-3">
-                        <AccessAlarmOutlinedIcon className=" font-size-16" />
-                        <span className="ml-2">Related Kit</span>
-                      </span>
+                      
                     </div>
                   </div>
                   {editComponentData ?
@@ -28021,7 +28010,7 @@ onChange={handleAdministrativreChange}
           {tabs === "6" && (
             // <Button variant="primary" onClick={addTempItemIntobundleItem}>
             <Button variant="primary" isDisabled={tempBundleItemCheckList.length === 0} onClick={addTempItemsInToSearchItems}>
-              {bundleAndServiceEditModeOn && tempBundleItemCheckList.length === reviewTabItemsList.length ? "Close" : "Add Selected"}
+              {bundleAndServiceEditModeOn && tempBundleItemCheckList.length === reviewTabItemsList.length > 0 ? "Add Selected" : "Close"}
               {/* {tempBundleItemCheckList.length > reviewTabItemsList.length ? "Add Selected" : "Close"} */}
               {/* Add Selected */}
             </Button>

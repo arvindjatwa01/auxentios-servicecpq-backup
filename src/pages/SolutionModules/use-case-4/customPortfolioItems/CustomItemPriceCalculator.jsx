@@ -8,23 +8,27 @@ import FormGroup from "@mui/material/FormGroup";
 import { FormControlLabel } from "@material-ui/core";
 import { Switch } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import { isEmpty } from "../utilities/textUtilities";
-import { getItemDataById, getItemPriceData } from "services";
+import { isEmpty } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/textUtilities";
 
 import {
-  defaultItemBodyObj,
-  defaultItemHeaderObj,
-  defaultItemPriceObj,
-} from "../itemConstant";
-import { getFormatDateTime } from "../utilities/dateUtilities";
+  defaultCustomItemHeaderModel,
+  defaultCustomItemBodyModel,
+  defaultCustomItemPriceObj,
+} from "../Use_Case_4_Constansts";
+import { getFormatDateTime } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/dateUtilities";
 import { callGetApi, callPostApi, callPutApi } from "services/ApiCaller";
-import { PORTFOLIO_ITEM_PRICE_BY_ITEM_ID } from "services/CONSTANTS";
+import {
+  CREATE_CUSTOM_PORTFOLIO_ITEM,
+  CREATE_CUSTOM_PRICE,
+  GET_CUSTOM_PORTFOLIO_ITEM_PRICE_DATA,
+} from "services/CONSTANTS";
 import { API_SUCCESS } from "services/ResponseCode";
-import { errorMessage } from "../utilities/toastMessage";
-import { updateItemPriceSjRkId } from "./SJRKIdUpdate";
+import { errorMessage } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/toastMessage";
+// import { updateItemPriceSjRkId } from "./SJRKIdUpdate";
 import LoadingProgress from "pages/Repair/components/Loader";
+import { updateCustomItemPricesSjRkId } from "pages/PortfolioAndBundle/newCreatePortfolioData/portfolio-item/SJRKIdUpdate";
 
-const ItemPriceCalculator = (props) => {
+const CustomItemPriceCalculator = (props) => {
   const {
     priceMethodKeyValuePair,
     priceTypeKeyValuePair,
@@ -38,13 +42,10 @@ const ItemPriceCalculator = (props) => {
     itemId,
     isEditable,
     handleSavePriceChanges,
-    reviewModeActive = false,
-    priceModalView = false,
-    hidePriceViewModal = null,
   } = props;
 
   const [itemPriceRecordObj, setItemPriceRecordObj] = useState({
-    itemPriceDataId: 0,
+    customItemPriceDataId: 0,
     priceMethod: "",
     currency: "",
     priceDate: new Date(),
@@ -79,7 +80,7 @@ const ItemPriceCalculator = (props) => {
   });
 
   const [itemPriceRequestObj, setItemPriceRequestObj] = useState({
-    ...defaultItemPriceObj,
+    ...defaultCustomItemPriceObj,
   });
 
   const [priceEscalationValues, setPriceEscalationValues] = useState({
@@ -98,16 +99,16 @@ const ItemPriceCalculator = (props) => {
   });
 
   const [itemRequestObj, setItemRequestObj] = useState({
-    itemId: 0,
+    customItemId: 0,
     itemName: "",
   });
 
   const [itemHeaderModelObj, setItemHeaderModelObj] = useState({
-    ...defaultItemHeaderObj,
+    ...defaultCustomItemHeaderModel,
   });
 
   const [itemBodyModelObj, setItemBodyModelObj] = useState({
-    ...defaultItemBodyObj,
+    ...defaultCustomItemBodyModel,
   });
 
   const [yearsKeyValuePairs, seYearsKeyValuePairs] = useState([
@@ -131,194 +132,191 @@ const ItemPriceCalculator = (props) => {
     seYearsKeyValuePairs(yearsOptionArr);
   }, [itemPriceRequestObj.noOfYear]);
 
-  // price edit mode enable
-  const handleEnableEditMode = () => {
-    if (!reviewModeActive) {
-      setEditItemPrice(false);
-    }
-  };
-
   // get Select Bundle/Service/Portfolio Item Details
   const handleGetItemDetails = async (itemId) => {
     setLoading(true);
-    const itemDetails = await getItemDataById(itemId);
-    if (itemDetails.status === 200) {
-      const { itemId, itemName, itemHeaderModel, itemBodyModel } =
-        itemDetails.data;
+    const itemReqUrl = `${CREATE_CUSTOM_PORTFOLIO_ITEM()}/${itemId}`;
+    callGetApi(
+      null,
+      itemReqUrl,
+      (response) => {
+        if (response.status === API_SUCCESS) {
+          const {
+            customItemId,
+            itemName,
+            customItemHeaderModel,
+            customItemBodyModel,
+          } = response.data;
 
-      const _currency = currencyKeyValuePair.find(
-        (obj) => obj.value === itemHeaderModel.currency
-      );
-      const _usageType = usageTypeKeyValuePair.find(
-        (obj) => obj.value === itemBodyModel.usage
-      );
+          const _currency = currencyKeyValuePair.find(
+            (obj) => obj.value === customItemHeaderModel.currency
+          );
+          const _usageType = usageTypeKeyValuePair.find(
+            (obj) => obj.value === customItemBodyModel.usage
+          );
 
-      const _itemYear = isEmpty(itemBodyModel.year)
-        ? ""
-        : { label: itemBodyModel.year, itemBodyModel: itemBodyModel.year };
+          const _itemYear = isEmpty(customItemBodyModel.year)
+            ? ""
+            : {
+                label: customItemBodyModel.year,
+                customItemBodyModel: customItemBodyModel.year,
+              };
 
-      // set item request obj data
-      setItemRequestObj({
-        itemId: itemId,
-        itemName: itemName,
-      });
+          // set item request obj data
+          setItemRequestObj({
+            customItemId: customItemId,
+            itemName: itemName,
+          });
 
-      // set item header request obj
-      const _itemHeaderModelObj = {
-        ...itemHeaderModel,
-        usage: _usageType || "",
-        currency: _currency || "",
-      };
-      setItemHeaderModelObj({ ..._itemHeaderModelObj });
+          // set item header request obj
+          const _itemHeaderModelObj = {
+            ...customItemHeaderModel,
+            usage: _usageType || "",
+            currency: _currency || "",
+          };
+          setItemHeaderModelObj({ ..._itemHeaderModelObj });
 
-      // set item body request obj
-      const _itemBodyModelObj = {
-        ...itemBodyModel,
-        usage: _usageType || "",
-        year: _itemYear,
-      };
-      setItemBodyModelObj({ ..._itemBodyModelObj });
+          // set item body request obj
+          const _itemBodyModelObj = {
+            ...customItemBodyModel,
+            usage: _usageType || "",
+            year: _itemYear,
+          };
+          setItemBodyModelObj({ ..._itemBodyModelObj });
 
-      //   setItemRequestObj({
-      //     ...itemRequestObj,
-      //     name: itemName,
-      //     description: itemBodyModel.itemBodyDescription,
-      //     usage: _usageIn || "",
-      //     strategyTask: _strategyTask,
-      //     taskType: _taskType,
-      //     usageType: _usageType,
-      //   });
+          if (customItemBodyModel.customItemPrices.length !== 0) {
+            const itemPriceId =
+              customItemBodyModel.customItemPrices[
+                customItemBodyModel.customItemPrices.length - 1
+              ].customItemPriceDataId;
 
-      if (itemBodyModel.itemPrices.length !== 0) {
-        setLoading(true);
-        const itemId =
-          itemBodyModel.itemPrices[itemBodyModel.itemPrices.length - 1]
-            .itemPriceDataId;
-        const rUrl = PORTFOLIO_ITEM_PRICE_BY_ITEM_ID() + "/" + itemId;
-        callGetApi(
-          null,
-          rUrl,
-          (response) => {
-            if (response.status === API_SUCCESS) {
-              const res = response.data;
-
-              // Set price method Key value
-              const _priceMethod = priceMethodKeyValuePair.find(
-                (obj) => obj.value === res.priceMethod
-              );
-
-              // set price type key value
-              const _priceType = priceTypeKeyValuePair.find(
-                (obj) => obj.value === res.priceType
-              );
-
-              // set addition price key value
-              const _additionalPriceType = additionalPriceKeyValuePair.find(
-                (obj) => obj.value === res.additionalPriceType
-              );
-
-              // set price escaltion key value
-              const _priceEscalation = priceHeadTypeKeyValuePair.find(
-                (obj) => obj.value === res.priceEscalation
-              );
-
-              // set dsicount type key value
-              const _discountType = discountTypeKeyValuePair.find(
-                (obj) => obj.value === res.discountType
-              );
-
-              // set frequency key value
-              let _frequency = frequencyKeyValuePairs.find(
-                (obj) => obj.value === res.frequency
-              );
-
-              // set unit key value
-              let _usageUnit = unitKeyValuePairs.find(
-                (obj) => obj.value === res.usageUnit
-              );
-
-              // set year key value
-              const _year = isEmpty(res.year)
-                ? ""
-                : { label: res.year, value: res.year };
-
-              // set price escalation values
-              setPriceEscalationValues({
-                sparePartsEscalation: res.sparePartsEscalation,
-                labourEscalation: res.labourEscalation,
-                miscEscalation: res.miscEscalation,
-                serviceEscalation: res.serviceEscalation,
-              });
-
-              // set price brackdiwn values
-              setPriceBrackdownValues({
-                labourPriceBreakDownPercentage:
-                  res.labourPriceBreakDownPercentage || 0,
-                miscPriceBreakDownPercentage:
-                  res.miscPriceBreakDownPercentage || 0,
-                sparePartsPriceBreakDownPercentage:
-                  res.sparePartsPriceBreakDownPercentage || 0,
-                servicePriceBreakDownPercentage:
-                  res.servicePriceBreakDownPercentage || 0,
-                priceBrackdownselectValue:
-                  priceHeadTypeKeyValuePair[
-                    !isEmpty(res.sparePartsPriceBreakDownPercentage)
-                      ? 0
-                      : !isEmpty(res.labourPriceBreakDownPercentage)
-                      ? 1
-                      : !isEmpty(res.miscPriceBreakDownPercentage)
-                      ? 2
-                      : !isEmpty(res.servicePriceBreakDownPercentage)
-                      ? 3
-                      : 0
-                  ],
-              });
-
-              setItemPriceRecordObj({
-                ...res,
-                numberOfEvents: res.numberOfEvents,
-                itemPriceId: res.itemPriceDataId,
-                year: _year,
-                frequency: _frequency || "",
-                usageUnit: _usageUnit || "",
-                priceMethod: _priceMethod || "",
-                priceType: _priceType || "",
-                additionalPriceType: _additionalPriceType || "",
-                priceEscalation: _priceEscalation || "",
-                discountType: _discountType || "",
-                currency: _currency || "",
-                usageType: _usageType || "",
-              });
-              setItemPriceRequestObj({
-                ...res,
-                numberOfEvents: res.numberOfEvents,
-                itemPriceId: res.itemPriceDataId,
-                year: _year,
-                frequency: _frequency || "",
-                usageUnit: _usageUnit || "",
-                priceMethod: _priceMethod || "",
-                priceType: _priceType || "",
-                additionalPriceType: _additionalPriceType || "",
-                priceEscalation: _priceEscalation || "",
-                discountType: _discountType || "",
-                currency: _currency || "",
-              });
-              setLoading(false);
-            } else {
-              setLoading(false);
-            }
-          },
-          (error) => {
+            const itemPriceReqUrl = `${GET_CUSTOM_PORTFOLIO_ITEM_PRICE_DATA}/${itemPriceId}`;
+            handleGetItemPriceDetails(itemPriceReqUrl, _usageType, _currency);
+          } else {
             setLoading(false);
-            return;
           }
-        );
-      }else{
+        } else {
+          setLoading(false);
+          errorMessage(response?.data?.message);
+        }
+      },
+      (error) => {
         setLoading(false);
+        errorMessage(error);
       }
-    } else {
-      setLoading(false);
-    }
+    );
+  };
+
+  // get Bundle|Service|Portfolio Item Price details
+  const handleGetItemPriceDetails = (rUrl, _usageType, _currency) => {
+    callGetApi(
+      null,
+      rUrl,
+      (response) => {
+        if (response.status === API_SUCCESS) {
+          const res = response.data;
+
+          // Set price method Key value
+          const _priceMethod = priceMethodKeyValuePair.find(
+            (obj) => obj.value === res.priceMethod
+          );
+
+          // set price type key value
+          const _priceType = priceTypeKeyValuePair.find(
+            (obj) => obj.value === res.priceType
+          );
+
+          // set addition price key value
+          const _additionalPriceType = additionalPriceKeyValuePair.find(
+            (obj) => obj.value === res.additionalPriceType
+          );
+
+          // set price escaltion key value
+          const _priceEscalation = priceHeadTypeKeyValuePair.find(
+            (obj) => obj.value === res.priceEscalation
+          );
+
+          // set dsicount type key value
+          const _discountType = discountTypeKeyValuePair.find(
+            (obj) => obj.value === res.discountType
+          );
+
+          // set frequency key value
+          let _frequency = frequencyKeyValuePairs.find(
+            (obj) => obj.value === res.frequency
+          );
+
+          // set unit key value
+          let _usageUnit = unitKeyValuePairs.find(
+            (obj) => obj.value === res.usageUnit
+          );
+
+          // set year key value
+          const _year = isEmpty(res.year)
+            ? ""
+            : { label: res.year, value: res.year };
+
+          // set price escalation values
+          setPriceEscalationValues({
+            sparePartsEscalation: res.sparePartsEscalation,
+            labourEscalation: res.labourEscalation,
+            miscEscalation: res.miscEscalation,
+            serviceEscalation: res.serviceEscalation,
+          });
+
+          // set price brackdiwn values
+          setPriceBrackdownValues({
+            labourPriceBreakDownPercentage:
+              res.labourPriceBreakDownPercentage || 0,
+            miscPriceBreakDownPercentage: res.miscPriceBreakDownPercentage || 0,
+            sparePartsPriceBreakDownPercentage:
+              res.sparePartsPriceBreakDownPercentage || 0,
+            servicePriceBreakDownPercentage:
+              res.servicePriceBreakDownPercentage || 0,
+          });
+
+          setItemPriceRecordObj({
+            ...res,
+            numberOfEvents: res.numberOfEvents,
+            itemPriceId: res.customItemPriceDataId,
+            year: _year,
+            frequency: _frequency || "",
+            usageUnit: _usageUnit || "",
+            priceMethod: _priceMethod || "",
+            priceType: _priceType || "",
+            additionalPriceType: _additionalPriceType || "",
+            priceEscalation: _priceEscalation || "",
+            discountType: _discountType || "",
+            currency: _currency || "",
+            usageType: _usageType || "",
+          });
+          setItemPriceRequestObj({
+            ...res,
+            numberOfEvents: res.numberOfEvents,
+            itemPriceId: res.customItemPriceDataId,
+            year: _year,
+            frequency: _frequency || "",
+            usageUnit: _usageUnit || "",
+            priceMethod: _priceMethod || "",
+            priceType: _priceType || "",
+            additionalPriceType: _additionalPriceType || "",
+            priceEscalation: _priceEscalation || "",
+            discountType: _discountType || "",
+            currency: _currency || "",
+          });
+
+          setLoading(false);
+        } else {
+          setLoading(false);
+          errorMessage(response?.data?.message);
+        }
+      },
+      (error) => {
+        setLoading(false);
+        errorMessage(error);
+        return;
+      }
+    );
   };
 
   // text value change
@@ -455,114 +453,110 @@ const ItemPriceCalculator = (props) => {
 
   // save changes
   const handleSaveItemPriceChanges = async () => {
-    if (priceModalView) {
-      hidePriceViewModal();
-    } else {
-      if (!editItemPrice && !checkInputValidation()) {
-        return;
+    if (!editItemPrice && !checkInputValidation()) {
+      return;
+    }
+
+    const requestObj = {
+      ...itemPriceRequestObj,
+      priceMethod: itemPriceRequestObj.priceMethod?.value || "LIST_PRICE",
+      priceType: itemPriceRequestObj.priceType?.value || "EVENT_BASED",
+      additionalPriceType:
+        itemPriceRequestObj.additionalPriceType?.value || "ABSOLUTE",
+      priceEscalation: itemPriceRequestObj.priceEscalation?.value || "",
+      sparePartsEscalation: priceEscalationValues.sparePartsEscalation || 0,
+      labourEscalation: priceEscalationValues.labourEscalation || 0,
+      miscEscalation: priceEscalationValues.miscEscalation || 0,
+      serviceEscalation: priceEscalationValues.serviceEscalation || 0,
+      flatPrice: itemPriceRequestObj.flatPrice || 0,
+      discountType:
+        itemPriceRequestObj.discountType?.value || "PORTFOLIO_DISCOUNT",
+      discountValue: itemPriceRequestObj.discountValue || 0,
+      sparePartsPriceBreakDownPercentage:
+        priceBrackdownValues.sparePartsPriceBreakDownPercentage || 0,
+      labourPriceBreakDownPercentage:
+        priceBrackdownValues.labourPriceBreakDownPercentage || 0,
+      miscPriceBreakDownPercentage:
+        priceBrackdownValues.miscPriceBreakDownPercentage || 0,
+      year: itemPriceRequestObj.year?.value || "1",
+      noOfYear: itemPriceRequestObj.noOfYear || 1,
+      startUsage: itemPriceRequestObj.startUsage,
+      endUsage: itemPriceRequestObj.endUsage,
+      frequency: itemPriceRequestObj.frequency?.value || "CYCLIC",
+      usageUnit: itemPriceRequestObj.usageUnit?.value || "",
+      recommendedUnit:
+        itemPriceRequestObj.usageUnit?.value === "YEAR"
+          ? "MONTH"
+          : itemPriceRequestObj.usageUnit?.value || "",
+      recommendedValue: itemPriceRequestObj.recommendedValue,
+      portfolio:
+        itemPriceRequestObj.portfolio?.portfolioId === 0
+          ? null
+          : itemPriceRequestObj.portfolio,
+    };
+
+    const _itemBodyModelObj = {
+      ...itemBodyModelObj,
+      usage: itemPriceRecordObj.usageType,
+      year: itemPriceRequestObj.year,
+    };
+
+    const _itemHeaderModelObj = {
+      ...itemHeaderModelObj,
+      currency: itemPriceRecordObj.currency,
+      usage: itemPriceRecordObj.usageType,
+    };
+
+    let rUrl = CREATE_CUSTOM_PRICE();
+    if (!editItemPrice) {
+      if (!isEmpty(requestObj.customItemPriceDataId)) {
+        rUrl = rUrl + "/" + requestObj.customItemPriceDataId;
       }
-
-      const requestObj = {
-        ...itemPriceRequestObj,
-        priceMethod: itemPriceRequestObj.priceMethod?.value || "LIST_PRICE",
-        priceType: itemPriceRequestObj.priceType?.value || "EVENT_BASED",
-        additionalPriceType:
-          itemPriceRequestObj.additionalPriceType?.value || "ABSOLUTE",
-        priceEscalation: itemPriceRequestObj.priceEscalation?.value || "",
-        sparePartsEscalation: priceEscalationValues.sparePartsEscalation || 0,
-        labourEscalation: priceEscalationValues.labourEscalation || 0,
-        miscEscalation: priceEscalationValues.miscEscalation || 0,
-        serviceEscalation: priceEscalationValues.serviceEscalation || 0,
-        flatPrice: itemPriceRequestObj.flatPrice || 0,
-        discountType:
-          itemPriceRequestObj.discountType?.value || "PORTFOLIO_DISCOUNT",
-        discountValue: itemPriceRequestObj.discountValue || 0,
-        sparePartsPriceBreakDownPercentage:
-          priceBrackdownValues.sparePartsPriceBreakDownPercentage || 0,
-        labourPriceBreakDownPercentage:
-          priceBrackdownValues.labourPriceBreakDownPercentage || 0,
-        miscPriceBreakDownPercentage:
-          priceBrackdownValues.miscPriceBreakDownPercentage || 0,
-        year: itemPriceRequestObj.year?.value || "1",
-        noOfYear: itemPriceRequestObj.noOfYear || 1,
-        startUsage: itemPriceRequestObj.startUsage,
-        endUsage: itemPriceRequestObj.endUsage,
-        frequency: itemPriceRequestObj.frequency?.value || "CYCLIC",
-        usageUnit: itemPriceRequestObj.usageUnit?.value || "",
-        recommendedUnit:
-          itemPriceRequestObj.usageUnit?.value === "YEAR"
-            ? "MONTH"
-            : itemPriceRequestObj.usageUnit?.value || "",
-        recommendedValue: itemPriceRequestObj.recommendedValue,
-        portfolio:
-          itemPriceRequestObj.portfolio?.portfolioId === 0
-            ? null
-            : itemPriceRequestObj.portfolio,
-      };
-
-      const _itemBodyModelObj = {
-        ...itemBodyModelObj,
-        usage: itemPriceRecordObj.usageType,
-        year: itemPriceRequestObj.year,
-      };
-
-      const _itemHeaderModelObj = {
-        ...itemHeaderModelObj,
-        currency: itemPriceRecordObj.currency,
-        usage: itemPriceRecordObj.usageType,
-      };
-
-      let rUrl = PORTFOLIO_ITEM_PRICE_BY_ITEM_ID();
-      if (!editItemPrice) {
-        if (!isEmpty(requestObj.itemPriceDataId)) {
-          rUrl = rUrl + "/" + requestObj.itemPriceDataId;
-        }
-        if (!isEmpty(requestObj.itemPriceDataId)) {
-          callPutApi(null, rUrl, requestObj, (response) => {
-            if (response.status === API_SUCCESS) {
-              updateItemPriceSjRkId({
-                standardJobId: itemPriceRequestObj.standardJobId,
-                repairKitId: itemPriceRequestObj.repairKitId,
-                itemId: itemId,
-                itemPriceDataId: itemPriceRequestObj.itemPriceDataId,
-              });
-              handleSavePriceChanges(
-                itemRequestObj,
-                _itemHeaderModelObj,
-                _itemBodyModelObj,
-                editItemPrice
-              );
-            }
-          });
-        } else {
-          callPostApi(null, rUrl, requestObj, (response) => {
-            if (response.status === API_SUCCESS) {
-              updateItemPriceSjRkId({
-                standardJobId: itemPriceRequestObj.standardJobId,
-                repairKitId: itemPriceRequestObj.repairKitId,
-                itemId: itemId,
-                itemPriceDataId: response.data?.itemPriceDataId,
-              });
-              _itemBodyModelObj["itemPrices"].push({
-                itemPriceDataId: response.data?.itemPriceDataId,
-              });
-              handleSavePriceChanges(
-                itemRequestObj,
-                _itemHeaderModelObj,
-                _itemBodyModelObj,
-                editItemPrice
-              );
-            }
-          });
-        }
+      if (!isEmpty(requestObj.customItemPriceDataId)) {
+        callPutApi(null, rUrl, requestObj, (response) => {
+          if (response.status === API_SUCCESS) {
+            updateCustomItemPricesSjRkId({
+              standardJobId: itemPriceRequestObj.standardJobId,
+              repairKitId: itemPriceRequestObj.repairKitId,
+              itemId: itemId,
+              itemPriceDataId: itemPriceRequestObj.customItemPriceDataId,
+            });
+            handleSavePriceChanges(
+              itemRequestObj,
+              _itemHeaderModelObj,
+              _itemBodyModelObj,
+              editItemPrice
+            );
+          }
+        });
       } else {
-        handleSavePriceChanges(
-          itemRequestObj,
-          _itemHeaderModelObj,
-          _itemBodyModelObj,
-          editItemPrice
-        );
+        callPostApi(null, rUrl, requestObj, (response) => {
+          if (response.status === API_SUCCESS) {
+            updateCustomItemPricesSjRkId({
+              standardJobId: itemPriceRequestObj.standardJobId,
+              repairKitId: itemPriceRequestObj.repairKitId,
+              itemId: itemId,
+              itemPriceDataId: response.data?.customItemPriceDataId,
+            });
+            _itemBodyModelObj["customItemPrices"].push({
+              itemPriceDataId: response.data?.customItemPriceDataId,
+            });
+            handleSavePriceChanges(
+              itemRequestObj,
+              _itemHeaderModelObj,
+              _itemBodyModelObj,
+              editItemPrice
+            );
+          }
+        });
       }
+    } else {
+      handleSavePriceChanges(
+        itemRequestObj,
+        _itemHeaderModelObj,
+        _itemBodyModelObj,
+        editItemPrice
+      );
     }
   };
 
@@ -576,18 +570,22 @@ const ItemPriceCalculator = (props) => {
         <>
           <div className="ligt-greey-bg p-3">
             <div>
-              <span className="mr-3 cursor" onClick={handleEnableEditMode}>
+              <span
+                className="mr-3 cursor"
+                onClick={() => setEditItemPrice(false)}
+                // onClick={() => setPortfolioItemPriceEditable(!portfolioItemPriceEditable)}
+              >
                 <i className="fa fa-pencil font-size-12" aria-hidden="true"></i>
                 <span className="ml-2">Edit</span>
               </span>
-              {/* <span className="mr-3">
+              <span className="mr-3">
                 <MonetizationOnOutlinedIcon className=" font-size-16" />
                 <span className="ml-2"> Adjust price</span>
               </span>
               <span>
                 <SellOutlinedIcon className=" font-size-16" />
                 <span className="ml-2">Split price</span>
-              </span> */}
+              </span>
             </div>
           </div>
           <div className="mt-3">
@@ -628,7 +626,7 @@ const ItemPriceCalculator = (props) => {
                       </p>
                       <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                         {isEmpty(itemPriceRequestObj.priceDate)
-                          ? getFormatDateTime(new Date(), false)
+                          ? "NA"
                           : getFormatDateTime(
                               itemPriceRequestObj.priceDate,
                               false
@@ -700,7 +698,7 @@ const ItemPriceCalculator = (props) => {
                         FLAT RATE INDICATOR
                       </p>
                       <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                        {!isEmpty(itemPriceRequestObj.flatPrice) ? "YES" : "NO"}
+                        {itemPriceRecordObj.flatRateIndicator ? "YES" : "NO"}
                       </h6>
                     </div>
                   </div>
@@ -1539,11 +1537,7 @@ const ItemPriceCalculator = (props) => {
                   onClick={handleSaveItemPriceChanges}
                   // onClick={handleItemPriceCalculatorSave}
                 >
-                  {priceModalView
-                    ? "Close"
-                    : editItemPrice
-                    ? "Next"
-                    : "Save & Next"}
+                  Next
                   {/* {portfolioItemPriceEditable ? "Next" : "Save & Next"} */}
                 </a>
               </div>
@@ -1555,4 +1549,4 @@ const ItemPriceCalculator = (props) => {
   );
 };
 
-export default ItemPriceCalculator;
+export default CustomItemPriceCalculator;

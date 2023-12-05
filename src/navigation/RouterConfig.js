@@ -68,6 +68,8 @@ import { ProtectedRoute } from "./ProtectedRoute";
 import { GuidedSolutionQuote } from "pages/SolutionModules/GuidedSolutionQuote";
 import { WorkList } from "pages/Dashboard/WorkList";
 import { CreateWorkList } from "pages/Dashboard/CreateWorkList";
+import SolutionAnalytics from "pages/SolutionModules/use-case-4/SolutionAnalytics";
+import CustomPortfolioAddUpdate from "pages/SolutionModules/use-case-4/CustomPortfolioAddUpdate";
 import CreatePartQuote from "pages/Repair/quote/CreateSparepartQuote";
 import { CreateSolutionQuote } from "pages/SolutionModules/CreateSolutionQuote";
 
@@ -169,8 +171,10 @@ export const RouterConfig = () => {
         <ProtectedRoute path={PORTFOLIO_SUMMARY} component={PortfolioSummary} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]} />
 
         {/* Solution Routes */}
-        <ProtectedRoute path={SOLUTION_BUILDER_ANALYTICS} component={Analytics} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]} />
-        <ProtectedRoute path={SOLUTION_BUILDER_CUSTOM_PORTFOLIO_CREATE} component={CreateCustomPortfolio} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]} />
+        {/* <ProtectedRoute path={SOLUTION_BUILDER_ANALYTICS} component={Analytics} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]} />
+        <ProtectedRoute path={SOLUTION_BUILDER_CUSTOM_PORTFOLIO_CREATE} component={CreateCustomPortfolio} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]} /> */}
+        <ProtectedRoute path={SOLUTION_BUILDER_ANALYTICS} component={SolutionAnalytics} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]} />
+        <ProtectedRoute path={SOLUTION_BUILDER_CUSTOM_PORTFOLIO_CREATE} component={CustomPortfolioAddUpdate} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]} />
 
         {/* Solution Quote Routes */}
         <ProtectedRoute path={GUIDED_SOLUTION_BUILDER} component={GuidedSolution} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]} />

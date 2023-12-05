@@ -138,7 +138,6 @@ const PortfolioItemTabsModal = (props) => {
         },
     ]
 
-
     return (
         <Modal show={show} onHide={hideModal} size="xl">
             <Modal.Body>

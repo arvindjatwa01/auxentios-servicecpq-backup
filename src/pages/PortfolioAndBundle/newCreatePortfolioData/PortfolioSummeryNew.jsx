@@ -35,12 +35,14 @@ import {
 
 import { selectCustomStyle, dataTableCustomStyle } from "./itemConstant";
 import {
+  GET_RECENT_ITEMS_LIST_URL,
   PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE,
   RECENT_PORTFOLIO_URL,
 } from "services/CONSTANTS";
 import { getApiCall } from "services/searchQueryService";
 import { callGetApi } from "services/ApiCaller";
 import { API_SUCCESS } from "services/ResponseCode";
+import LoadingProgress from "pages/Repair/components/Loader";
 
 const portfolioSearchOptions = [
   { label: "Make", value: "make" },
@@ -99,46 +101,23 @@ export const PortfolioSummary = () => {
   const [itemFlag, setItemFlag] = useState("");
   const [itemId, setItemId] = useState(null);
   const [showLoader, setShowLoader] = useState(false);
+  const [itemEditModeOn, setItemEditModeOn] = useState(false);
+
+  const [recentPortfolioLoader, setRecentPortfolioLoader] = useState(false);
+  const [recentBundleLoaer, setRecentBundleLoaer] = useState(false);
+  const [recentServiceLoader, setRecentServiceLoader] = useState(false);
 
   useEffect(() => {
     setShowLoader(true);
-    // get Recent Portfolio List
-    let loading, data, failure;
-    getApiCall(RECENT_PORTFOLIO_URL + "/recent", loading, data, failure)
-      // getSearchForRecentPortfolio()
-      .then((res) => {
-        if(res.length !== 0 || res !== undefined){
-            setRecentPortfolios(res);
-        }
-        // if (res.status === 200) {
-            // setRecentPortfolios(res.data);
-        // }
-      })
-      .catch((error) => {
-        return;
-      });
 
-    // get Recent Bundle Items
-    recentItemsList("BUNDLE_ITEM")
-      .then((res) => {
-        if (res.status === 200) {
-          setRecentBundles(res.data);
-        }
-      })
-      .catch((error) => {
-        return;
-      });
+    // get Recent Portfolio List
+    getRecentPortfolio();
 
     // get Recent Service Items
-    recentItemsList("SERVICE")
-      .then((res) => {
-        if (res.status === 200) {
-          setRecentServices(res.data);
-        }
-      })
-      .catch((error) => {
-        return;
-      });
+    getRecentServiceItem();
+
+    // get Recent Bundle Items
+    getRecentBundleItem();
 
     // get customer segment key Value Pairs
     getPortfolioCommonConfig("customer-segment")
@@ -306,15 +285,77 @@ export const PortfolioSummary = () => {
     setShowLoader(false);
   }, []);
 
+  // get Recent Portfolio List
+  const getRecentPortfolio = () => {
+    setRecentPortfolioLoader(true);
+    callGetApi(
+      null,
+      RECENT_PORTFOLIO_URL + "/recent",
+      (response) => {
+        if (response.status === API_SUCCESS) {
+          setRecentPortfolioLoader(false);
+          setRecentPortfolios(response.data);
+        } else {
+          setRecentPortfolioLoader(false);
+        }
+      },
+      (error) => {
+        setRecentPortfolioLoader(false);
+      }
+    );
+  };
+
+  // get Recent Service Items
+  const getRecentServiceItem = () => {
+    setRecentServiceLoader(true);
+    callGetApi(
+      null,
+      `${GET_RECENT_ITEMS_LIST_URL}SERVICE`,
+      (response) => {
+        if (response.status === API_SUCCESS) {
+          setRecentServiceLoader(false);
+          setRecentServices(response.data);
+        } else {
+          setRecentServiceLoader(false);
+        }
+      },
+      (error) => {
+        setRecentServiceLoader(false);
+      }
+    );
+  };
+
+  // get Recent Bundle Items
+  const getRecentBundleItem = () => {
+    setRecentBundleLoaer(true);
+    callGetApi(
+      null,
+      `${GET_RECENT_ITEMS_LIST_URL}BUNDLE_ITEM`,
+      (response) => {
+        if (response.status === API_SUCCESS) {
+          setRecentBundleLoaer(false);
+          setRecentBundles(response.data);
+        } else {
+          setRecentBundleLoaer(false);
+        }
+      },
+      (error) => {
+        setRecentBundleLoaer(false);
+      }
+    );
+  };
+
   useEffect(() => {
     if (!showBundleServiceModel) {
       setItemId(null);
       setItemFlag("");
+      setItemEditModeOn(false);
     }
   }, [showBundleServiceModel]);
 
   // view Bundle/Service Details
   const viewBundleServiceDetails = (row) => {
+    setItemEditModeOn(true);
     setItemId(row.itemId);
     setItemFlag(row.bundleFlag === "SERVICE" ? "SERVICE" : "BUNDLE");
     setShowBundleServiceModel(true);
@@ -334,6 +375,7 @@ export const PortfolioSummary = () => {
       setItemFlag(e.value);
       setShowBundleServiceModel(true);
       setItemId(null);
+      setItemEditModeOn(false);
     }
   };
 
@@ -1044,7 +1086,8 @@ export const PortfolioSummary = () => {
             />
           </div>
           {showLoader ? (
-            showLoadingProgress()
+            // showLoadingProgress()
+            <LoadingProgress />
           ) : (
             <>
               <div className="card p-4 mt-5">
@@ -1275,6 +1318,8 @@ export const PortfolioSummary = () => {
           itemVersionKeyValuePairs={itemVersionKeyValuePairs}
           itemStatusKeyValuePairs={itemStatusKeyValuePairs}
           itemId={itemId}
+          setItemId={setItemId}
+          itemEditModeOn={itemEditModeOn}
           frequencyKeyValuePairs={frequencyKeyValuePairs}
           unitKeyValuePairs={unitKeyValuePairs}
           priceHeadTypeKeyValuePair={priceHeadTypeKeyValuePair}

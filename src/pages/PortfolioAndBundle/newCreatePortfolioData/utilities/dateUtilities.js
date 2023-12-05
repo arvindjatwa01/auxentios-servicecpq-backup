@@ -27,6 +27,7 @@ export const getFormatDateTime = (timeStamp, withTime) => {
   if (withTime) {
     var finalDateString = hour + ":" + minutes + "" + format + ", " + day + " " + monthName[month] + " " + year;
   } else {
+    if(month < 10){ month = `0` + (month+1)}
     var finalDateString = year + "-" + month + "-" + day;
   }
   return finalDateString;
