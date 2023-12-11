@@ -60,7 +60,7 @@ export const defaultItemBodyObj = {
 // default data for item Price Add/Update
 export const defaultItemPriceObj = {
   itemPriceDataId: 0,
-  quantity: 0,
+  quantity: 1,
   standardJobId: "",
   repairKitId: "",
   templateDescription: "",

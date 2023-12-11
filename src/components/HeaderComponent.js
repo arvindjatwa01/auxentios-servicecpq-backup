@@ -12,14 +12,33 @@ import {
   ACCOUNT_SUPPORT,
   TEMPLATE,
 } from "../navigation/CONSTANTS";
+
+import {
+  getCurrencyKeyValuePair,
+  getCustomerSegmentKeyValuePair,
+  getFrequencyKeyValuePair,
+  getMachineComponentTypeKeyValuePair,
+  getPriceHeadTypeKeyValuePair,
+  getPriceListKeyValuePair,
+  getPriceMethodKeyValuePair,
+  getPriceTypeKeyValuePair,
+  getStatusKeyValuePair,
+  getSupportLevel,
+  getUnitKeyValuePair,
+  getValidityTypeKeyValuePair,
+} from "redux/actions/portfolioAndSolutionActions";
+import { isEmpty } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/textUtilities";
+
 import Cookies from "js-cookie";
 import { Divider } from "@mui/material";
+import { useDispatch } from "react-redux";
 
 export function HeaderComponent(props) {
   let history = useHistory();
+  const dispatch = useDispatch();
   const [age, setAge] = React.useState("5");
   const [loginStatus, setLoginStatus] = useState(false);
-  const [planName, setPlanName] = useState('STARTER');
+  const [planName, setPlanName] = useState("STARTER");
   const [tenantId, setTenantId] = useState("");
   const ENVIRONMENT = process.env.REACT_APP_ENV;
 
@@ -36,6 +55,7 @@ export function HeaderComponent(props) {
     history.push("/login");
     // window.location.href = "/login";
   };
+
   useEffect(() => {
     var CookiesSetData = Cookies.get("loginTenantDtl");
 
@@ -61,6 +81,28 @@ export function HeaderComponent(props) {
     // }
     // setLoginStatus(result.isLoggedIn)
   }, []);
+
+  useEffect(() => {
+    var CookiesSetData = Cookies.get("loginTenantDtl");
+    if (!isEmpty(CookiesSetData)) {
+      var getCookiesJsonData = JSON.parse(CookiesSetData);
+      if (getCookiesJsonData.user_logIn_Status) {
+        dispatch(getSupportLevel());
+        dispatch(getStatusKeyValuePair());
+        dispatch(getCustomerSegmentKeyValuePair());
+        dispatch(getPriceListKeyValuePair());
+        dispatch(getPriceMethodKeyValuePair());
+        dispatch(getPriceTypeKeyValuePair());
+        dispatch(getPriceHeadTypeKeyValuePair());
+        dispatch(getCurrencyKeyValuePair());
+        dispatch(getMachineComponentTypeKeyValuePair());
+        dispatch(getValidityTypeKeyValuePair());
+        dispatch(getFrequencyKeyValuePair());
+        dispatch(getUnitKeyValuePair());
+      }
+    }
+  }, []);
+
   return (
     <>
       <div
@@ -1352,16 +1394,18 @@ export function HeaderComponent(props) {
                 <div className="drop-down dropdown-profile animated fadeIn dropdown-menu">
                   <div className="dropdown-content-body">
                     <ul>
-                      {ENVIRONMENT !== "TRIAL" && <li>
-                        <Link to="/profile">
-                          <span>Profile View</span>
-                        </Link>
-                      </li>}
+                      {ENVIRONMENT !== "TRIAL" && (
+                        <li>
+                          <Link to="/profile">
+                            <span>Profile View</span>
+                          </Link>
+                        </li>
+                      )}
 
                       <li>
-                        <span >Tenant ID #: {tenantId}</span>
+                        <span>Tenant ID #: {tenantId}</span>
                       </li>
-                      {ENVIRONMENT !== "TRIAL" &&
+                      {ENVIRONMENT !== "TRIAL" && (
                         <>
                           <Divider />
                           <li>
@@ -1369,7 +1413,9 @@ export function HeaderComponent(props) {
                           </li>
                           <li>
                             <Link to={ACCOUNT_PACKAGES}>
-                              <span>My Packages <strong>({planName})</strong> </span>
+                              <span>
+                                My Packages <strong>({planName})</strong>{" "}
+                              </span>
                             </Link>
                           </li>
                           <li>
@@ -1393,7 +1439,8 @@ export function HeaderComponent(props) {
                               <span>Help & Support</span>
                             </Link>
                           </li>
-                        </>}
+                        </>
+                      )}
                       <li>
                         <a className="cursor" onClick={handleLogout}>
                           <span>{loginStatus ? "Logout" : "Login"}</span>

@@ -48,7 +48,7 @@ import {
   selectUpdateTaskList,
   taskActions,
 } from "../customerSegment/strategySlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getFormatDateTime } from "./utilities/dateUtilities";
 import { sparePartSearch } from "services/searchServices";
 import PortfolioCoverageSearch from "./PortfolioCoverageSearch";
@@ -89,6 +89,20 @@ export const CreatePortfolio = (props) => {
   const location = useLocation();
   const dispatch = useDispatch();
 
+  const {
+    supportLevelKeyValuePair,
+    portfolioStatusKeyValuePair,
+    customerSegmentKeyValuePair,
+    machineComponentKeyValuePair,
+    validityKeyValuePair,
+    priceListKeyValuePair,
+    priceMethodKeyValuePair,
+    priceTypeKeyValuePair,
+    priceHeadTypeKeyValuePair,
+    currencyKeyValuePair,
+    ...newdataResponse
+  } = useSelector((state) => state.commonAPIReducer);
+
   const categoryUsageKeyValuePair = useAppSelector(
     selectStrategyTaskOption(selectCategoryList)
   );
@@ -109,20 +123,20 @@ export const CreatePortfolio = (props) => {
   );
 
   // Price tab Key-Value -pair list
-  const [priceListKeyValuePair, setPriceListKeyValuePair] = useState([]);
-  const [priceMethodKeyValuePair, setPriceMethodKeyValuePair] = useState([]);
-  const [priceTypeKeyValuePair, setPriceTypeKeyValuePair] = useState([]);
-  const [priceHeadTypeKeyValuePair, setPriceHeadTypeKeyValuePair] = useState(
-    []
-  );
-  const [currencyKeyValuePair, setCurrencyKeyValuePair] = useState([]);
+  // const [priceListKeyValuePair, setPriceListKeyValuePair] = useState([]);
+  // const [priceMethodKeyValuePair, setPriceMethodKeyValuePair] = useState([]);
+  // const [priceTypeKeyValuePair, setPriceTypeKeyValuePair] = useState([]);
+  // const [priceHeadTypeKeyValuePair, setPriceHeadTypeKeyValuePair] = useState(
+  //   []
+  // );
+  // const [currencyKeyValuePair, setCurrencyKeyValuePair] = useState([]);
 
-  const [supportLevelKeyValuePair, setSupportLevelKeyValuePair] = useState([]);
+  // const [supportLevelKeyValuePair, setSupportLevelKeyValuePair] = useState([]);
   const [portfolioSupportLevel, setPortfolioSupportLevel] = useState({
     ...defaultSupportLevel,
   });
-  const [portfolioStatusKeyValuePair, setPortfolioStatusKeyValuePair] =
-    useState([]);
+  // const [portfolioStatusKeyValuePair, setPortfolioStatusKeyValuePair] =
+  //   useState([]);
   const [portfolioStatus, setPortfolioStatus] = useState({ ...defaultStatus });
   const [isActivePortfolio, setIsActivePortfolio] = useState(false);
 
@@ -140,12 +154,12 @@ export const CreatePortfolio = (props) => {
   });
 
   const [isPriceAgreementDisable, setIsPriceAgreementDisable] = useState(false);
-  const [customerSegmentKeyValuePair, setCustomerSegmentKeyValue] = useState(
-    []
-  );
-  const [validityKeyValuePair, setValidityKeyValuePair] = useState([]);
-  const [machineComponentKeyValuePair, setMachineComponentKeyValuePair] =
-    useState([]);
+  // const [customerSegmentKeyValuePair, setCustomerSegmentKeyValue] = useState(
+  //   []
+  // );
+  // const [validityKeyValuePair, setValidityKeyValuePair] = useState([]);
+  // const [machineComponentKeyValuePair, setMachineComponentKeyValuePair] =
+  //   useState([]);
 
   const [loading, setLoading] = useState(false);
 
@@ -234,155 +248,148 @@ export const CreatePortfolio = (props) => {
   }, [dispatch]);
 
   useEffect(() => {
-    // get Portfolio support-level Options Key-Value List
-    getSolutionPriceCommonConfig("support-level")
-      .then((res) => {
-        const supportLevelOptions = [];
-        res.map((d) => {
-          if (d.key != "EMPTY") {
-            supportLevelOptions.push({ value: d.key, label: d.value });
-          }
-        });
-        setSupportLevelKeyValuePair(supportLevelOptions);
-      })
-      .catch((err) => {
-        toast.error(err);
-      });
-
-    // get Portfolio Status Options Key-value List
-    getSolutionPriceCommonConfig("status")
-      .then((res) => {
-        const portfolioStatusOptions = [];
-        res.map((d) => {
-          if (d.key != "EMPTY") {
-            portfolioStatusOptions.push({ value: d.key, label: d.value });
-          }
-        });
-        setPortfolioStatusKeyValuePair(portfolioStatusOptions);
-      })
-      .catch((err) => {
-        toast.error(err);
-      });
-
-    // get customer segment key value pair list
-    getPortfolioCommonConfig("customer-segment")
-      .then((res) => {
-        const customerSegmentOptions = res.map((d) => ({
-          value: d.key,
-          label: d.value,
-        }));
-        setCustomerSegmentKeyValue(customerSegmentOptions);
-      })
-      .catch((err) => {
-        toast.error(err);
-      });
-
-    // get machine component key value Pair
-    getTypeKeyValue()
-      .then((res) => {
-        const options = [];
-        res.length !== 0 &&
-          res.map((d) => {
-            if (d.key !== "EMPTY") {
-              options.push({ value: d.key, label: d.value });
-            }
-          });
-        setMachineComponentKeyValuePair(options);
-      })
-      .catch((error) => {
-        return;
-      });
-
-    // get Validity Key-Value Pair list
-    getValidityKeyValue()
-      .then((res) => {
-        const validityOptions = [];
-        res.map((d) => {
-          if (d.key !== "EMPTY") {
-            validityOptions.push({ value: d.key, label: d.value });
-          }
-        });
-        setValidityKeyValuePair(validityOptions);
-      })
-      .catch((err) => {
-        toast.error(err);
-      });
-
-    // get Price-List key-value pair
-    getSolutionPriceCommonConfig("price-list")
-      .then((res) => {
-        const priceListOptions = [];
-        res.map((d) => {
-          if (d.key != "EMPTY") {
-            priceListOptions.push({ value: d.key, label: d.value });
-          }
-        });
-        setPriceListKeyValuePair(priceListOptions);
-      })
-      .catch((err) => {
-        toast.error(err);
-      });
-
-    // get PRice-method key-value Pair
-    getSolutionPriceCommonConfig("price-method")
-      .then((res) => {
-        const priceMethodOptions = [];
-        res.map((d) => {
-          if (d.key != "EMPTY") {
-            priceMethodOptions.push({ value: d.key, label: d.value });
-          }
-        });
-        setPriceMethodKeyValuePair(priceMethodOptions);
-      })
-      .catch((err) => {
-        toast.error(err);
-      });
-
-    // get Price-Type key-value Pair
-    getSolutionPriceCommonConfig("price-type")
-      .then((res) => {
-        const priceTypeOptions = [];
-        res.map((d) => {
-          if (d.key != "EMPTY") {
-            priceTypeOptions.push({ value: d.key, label: d.value });
-          }
-        });
-        setPriceTypeKeyValuePair(priceTypeOptions);
-      })
-      .catch((err) => {
-        toast.error(err);
-      });
-
-    //get price-head-type key-value pair
-    getSolutionPriceCommonConfig("price-head-type")
-      .then((res) => {
-        const priceHeadTypeOptions = [];
-        res.map((d) => {
-          if (d.key != "EMPTY") {
-            priceHeadTypeOptions.push({ value: d.key, label: d.value });
-          }
-        });
-        setPriceHeadTypeKeyValuePair(priceHeadTypeOptions);
-      })
-      .catch((err) => {
-        toast.error(err);
-      });
-
-    //  get currency  key-value pair
-    getSolutionPriceCommonConfig("currency")
-      .then((res) => {
-        const currencyOptions = [];
-        res.length !== 0 &&
-          res.map((d) => {
-            if (d.key != "EMPTY") {
-              currencyOptions.push({ value: d, label: d });
-            }
-          });
-        setCurrencyKeyValuePair(currencyOptions);
-      })
-      .catch((err) => {
-        return;
-      });
+    // // get Portfolio support-level Options Key-Value List
+    // getSolutionPriceCommonConfig("support-level")
+    //   .then((res) => {
+    //     const supportLevelOptions = [];
+    //     res.map((d) => {
+    //       if (d.key != "EMPTY") {
+    //         supportLevelOptions.push({ value: d.key, label: d.value });
+    //       }
+    //     });
+    //     setSupportLevelKeyValuePair(supportLevelOptions);
+    //   })
+    //   .catch((err) => {
+    //     toast.error(err);
+    //   });
+    // // get Portfolio Status Options Key-value List
+    // getSolutionPriceCommonConfig("status")
+    //   .then((res) => {
+    //     const portfolioStatusOptions = [];
+    //     res.map((d) => {
+    //       if (d.key != "EMPTY") {
+    //         portfolioStatusOptions.push({ value: d.key, label: d.value });
+    //       }
+    //     });
+    //     setPortfolioStatusKeyValuePair(portfolioStatusOptions);
+    //   })
+    //   .catch((err) => {
+    //     toast.error(err);
+    //   });
+    // // get customer segment key value pair list
+    // getPortfolioCommonConfig("customer-segment")
+    //   .then((res) => {
+    //     const customerSegmentOptions =
+    //       res.length !== 0 &&
+    //       res.map((d) => ({
+    //         value: d.key,
+    //         label: d.value,
+    //       }));
+    //     setCustomerSegmentKeyValue(customerSegmentOptions);
+    //   })
+    //   .catch((err) => {
+    //     toast.error(err);
+    //   });
+    // // get machine component key value Pair
+    // getTypeKeyValue()
+    //   .then((res) => {
+    //     const options = [];
+    //     res.length !== 0 &&
+    //       res.map((d) => {
+    //         if (d.key !== "EMPTY") {
+    //           options.push({ value: d.key, label: d.value });
+    //         }
+    //       });
+    //     setMachineComponentKeyValuePair(options);
+    //   })
+    //   .catch((error) => {
+    //     return;
+    //   });
+    // // get Validity Key-Value Pair list
+    // getValidityKeyValue()
+    //   .then((res) => {
+    //     const validityOptions = [];
+    //     res.map((d) => {
+    //       if (d.key !== "EMPTY") {
+    //         validityOptions.push({ value: d.key, label: d.value });
+    //       }
+    //     });
+    //     setValidityKeyValuePair(validityOptions);
+    //   })
+    //   .catch((err) => {
+    //     toast.error(err);
+    //   });
+    // // get Price-List key-value pair
+    // getSolutionPriceCommonConfig("price-list")
+    //   .then((res) => {
+    //     const priceListOptions = [];
+    //     res.map((d) => {
+    //       if (d.key != "EMPTY") {
+    //         priceListOptions.push({ value: d.key, label: d.value });
+    //       }
+    //     });
+    //     setPriceListKeyValuePair(priceListOptions);
+    //   })
+    //   .catch((err) => {
+    //     toast.error(err);
+    //   });
+    // // get PRice-method key-value Pair
+    // getSolutionPriceCommonConfig("price-method")
+    //   .then((res) => {
+    //     const priceMethodOptions = [];
+    //     res.map((d) => {
+    //       if (d.key != "EMPTY") {
+    //         priceMethodOptions.push({ value: d.key, label: d.value });
+    //       }
+    //     });
+    //     setPriceMethodKeyValuePair(priceMethodOptions);
+    //   })
+    //   .catch((err) => {
+    //     toast.error(err);
+    //   });
+    // // get Price-Type key-value Pair
+    // getSolutionPriceCommonConfig("price-type")
+    //   .then((res) => {
+    //     const priceTypeOptions = [];
+    //     res.map((d) => {
+    //       if (d.key != "EMPTY") {
+    //         priceTypeOptions.push({ value: d.key, label: d.value });
+    //       }
+    //     });
+    //     setPriceTypeKeyValuePair(priceTypeOptions);
+    //   })
+    //   .catch((err) => {
+    //     toast.error(err);
+    //   });
+    // //get price-head-type key-value pair
+    // getSolutionPriceCommonConfig("price-head-type")
+    //   .then((res) => {
+    //     const priceHeadTypeOptions = [];
+    //     res.map((d) => {
+    //       if (d.key != "EMPTY") {
+    //         priceHeadTypeOptions.push({ value: d.key, label: d.value });
+    //       }
+    //     });
+    //     setPriceHeadTypeKeyValuePair(priceHeadTypeOptions);
+    //   })
+    //   .catch((err) => {
+    //     toast.error(err);
+    //   });
+    // //  get currency  key-value pair
+    // getSolutionPriceCommonConfig("currency")
+    //   .then((res) => {
+    //     const currencyOptions = [];
+    //     res.length !== 0 &&
+    //       res.map((d) => {
+    //         if (d.key != "EMPTY") {
+    //           currencyOptions.push({ value: d, label: d });
+    //         }
+    //       });
+    //     setCurrencyKeyValuePair(currencyOptions);
+    //   })
+    //   .catch((err) => {
+    //     return;
+    //   });
   }, []);
 
   useEffect(() => {
@@ -428,13 +435,13 @@ export const CreatePortfolio = (props) => {
     const _portfolioSupportLevel = supportLevelKeyValuePair.find(
       (obj) => obj.value === recordData.supportLevel
     );
-    setPortfolioSupportLevel(_portfolioSupportLevel || "");
+    setPortfolioSupportLevel(_portfolioSupportLevel || defaultSupportLevel);
 
     // set Portfolio Status
     const _portfolioStatus = portfolioStatusKeyValuePair.find(
       (obj) => obj.value === recordData.status
     );
-    setPortfolioStatus(_portfolioStatus || "");
+    setPortfolioStatus(_portfolioStatus || defaultStatus);
     // setIsActivePortfolio={setIsActivePortfolio}
 
     // set Portfolio Tab Edit Mode true
@@ -459,6 +466,12 @@ export const CreatePortfolio = (props) => {
         customerSegmentKeyValuePair.find(
           (obj) => obj.value === recordData.customerSegment
         ) || "",
+      // customerSegment: isEmpty(recordData.customerSegment)
+      //   ? ""
+      //   : {
+      //       label: recordData.customerSegment,
+      //       value: recordData.customerSegment,
+      //     },
     });
 
     // set Validity Tab data
@@ -816,7 +829,14 @@ export const CreatePortfolio = (props) => {
   // handle price tab input data change
   const handlePriceTabTextChange = (e, type, keyName) => {
     if (type === "text") {
-      setPriceTabData({ ...priceTabData, [keyName]: e.target.value });
+      if (keyName === "priceBreakDownValue") {
+        setPriceBrackdownValues({
+          ...priceBrackdownValues,
+          [e.target.id]: e.target.value,
+        });
+      } else {
+        setPriceTabData({ ...priceTabData, [keyName]: e.target.value });
+      }
     } else {
       setPriceTabData({ ...priceTabData, [keyName]: e });
     }
@@ -1519,7 +1539,11 @@ export const CreatePortfolio = (props) => {
               </div>
               <div className="col-md-4 col-sm-4">
                 <p className="font-size-12 font-weight-500 mb-2">OPTIONALS</p>
-                {/* <h6 className="cursor font-weight-500 text-uppercase text-primary font-size-17">{selectedService.length !== 0 ? selectedService.length + " Service Selected" : "No Service Selected"}</h6> */}
+                <h6 className="cursor font-weight-500 text-uppercase text-primary font-size-17">
+                  {selectedService.length !== 0
+                    ? `${selectedService.length} Service Selected`
+                    : "No Service Selected"}
+                </h6>
               </div>
               <div className="col-md-4 col-sm-4">
                 <div className="form-group">
@@ -1696,6 +1720,9 @@ export const CreatePortfolio = (props) => {
                           "additionalPriceValue"
                         )
                       }
+                      disabled={isEmptySelect(
+                        priceTabData.additionalPriceType?.value
+                      )}
                     />
                   </div>
                 </div>
@@ -1732,6 +1759,9 @@ export const CreatePortfolio = (props) => {
                           "priceEscaltonValue"
                         )
                       }
+                      disabled={isEmptySelect(
+                        priceTabData.priceEscaltonValue?.value
+                      )}
                     />
                   </div>
                 </div>
@@ -1777,6 +1807,18 @@ export const CreatePortfolio = (props) => {
                       type="text"
                       className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
                       placeholder="optional"
+                      id={
+                        priceTabData.priceBreakDownType?.value === "PARTS"
+                          ? "sparePartsPrice"
+                          : priceTabData.priceBreakDownType?.value === "LABOR"
+                          ? "labourPrice"
+                          : priceTabData.priceBreakDownType?.value ===
+                            "MISCELLANEOUS"
+                          ? "miscPrice"
+                          : priceTabData.priceBreakDownType?.value === "SERVICE"
+                          ? "servicePrice"
+                          : ""
+                      }
                       // value={priceTabData.priceBreakDownValue}
                       value={
                         priceTabData.priceBreakDownType?.value === "PARTS"
@@ -1797,6 +1839,9 @@ export const CreatePortfolio = (props) => {
                           "priceBreakDownValue"
                         )
                       }
+                      disabled={isEmptySelect(
+                        priceTabData.priceBreakDownType?.value
+                      )}
                     />
                   </div>
                 </div>
@@ -2700,7 +2745,6 @@ export const CreatePortfolio = (props) => {
       if (selectedService.length !== 0) {
         _optionalServices = selectedService.map((obj) => obj.itemId).join(",");
       }
-      console.log("handleUpdatePortfolioOnItem itemIds ====== ", itemIds);
       let requestObj = {
         portfolioId: portfolioRecordId,
         headerType: generalTabData.headerType?.value || "",

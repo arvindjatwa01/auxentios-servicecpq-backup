@@ -1183,8 +1183,7 @@ const CustomItemTabsModal = (props) => {
             <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
               <TabList
                 className="custom-tabs-div"
-                onChange={(e, tabIndex) => setActiveTab(tabIndex)}
-                // onChange={(e, newValue) => { portfolioItemDataEditable && setTabs(newValue) }}
+                onChange={(e, tabIndex) => editItem && setActiveTab(tabIndex)}
               >
                 <Tab label="Portfolio Item" value={1} />
                 <Tab
