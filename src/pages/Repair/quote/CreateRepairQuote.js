@@ -281,6 +281,7 @@ export const CreateRepairQuote = (props) => {
   };
 
   const handleClickTemplate = (applicationType) => {
+    debugger
     setShowOptions(false);
     setSelectedQuoteOption("without_eval");
     handleApplicationTemplates(applicationType)

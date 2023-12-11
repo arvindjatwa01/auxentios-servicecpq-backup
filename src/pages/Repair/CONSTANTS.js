@@ -99,6 +99,15 @@ export const QUOTE_SEARCH_Q_OPTIONS = [
   { label: "SerialNo", value: "serialNo" }
 ];
 
+export const PORTFOLIO_SEARCH_OPTIONS = [
+  { label: "Make", value: "make" },
+  { label: "Model", value: "model" },
+  { label: "Prefix", value: "prefix" },
+  { label: "Family", value: "family" },
+  { label: "Name", value: "name" },
+  { label: "Description", value: "description" }
+];
+
 export const PARTLIST_BUILDER_SEARCH_Q_OPTIONS = [
   {
     label: "ID",
