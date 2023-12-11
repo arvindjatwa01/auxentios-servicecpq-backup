@@ -39,17 +39,17 @@ import link1Icon from "../../../../assets/images/link1.png";
 import penIcon from "../../../../assets/images/pen.png";
 
 import { MuiMenuComponent } from "../../../Operational/index";
-import PortfolioItemTabsModal from "./PortfolioItemTabsModal";
+// import PortfolioItemTabsModal from "./PortfolioItemTabsModal";
 import PortfolioCoverageSearch from "../PortfolioCoverageSearch";
 import ItemAddEdit from "./ItemAddEdit";
 
-import {
-  selectUpdateTaskList,
-  selectStrategyTaskOption,
-  selectCategoryList,
-  selectUpdateList,
-  taskActions,
-} from "../../customerSegment/strategySlice";
+// import {
+//   selectUpdateTaskList,
+//   selectStrategyTaskOption,
+//   selectCategoryList,
+//   selectUpdateList,
+//   taskActions,
+// } from "../../customerSegment/strategySlice";
 
 import { getPortfolioAndSolutionCommonConfig } from "../../../../services/index";
 import { isEmpty } from "../utilities/textUtilities";
@@ -64,7 +64,7 @@ import {
   usageTypeKeyValuePair,
   defaultItemHeaderObj,
   defaultItemBodyObj,
-  defaultItemPriceObj,
+  // defaultItemPriceObj,
 } from "../itemConstant";
 import InclusionExclusionModal from "../common/InclusionExclusionModal";
 import { API_SUCCESS } from "services/ResponseCode";
@@ -179,7 +179,7 @@ const coverageColumns = [
   {
     name: (
       <div>
-        <img className="mr-2" src={boxicon} />
+        <img className="mr-2" src={boxicon} alt="startSerailNo" />
         Start Serial No
       </div>
     ),
@@ -253,8 +253,14 @@ const PortfolioItemsList = (props) => {
   const [selectedSearchedItems, setSelectedSearchedItems] = useState([]);
   const [bundleServiceItemsList, setBundleServiceItemsList] = useState([]);
   const [existBundleServiceItems, setExistBundleServiceItems] = useState([]);
+  const [
+    checkSelectedBundleServiceUpateOrNot,
+    setCheckSelectedBundleServiceUpateOrNot,
+  ] = useState([]);
 
   const [reviewTabItemList, setReviewTabItemList] = useState([]);
+
+  const [expandedRows, setExpandedRows] = useState([]);
 
   const [showInclusionExclusionModal, setShowInclusionExclusionModal] =
     useState(false);
@@ -320,6 +326,12 @@ const PortfolioItemsList = (props) => {
     if (!showAddItemModal) {
       setRecorItemId(null);
       setEditItem(false);
+      setItemRequestObj({
+        itemId: 0,
+        itemName: "",
+      });
+      setItemHeaderModelObj({ ...defaultItemHeaderObj });
+      setItemBodyModelObj({ ...defaultItemBodyObj });
     }
   }, [showAddItemModal]);
 
@@ -697,6 +709,9 @@ const PortfolioItemsList = (props) => {
   const addSelectedSearchedItems = () => {
     const _portfolioItemsIds = [...portfolioItemsIds];
     const _bundleServiceItemsList = [...bundleServiceItemsList];
+    const _checkSelectedBundleServiceUpateOrNot = [
+      ...checkSelectedBundleServiceUpateOrNot,
+    ];
     selectedSearchedItems.map((itemRow, i) => {
       const exist = bundleServiceItemsList.some(
         (item) => item.itemId === itemRow.itemId
@@ -708,6 +723,19 @@ const PortfolioItemsList = (props) => {
     });
     setBundleServiceItemsList(_bundleServiceItemsList);
     setPortfolioItemsIds(_portfolioItemsIds);
+
+    selectedSearchedItems.map((itemRow, i) => {
+      const exist = checkSelectedBundleServiceUpateOrNot.some(
+        (item) => item.itemId === itemRow.itemId
+      );
+      if (!exist) {
+        _checkSelectedBundleServiceUpateOrNot.push(itemRow);
+      }
+    });
+    setCheckSelectedBundleServiceUpateOrNot([
+      ..._checkSelectedBundleServiceUpateOrNot,
+    ]);
+
     handleAddSearchItems([]);
   };
 
@@ -810,6 +838,16 @@ const PortfolioItemsList = (props) => {
   // go through with selected bundle and Service on save & Continue
   const handleContinueWithSelectebundleService = () => {
     try {
+      if (checkSelectedBundleServiceUpateOrNot.length !== 0) {
+        const bundleServiceNames = checkSelectedBundleServiceUpateOrNot
+          .map((obj) => obj.itemName)
+          .join(",");
+        errorMessage(
+          `Expend and update the ${bundleServiceNames} Bundle/Service Items, then you can Add Items and go forword.`
+        );
+        return;
+      }
+
       if (isEmpty(portfolioRecordId)) {
         errorMessage("Create Portfolio First, then you can Add Items");
         return;
@@ -837,15 +875,6 @@ const PortfolioItemsList = (props) => {
           itemId: bundleServiceItemsList[i].itemId,
         });
       }
-      // for (let i = 0; i < selectedItemsLength; i++) {
-      //   handleGetBundleServiceItemData(bundleServiceItemsList[i].itemId).then(
-      //     (res) => {
-      //       _portfolioItemsIds.push({
-      //         itemId: bundleServiceItemsList[i].itemId,
-      //       });
-      //     }
-      //   );
-      // }
 
       const removeDuplicateIds = _portfolioItemsIds.filter((obj, i, self) => {
         return (
@@ -871,19 +900,26 @@ const PortfolioItemsList = (props) => {
           itemBodyModelObj
         )
           .then((res) => {
-            if (res) {
-              handleUpdatePortfolio(_portfolioItemsIds).then((res) => {
-                if (res) {
-                  handleReviewTabTableData(removeDuplicateIds);
-                  if (componentDataTabShow) {
-                    setActiveTab(3);
-                  } else {
-                    setActiveTab(4);
-                  }
-                } else {
-                  errorMessage("Something Went Wrong");
-                }
-              });
+            if (res.apiSuccess) {
+              handleReviewTabTableData(removeDuplicateIds);
+              handleReviewTabTableData(removeDuplicateIds);
+              if (componentDataTabShow) {
+                setActiveTab(3);
+              } else {
+                setActiveTab(4);
+              }
+              // handleUpdatePortfolio(_portfolioItemsIds).then((res) => {
+              //   if (res) {
+              //     handleReviewTabTableData(removeDuplicateIds);
+              //     if (componentDataTabShow) {
+              //       setActiveTab(3);
+              //     } else {
+              //       setActiveTab(4);
+              //     }
+              //   } else {
+              //     errorMessage("Something Went Wrong");
+              //   }
+              // });
             } else {
               errorMessage("Something Went Wrong");
             }
@@ -943,7 +979,8 @@ const PortfolioItemsList = (props) => {
     isEditable,
     itemRequestObj,
     itemHeaderReqObj,
-    itemBodyReqObj
+    itemBodyReqObj,
+    itemPriceObj = {}
   ) => {
     return new Promise((resolve, reject) => {
       let rUrl = CREATE_PORTFOLIO_ITEM();
@@ -980,14 +1017,34 @@ const PortfolioItemsList = (props) => {
           requestObj,
           (response) => {
             if (response.status === API_SUCCESS) {
-              resolve(true);
+              if (Object.keys(itemPriceObj).length !== 0) {
+                updateItemPriceSjRkId({
+                  standardJobId: itemPriceObj.standardJobId,
+                  repairKitId: itemPriceObj.repairKitId,
+                  itemId: recorItemId,
+                  itemPriceDataId:
+                    itemBodyReqObj.itemPrices[
+                      itemBodyReqObj.itemPrices.length - 1
+                    ].itemPriceDataId,
+                });
+              }
+              resolve({
+                apiSuccess: true,
+                portfolioItemsIds: portfolioItemsIds,
+              });
             } else {
-              resolve(false);
               errorMessage(response?.data.message);
+              resolve({
+                apiSuccess: false,
+                portfolioItemsIds: portfolioItemsIds,
+              });
             }
           },
           (error) => {
-            resolve(false);
+            resolve({
+              apiSuccess: false,
+              portfolioItemsIds: portfolioItemsIds,
+            });
           }
         );
       } else {
@@ -1003,22 +1060,34 @@ const PortfolioItemsList = (props) => {
               setPortfolioItemsIds(_portfolioItemsIds);
               setItemRequestObj({ ...itemRequestObj, itemId: res.itemId });
               setRecorItemId(res.itemId);
-              // updateItemPriceSjRkId({
-              //   standardJobId: itemPriceObj.standardJobId,
-              //   repairKitId: itemPriceObj.repairKitId,
-              //   itemId: itemId,
-              //   itemPriceDataId:
-              //     itemBodyData.itemPrices[itemBodyData.itemPrices.length - 1]
-              //       .itemPriceDataId,
-              // });
-              resolve(true);
+              if (Object.keys(itemPriceObj).length !== 0) {
+                updateItemPriceSjRkId({
+                  standardJobId: itemPriceObj.standardJobId,
+                  repairKitId: itemPriceObj.repairKitId,
+                  itemId: res.itemId,
+                  itemPriceDataId:
+                    itemBodyReqObj.itemPrices[
+                      itemBodyReqObj.itemPrices.length - 1
+                    ].itemPriceDataId,
+                });
+              }
+              resolve({
+                apiSuccess: true,
+                portfolioItemsIds: _portfolioItemsIds,
+              });
             } else {
-              resolve(false);
               errorMessage(response?.data.message);
+              resolve({
+                apiSuccess: false,
+                portfolioItemsIds: portfolioItemsIds,
+              });
             }
           },
           (error) => {
-            resolve(false);
+            resolve({
+              apiSuccess: false,
+              portfolioItemsIds: portfolioItemsIds,
+            });
           }
         );
       }
@@ -1073,24 +1142,24 @@ const PortfolioItemsList = (props) => {
         };
         setItemBodyModelObj({ ..._itemBodyModelObj });
 
-        // const sjRkIdRequestObj = {
-        //   standardJobId: itemPriceData.standardJobId,
-        //   repairKitId: itemPriceData.repairKitId,
-        //   itemId: itemId,
-        //   itemPriceDataId: itemPriceData.itemPriceDataId,
-        // };
-
         if (!isViewModeOn) {
           handleAddUpdatePortfolioItem(
             isEditable,
             _itemRequestObj,
             _itemHeaderModelObj,
-            _itemBodyModelObj
+            _itemBodyModelObj,
+            itemPriceData
           ).then((res) => {
-            if (res) {
-              setActiveTab(
-                bundleServiceNeed ? 2 : componentDataTabShow ? 3 : 4
-              );
+            if (res.apiSuccess) {
+              handleUpdatePortfolio(res.portfolioItemsIds).then((res) => {
+                if (res) {
+                  setActiveTab(
+                    bundleServiceNeed ? 2 : componentDataTabShow ? 3 : 4
+                  );
+                } else {
+                  errorMessage("Somthing Went wrong.");
+                }
+              });
             }
           });
         } else {
@@ -1128,14 +1197,14 @@ const PortfolioItemsList = (props) => {
     const requestObj = {
       ...itemRequestObj,
       itemHeaderModel: {
-        ...itemHeaderModelObj,
+        ...headerModelObj,
         usage: headerModelObj.usage?.value || headerModelObj.usage || "",
         currency:
           headerModelObj.currency?.value || headerModelObj.currency || "",
         type: headerModelObj.type || "EMPTY",
       },
       itemBodyModel: {
-        ...itemBodyModelObj,
+        ...bodyModelObj,
         taskType: [
           itemBodyModelObj?.taskType?.value ||
             itemBodyModelObj?.taskType ||
@@ -1348,6 +1417,30 @@ const PortfolioItemsList = (props) => {
     );
   };
 
+  // Remove Bundle|Service item after update
+  const handleRemoveUpdatedBundelServiceItem = (itemId) => {
+    const _checkSelectedBundleServiceUpateOrNot = [
+      ...checkSelectedBundleServiceUpateOrNot,
+    ];
+    const indexOfExpened = _checkSelectedBundleServiceUpateOrNot.findIndex(
+      (obj) => obj.itemId === itemId
+    );
+    if (indexOfExpened !== -1) {
+      _checkSelectedBundleServiceUpateOrNot.splice(indexOfExpened, 1);
+    }
+    setCheckSelectedBundleServiceUpateOrNot([
+      ..._checkSelectedBundleServiceUpateOrNot,
+    ]);
+  };
+
+  const handleExpendableRowExpanded = (row) => {
+    if (checkSelectedBundleServiceUpateOrNot.length !== 0) {
+      const bundleServiceItemObj = checkSelectedBundleServiceUpateOrNot[0];
+      return row.itemId === bundleServiceItemObj.itemId;
+    }
+    return false;
+  };
+
   // Portfolio Items Modal box
   const viewPortfolioItemTabsModel = () => {
     return (
@@ -1358,7 +1451,7 @@ const PortfolioItemsList = (props) => {
               <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
                 <TabList
                   className="custom-tabs-div"
-                  onChange={(e, tabIndex) => setActiveTab(tabIndex)}
+                  onChange={(e, tabIndex) => editItem && setActiveTab(tabIndex)}
                   // onChange={(e, newValue) => { portfolioItemDataEditable && setTabs(newValue) }}
                 >
                   <Tab label="Portfolio Item" value={1} />
@@ -1451,9 +1544,21 @@ const PortfolioItemsList = (props) => {
                           unitKeyValuePairs={unitKeyValuePairs}
                           existBundleServiceItems={existBundleServiceItems}
                           bundleServiceItemsList={bundleServiceItemsList}
+                          portfolioRecordId={portfolioRecordId}
+                          portfolioItemId={recorItemId}
+                          handleUpdateItem={
+                            handleRemoveUpdatedBundelServiceItem
+                          }
                         />
                       )}
                       expandOnRowClicked
+                      preExpandedRows={[checkSelectedBundleServiceUpateOrNot]}
+                      expandableRowDisabled={() => false}
+                      // expandableRowExpanded={(row) => checkSelectedBundleServiceUpateOrNot.some((obj) => obj.itemId === row.itemId)}
+                      // expandableRowExpanded={(row) =>
+                      //   handleExpendableRowExpanded(row)
+                      // }
+                      expandableRowExpanded={handleExpendableRowExpanded}
                     />
                     <div
                       className="row mt-5"
@@ -1464,7 +1569,10 @@ const PortfolioItemsList = (props) => {
                         className="btn bg-primary text-white"
                         onClick={handleContinueWithSelectebundleService}
                       >
-                        {existBundleServiceItems.length === bundleServiceItemsList.length ? "Next" : "Save & Continue"}
+                        {existBundleServiceItems.length ===
+                        bundleServiceItemsList.length
+                          ? "Next"
+                          : "Save & Continue"}
                       </button>
                     </div>
                   </>
@@ -2097,11 +2205,7 @@ const PortfolioItemsList = (props) => {
             {row?.itemDescription}
           </div>
           <div className="d-flex align-items-center">
-            <div
-              className="description cursor mr-1"
-
-              // onClick={() => handleExpendedBundleServiceUpdate(i, row)}
-            ></div>
+            <div className="description cursor mr-1"></div>
           </div>
         </div>
       ),
@@ -2159,11 +2263,12 @@ const PortfolioItemsList = (props) => {
       cell: (row, i) => (
         <div className="d-flex justify-content-between align-items-baseline py-2 w-100">
           <div className="d-flex " data-tag="allowRowEvents">
-            {/* {((row?.standardJobId === "") || (row?.standardJobId === null) || (row?.standardJobId === undefined)) ?
-            ((row?.repairKitId === "") || (row?.repairKitId === null) || (row?.repairKitId === undefined)) ? "" : row?.repairKitId : row?.standardJobId} */}
+            {isEmpty(row?.standardJobId) && isEmpty(row?.repairKitId)
+              ? "NA"
+              : isEmpty(row?.standardJobId)
+              ? row?.repairKitId
+              : row?.standardJobId}
           </div>
-          {/* <div className="description cursor mr-1" onClick={() => handleExpendedBundleServiceUpdate(i, row)}>
-        </div> */}
         </div>
       ),
       wrap: true,
@@ -2225,7 +2330,6 @@ const PortfolioItemsList = (props) => {
           <div
             className="funds-grey cursor"
             onClick={() => handleReviewBundleServiceItemPrice(row)}
-            //   onClick={() => showPriceDataOfBundleOrService(row)}
           >
             <svg
               style={{ width: "13px" }}
@@ -2330,7 +2434,6 @@ const PortfolioItemsList = (props) => {
             <Link
               className="px-1 cursor"
               onClick={() => handleReviewBundleServiceItem(row)}
-              //   onClick={() => handleExpendedBundleServiceUpdate(i, row)}
             >
               <VisibilityOutlinedIcon />
             </Link>
@@ -2344,7 +2447,7 @@ const PortfolioItemsList = (props) => {
 
   // expended Portfolio Bundle/Service Items data table component
   const expendPortfolioItems = ({ data }) => (
-    <div className="expened-bundle-service-Items-data-table">
+    <div className="expened-bundle-service-Items-data-table mb-3">
       <DataTable
         title=""
         columns={expendItemsColums}
@@ -2413,7 +2516,11 @@ const PortfolioItemsList = (props) => {
 
   const viewBundleServiceItemPriceDetails = () => {
     return (
-      <Modal size="xl" show={showBundleServicePriceModel} onHide={() => setShowBundleServicePriceModel(false)}>
+      <Modal
+        size="xl"
+        show={showBundleServicePriceModel}
+        onHide={() => setShowBundleServicePriceModel(false)}
+      >
         <Modal.Body>
           <ItemPriceCalculator
             priceMethodKeyValuePair={priceMethodKeyValuePair}
@@ -2464,12 +2571,7 @@ const PortfolioItemsList = (props) => {
                 expandableRows={true}
                 expandOnRowClicked
                 expandableRowsComponent={expendPortfolioItems}
-                //   expandableRowsHideExpander={true}
                 customStyles={dataTableCustomStyle}
-                // selectableRows={isSelectAble}
-                // onSelectedRowsChange={(state) =>
-                //   setCheckedCoverageData(state.selectedRows)
-                // }
                 pagination
               />
             </div>

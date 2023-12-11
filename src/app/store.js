@@ -14,6 +14,7 @@ import { appReducer } from "../redux/reducers/appReducer";
 import { userReducer } from "../redux/reducers/userReducer";
 import { guidedSoltionReducer } from "../redux/reducers/guidedSolutionReducer"
 import { VerifyEmail } from './../pages/LoginSignUp/VerifyEmail';
+import { commonAPIReducer } from 'redux/reducers/portfolioAndSolutionReucers';
 
 
 
@@ -32,7 +33,8 @@ const rootReducer = combineReducers({
     
     app: appReducer,
     user: userReducer,
-    guidedSolution: guidedSoltionReducer
+    guidedSolution: guidedSoltionReducer,
+    commonAPIReducer: commonAPIReducer
 })
 
 const sagaMiddleware = createSagaMiddleware()

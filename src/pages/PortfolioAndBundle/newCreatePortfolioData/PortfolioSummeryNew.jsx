@@ -43,6 +43,7 @@ import { getApiCall } from "services/searchQueryService";
 import { callGetApi } from "services/ApiCaller";
 import { API_SUCCESS } from "services/ResponseCode";
 import LoadingProgress from "pages/Repair/components/Loader";
+import { useSelector } from "react-redux";
 
 const portfolioSearchOptions = [
   { label: "Make", value: "make" },
@@ -64,6 +65,21 @@ const bundleServiceSearchOptions = [
 
 export const PortfolioSummary = () => {
   const history = useHistory();
+  const {
+    supportLevelKeyValuePair: itemVersionKeyValuePairs,
+    portfolioStatusKeyValuePair: itemStatusKeyValuePairs,
+    customerSegmentKeyValuePair,
+    machineComponentKeyValuePair,
+    priceMethodKeyValuePair,
+    priceTypeKeyValuePair,
+    priceHeadTypeKeyValuePair,
+    currencyKeyValuePair,
+    frequencyKeyValuePairs,
+    unitKeyValuePairs,
+    // validityKeyValuePair,
+    // priceListKeyValuePair,
+    ...newdataResponse
+  } = useSelector((state) => state.commonAPIReducer);
   const [recentTabIs, setRecentTabIs] = useState("portfolio");
   const [recentPortfolios, setRecentPortfolios] = useState([]);
   const [recentBundles, setRecentBundles] = useState([]);
@@ -82,20 +98,20 @@ export const PortfolioSummary = () => {
   ]);
   const [searchResultData, setSearchResultData] = useState([]);
 
-  const [customerSegmentKeyValuePair, setCustomerSegmentKeyValuePair] =
-    useState([]);
-  const [machineComponentKeyValuePair, setMachineComponentKeyValuePair] =
-    useState([]);
-  const [itemVersionKeyValuePairs, setItemVersionKeyValuePairs] = useState([]);
-  const [itemStatusKeyValuePairs, setItemStatusKeyValuePairs] = useState([]);
-  const [frequencyKeyValuePairs, setFrequencyKeyValuePairs] = useState([]);
-  const [unitKeyValuePairs, setUnitKeyValuePairs] = useState([]);
-  const [priceMethodKeyValuePair, setPriceMethodKeyValuePair] = useState([]);
-  const [priceTypeKeyValuePair, setPriceTypeKeyValuePair] = useState([]);
-  const [priceHeadTypeKeyValuePair, setPriceHeadTypeKeyValuePair] = useState(
-    []
-  );
-  const [currencyKeyValuePair, setCurrencyKeyValuePair] = useState([]);
+  // const [customerSegmentKeyValuePair, setCustomerSegmentKeyValuePair] =
+  //   useState([]);
+  // const [machineComponentKeyValuePair, setMachineComponentKeyValuePair] =
+  //   useState([]);
+  // const [itemVersionKeyValuePairs, setItemVersionKeyValuePairs] = useState([]);
+  // const [itemStatusKeyValuePairs, setItemStatusKeyValuePairs] = useState([]);
+  // const [frequencyKeyValuePairs, setFrequencyKeyValuePairs] = useState([]);
+  // const [unitKeyValuePairs, setUnitKeyValuePairs] = useState([]);
+  // const [priceMethodKeyValuePair, setPriceMethodKeyValuePair] = useState([]);
+  // const [priceTypeKeyValuePair, setPriceTypeKeyValuePair] = useState([]);
+  // const [priceHeadTypeKeyValuePair, setPriceHeadTypeKeyValuePair] = useState(
+  //   []
+  // );
+  // const [currencyKeyValuePair, setCurrencyKeyValuePair] = useState([]);
 
   const [showBundleServiceModel, setShowBundleServiceModel] = useState(false);
   const [itemFlag, setItemFlag] = useState("");
@@ -119,169 +135,169 @@ export const PortfolioSummary = () => {
     // get Recent Bundle Items
     getRecentBundleItem();
 
-    // get customer segment key Value Pairs
-    getPortfolioCommonConfig("customer-segment")
-      .then((res) => {
-        const options = [];
-        res.length !== 0 &&
-          res.map((d) => {
-            if (d.key !== "EMPTY") {
-              options.push({ value: d.key, label: d.value });
-            }
-          });
-        setCustomerSegmentKeyValuePair(options);
-      })
-      .catch((error) => {
-        return;
-      });
+    // // get customer segment key Value Pairs
+    // getPortfolioCommonConfig("customer-segment")
+    //   .then((res) => {
+    //     const options = [];
+    //     res.length !== 0 &&
+    //       res.map((d) => {
+    //         if (d.key !== "EMPTY") {
+    //           options.push({ value: d.key, label: d.value });
+    //         }
+    //       });
+    //     setCustomerSegmentKeyValuePair(options);
+    //   })
+    //   .catch((error) => {
+    //     return;
+    //   });
 
-    // get machine component key value Pair
-    getTypeKeyValue()
-      .then((res) => {
-        const options = [];
-        res.length !== 0 &&
-          res.map((d) => {
-            if (d.key !== "EMPTY") {
-              options.push({ value: d.key, label: d.value });
-            }
-          });
-        setMachineComponentKeyValuePair(options);
-      })
-      .catch((error) => {
-        return;
-      });
+    // // get machine component key value Pair
+    // getTypeKeyValue()
+    //   .then((res) => {
+    //     const options = [];
+    //     res.length !== 0 &&
+    //       res.map((d) => {
+    //         if (d.key !== "EMPTY") {
+    //           options.push({ value: d.key, label: d.value });
+    //         }
+    //       });
+    //     setMachineComponentKeyValuePair(options);
+    //   })
+    //   .catch((error) => {
+    //     return;
+    //   });
 
-    // get item version key value Pair
-    getSolutionPriceCommonConfig("support-level")
-      .then((res) => {
-        const options = [];
-        res.length !== 0 &&
-          res.map((d) => {
-            if (d.key !== "EMPTY") {
-              options.push({ value: d.key, label: d.value });
-            }
-          });
-        setItemVersionKeyValuePairs(options);
-      })
-      .catch((err) => {
-        return;
-      });
+    // // get item version key value Pair
+    // getSolutionPriceCommonConfig("support-level")
+    //   .then((res) => {
+    //     const options = [];
+    //     res.length !== 0 &&
+    //       res.map((d) => {
+    //         if (d.key !== "EMPTY") {
+    //           options.push({ value: d.key, label: d.value });
+    //         }
+    //       });
+    //     setItemVersionKeyValuePairs(options);
+    //   })
+    //   .catch((err) => {
+    //     return;
+    //   });
 
-    // get item status key value Pair
-    getSolutionPriceCommonConfig("status")
-      .then((res) => {
-        const options = [];
-        res.length !== 0 &&
-          res.map((d) => {
-            if (d.key !== "EMPTY") {
-              options.push({ value: d.key, label: d.value });
-            }
-          });
-        setItemStatusKeyValuePairs(options);
-      })
-      .catch((err) => {
-        return;
-      });
+    // // get item status key value Pair
+    // getSolutionPriceCommonConfig("status")
+    //   .then((res) => {
+    //     const options = [];
+    //     res.length !== 0 &&
+    //       res.map((d) => {
+    //         if (d.key !== "EMPTY") {
+    //           options.push({ value: d.key, label: d.value });
+    //         }
+    //       });
+    //     setItemStatusKeyValuePairs(options);
+    //   })
+    //   .catch((err) => {
+    //     return;
+    //   });
 
-    // get frequency key-value pair
-    getPortfolioAndSolutionCommonConfig("frequency")
-      .then((res) => {
-        if (res.status === 200) {
-          const options = [];
-          res.length !== 0 &&
-            res.data.map((d) => {
-              if (d.key !== "EMPTY") {
-                options.push({ value: d.key, label: d.value });
-              }
-            });
-          setFrequencyKeyValuePairs(options);
-        }
-      })
-      .catch((err) => {
-        return;
-      });
+    // // get frequency key-value pair
+    // getPortfolioAndSolutionCommonConfig("frequency")
+    //   .then((res) => {
+    //     if (res.status === 200) {
+    //       const options = [];
+    //       res.length !== 0 &&
+    //         res.data.map((d) => {
+    //           if (d.key !== "EMPTY") {
+    //             options.push({ value: d.key, label: d.value });
+    //           }
+    //         });
+    //       setFrequencyKeyValuePairs(options);
+    //     }
+    //   })
+    //   .catch((err) => {
+    //     return;
+    //   });
 
-    // get unit key-value pairs
-    getPortfolioAndSolutionCommonConfig("unit")
-      .then((res) => {
-        if (res.status === 200) {
-          const options = [];
-          res.data.length !== 0 &&
-            res.data.map((d) => {
-              if (d.key !== "EMPTY" && d.key !== "MONTH") {
-                options.push({ value: d.key, label: d.value });
-              }
-            });
-          setUnitKeyValuePairs(options);
-        }
-      })
-      .catch((err) => {
-        return;
-      });
+    // // get unit key-value pairs
+    // getPortfolioAndSolutionCommonConfig("unit")
+    //   .then((res) => {
+    //     if (res.status === 200) {
+    //       const options = [];
+    //       res.data.length !== 0 &&
+    //         res.data.map((d) => {
+    //           if (d.key !== "EMPTY" && d.key !== "MONTH") {
+    //             options.push({ value: d.key, label: d.value });
+    //           }
+    //         });
+    //       setUnitKeyValuePairs(options);
+    //     }
+    //   })
+    //   .catch((err) => {
+    //     return;
+    //   });
 
-    // get Price-method key-value Pair
-    getSolutionPriceCommonConfig("price-method")
-      .then((res) => {
-        const priceMethodOptions = [];
-        res.length !== 0 &&
-          res.map((d) => {
-            if (d.key != "EMPTY") {
-              priceMethodOptions.push({ value: d.key, label: d.value });
-            }
-          });
-        setPriceMethodKeyValuePair(priceMethodOptions);
-      })
-      .catch((err) => {
-        return;
-      });
+    // // get Price-method key-value Pair
+    // getSolutionPriceCommonConfig("price-method")
+    //   .then((res) => {
+    //     const priceMethodOptions = [];
+    //     res.length !== 0 &&
+    //       res.map((d) => {
+    //         if (d.key != "EMPTY") {
+    //           priceMethodOptions.push({ value: d.key, label: d.value });
+    //         }
+    //       });
+    //     setPriceMethodKeyValuePair(priceMethodOptions);
+    //   })
+    //   .catch((err) => {
+    //     return;
+    //   });
 
-    // get Price-Type key-value Pair
-    getSolutionPriceCommonConfig("price-type")
-      .then((res) => {
-        const priceTypeOptions = [];
-        res.length !== 0 &&
-          res.map((d) => {
-            if (d.key != "EMPTY") {
-              priceTypeOptions.push({ value: d.key, label: d.value });
-            }
-          });
-        setPriceTypeKeyValuePair(priceTypeOptions);
-      })
-      .catch((err) => {
-        return;
-      });
+    // // get Price-Type key-value Pair
+    // getSolutionPriceCommonConfig("price-type")
+    //   .then((res) => {
+    //     const priceTypeOptions = [];
+    //     res.length !== 0 &&
+    //       res.map((d) => {
+    //         if (d.key != "EMPTY") {
+    //           priceTypeOptions.push({ value: d.key, label: d.value });
+    //         }
+    //       });
+    //     setPriceTypeKeyValuePair(priceTypeOptions);
+    //   })
+    //   .catch((err) => {
+    //     return;
+    //   });
 
-    //get price-head-type key-value pair
-    getSolutionPriceCommonConfig("price-head-type")
-      .then((res) => {
-        const priceHeadTypeOptions = [];
-        res.length !== 0 &&
-          res.map((d) => {
-            if (d.key != "EMPTY") {
-              priceHeadTypeOptions.push({ value: d.key, label: d.value });
-            }
-          });
-        setPriceHeadTypeKeyValuePair(priceHeadTypeOptions);
-      })
-      .catch((err) => {
-        return;
-      });
+    // //get price-head-type key-value pair
+    // getSolutionPriceCommonConfig("price-head-type")
+    //   .then((res) => {
+    //     const priceHeadTypeOptions = [];
+    //     res.length !== 0 &&
+    //       res.map((d) => {
+    //         if (d.key != "EMPTY") {
+    //           priceHeadTypeOptions.push({ value: d.key, label: d.value });
+    //         }
+    //       });
+    //     setPriceHeadTypeKeyValuePair(priceHeadTypeOptions);
+    //   })
+    //   .catch((err) => {
+    //     return;
+    //   });
 
-    //  get currency  key-value pair
-    getSolutionPriceCommonConfig("currency")
-      .then((res) => {
-        const currencyOptions = [];
-        res.length !== 0 &&
-          res.map((d) => {
-            if (d.key != "EMPTY") {
-              currencyOptions.push({ value: d, label: d });
-            }
-          });
-        setCurrencyKeyValuePair(currencyOptions);
-      })
-      .catch((err) => {
-        return;
-      });
+    // //  get currency  key-value pair
+    // getSolutionPriceCommonConfig("currency")
+    //   .then((res) => {
+    //     const currencyOptions = [];
+    //     res.length !== 0 &&
+    //       res.map((d) => {
+    //         if (d.key != "EMPTY") {
+    //           currencyOptions.push({ value: d, label: d });
+    //         }
+    //       });
+    //     setCurrencyKeyValuePair(currencyOptions);
+    //   })
+    //   .catch((err) => {
+    //     return;
+    //   });
     setShowLoader(false);
   }, []);
 

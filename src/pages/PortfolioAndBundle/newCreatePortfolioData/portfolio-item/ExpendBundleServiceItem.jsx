@@ -26,6 +26,9 @@ const ExpendBundleServiceItem = (props) => {
     priceTypeKeyValuePair,
     existBundleServiceItems,
     bundleServiceItemsList,
+    portfolioRecordId,
+    portfolioItemId,
+    handleUpdateItem,
   } = props;
 
   const [bundleServiceItemObj, setBundleServiceItemObj] = useState({
@@ -78,6 +81,11 @@ const ExpendBundleServiceItem = (props) => {
             itemId: itemId,
             itemName: itemName,
           });
+
+          if (!itemHeaderModel.portfolioItemIds.includes(portfolioItemId)) {
+            itemHeaderModel.portfolioItemIds.push(portfolioItemId);
+          }
+
           setBundleServiceItemHeader({ ...itemHeaderModel });
           setBundleServiceItemBody({ ...itemBodyModel });
           if (itemBodyModel.itemPrices.length !== 0) {
@@ -249,14 +257,38 @@ const ExpendBundleServiceItem = (props) => {
       try {
         const priceRequestObj = {
           ...bundleServicePriceObj,
-          priceMethod: bundleServicePriceObj.priceMethod?.value || "LIST_PRICE",
-          priceType: bundleServicePriceObj.priceType?.value || "EVENT_BASED",
-          frequency: bundleServicePriceObj.frequency?.value || "CYCLIC",
-          usageUnit: bundleServicePriceObj.usage?.value || "YEAR",
+          priceMethod:
+            bundleServicePriceObj.priceMethod?.value ||
+            bundleServicePriceObj.priceMethod ||
+            "LIST_PRICE",
+          priceType:
+            bundleServicePriceObj.priceType?.value ||
+            bundleServicePriceObj.priceType ||
+            "EVENT_BASED",
+          frequency:
+            bundleServicePriceObj.frequency?.value ||
+            bundleServicePriceObj.frequency ||
+            "CYCLIC",
+          usageUnit:
+            bundleServicePriceObj.usageUnit?.value ||
+            bundleServicePriceObj.usageUnit ||
+            "YEAR",
           recommendedUnit:
             bundleServicePriceObj.usageUnit?.value === "YEAR"
               ? "MONTH"
-              : bundleServicePriceObj.usageUnit?.value,
+              : bundleServicePriceObj.usageUnit?.value ||
+                bundleServicePriceObj.usageUnit ||
+                "MONTH",
+          year:
+            bundleServicePriceObj?.year?.value || bundleServicePriceObj?.year,
+          additionalPriceType:
+            bundleServicePriceObj.additionalPriceType?.value ||
+            bundleServicePriceObj?.additionalPriceType ||
+            "ABSOLUTE",
+          discountType:
+            bundleServicePriceObj.discountType?.value ||
+            bundleServicePriceObj?.discountType ||
+            "PORTFOLIO_DISCOUNT",
         };
 
         if (isExist) {
@@ -277,13 +309,22 @@ const ExpendBundleServiceItem = (props) => {
                     itemId: bundleServiceItemObj.itemId,
                     itemPriceDataId: bundleServicePriceObj.itemPriceDataId,
                   });
-                  resolve(true);
+                  resolve({
+                    successStatus: true,
+                    itemBodyModelObj: _bundleServiceItemBody,
+                  });
                 } else {
-                  resolve(false);
+                  resolve({
+                    successStatus: false,
+                    itemBodyModelObj: _bundleServiceItemBody,
+                  });
                 }
               },
               (error) => {
-                resolve(false);
+                resolve({
+                  successStatus: false,
+                  itemBodyModelObj: _bundleServiceItemBody,
+                });
               }
             );
           }
@@ -292,7 +333,11 @@ const ExpendBundleServiceItem = (props) => {
           callPostApi(
             null,
             priceCreateReqUrl,
-            priceRequestObj,
+            {
+              ...priceRequestObj,
+              itemPriceDataId: 0,
+              portfolio: { portfolioId: portfolioRecordId },
+            },
             (response) => {
               if (response.status === API_SUCCESS) {
                 const res = response.data;
@@ -303,20 +348,32 @@ const ExpendBundleServiceItem = (props) => {
                   itemPriceDataId: res.itemPriceDataId,
                 });
                 _bundleServiceItemBody.itemPrices.push({
-                  itemPriceDataId: bundleServiceItemObj.itemId,
+                  itemPriceDataId: res.itemPriceDataId,
                 });
-                resolve(true);
+                resolve({
+                  successStatus: true,
+                  itemBodyModelObj: _bundleServiceItemBody,
+                });
               } else {
-                resolve(false);
+                resolve({
+                  successStatus: false,
+                  itemBodyModelObj: _bundleServiceItemBody,
+                });
               }
             },
             (error) => {
-              resolve(false);
+              resolve({
+                successStatus: false,
+                itemBodyModelObj: _bundleServiceItemBody,
+              });
             }
           );
         }
       } catch (error) {
-        resolve(false);
+        resolve({
+          successStatus: false,
+          itemBodyModelObj: _bundleServiceItemBody,
+        });
       }
     });
   };
@@ -329,23 +386,30 @@ const ExpendBundleServiceItem = (props) => {
       }
 
       const _bundleServiceItemBody = { ...bundleServiceItemBody };
-      if (!handleAddUpdateItemPrice(_bundleServiceItemBody)) {
-        return;
-      }
 
-      // item update request Obj
-      const itemRequestObj = {
-        ...bundleServiceItemObj,
-        itemHeaderModel: { ...bundleServiceItemHeader },
-        itemBodyModel: { ..._bundleServiceItemBody },
-      };
-      const itemReqUrl =
-        CREATE_PORTFOLIO_ITEM() + "/" + bundleServiceItemObj.itemId;
-      callPutApi(null, itemReqUrl, itemRequestObj, (response) => {
-        if (response.status === API_SUCCESS) {
-          successMessage(
-            `${bundleServiceItemObj.itemName} Item updated successfully`
-          );
+      // if (!handleAddUpdateItemPrice(_bundleServiceItemBody)) {
+      //   return;
+      // }
+
+      handleAddUpdateItemPrice(_bundleServiceItemBody).then((res) => {
+        if (res.successStatus) {
+          // item update request Obj
+          const itemRequestObj = {
+            ...bundleServiceItemObj,
+            itemHeaderModel: { ...bundleServiceItemHeader },
+            itemBodyModel: { ...res.itemBodyModelObj },
+          };
+
+          const itemReqUrl =
+            CREATE_PORTFOLIO_ITEM() + "/" + bundleServiceItemObj.itemId;
+          callPutApi(null, itemReqUrl, itemRequestObj, (response) => {
+            if (response.status === API_SUCCESS) {
+              handleUpdateItem(bundleServiceItemObj.itemId);
+              successMessage(
+                `${bundleServiceItemObj.itemName} Item updated successfully`
+              );
+            }
+          });
         }
       });
     } catch (error) {
@@ -684,7 +748,7 @@ const ExpendBundleServiceItem = (props) => {
                       >
                         <input
                           className="border-none form-control border-radius-10 text-primary"
-                          type="text"
+                          type="number"
                           name="endUsage"
                           value={bundleServicePriceObj.endUsage}
                           onChange={(e) =>
@@ -899,16 +963,18 @@ const ExpendBundleServiceItem = (props) => {
           )}
         </>
       )}
-      {!isLastRow && <div className="p-3 d-flex align-items-center justify-content-between table-header-div">
-        <div className="" />
-        <div className="text-white">Item Name</div>
-        <div className="text-white">Description</div>
-        <div className="text-white">Strategy</div>
-        <div className="text-white">Task Type</div>
-        <div className="text-white">Quantity</div>
-        <div className="text-white">Recommended Value</div>
-        <div className="text-white">Template/Kit Id</div>
-      </div>}
+      {!isLastRow && (
+        <div className="p-3 d-flex align-items-center justify-content-between table-header-div">
+          <div className="" />
+          <div className="text-white">Item Name</div>
+          <div className="text-white">Description</div>
+          <div className="text-white">Strategy</div>
+          <div className="text-white">Task Type</div>
+          <div className="text-white">Quantity</div>
+          <div className="text-white">Recommended Value</div>
+          <div className="text-white">Template/Kit Id</div>
+        </div>
+      )}
     </>
   );
 };
