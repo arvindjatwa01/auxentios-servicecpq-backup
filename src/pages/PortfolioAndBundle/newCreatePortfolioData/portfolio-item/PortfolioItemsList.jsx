@@ -39,17 +39,17 @@ import link1Icon from "../../../../assets/images/link1.png";
 import penIcon from "../../../../assets/images/pen.png";
 
 import { MuiMenuComponent } from "../../../Operational/index";
-import PortfolioItemTabsModal from "./PortfolioItemTabsModal";
+// import PortfolioItemTabsModal from "./PortfolioItemTabsModal";
 import PortfolioCoverageSearch from "../PortfolioCoverageSearch";
 import ItemAddEdit from "./ItemAddEdit";
 
-import {
-  selectUpdateTaskList,
-  selectStrategyTaskOption,
-  selectCategoryList,
-  selectUpdateList,
-  taskActions,
-} from "../../customerSegment/strategySlice";
+// import {
+//   selectUpdateTaskList,
+//   selectStrategyTaskOption,
+//   selectCategoryList,
+//   selectUpdateList,
+//   taskActions,
+// } from "../../customerSegment/strategySlice";
 
 import { getPortfolioAndSolutionCommonConfig } from "../../../../services/index";
 import { isEmpty } from "../utilities/textUtilities";
@@ -64,7 +64,7 @@ import {
   usageTypeKeyValuePair,
   defaultItemHeaderObj,
   defaultItemBodyObj,
-  defaultItemPriceObj,
+  // defaultItemPriceObj,
 } from "../itemConstant";
 import InclusionExclusionModal from "../common/InclusionExclusionModal";
 import { API_SUCCESS } from "services/ResponseCode";
@@ -179,7 +179,7 @@ const coverageColumns = [
   {
     name: (
       <div>
-        <img className="mr-2" src={boxicon} />
+        <img className="mr-2" src={boxicon} alt="startSerailNo" />
         Start Serial No
       </div>
     ),
