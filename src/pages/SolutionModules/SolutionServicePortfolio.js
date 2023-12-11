@@ -162,6 +162,7 @@ export function SolutionServicePortfolio(props) {
 
   const [payerListArray, setPayerListArray] = useState([]);
 
+  const [expendedSolutionSubComponent, setExpendedSolutionSubComponent] = useState(null);
   // Customer Tab Data
   const [customerData, setCustomerData] = useState({
     source: "User Generated",
@@ -2354,13 +2355,13 @@ export function SolutionServicePortfolio(props) {
     {
       name: (
         <>
-          <div>Id</div>
+          <div>Name</div>
         </>
       ),
-      selector: (row) => row?.sbQuoteId,
+      selector: (row) => row?.itemName,
       wrap: true,
       sortable: true,
-      format: (row) => row?.sbQuoteId,
+      format: (row) => row?.itemName,
     },
     {
       name: (
@@ -3725,6 +3726,105 @@ export function SolutionServicePortfolio(props) {
         handleSnack("error", `Failed to update the status!`);
       });
   };
+
+  const searchItemsExpendedColumns = [
+    {
+      name: (
+        <>
+          <div>Model No</div>
+        </>
+      ),
+      selector: (row) => row?.modelNo,
+      wrap: true,
+      sortable: true,
+      format: (row) => row?.modelNo,
+      minWidth: "150px",
+      maxWidth: "150px",
+    },
+    {
+      name: (
+        <>
+          <div>Family</div>
+        </>
+      ),
+      selector: (row) => row?.family,
+      wrap: true,
+      sortable: true,
+      format: (row) => row?.family
+    },
+    {
+      name: (
+        <>
+          <div>Make</div>
+        </>
+      ),
+      selector: (row) => row?.make,
+      wrap: true,
+      sortable: true,
+      format: (row) => row?.make,
+    },
+    {
+      name: (
+        <>
+          {/* <div>Net Price</div> */}
+          <div>Serial Number</div>
+        </>
+      ),
+      selector: (row) => row?.serialNumber,
+      wrap: true,
+      sortable: true,
+      format: (row) => row?.serialNumber,
+    },
+
+  ];
+
+  const SolutionExpendItemsData = ({ data }) => (
+
+    <>
+      <div className="p-5 border-bottom">
+        <div className="border border-radius-10">
+          <div className="d-flex align-items-center justify-content-between p-3">
+            <div className="d-flex align-items-center">
+              <h6 className="mb-0 font-weight-600 font-size-14 mr-3">Coverage</h6>
+              <div className="d-flex align-items-center">
+                {/* <a className="mr-2 cursor">
+                  <span><ModeEditOutlineOutlinedIcon /></span>
+                </a>
+                <a className="mr-2 cursor">
+                  <span><ShareOutlinedIcon /></span>
+                </a> */}
+                {/* <a className=" cursor">
+                  <span><SearchIcon /></span>
+                </a> */}
+              </div>
+            </div>
+            {/* <div className="border-left d-flex align-items-center">
+              <a style={{ whiteSpace: "pre" }} className="btn-sm cursor" onClick={showAddBundleServiceItemPopup}>
+                <span className="mr-2">  <AddIcon /></span> Add
+              </a>
+            </div> */}
+          </div>
+          {data.coverages ?
+            <>
+              <DataTable
+                title=""
+                columns={searchItemsExpendedColumns}
+                data={data.coverages}
+                customStyles={customStyles}
+                // expandableRows
+                // selectableRows
+                // expandableRowExpanded={(row) => (row === expendedSolutionSubComponent)}
+                // expandOnRowClicked
+                // onRowClicked={(row) => { setExpendedSolutionSubComponent(row) }}
+                // expandableRowsComponent={ExpendSolutionComponentCodeData}
+                // onRowExpandToggled={(bool, row) => setExpendedSolutionSubComponent(row)}
+                pagination
+              />
+            </> : <></>}
+        </div>
+      </div>
+    </>
+  );
 
   return (
     <>
@@ -6389,6 +6489,7 @@ export function SolutionServicePortfolio(props) {
                       onSelectedRowsChange={(state) =>
                         setFilterQuoteItems(state.selectedRows)
                       }
+
                     />
                     <div className="mb-3">
                       <div className="text-right">
@@ -6412,8 +6513,13 @@ export function SolutionServicePortfolio(props) {
                       data={quoteItemsMaster}
                       customStyles={customStyles}
                       pagination
-                    // onRowClicked={(e) => handleRowClick(e)}
-                    // selectableRows
+                      // onRowClicked={(e) => handleRowClick(e)}
+                      // selectableRows
+                      expandableRowExpanded={(row) => (row === expendedSolutionSubComponent)}
+                      expandOnRowClicked
+                      onRowClicked={(row) => { setExpendedSolutionSubComponent(row) }}
+                      expandableRows
+                      expandableRowsComponent={SolutionExpendItemsData}
                     />
                     <div className="my-2">
                       <Link
