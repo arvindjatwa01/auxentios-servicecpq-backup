@@ -1,28 +1,37 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import Select from "react-select";
-import SearchIcon from "@mui/icons-material/Search";
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import React, { useEffect, useState } from "react";
+
 import Pagination from "@mui/material/Pagination";
 import { Stack } from "@mui/material";
-import DataTable from "react-data-table-component";
-import AddIcon from "@mui/icons-material/Add";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import EquipmentSearchComponent from "./EquipmentSearchComponent";
 import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
-import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
+import TabContext from "@mui/lab/TabContext";
 import TabPanel from "@mui/lab/TabPanel";
 import Switch from "@mui/material/Switch";
-import $ from "jquery";
+
+import Select from "react-select";
+
+import { callGetApi } from "services/ApiCaller";
+import { API_SUCCESS } from "services/ResponseCode";
+import { Get_Spare_Parts_Datails_By_Id_GET } from "services/CONSTANTS";
+
 import EquipmentDataTable from "./EquipmentDataTable";
-import EquipmentReportDetails from "./EquipmentReportDetails";
-import SearchListMaster from "./SearchListMaster";
 import EquipmentSearchMaster from "./EquipmentSearchMaster";
-import { partsSearch } from "./equipmentConstant";
 import WithoutSearchDataTable from "./WithoutSearchDataTable";
+import {
+  SEARCH_FLAG_PARTS,
+  SPARE_PARTS_ALTERNATE_PARTS_DETAILS,
+  SPARE_PARTS_PRICE_DETAILS,
+  SPARE_PARTS_REMAN_OR_REFURB_DETAILS,
+  SPARE_PARTS_REPLACED_BY_DETAILS,
+  SPARE_PARTS_WARRENTY_DETAILS,
+} from "./equipmentMasterConstants";
+import PartsMasterSearchList from "./SparePartsMaster/PartsMasterSearchList";
+import LoadingProgress from "pages/Repair/components/Loader";
+import { isEmpty } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/textUtilities";
+import PartsReportDetails from "./SparePartsMaster/PartsReportDetails";
 
 const label = { inputProps: { "aria-label": "Switch demo" } };
 
@@ -106,59 +115,31 @@ const warrentydata = [
     servicePrice: "5879.24",
   },
 ];
-const dummySearchList = [
-  {
-    id: 1,
-    A: "5365377",
-    B: "HOSE AS.",
-    C: "3620656",
-    D: "CATERPILLAR",
-    active: true,
-  },
-  {
-    id: 2,
-    A: "1L1118",
-    B: "FITTING",
-    C: "3620656",
-    D: "Description",
-    active: false,
-  },
-  {
-    id: 3,
-    A: "0R6158",
-    B: "Full Core Deposit",
-    C: "992K",
-    D: "Description",
-    active: false,
-  },
-  {
-    id: 4,
-    A: "3J0634",
-    B: "SEAL",
-    C: "3620656",
-    D: "Description",
-    active: false,
-  },
-  {
-    id: 5,
-    A: "F198300020130",
-    B: "PRESSURE WASHER",
-    C: "3620656",
-    D: "Description",
-    active: false,
-  },
-];
 
 const Parts360 = () => {
   const [bundleItems, setBundleItems] = useState([...tempdata]);
-  const [reportModalHeader, setReportModalHeader] = useState("");
-  const [reportType, setReportType] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [modelHeaderTitle, setModelHeaderTitle] = useState("");
+  const [modelContentReportType, setModelContentReportType] = useState("");
+  const [modelContentReportObj, setModelContentReportObj] = useState(null);
+
   const [warrentyItems, setWarrentyItems] = useState([...warrentydata]);
-  const [searchList, setSearchList] = useState([...dummySearchList]);
+  const [searchList, setSearchList] = useState([]);
+
+  const [selectedPartsId, setSelectedPartsId] = useState(null);
+  const [selectedPartsDetails, setSelectedPartsDetails] = useState(null);
   const [value, setValue] = React.useState("1");
 
   const [pageNo, setPageNo] = useState(1);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!showModal) {
+      setModelHeaderTitle("");
+      setModelContentReportType("");
+      setModelContentReportObj(null);
+    }
+  }, [showModal]);
 
   // handle Page change
   const handlePageChange = (event, value) => {
@@ -169,86 +150,50 @@ const Parts360 = () => {
     setValue(newValue);
   };
 
+  // replaced by columns
   const replpacedItemColumns = [
     {
-      name: (
-        <>
-          <div>Replaced By</div>
-        </>
-      ),
+      name: <div>Replaced By</div>,
       selector: (row) => row.itemName,
       wrap: true,
-      sortable: true,
-      format: (row) => row.itemName,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Replaced Quantity</div>
-        </>
-      ),
+      name: <div>Replaced Quantity</div>,
       selector: (row) => row.itemDescription,
       wrap: true,
-      sortable: true,
-      format: (row) => row.itemDescription,
+      sortable: false,
     },
-
     {
-      name: (
-        <>
-          <div>Availability</div>
-        </>
-      ),
+      name: <div>Availability</div>,
       selector: (row) => row?.itemHeaderStrategy,
       wrap: true,
-      sortable: true,
-      format: (row) => row?.itemHeaderStrategy,
+      sortable: false,
       // minWidth: "150px",
       // maxWidth: "150px",
     },
     {
-      name: (
-        <>
-          <div>Total Available</div>
-        </>
-      ),
+      name: <div>Total Available</div>,
       selector: (row) => row?.taskType,
       wrap: true,
-      sortable: true,
-      format: (row) => row?.taskType,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Sales Unit</div>
-        </>
-      ),
+      name: <div>Sales Unit</div>,
       selector: (row) => row?.quantity,
       wrap: true,
-      sortable: true,
-      format: (row) => row?.quantity,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Price</div>
-        </>
-      ),
+      name: <div>Price</div>,
       selector: (row) => row?.recommendedValue,
       wrap: true,
-      sortable: true,
-      format: (row) => row?.recommendedValue,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Actions</div>
-        </>
-      ),
-      // selector: (row) => row?.bundleFlag,
+      name: <div>Actions</div>,
       wrap: true,
-      sortable: true,
-      // format: (row) => row?.bundleFlag,
+      sortable: false,
       cell: (row) => (
         <div
           className="d-flex justify-content-center align-items-center row-svg-div"
@@ -257,7 +202,11 @@ const Parts360 = () => {
           <EditOutlinedIcon
             className="mr-1"
             onClick={() =>
-              handleShowReportDetails("Replaced By", "replacedByDetails")
+              handleShowReportDetails(
+                "Replaced By",
+                SPARE_PARTS_REPLACED_BY_DETAILS,
+                row
+              )
             }
           />
           <DeleteOutlineOutlinedIcon />
@@ -265,84 +214,51 @@ const Parts360 = () => {
       ),
     },
   ];
+
+  // alternate parts columns
   const alternateItemColumns = [
     {
-      name: (
-        <>
-          <div>Alternate Part #</div>
-        </>
-      ),
+      name: <div>Alternate Part #</div>,
       selector: (row) => row.itemName,
       wrap: true,
-      sortable: true,
-      format: (row) => row.itemName,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Quantity</div>
-        </>
-      ),
+      name: <div>Quantity</div>,
       selector: (row) => row.itemDescription,
       wrap: true,
-      sortable: true,
-      format: (row) => row.itemDescription,
+      sortable: false,
     },
-
     {
-      name: (
-        <>
-          <div>Availability</div>
-        </>
-      ),
+      name: <div>Availability</div>,
       selector: (row) => row?.itemHeaderStrategy,
       wrap: true,
-      sortable: true,
-      format: (row) => row?.itemHeaderStrategy,
+      sortable: false,
       // minWidth: "150px",
       // maxWidth: "150px",
     },
     {
-      name: (
-        <>
-          <div>Total Available</div>
-        </>
-      ),
+      name: <div>Total Available</div>,
       selector: (row) => row?.taskType,
       wrap: true,
-      sortable: true,
-      format: (row) => row?.taskType,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Sales Unit</div>
-        </>
-      ),
+      name: <div>Sales Unit</div>,
       selector: (row) => row?.quantity,
       wrap: true,
-      sortable: true,
-      format: (row) => row?.quantity,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Price</div>
-        </>
-      ),
+      name: <div>Price</div>,
       selector: (row) => row?.recommendedValue,
       wrap: true,
-      sortable: true,
-      format: (row) => row?.recommendedValue,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Actions</div>
-        </>
-      ),
+      name: <div>Actions</div>,
       wrap: true,
-      sortable: true,
+      sortable: false,
       cell: (row) => (
         <div
           className="d-flex justify-content-center align-items-center row-svg-div"
@@ -351,7 +267,11 @@ const Parts360 = () => {
           <EditOutlinedIcon
             className="mr-1"
             onClick={() =>
-              handleShowReportDetails("Alternate Parts", "alternateDetails")
+              handleShowReportDetails(
+                "Alternate Parts",
+                SPARE_PARTS_ALTERNATE_PARTS_DETAILS,
+                row
+              )
             }
           />
           <DeleteOutlineOutlinedIcon />
@@ -359,84 +279,51 @@ const Parts360 = () => {
       ),
     },
   ];
+
+  // reman or reverb columns
   const remanItemColumns = [
     {
-      name: (
-        <>
-          <div>Reman Part #</div>
-        </>
-      ),
+      name: <div>Reman Part #</div>,
       selector: (row) => row.itemName,
       wrap: true,
-      sortable: true,
-      format: (row) => row.itemName,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Refurbished Part #</div>
-        </>
-      ),
+      name: <div>Refurbished Part #</div>,
       selector: (row) => row.itemDescription,
       wrap: true,
-      sortable: true,
-      format: (row) => row.itemDescription,
+      sortable: false,
     },
-
     {
-      name: (
-        <>
-          <div>Availability</div>
-        </>
-      ),
+      name: <div>Availability</div>,
       selector: (row) => row?.itemHeaderStrategy,
       wrap: true,
-      sortable: true,
-      format: (row) => row?.itemHeaderStrategy,
+      sortable: false,
       // minWidth: "150px",
       // maxWidth: "150px",
     },
     {
-      name: (
-        <>
-          <div>Total Available</div>
-        </>
-      ),
+      name: <div>Total Available</div>,
       selector: (row) => row?.taskType,
       wrap: true,
-      sortable: true,
-      format: (row) => row?.taskType,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Sales Unit</div>
-        </>
-      ),
+      name: <div>Sales Unit</div>,
       selector: (row) => row?.quantity,
       wrap: true,
-      sortable: true,
-      format: (row) => row?.quantity,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Price</div>
-        </>
-      ),
+      name: <div>Price</div>,
       selector: (row) => row?.recommendedValue,
       wrap: true,
-      sortable: true,
-      format: (row) => row?.recommendedValue,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Actions</div>
-        </>
-      ),
+      name: <div>Actions</div>,
       wrap: true,
-      sortable: true,
+      sortable: false,
       cell: (row) => (
         <div
           className="d-flex justify-content-center align-items-center row-svg-div"
@@ -445,7 +332,11 @@ const Parts360 = () => {
           <EditOutlinedIcon
             className="mr-1"
             onClick={() =>
-              handleShowReportDetails("Reman or Refurb Options", "remanDetails")
+              handleShowReportDetails(
+                "Reman or Refurb Options",
+                SPARE_PARTS_REMAN_OR_REFURB_DETAILS,
+                row
+              )
             }
           />
           <DeleteOutlineOutlinedIcon />
@@ -453,249 +344,63 @@ const Parts360 = () => {
       ),
     },
   ];
+
+  // parts price columns
   const priceItemColumns = [
     {
-      name: (
-        <>
-          <div>Group#</div>
-        </>
-      ),
+      name: <div>Group#</div>,
       selector: (row) => row.itemName,
       wrap: true,
-      sortable: true,
-      format: (row) => row.itemName,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Type</div>
-        </>
-      ),
+      name: <div>Type</div>,
       selector: (row) => row.itemDescription,
       wrap: true,
-      sortable: true,
-      format: (row) => row.itemDescription,
+      sortable: false,
     },
-
     {
-      name: (
-        <>
-          <div>Part #</div>
-        </>
-      ),
+      name: <div>Part #</div>,
       selector: (row) => row?.itemHeaderStrategy,
       wrap: true,
-      sortable: true,
-      format: (row) => row?.itemHeaderStrategy,
+      sortable: false,
       // minWidth: "150px",
       // maxWidth: "150px",
     },
     {
-      name: (
-        <>
-          <div>Sales Unit</div>
-        </>
-      ),
+      name: <div>Sales Unit</div>,
       selector: (row) => row?.taskType,
       wrap: true,
-      sortable: true,
-      format: (row) => row?.taskType,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Quantity</div>
-        </>
-      ),
+      name: <div>Quantity</div>,
       selector: (row) => row?.quantity,
       wrap: true,
-      sortable: true,
-      format: (row) => row?.quantity,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Price</div>
-        </>
-      ),
+      name: <div>Price</div>,
       selector: (row) => row?.recommendedValue,
       wrap: true,
-      sortable: true,
-      format: (row) => row?.recommendedValue,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Valid From</div>
-        </>
-      ),
+      name: <div>Valid From</div>,
       selector: (row) => row?.recommendedValue,
       wrap: true,
-      sortable: true,
-      format: (row) => row?.recommendedValue,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Valid To</div>
-        </>
-      ),
+      name: <div>Valid To</div>,
       selector: (row) => row?.recommendedValue,
       wrap: true,
-      sortable: true,
-      format: (row) => row?.recommendedValue,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Actions</div>
-        </>
-      ),
+      name: <div>Actions</div>,
       wrap: true,
-      sortable: true,
-      cell: (row) => (
-        <div
-          className="d-flex justify-content-center align-items-center row-svg-div"
-          style={{ minWidth: "180px !important" }}
-        >
-          <EditOutlinedIcon
-            className="mr-1"
-            onClick={() => handleShowReportDetails("Price Details", "price")}
-          />
-          <DeleteOutlineOutlinedIcon />
-        </div>
-      ),
-    },
-  ];
-  const erpDetailsItemColumns = [
-    {
-      name: (
-        <>
-          <div>ERP Condition</div>
-        </>
-      ),
-      selector: (row) => row.itemName,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.itemName,
-    },
-    {
-      name: (
-        <>
-          <div>ERP Amount</div>
-        </>
-      ),
-      selector: (row) => row.itemDescription,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.itemDescription,
-    },
-
-    {
-      name: (
-        <>
-          <div>ERP Cost Price</div>
-        </>
-      ),
-      selector: (row) => row?.itemHeaderStrategy,
-      wrap: true,
-      sortable: true,
-      format: (row) => row?.itemHeaderStrategy,
-      // minWidth: "150px",
-      // maxWidth: "150px",
-    },
-    {
-      name: (
-        <>
-          <div>ERP Margin</div>
-        </>
-      ),
-      selector: (row) => row?.taskType,
-      wrap: true,
-      sortable: true,
-      format: (row) => row?.taskType,
-    },
-    {
-      name: (
-        <>
-          <div>Last Priced Date </div>
-        </>
-      ),
-      selector: (row) => row?.quantity,
-      wrap: true,
-      sortable: true,
-      format: (row) => row?.quantity,
-    },
-    {
-      name: (
-        <>
-          <div>Price Change Date</div>
-        </>
-      ),
-      selector: (row) => row?.recommendedValue,
-      wrap: true,
-      sortable: true,
-      format: (row) => row?.recommendedValue,
-    },
-  ];
-  const warrentyItemColumns = [
-    {
-      name: (
-        <>
-          <div>Warranty Type</div>
-        </>
-      ),
-      selector: (row) => row.itemName,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.itemName,
-    },
-    {
-      name: (
-        <>
-          <div>Warranty Duration</div>
-        </>
-      ),
-      selector: (row) => row.itemDescription,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.itemDescription,
-    },
-
-    {
-      name: (
-        <>
-          <div>Date Of Sale</div>
-        </>
-      ),
-      selector: (row) => row?.itemHeaderStrategy,
-      wrap: true,
-      sortable: true,
-      format: (row) => row?.itemHeaderStrategy,
-      // minWidth: "150px",
-      // maxWidth: "150px",
-    },
-    {
-      name: (
-        <>
-          <div>Date Of Installation</div>
-        </>
-      ),
-      selector: (row) => row?.taskType,
-      wrap: true,
-      sortable: true,
-      format: (row) => row?.taskType,
-    },
-    {
-      name: (
-        <>
-          <div>Actions</div>
-        </>
-      ),
-      // selector: (row) => row?.bundleFlag,
-      wrap: true,
-      sortable: true,
-      // format: (row) => row?.bundleFlag,
+      sortable: false,
       cell: (row) => (
         <div
           className="d-flex justify-content-center align-items-center row-svg-div"
@@ -704,7 +409,11 @@ const Parts360 = () => {
           <EditOutlinedIcon
             className="mr-1"
             onClick={() =>
-              handleShowReportDetails("Warranty Details", "partsWarranty")
+              handleShowReportDetails(
+                "Price Details",
+                SPARE_PARTS_PRICE_DETAILS,
+                row
+              )
             }
           />
           <DeleteOutlineOutlinedIcon />
@@ -712,44 +421,130 @@ const Parts360 = () => {
       ),
     },
   ];
-  const customStyles = {
-    rows: {
-      style: {
-        minHeight: "72px",
-      },
-    },
-    headCells: {
-      style: {
-        paddingLeft: "8px",
-        paddingRight: "8px",
-        backgroundColor: "#872ff7",
-        color: "#fff",
-        borderRight: "1px solid rgba(0,0,0,.12)",
-      },
-    },
-    cells: {
-      style: {
-        paddingLeft: "8px",
-        paddingRight: "8px",
-        borderRight: "1px solid rgba(0,0,0,.12)",
-      },
-    },
-  };
 
+  // parts erp detals columns
+  const erpDetailsItemColumns = [
+    {
+      name: <div>ERP Condition</div>,
+      selector: (row) => row.itemName,
+      wrap: true,
+      sortable: false,
+    },
+    {
+      name: <div>ERP Amount</div>,
+      selector: (row) => row.itemDescription,
+      wrap: true,
+      sortable: false,
+    },
+    {
+      name: <div>ERP Cost Price</div>,
+      selector: (row) => row?.itemHeaderStrategy,
+      wrap: true,
+      sortable: false,
+      // minWidth: "150px",
+      // maxWidth: "150px",
+    },
+    {
+      name: <div>ERP Margin</div>,
+      selector: (row) => row?.taskType,
+      wrap: true,
+      sortable: false,
+    },
+    {
+      name: <div>Last Priced Date </div>,
+      selector: (row) => row?.quantity,
+      wrap: true,
+      sortable: false,
+    },
+    {
+      name: <div>Price Change Date</div>,
+      selector: (row) => row?.recommendedValue,
+      wrap: true,
+      sortable: false,
+    },
+  ];
+
+  // parts warrenty columns
+  const warrentyItemColumns = [
+    {
+      name: <div>Warranty Type</div>,
+      selector: (row) => row.itemName,
+      wrap: true,
+      sortable: false,
+    },
+    {
+      name: <div>Warranty Duration</div>,
+      selector: (row) => row.itemDescription,
+      wrap: true,
+      sortable: false,
+    },
+    {
+      name: <div>Date Of Sale</div>,
+      selector: (row) => row?.itemHeaderStrategy,
+      wrap: true,
+      sortable: false,
+    },
+    {
+      name: <div>Date Of Installation</div>,
+      selector: (row) => row?.taskType,
+      wrap: true,
+      sortable: false,
+    },
+    {
+      name: <div>Actions</div>,
+      wrap: true,
+      sortable: false,
+      cell: (row) => (
+        <div
+          className="d-flex justify-content-center align-items-center row-svg-div"
+          style={{ minWidth: "180px !important" }}
+        >
+          <EditOutlinedIcon
+            className="mr-1"
+            onClick={() =>
+              handleShowReportDetails(
+                "Warranty Details",
+                SPARE_PARTS_WARRENTY_DETAILS,
+                row
+              )
+            }
+          />
+          <DeleteOutlineOutlinedIcon />
+        </div>
+      ),
+    },
+  ];
+
+  // view select search parts details
   const handleViewDetails = (id) => {
-    const _searchList = [...searchList];
-    const updatedSearchList = _searchList.map((data) => ({
-      ...data,
-      active: data.id === id ? true : false,
-    }));
-    setSearchList(updatedSearchList);
+    setLoading(true);
+    setPageNo(1);
+    const rUrl = Get_Spare_Parts_Datails_By_Id_GET + id;
+    callGetApi(
+      null,
+      rUrl,
+      (response) => {
+        if (response.status === API_SUCCESS) {
+          const responseData = response.data;
+          setSelectedPartsId(id);
+          setSelectedPartsDetails(responseData);
+          setLoading(false);
+        } else {
+          setLoading(false);
+        }
+      },
+      (error) => {
+        setLoading(false);
+      }
+    );
   };
 
-  //
-  const handleShowReportDetails = (title, reportType) => {
+  // view the detais for data table row
+  const handleShowReportDetails = (title, reportType, row) => {
+    setModelHeaderTitle(title);
+    setModelContentReportType(reportType);
+    setModelContentReportObj(row);
     setShowModal(true);
-    setReportModalHeader(title);
-    setReportType(reportType);
   };
 
   // Parts page 1 details
@@ -763,8 +558,10 @@ const Parts360 = () => {
                 <p className="text-light-60 font-size-12 m-0 font-weight-500">
                   Description
                 </p>
-                <p className="text-primary font-size-12 mt-1 font-weight-500">
-                  Full Core Deposit
+                <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                  {isEmpty(selectedPartsDetails.description)
+                    ? "NA"
+                    : selectedPartsDetails.description}
                 </p>
               </div>
             </div>
@@ -773,8 +570,10 @@ const Parts360 = () => {
                 <p className="text-light-60 font-size-12 m-0 font-weight-500">
                   Type
                 </p>
-                <p className="text-primary font-size-12 mt-1 font-weight-500">
-                  Reman
+                <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                  {isEmpty(selectedPartsDetails.partType)
+                    ? "NA"
+                    : selectedPartsDetails.partType}
                 </p>
               </div>
             </div>
@@ -790,8 +589,10 @@ const Parts360 = () => {
                 <p className="text-light-60 font-size-12 m-0 font-weight-500">
                   Manufacturer
                 </p>
-                <p className="text-primary font-size-12 mt-1 font-weight-500">
-                  Caterpillar
+                <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                  {isEmpty(selectedPartsDetails.manufacturer)
+                    ? "NA"
+                    : selectedPartsDetails.manufacturer}
                 </p>
               </div>
             </div>
@@ -800,8 +601,10 @@ const Parts360 = () => {
                 <p className="text-light-60 font-size-12 m-0 font-weight-500">
                   Model
                 </p>
-                <p className="text-primary font-size-12 mt-1 font-weight-500">
-                  336D2 L
+                <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                  {isEmpty(selectedPartsDetails.model)
+                    ? "NA"
+                    : selectedPartsDetails.model}
                 </p>
               </div>
             </div>
@@ -809,8 +612,10 @@ const Parts360 = () => {
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
                 Group Number
               </p>
-              <p className="text-primary font-size-12 mt-1 font-weight-500">
-                3620656
+              <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                {isEmpty(selectedPartsDetails.groupNumber)
+                  ? "NA"
+                  : selectedPartsDetails.groupNumber}
               </p>
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
@@ -818,8 +623,10 @@ const Parts360 = () => {
                 <p className="text-light-60 font-size-12 m-0 font-weight-500">
                   Parts Group
                 </p>
-                <p className="text-primary font-size-12 mt-1 font-weight-500">
-                  REMAN
+                <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                  {isEmpty(selectedPartsDetails.partsGroup)
+                    ? "NA"
+                    : selectedPartsDetails.partsGroup}
                 </p>
               </div>
             </div>
@@ -828,8 +635,10 @@ const Parts360 = () => {
                 <p className="text-light-60 font-size-12 m-0 font-weight-500">
                   BEC Code
                 </p>
-                <p className="text-primary font-size-12 mt-1 font-weight-500">
-                  1PB
+                <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                  {isEmpty(selectedPartsDetails.becCode)
+                    ? "NA"
+                    : selectedPartsDetails.becCode}
                 </p>
               </div>
             </div>
@@ -837,8 +646,10 @@ const Parts360 = () => {
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
                 BEC Code Description
               </p>
-              <p className="text-primary font-size-12 mt-1 font-weight-500">
-                CALEFACTOR CCC
+              <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                {isEmpty(selectedPartsDetails.becCodeDescription)
+                  ? "NA"
+                  : selectedPartsDetails.becCodeDescription}
               </p>
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
@@ -846,8 +657,10 @@ const Parts360 = () => {
                 <p className="text-light-60 font-size-12 m-0 font-weight-500">
                   Serial Number (If Any)
                 </p>
-                <p className="text-primary font-size-12 mt-1 font-weight-500">
-                  ZCT01096
+                <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                  {isEmpty(selectedPartsDetails.serialNo)
+                    ? "NA"
+                    : selectedPartsDetails.serialNo}
                 </p>
               </div>
             </div>
@@ -856,8 +669,10 @@ const Parts360 = () => {
                 <p className="text-light-60 font-size-12 m-0 font-weight-500">
                   Status
                 </p>
-                <p className="text-primary font-size-12 mt-1 font-weight-500">
-                  Active
+                <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                  {isEmpty(selectedPartsDetails.status)
+                    ? "NA"
+                    : selectedPartsDetails.status}
                 </p>
               </div>
             </div>
@@ -870,56 +685,71 @@ const Parts360 = () => {
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
                 Material Group
               </p>
-              <p className="text-primary font-size-12 mt-1 font-weight-500">
-                AA: 0S1619
+              <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                {isEmpty(selectedPartsDetails.materialGroup)
+                  ? "NA"
+                  : selectedPartsDetails.materialGroup}
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
                 Material Number
               </p>
-              <p className="text-primary font-size-12 mt-1 font-weight-500">
-                AA: 0S1619
+              <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                {isEmpty(selectedPartsDetails.erpMaterialNumber)
+                  ? "NA"
+                  : selectedPartsDetails.erpMaterialNumber}
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
                 Old Material Number
               </p>
-              <p className="text-primary font-size-12 mt-1 font-weight-500">
-                AA: 0S1619
+              <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                {isEmpty(selectedPartsDetails.oldMaterialNumber)
+                  ? "NA"
+                  : selectedPartsDetails.manufacturer}
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
                 Average Cost
               </p>
-              <p className="text-primary font-size-12 mt-1 font-weight-500">
-                $ 90534
+              <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                ${" "}
+                {isEmpty(selectedPartsDetails.costPrice)
+                  ? 0
+                  : selectedPartsDetails.costPrice}
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
                 Availability
               </p>
-              <p className="text-primary font-size-12 mt-1 font-weight-500">
-                Stock
+              <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                {isEmpty(selectedPartsDetails.availability)
+                  ? "NA"
+                  : selectedPartsDetails.availability}
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
                 Total Number Available
               </p>
-              <p className="text-primary font-size-12 mt-1 font-weight-500">
-                10
+              <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                {isEmpty(selectedPartsDetails.totalAvailability)
+                  ? "NA"
+                  : selectedPartsDetails.totalAvailability}
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
                 Status
               </p>
-              <p className="text-primary font-size-12 mt-1 font-weight-500">
-                Active
+              <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                {isEmpty(selectedPartsDetails.status)
+                  ? "NA"
+                  : selectedPartsDetails.status}
               </p>
             </div>
           </div>
@@ -1127,52 +957,83 @@ const Parts360 = () => {
           <p className="mb-1 mt-4 font-size-12">
             Select the search criteria for equipment
           </p>
-          <EquipmentSearchMaster falgType="parts" />
+          <EquipmentSearchMaster
+            falgType="parts"
+            searchFlag={SEARCH_FLAG_PARTS}
+            setSearchList={setSearchList}
+          />
           <div className="row mt-3">
-            <SearchListMaster
-              searchList={searchList}
-              viewEquipmentDetails={handleViewDetails}
-            />
+            {searchList.length !== 0 && (
+              <PartsMasterSearchList
+                partsSearchList={searchList}
+                selectedPartsId={selectedPartsId}
+                handleViewDetails={handleViewDetails}
+              />
+            )}
             <div className="col-xl-8 col-lg-7 col-md-12 col-sm-12 equipment-master-chart mt-custom">
-              <div className="">
-                <div className="bg-white p-3 border-radius-10 ">
-                  <div className="d-flex align-items-center justify-content-between equipment-pagination">
-                    <h5 className="font-weight-600 mb-0">Full Core Deposit</h5>
-                    <Stack spacing={2}>
-                      <Pagination
-                        boundaryCount={0}
-                        siblingCount={0}
-                        shape="rounded"
-                        hidePrevButton={pageNo === 1 && true}
-                        hideNextButton={pageNo === 4 && true}
-                        count={4}
-                        page={pageNo}
-                        onChange={handlePageChange}
-                      />
-                    </Stack>
-                  </div>
-                  <div className="d-block mt-3">
-                    <h6 className="text-primary font-weight-600">0R6158</h6>
-                    <p className="text-light-60 font-size-12 mb-0">
-                      992K - 2015
-                    </p>
-                  </div>
-                </div>
-                {pageNo === 1 && viewDetailsPage_1()}
-                {pageNo === 2 && viewDetailsPage_2()}
-                {pageNo === 3 && viewDetailsPage_3()}
-                {pageNo === 4 && viewDetailsPage_4()}
-              </div>
+              {loading ? (
+                <LoadingProgress />
+              ) : (
+                <>
+                  {selectedPartsId && (
+                    <div className="">
+                      <div className="bg-white p-3 border-radius-10 ">
+                        <div className="d-flex align-items-center justify-content-between equipment-pagination">
+                          <h5 className="font-weight-600 mb-0">
+                            Full Core Deposit
+                          </h5>
+                          <Stack spacing={2}>
+                            <Pagination
+                              boundaryCount={0}
+                              siblingCount={0}
+                              shape="rounded"
+                              hidePrevButton={pageNo === 1 && true}
+                              hideNextButton={pageNo === 4 && true}
+                              count={4}
+                              page={pageNo}
+                              onChange={handlePageChange}
+                            />
+                          </Stack>
+                        </div>
+                        <div className="d-block mt-3">
+                          <h6 className="text-primary font-weight-600">
+                            {!isEmpty(selectedPartsDetails.partNumber) &&
+                              selectedPartsDetails.partNumber}
+                          </h6>
+                          <p className="text-light-60 font-size-12 mb-0">
+                            {!isEmpty(selectedPartsDetails.model) &&
+                              selectedPartsDetails.model}
+                          </p>
+                        </div>
+                      </div>
+                      {pageNo === 1 && viewDetailsPage_1()}
+                      {pageNo === 2 && viewDetailsPage_2()}
+                      {pageNo === 3 && viewDetailsPage_3()}
+                      {pageNo === 4 && viewDetailsPage_4()}
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           </div>
         </div>
       </div>
-      {showModal && (
+      {/* {showModal && (
         <EquipmentReportDetails
           show={showModal}
           hideModel={() => setShowModal(false)}
           header={reportModalHeader}
           reportType={reportType}
+        />
+      )} */}
+
+      {showModal && (
+        <PartsReportDetails
+          show={showModal}
+          hideModal={() => setShowModal(false)}
+          headerTitle={modelHeaderTitle}
+          contentReportType={modelContentReportType}
+          contetntReportObj={modelContentReportObj}
         />
       )}
     </>

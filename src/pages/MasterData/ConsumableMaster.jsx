@@ -1,71 +1,52 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import Select from "react-select";
-import SearchIcon from "@mui/icons-material/Search";
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+
 import Pagination from "@mui/material/Pagination";
 import { Stack } from "@mui/material";
-import $ from "jquery";
+
+import { callGetApi } from "services/ApiCaller";
+import { Get_Consumable_Master_Details_By_Id_GET } from "services/CONSTANTS";
+import { API_SUCCESS } from "services/ResponseCode";
+
 import EquipmentSearchMaster from "./EquipmentSearchMaster";
-import SearchListMaster from "./SearchListMaster";
-import { defaultConsumableSearchList } from "./equipmentConstant";
+import { SEARCH_FLAG_CONSUMABLE } from "./equipmentMasterConstants";
+import ConsumableMasterSearchList from "./ConsumableMaster/ConsumableMasterSearchList";
+import LoadingProgress from "pages/Repair/components/Loader";
+import { isEmpty } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/textUtilities";
 
 const ConsumableMaster = () => {
-  const [searchList, setSearchList] = useState([
-    ...defaultConsumableSearchList,
-  ]);
-  const removeSearchCritria = () => {
-    setSearchSelector([]);
-  };
-  const addMoreSearchCritria = () => {
-    const _searchSelector = [...searchSelector];
-    _searchSelector.push({
-      id: searchSelector.length + 1,
-      selectOperator: "",
-      selectFamily: "",
-      inputSearch: "",
-      selectOptions: [],
-      selectedOption: "",
-    });
-    if (_searchSelector.length <= 2) {
-      setSearchSelector(_searchSelector);
-    }
-  };
-  const handleClickOnSearchedList = (currentItem, id) => {
-    let tempArray = [...searchSelector];
-    let obj = tempArray[id];
-    obj.inputSearch = currentItem;
-    obj.selectedOption = currentItem;
-    tempArray[id] = obj;
-    setSearchSelector([...tempArray]);
-    $(`.scrollbar-${id}`).css("display", "none");
-  };
-  const [searchSelector, setSearchSelector] = useState([
-    {
-      id: 0,
-      selectFamily: "",
-      selectOperator: "",
-      inputSearch: "",
-      selectOptions: [],
-      selectedOption: "",
-      itemType: { label: "", value: "" },
-      itemTypeOperator: "",
-      selectedKeyValue: "",
-    },
-  ]);
+  const [searchList, setSearchList] = useState([]);
+  const [selectedConsumableId, setSelectedConsumableId] = useState(null);
   const [pageNo, setPageNo] = React.useState(1);
+  const [selectedConsumableDetals, setSelectedConsumableDetals] =
+    useState(null);
+  const [loading, setLoading] = useState(false);
+
   const handlePageChange = (event, value) => {
     setPageNo(value);
   };
 
   // view search list details
-  const viewEquipmentDetails = (id) => {
-    const _searchList = [...searchList];
-    const updatedSearchList = _searchList.map((data) => ({
-      ...data,
-      active: data.id === id ? true : false,
-    }));
-    setSearchList(updatedSearchList);
+  const handleViewSelectSearchRowDetails = (id) => {
+    setLoading(true);
+    setPageNo(1);
+    const rUrl = Get_Consumable_Master_Details_By_Id_GET + id;
+    callGetApi(
+      null,
+      rUrl,
+      (response) => {
+        if (response.status === API_SUCCESS) {
+          const responseData = response.data;
+          setSelectedConsumableId(id);
+          setSelectedConsumableDetals(responseData);
+          setLoading(false);
+        } else {
+          setLoading(false);
+        }
+      },
+      (error) => {
+        setLoading(false);
+      }
+    );
   };
 
   //page 1 details
@@ -79,8 +60,10 @@ const ConsumableMaster = () => {
                 <p className="text-light-60 font-size-12 m-0 font-weight-500">
                   Consumable Number
                 </p>
-                <p className="text-primary font-size-12 mt-1 font-weight-500">
-                  101093
+                <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                  {isEmpty(selectedConsumableDetals.consumableId)
+                    ? "NA"
+                    : selectedConsumableDetals.consumableId}
                 </p>
               </div>
             </div>
@@ -90,7 +73,9 @@ const ConsumableMaster = () => {
                   Description
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500">
-                  TRAPO INDUSTRIAL
+                  {isEmpty(selectedConsumableDetals.description)
+                    ? "NA"
+                    : selectedConsumableDetals.description}
                 </p>
               </div>
             </div>
@@ -100,7 +85,9 @@ const ConsumableMaster = () => {
                   Stock/Non Stock
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500">
-                  Non Stockable
+                  {isEmpty(selectedConsumableDetals.stockItem)
+                    ? "Not Stockable"
+                    : "Stockable"}
                 </p>
               </div>
             </div>
@@ -110,7 +97,9 @@ const ConsumableMaster = () => {
                   Unit Of Measure
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500">
-                  CM
+                  {isEmpty(selectedConsumableDetals.unit)
+                    ? "NA"
+                    : selectedConsumableDetals.unit}
                 </p>
               </div>
             </div>
@@ -120,7 +109,9 @@ const ConsumableMaster = () => {
                   Supplier
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500">
-                  AA
+                  {isEmpty(selectedConsumableDetals.sourceOrVendor)
+                    ? "NA"
+                    : selectedConsumableDetals.sourceOrVendor}
                 </p>
               </div>
             </div>
@@ -129,7 +120,7 @@ const ConsumableMaster = () => {
                 Availability
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
-                Yes
+                {isEmpty(selectedConsumableDetals.availability) ? "No" : "Yes"}
               </p>
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
@@ -138,7 +129,9 @@ const ConsumableMaster = () => {
                   Total Available
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500">
-                  10
+                  {isEmpty(selectedConsumableDetals.avgContractedPrice)
+                    ? "NA"
+                    : selectedConsumableDetals.avgContractedPrice}
                 </p>
               </div>
             </div>
@@ -152,7 +145,9 @@ const ConsumableMaster = () => {
                 Material Group
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
-                AA: 0S1619
+                {isEmpty(selectedConsumableDetals.erpMaterialGroup)
+                  ? "NA"
+                  : selectedConsumableDetals.erpMaterialGroup}
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
@@ -160,7 +155,9 @@ const ConsumableMaster = () => {
                 Material Number
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
-                AA: 0S1619
+                {isEmpty(selectedConsumableDetals.erpMaterialNumber)
+                  ? "NA"
+                  : selectedConsumableDetals.erpMaterialNumber}
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
@@ -200,6 +197,7 @@ const ConsumableMaster = () => {
       </>
     );
   };
+
   //page 2 details
   const viewDetailsPage_2 = () => {
     return (
@@ -268,40 +266,62 @@ const ConsumableMaster = () => {
         <p className="mb-1 mt-4 font-size-12">
           Select the search criteria for consumable
         </p>
-        <EquipmentSearchMaster falgType="consumable" />
+        <EquipmentSearchMaster
+          falgType="consumable"
+          searchFlag={SEARCH_FLAG_CONSUMABLE}
+          setSearchList={setSearchList}
+        />
         <div className="row mt-3">
-          <SearchListMaster
-            searchList={searchList}
-            viewEquipmentDetails={viewEquipmentDetails}
-          />
+          {searchList.length !== 0 && (
+            <ConsumableMasterSearchList
+              consumableSearchList={searchList}
+              selectedConsumableId={selectedConsumableId}
+              handleViewDetails={handleViewSelectSearchRowDetails}
+            />
+          )}
           <div className="col-xl-8 col-lg-7 col-md-12 col-sm-12 equipment-master-chart mt-custom">
-            <div className="">
-              <div className="bg-white p-3 border-radius-10 ">
-                <div className="d-flex align-items-center justify-content-between equipment-pagination">
-                  <h5 className="font-weight-600 mb-0">Trapo Industrial</h5>
-                  <Stack spacing={2}>
-                    <Pagination
-                      boundaryCount={0}
-                      siblingCount={0}
-                      shape="rounded"
-                      hidePrevButton={pageNo === 1 && true}
-                      hideNextButton={pageNo === 2 && true}
-                      count={2}
-                      page={pageNo}
-                      onChange={handlePageChange}
-                    />
-                  </Stack>
-                </div>
-                <div className="d-block mt-3">
-                  <h6 className="text-primary font-weight-600">101093</h6>
-                  <p className="text-light-60 font-size-12 mb-0">
-                    Non Stockable
-                  </p>
-                </div>
-              </div>
-              {pageNo === 1 && viewDetailsPage_1()}
-              {pageNo === 2 && viewDetailsPage_2()}
-            </div>
+            {loading ? (
+              <LoadingProgress />
+            ) : (
+              <>
+                {selectedConsumableId && (
+                  <div className="">
+                    <div className="bg-white p-3 border-radius-10 ">
+                      <div className="d-flex align-items-center justify-content-between equipment-pagination">
+                        <h5 className="font-weight-600 mb-0">
+                          Trapo Industrial
+                        </h5>
+                        <Stack spacing={2}>
+                          <Pagination
+                            boundaryCount={0}
+                            siblingCount={0}
+                            shape="rounded"
+                            hidePrevButton={pageNo === 1 && true}
+                            hideNextButton={pageNo === 2 && true}
+                            count={2}
+                            page={pageNo}
+                            onChange={handlePageChange}
+                          />
+                        </Stack>
+                      </div>
+                      <div className="d-block mt-3">
+                        <h6 className="text-primary font-weight-600">
+                          {!isEmpty(selectedConsumableDetals.consumableId) &&
+                            selectedConsumableDetals.consumableId}
+                        </h6>
+                        <p className="text-light-60 font-size-12 mb-0">
+                          {!isEmpty(selectedConsumableDetals.stockItem)
+                            ? "Stockable"
+                            : "Non Stockable"}
+                        </p>
+                      </div>
+                    </div>
+                    {pageNo === 1 && viewDetailsPage_1()}
+                    {pageNo === 2 && viewDetailsPage_2()}
+                  </div>
+                )}
+              </>
+            )}
           </div>
         </div>
       </div>

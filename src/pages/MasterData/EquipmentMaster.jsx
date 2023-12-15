@@ -1,37 +1,59 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import Select from "react-select";
-import SearchIcon from "@mui/icons-material/Search";
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import React, { useEffect, useState } from "react";
+
 import Pagination from "@mui/material/Pagination";
-import { Card, Divider, Grid, Stack } from "@mui/material";
-import PaginationStackedChart from "./PaginationStackedChart";
-import DataTable from "react-data-table-component";
-import AddIcon from "@mui/icons-material/Add";
+import { Divider, Grid, Stack } from "@mui/material";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import EquipmentSearchComponent from "./EquipmentSearchComponent";
 import Switch from "@mui/material/Switch";
-import { Modal } from "react-bootstrap";
+
+import Select from "react-select";
 import $ from "jquery";
+
+import { callGetApi } from "services/ApiCaller";
+import { Get_Equipment_Datails_By_Id_GET } from "services/CONSTANTS";
+import { API_SUCCESS } from "services/ResponseCode";
+
+import PaginationStackedChart from "./PaginationStackedChart";
 import EquipmentReportDetails from "./EquipmentReportDetails";
-import {
-  defaultContactData,
-  defaultSearchList,
-  defaultWarrentyData,
-  searchOptions,
-} from "./equipmentConstant";
+import { defaultContactData, defaultWarrentyData } from "./equipmentConstant";
 import EquipmentDataTable from "./EquipmentDataTable";
 import EquipmentSearchMaster from "./EquipmentSearchMaster";
-import SearchListMaster from "./SearchListMaster";
+import {
+  EQUIPMENT_CONTRACT_DETAILS,
+  EQUIPMENT_ERP_WARRENTY_REPORT_DETAILS,
+  EQUIPMENT_FAILURE_REPORT_DETAILS,
+  EQUIPMENT_SERVICE_REPORT_DETAILS,
+  EQUIPMENT_USAGE_SMU_REPORT_DETAILS,
+  EQUIPMENT_WARRENTY_DETAILS,
+  EQUIPMNT_USAGE_REPORT_DETAILS,
+  SEARCH_FALG_EQUIPMENT,
+  Switch_label_Object,
+} from "./equipmentMasterConstants";
+import EquipmentMasterSearchList from "./EquipmentMaster/EquipmentMasterSearchList";
+import LoadingProgress from "pages/Repair/components/Loader";
+import { isEmpty } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/textUtilities";
+import EquipmentReportDetail from "./EquipmentMaster/EquipmentReportDetail";
 
 const EquipmentMaster = () => {
   const [showModal, setShowModal] = useState(false);
-  const [reportModalHeader, setReportModalHeader] = useState("");
-  const [reportType, setReportType] = useState(null);
+  const [modelHeaderTitle, setModelHeaderTitle] = useState("");
+  const [modelContentReportType, setModelContentReportType] = useState("");
+  const [modelContentReportObj, setModelContentReportObj] = useState(null);
   const [contarctData, setContarctData] = useState([...defaultContactData]);
   const [warrentyData, setWarrentyData] = useState([...defaultWarrentyData]);
-  const [searchList, setSearchList] = useState([...defaultSearchList]);
+  const [searchList, setSearchList] = useState([]);
+
+  const [selectedEquipmentId, setSelectedEquipmentId] = useState(null);
+  const [selectEquipmentDetails, setSelectEquipmentDetails] = useState(null);
+
+  const [contractRecordsList, setContractRecordsList] = useState([]);
+  const [warrantyDetailsList, setWarrantyDetailsList] = useState([]);
+  const [serviceReportList, setServiceReportList] = useState([]);
+  const [failureReportList, setFailureReportList] = useState([]);
+  const [usageDetailsList, setUsageDetailsList] = useState([]);
+  const [pageNo, setPageNo] = useState(1);
+
+  
   const lifeCycleStatusData = [
     {
       month: "Jan",
@@ -71,221 +93,123 @@ const EquipmentMaster = () => {
     },
   ];
 
-  const label = { inputProps: { "aria-label": "Switch demo" } };
+  useEffect(() => {
+    if (!showModal) {
+      setModelHeaderTitle("");
+      setModelContentReportType("");
+      setModelContentReportObj(null);
+    }
+  }, [showModal]);
 
-  const [searchSelector, setSearchSelector] = useState([
-    {
-      id: 0,
-      selectFamily: "",
-      selectOperator: "",
-      inputSearch: "",
-      selectOptions: [],
-      selectedOption: "",
-      itemType: { label: "", value: "" },
-      itemTypeOperator: "",
-      selectedKeyValue: "",
-    },
-  ]);
-  const [pageNo, setPageNo] = useState(1);
   const handlePageChange = (event, value) => {
     setPageNo(value);
   };
 
-  const addMoreSearchCritria = () => {
-    const _searchSelector = [...searchSelector];
-    _searchSelector.push({
-      id: searchSelector.length + 1,
-      selectOperator: "",
-      selectFamily: "",
-      inputSearch: "",
-      selectOptions: [],
-      selectedOption: "",
-    });
-    if (_searchSelector.length <= 2) {
-      setSearchSelector(_searchSelector);
-    }
+  const [loading, setLoading] = useState(false);
 
-    // if (searchSelector.length < 2) {
-    //   setSearchSelector([
-    //     ...searchSelector,
-    //     {
-    //       id: searchSelector.length,
-    //       selectOperator: "",
-    //       selectFamily: "",
-    //       inputSearch: "",
-    //       selectOptions: [],
-    //       selectedOption: "",
-    //     },
-    //   ]);
-    // }
-  };
-
-  const removeSearchCritria = () => {
-    setSearchSelector([]);
-  };
-
-  const handleClickOnSearchedList = (currentItem, id) => {
-    let tempArray = [...searchSelector];
-    let obj = tempArray[id];
-    obj.inputSearch = currentItem;
-    obj.selectedOption = currentItem;
-    tempArray[id] = obj;
-    setSearchSelector([...tempArray]);
-    $(`.scrollbar-${id}`).css("display", "none");
-  };
-
-  const contractItemColumns = [
+  // Contrect detauls columns
+  const contractDetailsColumns = [
     {
-      name: (
-        <>
-          <div>Entitlement #</div>
-        </>
-      ),
-      selector: (row) => row.itemName,
+      id: "contarctEntitlementId",
+      name: <div>Entitlement #</div>,
+      selector: (row) => row.entitlementId,
       wrap: true,
-      sortable: true,
-      format: (row) => row.itemName,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Entitlement Title</div>
-        </>
-      ),
-      selector: (row) => row.itemDescription,
+      id: "contractEntitlementTitle",
+      name: <div>Entitlement Title</div>,
+      selector: (row) => row.title || "NA",
       wrap: true,
-      sortable: true,
-      format: (row) => row.itemDescription,
+      sortable: false,
     },
-
     {
-      name: (
-        <>
-          <div>Category</div>
-        </>
-      ),
-      selector: (row) => row?.itemHeaderStrategy,
+      id: "contratcCategory",
+      name: <div>Category</div>,
+      selector: (row) => row?.category || "NA",
       wrap: true,
-      sortable: true,
-      format: (row) => row?.itemHeaderStrategy,
+      sortable: false,
       // minWidth: "150px",
       // maxWidth: "150px",
     },
     {
-      name: (
-        <>
-          <div>Basis</div>
-        </>
-      ),
-      selector: (row) => row?.taskType,
+      id: "contractBasis",
+      name: <div>Basis</div>,
+      selector: (row) => row?.basis || "NA",
       wrap: true,
-      sortable: true,
-      format: (row) => row?.taskType,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Amount</div>
-        </>
-      ),
-      selector: (row) => row?.quantity,
+      id: "contartcAmount",
+      name: <div>Amount</div>,
+      selector: (row) => row?.amount || 0,
       wrap: true,
-      sortable: true,
-      format: (row) => row?.quantity,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Currency</div>
-        </>
-      ),
-      selector: (row) => row?.recommendedValue,
+      id: "contractCurrency",
+      name: <div>Currency</div>,
+      selector: (row) => row?.currency || "NA",
       wrap: true,
-      sortable: true,
-      format: (row) => row?.recommendedValue,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Valid For</div>
-        </>
-      ),
-      selector: (row) => row?.servicePrice,
+      id: "contractValidFor",
+      name: <div>Valid For</div>,
+      selector: (row) => row?.validFor || "NA",
       wrap: true,
-      sortable: true,
-      format: (row) => row?.servicePrice,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Unit</div>
-        </>
-      ),
-      selector: (row) => row?.bundleFlag,
+      id: "contractUnit",
+      name: <div>Unit</div>,
+      selector: (row) => row?.unitOfMeasure || "NA",
       wrap: true,
-      sortable: true,
-      format: (row) => row?.bundleFlag,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Start Date</div>
-        </>
-      ),
-      selector: (row) => row?.bundleFlag,
+      id: "contractStartDate",
+      name: <div>Start Date</div>,
+      selector: (row) => row?.startDate || "NA",
       wrap: true,
-      sortable: true,
-      format: (row) => row?.bundleFlag,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>End Date</div>
-        </>
-      ),
-      selector: (row) => row?.bundleFlag,
+      id: "contratcEndDate",
+      name: <div>End Date</div>,
+      selector: (row) => row?.endDate || "NA",
       wrap: true,
-      sortable: true,
-      format: (row) => row?.bundleFlag,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Start Usage</div>
-        </>
-      ),
-      selector: (row) => row?.bundleFlag,
+      id: "contractStartDate",
+      name: <div>Start Usage</div>,
+      selector: (row) => row?.startUsage || "NA",
       wrap: true,
-      sortable: true,
-      format: (row) => row?.bundleFlag,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>End Usage</div>
-        </>
-      ),
-      selector: (row) => row?.bundleFlag,
+      id: "contractEndUsage",
+      name: <div>End Usage</div>,
+      selector: (row) => row?.endUsage,
       wrap: true,
-      sortable: true,
-      format: (row) => row?.bundleFlag,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Actions</div>
-        </>
-      ),
-      // selector: (row) => row?.bundleFlag,
+      id: "contarctActions",
+      name: <div>Actions</div>,
       wrap: true,
-      sortable: true,
-      // format: (row) => row?.bundleFlag,
+      sortable: false,
       cell: (row) => (
         <div
           className="d-flex justify-content-center align-items-center row-svg-div"
           style={{ minWidth: "180px !important" }}
           onClick={() =>
-            handleShowReportDetails("Contract Details", "contract")
+            handleShowReportDetails(
+              "Contract Details",
+              EQUIPMENT_CONTRACT_DETAILS,
+              row
+            )
           }
         >
           <EditOutlinedIcon className="mr-1" />
@@ -294,119 +218,79 @@ const EquipmentMaster = () => {
       ),
     },
   ];
-  const warrentyItemColumns = [
-    {
-      name: (
-        <>
-          <div>ID</div>
-        </>
-      ),
-      selector: (row) => row.itemName,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.itemName,
-    },
-    {
-      name: (
-        <>
-          <div>Title</div>
-        </>
-      ),
-      selector: (row) => row.itemDescription,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.itemDescription,
-    },
 
+  // warrenty details columns
+  const warrentyDetailsColumns = [
     {
-      name: (
-        <>
-          <div>Category</div>
-        </>
-      ),
-      selector: (row) => row?.itemHeaderStrategy,
+      id: "warrentyId",
+      name: <div>ID</div>,
+      selector: (row) => row.id,
       wrap: true,
-      sortable: true,
-      format: (row) => row?.itemHeaderStrategy,
+      sortable: false,
+    },
+    {
+      id: "warrentyTitle",
+      name: <div>Title</div>,
+      selector: (row) => row.title || "NA",
+      wrap: true,
+      sortable: false,
+    },
+    {
+      id: "warrentyCategory",
+      name: <div>Category</div>,
+      selector: (row) => row?.category || "NA",
+      wrap: true,
+      sortable: false,
       // minWidth: "150px",
       // maxWidth: "150px",
     },
     {
-      name: (
-        <>
-          <div>Basis</div>
-        </>
-      ),
-      selector: (row) => row?.taskType,
+      id: "warrentyBasis",
+      name: <div>Basis</div>,
+      selector: (row) => row?.basis || "NA",
       wrap: true,
-      sortable: true,
-      format: (row) => row?.taskType,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Unit</div>
-        </>
-      ),
-      selector: (row) => row?.quantity,
+      id: "warrentyUnit",
+      name: <div>Unit</div>,
+      selector: (row) => row?.unitOfMeasure || "NA",
       wrap: true,
-      sortable: true,
-      format: (row) => row?.quantity,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Start Date</div>
-        </>
-      ),
-      selector: (row) => row?.recommendedValue,
+      id: "warrentyStartDate",
+      name: <div>Start Date</div>,
+      selector: (row) => row?.startDate || "NA",
       wrap: true,
-      sortable: true,
-      format: (row) => row?.recommendedValue,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>End Date</div>
-        </>
-      ),
-      selector: (row) => row?.servicePrice,
+      id: "warrentyEndData",
+      name: <div>End Date</div>,
+      selector: (row) => row?.endDate || "NA",
       wrap: true,
-      sortable: true,
-      format: (row) => row?.servicePrice,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Start Usage</div>
-        </>
-      ),
-      selector: (row) => row?.servicePrice,
+      i: "warrentyStartUsage",
+      name: <div>Start Usage</div>,
+      selector: (row) => row?.startUsage || "NA",
       wrap: true,
-      sortable: true,
-      format: (row) => row?.servicePrice,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>End Usage</div>
-        </>
-      ),
-      selector: (row) => row?.servicePrice,
+      id: "warrentyEndUsage",
+      name: <div>End Usage</div>,
+      selector: (row) => row?.endUsage,
       wrap: true,
-      sortable: true,
-      format: (row) => row?.servicePrice,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Actions</div>
-        </>
-      ),
-      // selector: (row) => row?.bundleFlag,
+      id: "warrentyActions",
+      name: <div>Actions</div>,
       wrap: true,
-      sortable: true,
-      // format: (row) => row?.bundleFlag,
+      sortable: false,
       cell: (row) => (
         <div
           className="d-flex justify-content-center align-items-center row-svg-div"
@@ -415,7 +299,11 @@ const EquipmentMaster = () => {
           <EditOutlinedIcon
             className="mr-1"
             onClick={() =>
-              handleShowReportDetails("Warranty Details", "warranty")
+              handleShowReportDetails(
+                "Warranty Details",
+                EQUIPMENT_WARRENTY_DETAILS,
+                row
+              )
             }
           />
           <DeleteOutlineOutlinedIcon />
@@ -423,178 +311,49 @@ const EquipmentMaster = () => {
       ),
     },
   ];
-  const failureItemColumns = [
-    {
-      name: (
-        <>
-          <div>Part #</div>
-        </>
-      ),
-      selector: (row) => row.itemName,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.itemName,
-    },
-    {
-      name: (
-        <>
-          <div>Quantity</div>
-        </>
-      ),
-      selector: (row) => row.itemDescription,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.itemDescription,
-    },
 
-    {
-      name: (
-        <>
-          <div>Sub-Assembly</div>
-        </>
-      ),
-      selector: (row) => row?.itemHeaderStrategy,
-      wrap: true,
-      sortable: true,
-      format: (row) => row?.itemHeaderStrategy,
-      // minWidth: "150px",
-      // maxWidth: "150px",
-    },
-    {
-      name: (
-        <>
-          <div>Warranty</div>
-        </>
-      ),
-      selector: (row) => row?.taskType,
-      wrap: true,
-      sortable: true,
-      format: (row) => row?.taskType,
-    },
-    {
-      name: (
-        <>
-          <div>Failure Date</div>
-        </>
-      ),
-      selector: (row) => row?.quantity,
-      wrap: true,
-      sortable: true,
-      format: (row) => row?.quantity,
-    },
-    {
-      name: (
-        <>
-          <div>Repair Date</div>
-        </>
-      ),
-      selector: (row) => row?.recommendedValue,
-      wrap: true,
-      sortable: true,
-      format: (row) => row?.recommendedValue,
-    },
-    {
-      name: (
-        <>
-          <div>Hours On Part</div>
-        </>
-      ),
-      selector: (row) => row?.servicePrice,
-      wrap: true,
-      sortable: true,
-      format: (row) => row?.servicePrice,
-    },
-    {
-      name: (
-        <>
-          <div>Actions</div>
-        </>
-      ),
-      // selector: (row) => row?.bundleFlag,
-      wrap: true,
-      sortable: true,
-      // format: (row) => row?.bundleFlag,
-      cell: (row) => (
-        <div
-          className="d-flex justify-content-center align-items-center row-svg-div"
-          style={{ minWidth: "180px !important" }}
-        >
-          <EditOutlinedIcon
-            className="mr-1"
-            onClick={() => handleShowReportDetails("Failure Report", "failure")}
-          />
-          <DeleteOutlineOutlinedIcon />
-        </div>
-      ),
-    },
-  ];
+  // ERP warrenty report columns
   const erpWarrentyItemColumns = [
     {
-      name: (
-        <>
-          <div>Component ID</div>
-        </>
-      ),
+      id: "erpWarrentyComponentId",
+      name: <div>Component ID</div>,
       selector: (row) => row.itemName,
       wrap: true,
-      sortable: true,
-      format: (row) => row.itemName,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Description</div>
-        </>
-      ),
+      id: "erpWarrentyDescription",
+      name: <div>Description</div>,
       selector: (row) => row.itemDescription,
       wrap: true,
-      sortable: true,
-      format: (row) => row.itemDescription,
+      sortable: false,
     },
-
     {
-      name: (
-        <>
-          <div>Serial Number </div>
-        </>
-      ),
+      id: "erpWarrentySerialNumber",
+      name: <div>Serial Number </div>,
       selector: (row) => row?.itemHeaderStrategy,
       wrap: true,
-      sortable: true,
-      format: (row) => row?.itemHeaderStrategy,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Warranty</div>
-        </>
-      ),
+      i: "erpWarrentyWarrentyType",
+      name: <div>Warranty</div>,
       selector: (row) => row?.taskType,
       wrap: true,
-      sortable: true,
-      format: (row) => row?.taskType,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Warranty Code</div>
-        </>
-      ),
+      id: "erpWarrentyWarrentyCode",
+      name: <div>Warranty Code</div>,
       selector: (row) => row?.quantity,
       wrap: true,
-      sortable: true,
-      format: (row) => row?.quantity,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Actions</div>
-        </>
-      ),
-      // selector: (row) => row?.bundleFlag,
+      id: "erpWarrentyActions",
+      name: <div>Actions</div>,
       wrap: true,
-      sortable: true,
-      // format: (row) => row?.bundleFlag,
+      sortable: false,
       cell: (row) => (
         <div
           className="d-flex justify-content-center align-items-center row-svg-div"
@@ -603,7 +362,11 @@ const EquipmentMaster = () => {
           <EditOutlinedIcon
             className="mr-1"
             onClick={() =>
-              handleShowReportDetails("Warranty Report", "erpWarranty")
+              handleShowReportDetails(
+                "Warranty Report",
+                EQUIPMENT_ERP_WARRENTY_REPORT_DETAILS,
+                row
+              )
             }
           />
           <DeleteOutlineOutlinedIcon />
@@ -611,97 +374,65 @@ const EquipmentMaster = () => {
       ),
     },
   ];
-  const serviceItemColumns = [
-    {
-      name: (
-        <>
-          <div>Report#</div>
-        </>
-      ),
-      selector: (row) => row.itemName,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.itemName,
-    },
-    {
-      name: (
-        <>
-          <div>Job #</div>
-        </>
-      ),
-      selector: (row) => row.itemDescription,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.itemDescription,
-    },
 
+  // service Report columns
+  const serviceReportColumns = [
     {
-      name: (
-        <>
-          <div>Engine Model #</div>
-        </>
-      ),
-      selector: (row) => row?.itemHeaderStrategy,
+      id: "serviceReportReportNumber",
+      name: <div>Report#</div>,
+      selector: (row) => row.reportNumber,
       wrap: true,
-      sortable: true,
-      format: (row) => row?.itemHeaderStrategy,
+      sortable: false,
+    },
+    {
+      id: "serviceReportJobNumber",
+      name: <div>Job #</div>,
+      selector: (row) => row.jobNumber || "NA",
+      wrap: true,
+      sortable: false,
+    },
+    {
+      id: "serviceReportEngineModelNumber",
+      name: <div>Engine Model #</div>,
+      selector: (row) => row?.engineModelNumber || "NA",
+      wrap: true,
+      sortable: false,
       // minWidth: "150px",
       // maxWidth: "150px",
     },
     {
-      name: (
-        <>
-          <div>Engine Serial #</div>
-        </>
-      ),
-      selector: (row) => row?.taskType,
+      id: "serviceReportEngineSerialNumber",
+      name: <div>Engine Serial #</div>,
+      selector: (row) => row?.engineSerialNumber || "NA",
       wrap: true,
-      sortable: true,
-      format: (row) => row?.taskType,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Usage</div>
-        </>
-      ),
-      selector: (row) => row?.quantity,
+      id: "serviceReportUsage",
+      name: <div>Usage</div>,
+      selector: (row) => row?.usage || "NA",
       wrap: true,
-      sortable: true,
-      format: (row) => row?.quantity,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Repair Date</div>
-        </>
-      ),
-      selector: (row) => row?.recommendedValue,
+      id: "serviceReportRepairDate",
+      name: <div>Repair Date</div>,
+      selector: (row) => row?.repairDate,
       wrap: true,
-      sortable: true,
-      format: (row) => row?.recommendedValue,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Complaints</div>
-        </>
-      ),
-      selector: (row) => row?.servicePrice,
+      id: "serviceReportComplaints",
+      name: <div>Complaints</div>,
+      selector: (row) => row?.complaint || "NA",
       wrap: true,
-      sortable: true,
-      format: (row) => row?.servicePrice,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Actions</div>
-        </>
-      ),
-      // selector: (row) => row?.bundleFlag,
+      id: "serviceReportActions",
+      name: <div>Actions</div>,
       wrap: true,
-      sortable: true,
-      // format: (row) => row?.bundleFlag,
+      sortable: false,
       cell: (row) => (
         <div
           className="d-flex justify-content-center align-items-center row-svg-div"
@@ -709,93 +440,78 @@ const EquipmentMaster = () => {
         >
           <EditOutlinedIcon
             className="mr-1"
-            onClick={() => handleShowReportDetails("Service Report", "service")}
+            onClick={() =>
+              handleShowReportDetails(
+                "Service Report",
+                EQUIPMENT_SERVICE_REPORT_DETAILS,
+                row
+              )
+            }
           />
           <DeleteOutlineOutlinedIcon />
         </div>
       ),
     },
   ];
-  const usageItemColumns = [
-    {
-      name: (
-        <>
-          <div>Current Usage</div>
-        </>
-      ),
-      selector: (row) => row.itemName,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.itemName,
-    },
-    {
-      name: (
-        <>
-          <div>Average Usage</div>
-        </>
-      ),
-      selector: (row) => row.itemDescription,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.itemDescription,
-    },
 
+  // Failure Report columns
+  const failureReportColumns = [
     {
-      name: (
-        <>
-          <div>Last Updated Date</div>
-        </>
-      ),
-      selector: (row) => row?.itemHeaderStrategy,
+      id: "failureReportPartNumber",
+      name: <div>Part #</div>,
+      selector: (row) => row.partNumber,
       wrap: true,
-      sortable: true,
-      format: (row) => row?.itemHeaderStrategy,
+      sortable: false,
+    },
+    {
+      id: "failureReportQuantity",
+      name: <div>Quantity</div>,
+      selector: (row) => row.quantity || "NA",
+      wrap: true,
+      sortable: false,
+    },
+    {
+      id: "failureReportSubAssembly",
+      name: <div>Sub-Assembly</div>,
+      selector: (row) => row?.subAssembly || "NA",
+      wrap: true,
+      sortable: false,
       // minWidth: "150px",
       // maxWidth: "150px",
     },
     {
-      name: (
-        <>
-          <div>Sensor ID</div>
-        </>
-      ),
-      selector: (row) => row?.taskType,
+      id: "failureReportWarrenty",
+      name: <div>Warranty</div>,
+      selector: (row) => row?.warranty || "NA",
       wrap: true,
-      sortable: true,
-      format: (row) => row?.taskType,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>SMU ID</div>
-        </>
-      ),
-      selector: (row) => row?.quantity,
+      id: "failureReportFailureDate",
+      name: <div>Failure Date</div>,
+      selector: (row) => row?.failureDate,
       wrap: true,
-      sortable: true,
-      format: (row) => row?.quantity,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>SMU Type</div>
-        </>
-      ),
-      selector: (row) => row?.recommendedValue,
+      id: "failureReportRepairDate",
+      name: <div>Repair Date</div>,
+      selector: (row) => row?.repairDate,
       wrap: true,
       sortable: true,
-      format: (row) => row?.recommendedValue,
     },
     {
-      name: (
-        <>
-          <div>Actions</div>
-        </>
-      ),
-      // selector: (row) => row?.bundleFlag,
+      id: "failureReportHoursOnPart",
+      name: <div>Hours On Part</div>,
+      selector: (row) => row?.hourseOnPart || "NA",
       wrap: true,
-      sortable: true,
-      // format: (row) => row?.bundleFlag,
+      sortable: false,
+    },
+    {
+      id: "failureReportActions",
+      name: <div>Actions</div>,
+      wrap: true,
+      sortable: false,
       cell: (row) => (
         <div
           className="d-flex justify-content-center align-items-center row-svg-div"
@@ -803,104 +519,142 @@ const EquipmentMaster = () => {
         >
           <EditOutlinedIcon
             className="mr-1"
-            onClick={() => handleShowReportDetails("Usage Report", "usage")}
+            onClick={() =>
+              handleShowReportDetails(
+                "Failure Report",
+                EQUIPMENT_FAILURE_REPORT_DETAILS,
+                row
+              )
+            }
           />
           <DeleteOutlineOutlinedIcon />
         </div>
       ),
     },
   ];
+
+  // usage details columns
+  const usageDetailsColumns = [
+    {
+      id: "usageDetailsCurrentUsage",
+      name: <div>Current Usage</div>,
+      selector: (row) => row.currentUsage || "NA",
+      wrap: true,
+      sortable: false,
+    },
+    {
+      id: "usageDetailsAverageUsage",
+      name: <div>Average Usage</div>,
+      selector: (row) => row.averageUsage || "NA",
+      wrap: true,
+      sortable: false,
+    },
+    {
+      id: "usageDetailsLastUpdatedDate",
+      name: <div>Last Updated Date</div>,
+      selector: (row) => row?.updatedAt,
+      wrap: true,
+      sortable: false,
+      // minWidth: "150px",
+      // maxWidth: "150px",
+    },
+    {
+      id: "usageDetailsSensorId",
+      name: <div>Sensor ID</div>,
+      selector: (row) => row?.sensorId || "NA",
+      wrap: true,
+      sortable: false,
+    },
+    {
+      id: "usageDetailsSMUId",
+      name: <div>SMU ID</div>,
+      selector: (row) => row?.smuId || "NA",
+      wrap: true,
+      sortable: false,
+    },
+    {
+      id: "usageDetailsSMUType",
+      name: <div>SMU Type</div>,
+      selector: (row) => row?.smuType || "NA",
+      wrap: true,
+      sortable: false,
+    },
+    {
+      id: "usageDetailsActions",
+      name: <div>Actions</div>,
+      wrap: true,
+      sortable: false,
+      cell: (row) => (
+        <div
+          className="d-flex justify-content-center align-items-center row-svg-div"
+          style={{ minWidth: "180px !important" }}
+        >
+          <EditOutlinedIcon
+            className="mr-1"
+            onClick={() =>
+              handleShowReportDetails(
+                "Usage Report",
+                EQUIPMNT_USAGE_REPORT_DETAILS,
+                row
+              )
+            }
+          />
+          <DeleteOutlineOutlinedIcon />
+        </div>
+      ),
+    },
+  ];
+
+  // Usage Smu columns
   const usageSmuItemColumns = [
     {
-      name: (
-        <>
-          <div>SMU ID/Sensor ID</div>
-        </>
-      ),
+      name: <div>SMU ID/Sensor ID</div>,
       selector: (row) => row.itemName,
       wrap: true,
-      sortable: true,
-      format: (row) => row.itemName,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>SMU Type</div>
-        </>
-      ),
+      name: <div>SMU Type</div>,
       selector: (row) => row.itemDescription,
       wrap: true,
-      sortable: true,
-      format: (row) => row.itemDescription,
+      sortable: false,
     },
-
     {
-      name: (
-        <>
-          <div>Usage ID</div>
-        </>
-      ),
+      name: <div>Usage ID</div>,
       selector: (row) => row?.itemHeaderStrategy,
       wrap: true,
-      sortable: true,
-      format: (row) => row?.itemHeaderStrategy,
+      sortable: false,
       // minWidth: "150px",
       // maxWidth: "150px",
     },
     {
-      name: (
-        <>
-          <div>Reading Date</div>
-        </>
-      ),
+      name: <div>Reading Date</div>,
       selector: (row) => row?.taskType,
       wrap: true,
-      sortable: true,
-      format: (row) => row?.taskType,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Unit</div>
-        </>
-      ),
+      name: <div>Unit</div>,
       selector: (row) => row?.quantity,
       wrap: true,
-      sortable: true,
-      format: (row) => row?.quantity,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Reading Description</div>
-        </>
-      ),
+      name: <div>Reading Description</div>,
       selector: (row) => row?.recommendedValue,
       wrap: true,
-      sortable: true,
-      format: (row) => row?.recommendedValue,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Overwrite/Error</div>
-        </>
-      ),
+      name: <div>Overwrite/Error</div>,
       selector: (row) => row?.recommendedValue,
       wrap: true,
-      sortable: true,
-      format: (row) => row?.recommendedValue,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Actions</div>
-        </>
-      ),
-      // selector: (row) => row?.bundleFlag,
+      name: <div>Actions</div>,
       wrap: true,
-      sortable: true,
-      // format: (row) => row?.bundleFlag,
+      sortable: false,
       cell: (row) => (
         <div
           className="d-flex justify-content-center align-items-center row-svg-div"
@@ -908,7 +662,13 @@ const EquipmentMaster = () => {
         >
           <EditOutlinedIcon
             className="mr-1"
-            onClick={() => handleShowReportDetails("Usage Report", "usageSmu")}
+            onClick={() =>
+              handleShowReportDetails(
+                "Usage Report",
+                EQUIPMENT_USAGE_SMU_REPORT_DETAILS,
+                row
+              )
+            }
           />
           <DeleteOutlineOutlinedIcon />
         </div>
@@ -916,21 +676,51 @@ const EquipmentMaster = () => {
     },
   ];
 
-  //
-  const handleShowReportDetails = (title, reportType) => {
+  // show the model
+  const handleShowReportDetails = (title, reportType, row) => {
+    setModelHeaderTitle(title);
+    setModelContentReportType(reportType);
+    setModelContentReportObj(row);
     setShowModal(true);
-    setReportModalHeader(title);
-    setReportType(reportType);
   };
 
-  // view search list details
+  // view Selected Search equipment details
   const handleViewDetails = (id) => {
-    const _searchList = [...searchList];
-    const updatedSearchList = _searchList.map((data) => ({
-      ...data,
-      active: data.id === id ? true : false,
-    }));
-    setSearchList(updatedSearchList);
+    setLoading(true);
+    setPageNo(1);
+    const rUrl = Get_Equipment_Datails_By_Id_GET + id;
+    callGetApi(
+      null,
+      rUrl,
+      (response) => {
+        if (response.status === API_SUCCESS) {
+          const responseData = response.data;
+
+          const {
+            contractRecords,
+            warrantyRecords,
+            serviceRecords,
+            failureRecords,
+            usageRecords,
+            sensorRecords,
+            ...restEquipmentDetails
+          } = responseData;
+          setSelectedEquipmentId(id);
+          setContractRecordsList(contractRecords);
+          setWarrantyDetailsList(warrantyRecords);
+          setServiceReportList(serviceRecords);
+          setFailureReportList(failureRecords);
+          setUsageDetailsList(usageRecords);
+          setSelectEquipmentDetails(responseData);
+          setLoading(false);
+        } else {
+          setLoading(false);
+        }
+      },
+      (error) => {
+        setLoading(false);
+      }
+    );
   };
 
   // page 1 content
@@ -944,8 +734,10 @@ const EquipmentMaster = () => {
                 <p className="text-light-60 font-size-12 m-0 font-weight-500">
                   Manufacturer
                 </p>
-                <p className="text-primary font-size-12 mt-1 font-weight-500">
-                  Caterpillar
+                <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                  {isEmpty(selectEquipmentDetails.maker)
+                    ? "NA"
+                    : selectEquipmentDetails.maker}
                 </p>
               </div>
             </div>
@@ -954,8 +746,10 @@ const EquipmentMaster = () => {
                 <p className="text-light-60 font-size-12 m-0 font-weight-500">
                   Model
                 </p>
-                <p className="text-primary font-size-12 mt-1 font-weight-500">
-                  336D2 L
+                <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                  {isEmpty(selectEquipmentDetails.model)
+                    ? "NA"
+                    : selectEquipmentDetails.model}
                 </p>
               </div>
             </div>
@@ -972,7 +766,9 @@ const EquipmentMaster = () => {
                   Engine Model
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500">
-                  C9 ACERT
+                  {isEmpty(selectEquipmentDetails.engineModel)
+                    ? "NA"
+                    : selectEquipmentDetails.engineModel}
                 </p>
               </div>
             </div>
@@ -982,7 +778,9 @@ const EquipmentMaster = () => {
                   Operating Weight
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500">
-                  80648 lb
+                  {isEmpty(selectEquipmentDetails.operator)
+                    ? "NA"
+                    : selectEquipmentDetails.operator}
                 </p>
               </div>
             </div>
@@ -991,7 +789,9 @@ const EquipmentMaster = () => {
                 Net Flywheel Power
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
-                268 HP
+                {isEmpty(selectEquipmentDetails.netFlywheelPower)
+                  ? "NA"
+                  : selectEquipmentDetails.netFlywheelPower}
               </p>
             </div>
           </div>
@@ -1043,48 +843,64 @@ const EquipmentMaster = () => {
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
                 Customer Id
               </p>
-              <p className="text-primary font-size-12 mt-1 font-weight-500">
-                Caterpillar
+              <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                {isEmpty(selectEquipmentDetails.customerId)
+                  ? "NA"
+                  : selectEquipmentDetails.customerId}
               </p>
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
                 Customer Name
               </p>
-              <p className="text-primary font-size-12 mt-1 font-weight-500">
-                336D2 L
+              <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase ">
+                {/* {isEmpty(selectEquipmentDetails.customerName) ? "NA" : selectEquipmentDetails.customerName} */}
+                {isEmpty(selectEquipmentDetails.customer)
+                  ? "NA"
+                  : selectEquipmentDetails.customer}
               </p>
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
                 Contact Person
               </p>
-              <p className="text-primary font-size-12 mt-1 font-weight-500">
-                268 HP
+              <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                {/* {isEmpty(selectEquipmentDetails.contactPhone)
+                  ? "NA"
+                  : selectEquipmentDetails.contactPhone} */}
+                {isEmpty(selectEquipmentDetails.contact)
+                  ? "NA"
+                  : selectEquipmentDetails.contact}
               </p>
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
                 Customer Group
               </p>
-              <p className="text-primary font-size-12 mt-1 font-weight-500">
-                C9 ACERT
+              <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase ">
+                {isEmpty(selectEquipmentDetails.customerGroup)
+                  ? "NA"
+                  : selectEquipmentDetails.customerGroup}
               </p>
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
                 Customer Segment
               </p>
-              <p className="text-primary font-size-12 mt-1 font-weight-500">
-                80648 lb
+              <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase ">
+                {isEmpty(selectEquipmentDetails.customerSegment)
+                  ? "NA"
+                  : selectEquipmentDetails.customerSegment}
               </p>
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
                 Last Owner
               </p>
-              <p className="text-primary font-size-12 mt-1 font-weight-500">
-                268 HP
+              <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase ">
+                {isEmpty(selectEquipmentDetails.owner)
+                  ? "NA"
+                  : selectEquipmentDetails.owner}
               </p>
             </div>
           </div>
@@ -1096,8 +912,10 @@ const EquipmentMaster = () => {
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
                 Fleet number
               </p>
-              <p className="text-primary font-size-12 mt-1 font-weight-500">
-                20
+              <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase ">
+                {isEmpty(selectEquipmentDetails.fleetNo)
+                  ? "NA"
+                  : selectEquipmentDetails.fleetNo}
               </p>
             </div>
             <div className="col-lg-6 col-md-6 col-sm-12 col-12 mt-3">
@@ -1105,7 +923,10 @@ const EquipmentMaster = () => {
                 Contact Address
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
-                8501 Willow Avenue, Los Angeles, CA 90037
+                NA
+                {/* {selectEquipmentDetails.regionOrState +
+                  "," +
+                  selectEquipmentDetails.country} */}
               </p>
             </div>
             <div className="col-lg-6 col-md-6 col-sm-12 col-12 mt-3">
@@ -1113,7 +934,9 @@ const EquipmentMaster = () => {
                 Geo codes
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
-                Latitude: 34.051480 Longitude: -117.973470
+                {isEmpty(selectEquipmentDetails.geocode)
+                  ? "NA"
+                  : selectEquipmentDetails.geocode}
               </p>
             </div>
             <div className="col-lg-6 col-md-6 col-sm-12 col-12 mt-3">
@@ -1121,7 +944,9 @@ const EquipmentMaster = () => {
                 Primary Contact
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
-                Olive Serrano
+                {isEmpty(selectEquipmentDetails.contact)
+                  ? "NA"
+                  : selectEquipmentDetails.contact}
               </p>
             </div>
             <div className="col-lg-6 col-md-6 col-sm-12 col-12 mt-3">
@@ -1129,7 +954,12 @@ const EquipmentMaster = () => {
                 Moved In/Out
               </p>
               <div className="equipment-switch">
-                <Switch {...label} defaultChecked />
+                <Switch
+                  {...Switch_label_Object}
+                  checked={
+                    selectEquipmentDetails.movedInOrOutFlag ? true : false
+                  }
+                />
               </div>
             </div>
             <div className="col-lg-6 col-md-6 col-sm-12 col-12 mt-3">
@@ -1137,7 +967,9 @@ const EquipmentMaster = () => {
                 Previous Location
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
-                8501 Willow Avenue, Los Angeles, CA 90037
+                {isEmpty(selectEquipmentDetails.previousLocation)
+                  ? "NA"
+                  : selectEquipmentDetails.previousLocation}
               </p>
             </div>
             <div className="col-lg-6 col-md-6 col-sm-12 col-12 mt-3">
@@ -1145,7 +977,9 @@ const EquipmentMaster = () => {
                 New Location
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
-                8501 Willow Avenue, Los Angeles, CA 90037
+                {isEmpty(selectEquipmentDetails.newLocation)
+                  ? "NA"
+                  : selectEquipmentDetails.newLocation}
               </p>
             </div>
             <div className="col-lg-6 col-md-6 col-sm-12 col-12 mt-3">
@@ -1153,7 +987,9 @@ const EquipmentMaster = () => {
                 Moved In Date
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
-                02/08/2023
+                {isEmpty(selectEquipmentDetails.movedInDate)
+                  ? "NA"
+                  : selectEquipmentDetails.movedInDate}
               </p>
             </div>
           </div>
@@ -1168,14 +1004,14 @@ const EquipmentMaster = () => {
       <>
         <h5 className="font-weight-500 mt-4 ">Contract Details</h5>
         <EquipmentDataTable
-          columns={contractItemColumns}
-          data={contarctData}
+          columns={contractDetailsColumns}
+          data={contractRecordsList}
           title="Contracts"
         />
         <h5 className="font-weight-500 mt-5 ">Warranty Details</h5>
         <EquipmentDataTable
-          columns={warrentyItemColumns}
-          data={contarctData}
+          columns={warrentyDetailsColumns}
+          data={warrantyDetailsList}
           title="Warranty"
         />
       </>
@@ -1262,14 +1098,14 @@ const EquipmentMaster = () => {
       <>
         <h5 className="font-weight-500 mt-4 ">Service Report</h5>
         <EquipmentDataTable
-          columns={serviceItemColumns}
-          data={warrentyData}
+          columns={serviceReportColumns}
+          data={serviceReportList}
           title={"Service"}
         />
         <h5 className="font-weight-500 mt-5 ">Failure report </h5>
         <EquipmentDataTable
-          columns={failureItemColumns}
-          data={warrentyData}
+          columns={failureReportColumns}
+          data={failureReportList}
           title={"Failures"}
         />
       </>
@@ -1282,8 +1118,8 @@ const EquipmentMaster = () => {
       <>
         <h5 className="font-weight-500 mt-4 ">Usage Details </h5>
         <EquipmentDataTable
-          columns={usageItemColumns}
-          data={warrentyData}
+          columns={usageDetailsColumns}
+          data={usageDetailsList}
           title="Usage"
         />
         <EquipmentDataTable
@@ -1301,56 +1137,83 @@ const EquipmentMaster = () => {
         <div className="container-fluid">
           <h5 className="font-weight-600 mb-0">Equipment Master</h5>
           <p className="mb-1 mt-4 font-size-12">Select the search criteria</p>
-          <EquipmentSearchMaster falgType="equipment" />
+          <EquipmentSearchMaster
+            falgType="equipment"
+            searchFlag={SEARCH_FALG_EQUIPMENT}
+            setSearchList={setSearchList}
+          />
           <div className="row mt-3 mb-5">
-            <SearchListMaster
-              searchList={searchList}
-              viewEquipmentDetails={handleViewDetails}
-            />
+            {searchList.length !== 0 && (
+              <EquipmentMasterSearchList
+                equipmentSearchList={searchList}
+                selectedEquipmentId={selectedEquipmentId}
+                handleViewDetails={handleViewDetails}
+              />
+            )}
             <div className="col-xl-8 col-lg-7 col-md-12 col-sm-12 equipment-master-chart mt-custom">
-              <div className="">
-                <div className="bg-white p-3 border-radius-10 ">
-                  <div className="d-flex align-items-center justify-content-between equipment-pagination">
-                    <h5 className="font-weight-600 mb-0">
-                      CHAIN EXCAVATOR - 336D2 L
-                    </h5>
-                    <Stack spacing={2}>
-                      <Pagination
-                        boundaryCount={0}
-                        siblingCount={0}
-                        shape="rounded"
-                        hidePrevButton={pageNo === 1 && true}
-                        hideNextButton={pageNo === 6 && true}
-                        count={6}
-                        page={pageNo}
-                        onChange={handlePageChange}
-                      />
-                    </Stack>
-                  </div>
-                  <div className="d-block mt-3">
-                    <h6 className="text-primary font-weight-600">ZCT01096</h6>
-                    <p className="text-light-60 font-size-12 mb-0">
-                      336D2 L - 2015
-                    </p>
-                  </div>
-                </div>
-                {pageNo === 1 && viewDetailsPage_1()}
-                {pageNo === 2 && viewDetailsPage_2()}
-                {pageNo === 3 && viewDetailsPage_3()}
-                {pageNo === 4 && viewDetailsPage_4()}
-                {pageNo === 5 && viewDetailsPage_5()}
-                {pageNo === 6 && viewDetailsPage_6()}
-              </div>
+              {loading ? (
+                <LoadingProgress />
+              ) : (
+                <>
+                  {selectedEquipmentId && (
+                    <div className="">
+                      <div className="bg-white p-3 border-radius-10 ">
+                        <div className="d-flex align-items-center justify-content-between equipment-pagination">
+                          <h5 className="font-weight-600 mb-0 text-uppercase">
+                            {`${selectEquipmentDetails.description} - ${selectEquipmentDetails.model}`}
+                          </h5>
+                          <Stack spacing={2}>
+                            <Pagination
+                              boundaryCount={0}
+                              siblingCount={0}
+                              shape="rounded"
+                              hidePrevButton={pageNo === 1 && true}
+                              hideNextButton={pageNo === 6 && true}
+                              count={6}
+                              page={pageNo}
+                              onChange={handlePageChange}
+                            />
+                          </Stack>
+                        </div>
+                        <div className="d-block mt-3">
+                          <h6 className="text-primary font-weight-600 text-uppercase">
+                            {selectEquipmentDetails.equipmentNumber}
+                          </h6>
+                          <p className="text-light-60 font-size-12 mb-0 text-uppercase">
+                            {selectEquipmentDetails.model}
+                          </p>
+                        </div>
+                      </div>
+                      {pageNo === 1 && viewDetailsPage_1()}
+                      {pageNo === 2 && viewDetailsPage_2()}
+                      {pageNo === 3 && viewDetailsPage_3()}
+                      {pageNo === 4 && viewDetailsPage_4()}
+                      {pageNo === 5 && viewDetailsPage_5()}
+                      {pageNo === 6 && viewDetailsPage_6()}
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           </div>
         </div>
       </div>
-      {showModal && (
+      {/* {showModal && (
         <EquipmentReportDetails
           show={showModal}
           hideModel={() => setShowModal(false)}
-          header={reportModalHeader}
-          reportType={reportType}
+          header={modelHeaderTitle}
+          reportType={modelContentReportType}
+        />
+      )} */}
+
+      {showModal && (
+        <EquipmentReportDetail
+          show={showModal}
+          hideModal={() => setShowModal(false)}
+          headerTitle={modelHeaderTitle}
+          contentReportType={modelContentReportType}
+          contetntReportObj={modelContentReportObj}
         />
       )}
     </>

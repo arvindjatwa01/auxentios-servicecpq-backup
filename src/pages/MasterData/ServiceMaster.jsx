@@ -1,23 +1,23 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+
 import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
-import { Link } from "react-router-dom";
 import Pagination from "@mui/material/Pagination";
 import { Stack } from "@mui/material";
-import Select from "react-select";
-import SearchIcon from "@mui/icons-material/Search";
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-import DataTable from "react-data-table-component";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import $ from "jquery";
+
 import EquipmentSearchMaster from "./EquipmentSearchMaster";
 import SearchListMaster from "./SearchListMaster";
 import WithoutSearchDataTable from "./WithoutSearchDataTable";
-import EquipmentReportDetails from "./EquipmentReportDetails";
+import LabourAndServiceReport from "./LabourAndServiceMaster/LabourAndServiceReport";
+import {
+  LABOUR_AND_SERVICE_ERP_DETAILS,
+  LABOUR_AND_SERVICE_PRICE_DETAILS,
+} from "./equipmentMasterConstants";
 
 const tempdata = [
   {
@@ -210,9 +210,11 @@ const dummySearchServiceList = [
 
 const ServiceMaster = () => {
   const [bundleItems, setBundleItems] = useState([...tempdata]);
-  const [reportModalHeader, setReportModalHeader] = useState("");
-  const [reportType, setReportType] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [modelHeaderTitle, setModelHeaderTitle] = useState("");
+  const [modelContentReportType, setModelContentReportType] = useState("");
+  const [modelContentReportObj, setModelContentReportObj] = useState(null);
+
   const [laborPageNo, setLaborPageNo] = useState(1);
   const [servicePageNo, setServicePageNo] = useState(1);
   const [globalLaborList, setGlobalLaborList] = useState([
@@ -223,66 +225,35 @@ const ServiceMaster = () => {
   ]);
   const [erpItemsService, setErpItemsService] = useState([...erpservicedata]);
   const [value, setValue] = React.useState("1");
+
+  useEffect(() => {
+    if (!showModal) {
+      setModelHeaderTitle("");
+      setModelContentReportType("");
+      setModelContentReportObj(null);
+    }
+  }, [showModal]);
+
   //Labor Page Change
   const handleLaborPageChange = (event, value) => {
     setLaborPageNo(value);
   };
+
   const handleServicePageChange = (event, value) => {
     setServicePageNo(value);
   };
+
   // modal component function
-  const handleShowReportDetails = (title, reportType) => {
+  const handleShowReportDetails = (title, reportType, row) => {
+    setModelHeaderTitle(title);
+    setModelContentReportType(reportType);
+    setModelContentReportObj(row);
     setShowModal(true);
-    setReportModalHeader(title);
-    setReportType(reportType);
   };
-  const laborOptions = [
-    { value: "A", label: "Activity ID" },
-    { value: "B", label: "Activity Name" },
-    { value: "C", label: "Supplying Vendor" },
-  ];
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-  const addMoreSearchCritria = () => {
-    const _searchSelector = [...searchSelector];
-    _searchSelector.push({
-      id: searchSelector.length + 1,
-      selectOperator: "",
-      selectFamily: "",
-      inputSearch: "",
-      selectOptions: [],
-      selectedOption: "",
-    });
-    if (_searchSelector.length <= 2) {
-      setSearchSelector(_searchSelector);
-    }
-  };
-  const handleClickOnSearchedList = (currentItem, id) => {
-    let tempArray = [...searchSelector];
-    let obj = tempArray[id];
-    obj.inputSearch = currentItem;
-    obj.selectedOption = currentItem;
-    tempArray[id] = obj;
-    setSearchSelector([...tempArray]);
-    $(`.scrollbar-${id}`).css("display", "none");
-  };
-  const [searchSelector, setSearchSelector] = useState([
-    {
-      id: 0,
-      selectFamily: "",
-      selectOperator: "",
-      inputSearch: "",
-      selectOptions: [],
-      selectedOption: "",
-      itemType: { label: "", value: "" },
-      itemTypeOperator: "",
-      selectedKeyValue: "",
-    },
-  ]);
-  const removeSearchCritria = () => {
-    setSearchSelector([]);
-  };
+
   const [labormasterpagination, setLabormasterpagination] = React.useState(1);
   const laborPaginationChange = (event, value) => {
     setLabormasterpagination(value);
@@ -429,7 +400,11 @@ const ServiceMaster = () => {
           <EditOutlinedIcon
             className="mr-1"
             onClick={() =>
-              handleShowReportDetails("Price Details", "laborPrice")
+              handleShowReportDetails(
+                "Price Details",
+                LABOUR_AND_SERVICE_PRICE_DETAILS,
+                row
+              )
             }
           />
           <DeleteOutlineOutlinedIcon />
@@ -567,7 +542,11 @@ const ServiceMaster = () => {
           <EditOutlinedIcon
             className="mr-1"
             onClick={() =>
-              handleShowReportDetails("Price Details", "srvicePrice")
+              handleShowReportDetails(
+                "Price Details",
+                LABOUR_AND_SERVICE_ERP_DETAILS,
+                row
+              )
             }
           />
           <DeleteOutlineOutlinedIcon />
@@ -635,29 +614,6 @@ const ServiceMaster = () => {
       format: (row) => row?.quantity,
     },
   ];
-  const customStyles = {
-    rows: {
-      style: {
-        minHeight: "72px",
-      },
-    },
-    headCells: {
-      style: {
-        paddingLeft: "8px",
-        paddingRight: "8px",
-        backgroundColor: "#872ff7",
-        color: "#fff",
-        borderRight: "1px solid rgba(0,0,0,.12)",
-      },
-    },
-    cells: {
-      style: {
-        paddingLeft: "8px",
-        paddingRight: "8px",
-        borderRight: "1px solid rgba(0,0,0,.12)",
-      },
-    },
-  };
 
   const viewLaborDetails = (id) => {
     const _globalLaborList = [...globalLaborList];
@@ -1087,13 +1043,22 @@ const ServiceMaster = () => {
         </div>
       </div>
       {showModal && (
+        <LabourAndServiceReport
+          show={showModal}
+          hideModal={() => setShowModal(false)}
+          headerTitle={modelHeaderTitle}
+          contentReportType={modelContentReportType}
+          contetntReportObj={modelContentReportObj}
+        />
+      )}
+      {/* {showModal && (
         <EquipmentReportDetails
           show={showModal}
           hideModel={() => setShowModal(false)}
           header={reportModalHeader}
           reportType={reportType}
         />
-      )}
+      )} */}
     </>
   );
 };
