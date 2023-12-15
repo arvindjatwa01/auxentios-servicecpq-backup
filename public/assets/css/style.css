@@ -6600,6 +6600,10 @@ button.bg-dark:focus {
 .text-left {
   text-align: left !important; }
 
+.float-right-summary {
+  right: 18px;
+  position: absolute;
+}
 .text-right {
   text-align: right !important; }
 
