@@ -2757,7 +2757,7 @@ const CustomPortfolioAddUpdate = (props) => {
         strategyTask: strategyTabData.strategyTask?.value || "EMPTY",
         taskType: strategyTabData.taskType?.value || "EMPTY",
         optionalServices: _optionalServices,
-        // optionalServices: "",s
+        // optionalServices: "",
         responseTime: strategyTabData.responseTime?.value || "EMPTY",
         productHierarchy: strategyTabData.productHierarchy?.value || "EMPTY",
         geographic: strategyTabData.geographic?.value || "EMPTY",

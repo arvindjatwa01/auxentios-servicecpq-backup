@@ -350,7 +350,6 @@ export const Get_Customer_Master_Details_By_Id_GET = DATA_SVC_CUSTOMER;
 export const DATA_SVC_CONSUMABLE = DATA_SERVICE_URI + "consumable/";
 export const SEARCH_CONSUMABLE_MASTER = (endPath) => DATA_SVC_CONSUMABLE + `/search?search=${endPath}`;
 export const Get_Consumable_Master_Details_By_Id_GET = DATA_SVC_CONSUMABLE;
-
 //WorkList URIs
 export const WORKLIST = (pagination) => COMMON_SERVICE_URI + `worklist/cases${pagination}`
 export const CREATE_WORKLIST = () => COMMON_SERVICE_URI + `worklist/case`
