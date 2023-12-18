@@ -36,7 +36,7 @@ import {
   getRecentSolutionQuotes,
   getRecentQuotes,
 } from "../../services/index";
-import { SOLUTION_QUOTE_SEARCH } from "navigation/CONSTANTS";
+import { SOLUTION_QUOTE_CREATE, SOLUTION_QUOTE_SEARCH } from "navigation/CONSTANTS";
 
 const SolutionQuote = () => {
 
@@ -270,18 +270,35 @@ const SolutionQuote = () => {
         <div class="container-fluid ">
           <div className="d-flex align-items-center justify-content-between mt-2">
             <h5 className="font-weight-600 mb-0" style={{ fontSize: "18px" }}>Solution Quote</h5>
-            <div>
-              <Link to={SOLUTION_QUOTE_SEARCH} style={{ cursor: 'pointer' }} className="btn bg-primary text-white pull-right">
-                Search Quote<ChevronRightIcon className="" />
+            <div >
+              <Link
+                to={SOLUTION_QUOTE_CREATE}
+                className="btn bg-primary text-white"
+              >
+                Create New <ChevronRightIcon className="" />
               </Link>
             </div>
+            
           </div>
           <div className="card p-4 mt-5">
-
-            <div className="mt-5">
+            <div className="">
               {/* <h6 class="font-weight-600 text-grey mb-0">ANALYTICS</h6> */}
               <div className="recent-div p-3">
-                <h6 className="font-weight-600 text-grey mb-0">RECENT SOLUTION QUOTE</h6>
+                <div className="d-flex align-items-center justify-content-between">
+                  <h6 className="font-weight-600 text-grey mb-0">
+                    RECENT SOLUTION QUOTE
+                  </h6>
+                  <div>
+                    <Link
+                      to={SOLUTION_QUOTE_SEARCH}
+                      style={{ cursor: "pointer" }}
+                      className="btn bg-primary text-white pull-right"
+                    >
+                      Search Quote
+                      <ChevronRightIcon className="" />
+                    </Link>
+                  </div>
+                </div>
                 {recentSolutionQuoteData.length === 0 ? (
                   // <LoadingProgress />
                   "No Record Found"

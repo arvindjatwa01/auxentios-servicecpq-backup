@@ -743,12 +743,28 @@ export const CreateSolutionQuote = (props) => {
                                         </Typography>
 
                                         <CardWithEvalWrapper
-                                            onClick={() => { history.push("/portfolio/new") }}>
+                                            onClick={() => {
+                                                history.push({
+                                                    pathname: "/portfolio/new",
+                                                    state: {
+                                                        portfolioId: "",
+                                                        type: "new",
+                                                    }
+                                                })
+                                            }}>
                                             <SettingsSuggestTwoToneIcon sx={{ mx: 2, color: 'green' }} />Create Portfolio
                                         </CardWithEvalWrapper>
 
                                         <CardWithEvalWrapper
-                                            onClick={() => { history.push("/solutionBuilder/create") }}>
+                                            onClick={() => {
+                                                history.push({
+                                                    pathname: "/solutionBuilder/create",
+                                                    state: {
+                                                        portfolioId: "",
+                                                        type: "new",
+                                                    }
+                                                })
+                                            }}>
                                             <ManageAccountsTwoToneIcon sx={{ mx: 2, color: 'blue' }} />Create Solution
                                         </CardWithEvalWrapper>
                                         {/* <Card variant="outlined" onClick={() => { history.push("/solutionBuilder/analytics") }}
