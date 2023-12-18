@@ -2728,6 +2728,12 @@ const CustomPortfolioAddUpdate = (props) => {
   const handleNextClick = (e) => {
     try {
       let { id } = e.target;
+      // optionsalSerivce
+      let _optionalServices = "";
+      if (selectedService.length !== 0) {
+        _optionalServices = selectedService.map((obj) => obj.itemId).join(",");
+      }
+
       const requestObj = {
         ...defaultCustomPortfolioObj,
         customPortfolioId: customPortfolioRecordId,
@@ -2750,8 +2756,8 @@ const CustomPortfolioAddUpdate = (props) => {
         usageCategory: strategyTabData.categoryUsage?.value || "EMPTY",
         strategyTask: strategyTabData.strategyTask?.value || "EMPTY",
         taskType: strategyTabData.taskType?.value || "EMPTY",
-        // optionalServices: _optionalServices,
-        optionalServices: "",
+        optionalServices: _optionalServices,
+        // optionalServices: "",s
         responseTime: strategyTabData.responseTime?.value || "EMPTY",
         productHierarchy: strategyTabData.productHierarchy?.value || "EMPTY",
         geographic: strategyTabData.geographic?.value || "EMPTY",

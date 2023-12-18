@@ -1,69 +1,51 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import Select from "react-select";
-import SearchIcon from "@mui/icons-material/Search";
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+
 import Pagination from "@mui/material/Pagination";
 import { Stack } from "@mui/material";
-import $ from "jquery";
+
+import { callGetApi } from "services/ApiCaller";
+import { API_SUCCESS } from "services/ResponseCode";
+import { Get_Customer_Master_Details_By_Id_GET } from "services/CONSTANTS";
+
 import EquipmentSearchMaster from "./EquipmentSearchMaster";
-import SearchListMaster from "./SearchListMaster";
-import { defaultCustomerSearchList } from "./equipmentConstant";
+import { SEARCH_FLAG_CUSTOMER } from "./equipmentMasterConstants";
+import LoadingProgress from "pages/Repair/components/Loader";
+import CustomerMasterSearchList from "./CustomerMaster/CustomerMasterSearchList";
+import { isEmpty } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/textUtilities";
 
 const CustomerMaster = () => {
-  const [searchList, setSearchList] = useState([...defaultCustomerSearchList]);
-  const removeSearchCritria = () => {
-    setSearchSelector([]);
-  };
-  const addMoreSearchCritria = () => {
-    const _searchSelector = [...searchSelector];
-    _searchSelector.push({
-      id: searchSelector.length + 1,
-      selectOperator: "",
-      selectFamily: "",
-      inputSearch: "",
-      selectOptions: [],
-      selectedOption: "",
-    });
-    if (_searchSelector.length <= 2) {
-      setSearchSelector(_searchSelector);
-    }
-  };
-  const handleClickOnSearchedList = (currentItem, id) => {
-    let tempArray = [...searchSelector];
-    let obj = tempArray[id];
-    obj.inputSearch = currentItem;
-    obj.selectedOption = currentItem;
-    tempArray[id] = obj;
-    setSearchSelector([...tempArray]);
-    $(`.scrollbar-${id}`).css("display", "none");
-  };
-  const [searchSelector, setSearchSelector] = useState([
-    {
-      id: 0,
-      selectFamily: "",
-      selectOperator: "",
-      inputSearch: "",
-      selectOptions: [],
-      selectedOption: "",
-      itemType: { label: "", value: "" },
-      itemTypeOperator: "",
-      selectedKeyValue: "",
-    },
-  ]);
+  const [searchList, setSearchList] = useState([]);
+  const [selectedCustomerId, setSelectedCustomerId] = useState(null);
+  const [selectedCustomerDetails, setSelectedCustomerDetails] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [pageNo, setPageNo] = useState(1);
+
   const handlePageChange = (event, value) => {
     setPageNo(value);
   };
 
   // view search list details
-  const viewEquipmentDetails = (id) => {
-    const _searchList = [...searchList];
-    const updatedSearchList = _searchList.map((data) => ({
-      ...data,
-      active: data.id === id ? true : false,
-    }));
-    setSearchList(updatedSearchList);
+  const handleViewSelectSearchRowDetails = (id) => {
+    setLoading(true);
+    setPageNo(1);
+    const rUrl = Get_Customer_Master_Details_By_Id_GET + id;
+    callGetApi(
+      null,
+      rUrl,
+      (response) => {
+        if (response.status === API_SUCCESS) {
+          const responseData = response.data;
+          setSelectedCustomerId(id);
+          setSelectedCustomerDetails(responseData);
+          setLoading(false);
+        } else {
+          setLoading(false);
+        }
+      },
+      (error) => {
+        setLoading(false);
+      }
+    );
   };
 
   // page 1 details
@@ -77,8 +59,10 @@ const CustomerMaster = () => {
                 <p className="text-light-60 font-size-12 m-0 font-weight-500">
                   Customer ID
                 </p>
-                <p className="text-primary font-size-12 mt-1 font-weight-500">
-                  1011453
+                <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                  {isEmpty(selectedCustomerDetails.customerId)
+                    ? "NA"
+                    : selectedCustomerDetails.customerId}
                 </p>
               </div>
             </div>
@@ -87,8 +71,10 @@ const CustomerMaster = () => {
                 <p className="text-light-60 font-size-12 m-0 font-weight-500">
                   Customer Name
                 </p>
-                <p className="text-primary font-size-12 mt-1 font-weight-500">
-                  PROVINCIAL MUNICIPALITY OF CHANCHAMAYO
+                <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                  {isEmpty(selectedCustomerDetails.fullName)
+                    ? "NA"
+                    : selectedCustomerDetails.fullName}
                 </p>
               </div>
             </div>
@@ -97,8 +83,10 @@ const CustomerMaster = () => {
                 <p className="text-light-60 font-size-12 m-0 font-weight-500">
                   Customer Type
                 </p>
-                <p className="text-primary font-size-12 mt-1 font-weight-500">
-                  Non Stockable
+                <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                  {isEmpty(selectedCustomerDetails.customerType)
+                    ? "NA"
+                    : selectedCustomerDetails.customerType}
                 </p>
               </div>
             </div>
@@ -107,8 +95,10 @@ const CustomerMaster = () => {
                 <p className="text-light-60 font-size-12 m-0 font-weight-500">
                   Customer Address
                 </p>
-                <p className="text-primary font-size-12 mt-1 font-weight-500">
-                  83 Princeton Court, Cupertino, CA 95014
+                <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                  {isEmpty(selectedCustomerDetails.addressDTO?.fullAddress)
+                    ? "NA"
+                    : selectedCustomerDetails.addressDTO?.fullAddress}
                 </p>
               </div>
             </div>
@@ -117,8 +107,10 @@ const CustomerMaster = () => {
                 <p className="text-light-60 font-size-12 m-0 font-weight-500">
                   District
                 </p>
-                <p className="text-primary font-size-12 mt-1 font-weight-500">
-                  Autown
+                <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                  {isEmpty(selectedCustomerDetails.addressDTO?.district)
+                    ? "NA"
+                    : selectedCustomerDetails.addressDTO?.district}
                 </p>
               </div>
             </div>
@@ -126,8 +118,10 @@ const CustomerMaster = () => {
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
                 Region/State
               </p>
-              <p className="text-primary font-size-12 mt-1 font-weight-500">
-                Millworth
+              <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                {isEmpty(selectedCustomerDetails.addressDTO?.regionOrState)
+                  ? "NA"
+                  : selectedCustomerDetails.addressDTO?.regionOrState}
               </p>
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
@@ -135,8 +129,10 @@ const CustomerMaster = () => {
                 <p className="text-light-60 font-size-12 m-0 font-weight-500">
                   Country
                 </p>
-                <p className="text-primary font-size-12 mt-1 font-weight-500">
-                  US
+                <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                  {isEmpty(selectedCustomerDetails.addressDTO?.country)
+                    ? "NA"
+                    : selectedCustomerDetails.addressDTO?.country}
                 </p>
               </div>
             </div>
@@ -145,8 +141,10 @@ const CustomerMaster = () => {
                 <p className="text-light-60 font-size-12 m-0 font-weight-500">
                   Website
                 </p>
-                <p className="text-primary font-size-12 mt-1 font-weight-500">
-                  multiplx@optonline.net
+                <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                  {isEmpty(selectedCustomerDetails.wwebsite)
+                    ? "NA"
+                    : selectedCustomerDetails.website}
                 </p>
               </div>
             </div>
@@ -155,8 +153,10 @@ const CustomerMaster = () => {
                 <p className="text-light-60 font-size-12 m-0 font-weight-500">
                   Email
                 </p>
-                <p className="text-primary font-size-12 mt-1 font-weight-500">
-                  multiplx@optonline.net
+                <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                  {isEmpty(selectedCustomerDetails.email)
+                    ? "NA"
+                    : selectedCustomerDetails.email}
                 </p>
               </div>
             </div>
@@ -169,32 +169,40 @@ const CustomerMaster = () => {
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
                 Contact
               </p>
-              <p className="text-primary font-size-12 mt-1 font-weight-500">
-                Carl Mayer
+              <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                {isEmpty(selectedCustomerDetails.contactType)
+                  ? "NA"
+                  : selectedCustomerDetails.contactType}
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
                 Payer Type
               </p>
-              <p className="text-primary font-size-12 mt-1 font-weight-500">
-                Self
+              <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                {isEmpty(selectedCustomerDetails.payerType)
+                  ? "NA"
+                  : selectedCustomerDetails.payerType}
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
                 Payer Name
               </p>
-              <p className="text-primary font-size-12 mt-1 font-weight-500">
-                PROVINCIAL MUNICIPALITY OF CHANCHAMAYO
+              <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                {isEmpty(selectedCustomerDetails.payer)
+                  ? "NA"
+                  : selectedCustomerDetails.payer}
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
                 Insurance
               </p>
-              <p className="text-primary font-size-12 mt-1 font-weight-500">
-                AIG
+              <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                {isEmpty(selectedCustomerDetails.insurance)
+                  ? "NA"
+                  : selectedCustomerDetails.insurance}
               </p>
             </div>
           </div>
@@ -202,6 +210,7 @@ const CustomerMaster = () => {
       </>
     );
   };
+
   // page 2 details
   const viewDetailsPage_2 = () => {
     return (
@@ -214,7 +223,9 @@ const CustomerMaster = () => {
                 Customer Segment
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
-                Mining
+                {isEmpty(selectedCustomerDetails.customerSegemnt)
+                  ? "NA"
+                  : selectedCustomerDetails.customerSegemnt}
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
@@ -222,7 +233,9 @@ const CustomerMaster = () => {
                 Customer Group
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
-                Medium Enterprise
+                {isEmpty(selectedCustomerDetails.customerGroup)
+                  ? "NA"
+                  : selectedCustomerDetails.customerGroup}
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
@@ -230,7 +243,9 @@ const CustomerMaster = () => {
                 Customer Type
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
-                Commercial
+                {isEmpty(selectedCustomerDetails.customerType)
+                  ? "NA"
+                  : selectedCustomerDetails.customerType}
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
@@ -238,7 +253,9 @@ const CustomerMaster = () => {
                 Customer Class
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
-                A Class
+                {isEmpty(selectedCustomerDetails.customerClass)
+                  ? "NA"
+                  : selectedCustomerDetails.customerClass}
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
@@ -246,7 +263,9 @@ const CustomerMaster = () => {
                 Customer Since
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
-                2012
+                {isEmpty(selectedCustomerDetails.createdAt)
+                  ? "NA"
+                  : selectedCustomerDetails.createdAt}
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
@@ -254,7 +273,9 @@ const CustomerMaster = () => {
                 Status
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
-                Active
+                {isEmpty(selectedCustomerDetails.status)
+                  ? "NA"
+                  : selectedCustomerDetails.status}
               </p>
             </div>
           </div>
@@ -267,7 +288,9 @@ const CustomerMaster = () => {
                 Customer Code
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
-                CU1011453
+                {isEmpty(selectedCustomerDetails.customerCode)
+                  ? "NA"
+                  : selectedCustomerDetails.customerCode}
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
@@ -275,7 +298,9 @@ const CustomerMaster = () => {
                 Customer Group
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
-                Medium Enterprise
+                {isEmpty(selectedCustomerDetails.customerGroup)
+                  ? "NA"
+                  : selectedCustomerDetails.customerGroup}
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
@@ -283,7 +308,9 @@ const CustomerMaster = () => {
                 Customer Industry
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
-                PROVINCIAL MUNICIPALITY OF CHANCHAMAYO
+                {isEmpty(selectedCustomerDetails.businessArea)
+                  ? "NA"
+                  : selectedCustomerDetails.businessArea}
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
@@ -291,7 +318,9 @@ const CustomerMaster = () => {
                 Customer Rating
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
-                3.4
+                {isEmpty(selectedCustomerDetails.customerRating)
+                  ? "NA"
+                  : selectedCustomerDetails.customerRating}
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
@@ -299,7 +328,9 @@ const CustomerMaster = () => {
                 Customer Type
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
-                Commercial
+                {isEmpty(selectedCustomerDetails.customerType)
+                  ? "NA"
+                  : selectedCustomerDetails.customerType}
               </p>
             </div>
           </div>
@@ -307,6 +338,7 @@ const CustomerMaster = () => {
       </>
     );
   };
+
   return (
     <div className="content-body" style={{ minHeight: "884px" }}>
       <div className="container-fluid">
@@ -314,43 +346,62 @@ const CustomerMaster = () => {
         <p className="mb-1 mt-4 font-size-12">
           Select the search criteria for customer
         </p>
-        <EquipmentSearchMaster falgType="customer" />
+        <EquipmentSearchMaster
+          falgType="customer"
+          searchFlag={SEARCH_FLAG_CUSTOMER}
+          setSearchList={setSearchList}
+        />
         <div className="row mt-3">
-          <SearchListMaster
-            searchList={searchList}
-            viewEquipmentDetails={viewEquipmentDetails}
-          />
+          {searchList.length !== 0 && (
+            <CustomerMasterSearchList
+              customerSearchList={searchList}
+              selectedCustomerId={selectedCustomerId}
+              handleViewDetails={handleViewSelectSearchRowDetails}
+            />
+          )}
           <div className="col-xl-8 col-lg-7 col-md-12 col-sm-12 equipment-master-chart mt-custom">
-            <div className="">
-              <div className="bg-white p-3 border-radius-10 ">
-                <div className="d-flex align-items-center justify-content-between equipment-pagination">
-                  <h5 className="font-weight-600 mb-0">
-                    Provincial Municipality of Chanchamayo
-                  </h5>
-                  <Stack spacing={2}>
-                    <Pagination
-                      boundaryCount={0}
-                      siblingCount={0}
-                      shape="rounded"
-                      hidePrevButton={pageNo === 1 && true}
-                      hideNextButton={pageNo === 2 && true}
-                      count={2}
-                      page={pageNo}
-                      onChange={handlePageChange}
-                    />
-                  </Stack>
-                </div>
-                <div className="d-block mt-3">
-                  <h6 className="text-primary font-weight-600">1011453</h6>
-                  <p className="text-light-60 font-size-12 mb-0">
-                    Small Retail - Energy
-                  </p>
-                </div>
-              </div>
+            {loading ? (
+              <LoadingProgress />
+            ) : (
+              <>
+                {selectedCustomerId && (
+                  <div className="">
+                    <div className="bg-white p-3 border-radius-10 ">
+                      <div className="d-flex align-items-center justify-content-between equipment-pagination">
+                        <h5 className="font-weight-600 mb-0">
+                          Provincial Municipality of Chanchamayo
+                        </h5>
+                        <Stack spacing={2}>
+                          <Pagination
+                            boundaryCount={0}
+                            siblingCount={0}
+                            shape="rounded"
+                            hidePrevButton={pageNo === 1 && true}
+                            hideNextButton={pageNo === 2 && true}
+                            count={2}
+                            page={pageNo}
+                            onChange={handlePageChange}
+                          />
+                        </Stack>
+                      </div>
+                      <div className="d-block mt-3">
+                        <h6 className="text-primary font-weight-600">
+                          {!isEmpty(selectedCustomerDetails.customerId) &&
+                            selectedCustomerDetails.customerId}
+                        </h6>
+                        <p className="text-light-60 font-size-12 mb-0">
+                          {!isEmpty(selectedCustomerDetails.fullName) &&
+                            selectedCustomerDetails.fullName}
+                        </p>
+                      </div>
+                    </div>
 
-              {pageNo === 1 && viewDetailsPage_1()}
-              {pageNo === 2 && viewDetailsPage_2()}
-            </div>
+                    {pageNo === 1 && viewDetailsPage_1()}
+                    {pageNo === 2 && viewDetailsPage_2()}
+                  </div>
+                )}
+              </>
+            )}
           </div>
         </div>
       </div>

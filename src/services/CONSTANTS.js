@@ -333,6 +333,23 @@ export const FETCH_BOTTOM_TEN = () => QUOTE_REST_SERVICE + "/bottom-10-quotes";
 // Master Equipment 
 export const validate_Coverage_Get_Url = DATA_SERVICE_URI + "equipment/validate-coverage"
 export const DATA_SVC_EQUIPMENT = () => DATA_SERVICE_URI + "equipment";
+export const SEARCH_EQUIPMENT = (endPath) => DATA_SVC_EQUIPMENT() + `/search?search=${endPath}`;
+export const Get_Equipment_Datails_By_Id_GET = DATA_SVC_EQUIPMENT() + "/";
+
+// Master Parts
+export const DATA_SVC_PARTS =  DATA_SERVICE_URI + "sparepart/";
+export const SEARCH_SPARC_PART = (endPath) =>  DATA_SVC_PARTS  + `/search?search=${endPath}`;
+export const Get_Spare_Parts_Datails_By_Id_GET = DATA_SVC_PARTS;
+
+// Master Customer
+export const DATA_SVC_CUSTOMER =  DATA_SERVICE_URI + "customer/";
+export const SEARCH_CUSTOMER_MASTER = (endPath) => DATA_SVC_CUSTOMER + `/search?search=${endPath}`;
+export const Get_Customer_Master_Details_By_Id_GET = DATA_SVC_CUSTOMER;
+
+// Master Consumble
+export const DATA_SVC_CONSUMABLE = DATA_SERVICE_URI + "consumable/";
+export const SEARCH_CONSUMABLE_MASTER = (endPath) => DATA_SVC_CONSUMABLE + `/search?search=${endPath}`;
+export const Get_Consumable_Master_Details_By_Id_GET = DATA_SVC_CONSUMABLE;
 
 //WorkList URIs
 export const WORKLIST = (pagination) => COMMON_SERVICE_URI + `worklist/cases${pagination}`

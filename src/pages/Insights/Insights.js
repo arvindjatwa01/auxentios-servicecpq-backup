@@ -23,6 +23,7 @@ import ServiceRecommend from "./ServiceRecommend";
 import JobhourRecommend from "./JobhourRecommend";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import DiscountGuidance from "./DiscountGuidance";
+import MarginRecommendation from "./MarginRecommendation";
 
 export default function Insights(props) {
   const [insightType, setInsightType] = useState("");
@@ -96,6 +97,7 @@ export default function Insights(props) {
           {insightType === 'service-recommend' && <ServiceRecommend handleSnack={handleSnack} />}
           {insightType === 'job-hr-recommend' && <JobhourRecommend handleSnack={handleSnack} />}
           {insightType === 'discount' && <DiscountGuidance handleSnack={handleSnack} />}
+          {insightType === 'margin' && <MarginRecommendation handleSnack={handleSnack} />}
         </div>
       </div>
     </Fragment>
