@@ -46,14 +46,69 @@ const EquipmentMaster = () => {
   const [selectedEquipmentId, setSelectedEquipmentId] = useState(null);
   const [selectEquipmentDetails, setSelectEquipmentDetails] = useState(null);
 
-  const [contractRecordsList, setContractRecordsList] = useState([]);
+  const [contractRecordsList, setContractRecordsList] = useState([
+    {
+      entitlementId: "CSA-PM-2000",
+      title: "CSA Premium Support",
+      category: "Event Based",
+      basis: "Time based",
+      amount: "12800",
+      currency: "USD",
+      validFor: "2000",
+      unitOfMeasure: "Hours",
+      startDate: "12.08.2022",
+      endDate: "12.08.2023",
+      startUsage: "3245",
+      endUsage: "5245",
+    },
+  ]);
   const [warrantyDetailsList, setWarrantyDetailsList] = useState([]);
-  const [serviceReportList, setServiceReportList] = useState([]);
-  const [failureReportList, setFailureReportList] = useState([]);
-  const [usageDetailsList, setUsageDetailsList] = useState([]);
+  const [serviceReportList, setServiceReportList] = useState([
+    {
+      reportNumber: "RKJ221031",
+      jobNumber: "WO90786",
+      engineModelNumber: "C9 ACERT",
+      engineSerialNumber: "25461036",
+      usage: "3185",
+      repairDate: "44865",
+      complaint: "SR6541",
+    },
+  ]);
+  const [failureReportList, setFailureReportList] = useState([
+    {
+      partNumber: "772471Ajx",
+      quantity: "",
+      subAssembly: "Hydraulic System",
+      warranty: "No",
+      failureDate: "44855",
+      repairDate: "44858",
+      hoursOnPart: "2103",
+      correction: "Lifting problem",
+    },
+  ]);
+  const [usageDetailsList, setUsageDetailsList] = useState([
+    {
+      currentUsage: "6500",
+      averageUsage: "240 / Month",
+      updatedAt: "",
+      sensorId: "NA",
+      smuId: "1270",
+      smuType: "Hours",
+    },
+  ]);
+  const [dailyUsageDetails, setDailyUsageDetails] = useState([
+    {
+      smuId: "1270",
+      smuType: "Hours",
+      usageId: "11009",
+      readingDate: "45220",
+      unitOfMeasure: "Hours",
+      readingDescription: "Ok",
+      overWritenError: "",
+    },
+  ]);
   const [pageNo, setPageNo] = useState(1);
 
-  
   const lifeCycleStatusData = [
     {
       month: "Jan",
@@ -466,7 +521,7 @@ const EquipmentMaster = () => {
     {
       id: "failureReportQuantity",
       name: <div>Quantity</div>,
-      selector: (row) => row.quantity || "NA",
+      selector: (row) => row.quantity || "1",
       wrap: true,
       sortable: false,
     },
@@ -503,7 +558,7 @@ const EquipmentMaster = () => {
     {
       id: "failureReportHoursOnPart",
       name: <div>Hours On Part</div>,
-      selector: (row) => row?.hourseOnPart || "NA",
+      selector: (row) => row?.hoursOnPart || "NA",
       wrap: true,
       sortable: false,
     },
@@ -609,19 +664,19 @@ const EquipmentMaster = () => {
   const usageSmuItemColumns = [
     {
       name: <div>SMU ID/Sensor ID</div>,
-      selector: (row) => row.itemName,
+      selector: (row) => row.smuId,
       wrap: true,
       sortable: false,
     },
     {
       name: <div>SMU Type</div>,
-      selector: (row) => row.itemDescription,
+      selector: (row) => row.smuType,
       wrap: true,
       sortable: false,
     },
     {
       name: <div>Usage ID</div>,
-      selector: (row) => row?.itemHeaderStrategy,
+      selector: (row) => row?.usageId,
       wrap: true,
       sortable: false,
       // minWidth: "150px",
@@ -629,25 +684,25 @@ const EquipmentMaster = () => {
     },
     {
       name: <div>Reading Date</div>,
-      selector: (row) => row?.taskType,
+      selector: (row) => row?.readingDate,
       wrap: true,
       sortable: false,
     },
     {
       name: <div>Unit</div>,
-      selector: (row) => row?.quantity,
+      selector: (row) => row?.unitOfMeasure,
       wrap: true,
       sortable: false,
     },
     {
       name: <div>Reading Description</div>,
-      selector: (row) => row?.recommendedValue,
+      selector: (row) => row?.readingDescription,
       wrap: true,
       sortable: false,
     },
     {
       name: <div>Overwrite/Error</div>,
-      selector: (row) => row?.recommendedValue,
+      selector: (row) => row?.overWritenError,
       wrap: true,
       sortable: false,
     },
@@ -706,11 +761,11 @@ const EquipmentMaster = () => {
             ...restEquipmentDetails
           } = responseData;
           setSelectedEquipmentId(id);
-          setContractRecordsList(contractRecords);
+          // setContractRecordsList(contractRecords);
           setWarrantyDetailsList(warrantyRecords);
-          setServiceReportList(serviceRecords);
-          setFailureReportList(failureRecords);
-          setUsageDetailsList(usageRecords);
+          // setServiceReportList(serviceRecords);
+          // setFailureReportList(failureRecords);
+          // setUsageDetailsList(usageRecords);
           setSelectEquipmentDetails(responseData);
           setLoading(false);
         } else {
@@ -735,9 +790,10 @@ const EquipmentMaster = () => {
                   Manufacturer
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                  {isEmpty(selectEquipmentDetails.maker)
+                  {/* {isEmpty(selectEquipmentDetails.maker)
                     ? "NA"
-                    : selectEquipmentDetails.maker}
+                    : selectEquipmentDetails.maker} */}
+                  Caterpillar
                 </p>
               </div>
             </div>
@@ -747,9 +803,10 @@ const EquipmentMaster = () => {
                   Model
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                  {isEmpty(selectEquipmentDetails.model)
+                  {/* {isEmpty(selectEquipmentDetails.model)
                     ? "NA"
-                    : selectEquipmentDetails.model}
+                    : selectEquipmentDetails.model} */}
+                  336D2 L
                 </p>
               </div>
             </div>
@@ -766,9 +823,10 @@ const EquipmentMaster = () => {
                   Engine Model
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500">
-                  {isEmpty(selectEquipmentDetails.engineModel)
+                  {/* {isEmpty(selectEquipmentDetails.engineModel)
                     ? "NA"
-                    : selectEquipmentDetails.engineModel}
+                    : selectEquipmentDetails.engineModel} */}
+                  C9 ACERT
                 </p>
               </div>
             </div>
@@ -844,9 +902,10 @@ const EquipmentMaster = () => {
                 Customer Id
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                {isEmpty(selectEquipmentDetails.customerId)
+                {/* {isEmpty(selectEquipmentDetails.customerId)
                   ? "NA"
-                  : selectEquipmentDetails.customerId}
+                  : selectEquipmentDetails.customerId} */}
+                1149596
               </p>
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-3">
@@ -854,10 +913,10 @@ const EquipmentMaster = () => {
                 Customer Name
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase ">
-                {/* {isEmpty(selectEquipmentDetails.customerName) ? "NA" : selectEquipmentDetails.customerName} */}
-                {isEmpty(selectEquipmentDetails.customer)
+                {/* {isEmpty(selectEquipmentDetails.customer)
                   ? "NA"
-                  : selectEquipmentDetails.customer}
+                  : selectEquipmentDetails.customer} */}
+                UNNATI MARIGOLD REALTORS LLP
               </p>
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-3">
@@ -868,9 +927,10 @@ const EquipmentMaster = () => {
                 {/* {isEmpty(selectEquipmentDetails.contactPhone)
                   ? "NA"
                   : selectEquipmentDetails.contactPhone} */}
-                {isEmpty(selectEquipmentDetails.contact)
+                {/* {isEmpty(selectEquipmentDetails.contact)
                   ? "NA"
-                  : selectEquipmentDetails.contact}
+                  : selectEquipmentDetails.contact} */}
+                Vinay Sharma
               </p>
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-3">
@@ -878,9 +938,10 @@ const EquipmentMaster = () => {
                 Customer Group
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase ">
-                {isEmpty(selectEquipmentDetails.customerGroup)
+                {/* {isEmpty(selectEquipmentDetails.customerGroup)
                   ? "NA"
-                  : selectEquipmentDetails.customerGroup}
+                  : selectEquipmentDetails.customerGroup} */}
+                Midsize
               </p>
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-3">
@@ -888,9 +949,10 @@ const EquipmentMaster = () => {
                 Customer Segment
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase ">
-                {isEmpty(selectEquipmentDetails.customerSegment)
+                {/* {isEmpty(selectEquipmentDetails.customerSegment)
                   ? "NA"
-                  : selectEquipmentDetails.customerSegment}
+                  : selectEquipmentDetails.customerSegment} */}
+                Construction
               </p>
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-3">
@@ -898,9 +960,10 @@ const EquipmentMaster = () => {
                 Last Owner
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase ">
-                {isEmpty(selectEquipmentDetails.owner)
+                {/* {isEmpty(selectEquipmentDetails.owner)
                   ? "NA"
-                  : selectEquipmentDetails.owner}
+                  : selectEquipmentDetails.owner} */}
+                Not applicable
               </p>
             </div>
           </div>
@@ -913,9 +976,10 @@ const EquipmentMaster = () => {
                 Fleet number
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase ">
-                {isEmpty(selectEquipmentDetails.fleetNo)
+                {/* {isEmpty(selectEquipmentDetails.fleetNo)
                   ? "NA"
-                  : selectEquipmentDetails.fleetNo}
+                  : selectEquipmentDetails.fleetNo} */}
+                D2L - RAJ - NORTH
               </p>
             </div>
             <div className="col-lg-6 col-md-6 col-sm-12 col-12 mt-3">
@@ -923,7 +987,7 @@ const EquipmentMaster = () => {
                 Contact Address
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
-                NA
+                Alwar, Rajsthan
                 {/* {selectEquipmentDetails.regionOrState +
                   "," +
                   selectEquipmentDetails.country} */}
@@ -934,9 +998,10 @@ const EquipmentMaster = () => {
                 Geo codes
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
-                {isEmpty(selectEquipmentDetails.geocode)
+                {/* {isEmpty(selectEquipmentDetails.geocode)
                   ? "NA"
-                  : selectEquipmentDetails.geocode}
+                  : selectEquipmentDetails.geocode} */}
+                Latitude: 34.051480 Longitude: -117.973470
               </p>
             </div>
             <div className="col-lg-6 col-md-6 col-sm-12 col-12 mt-3">
@@ -944,9 +1009,10 @@ const EquipmentMaster = () => {
                 Primary Contact
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
-                {isEmpty(selectEquipmentDetails.contact)
+                {/* {isEmpty(selectEquipmentDetails.contact)
                   ? "NA"
-                  : selectEquipmentDetails.contact}
+                  : selectEquipmentDetails.contact} */}
+                Sachin Meena
               </p>
             </div>
             <div className="col-lg-6 col-md-6 col-sm-12 col-12 mt-3">
@@ -956,9 +1022,10 @@ const EquipmentMaster = () => {
               <div className="equipment-switch">
                 <Switch
                   {...Switch_label_Object}
-                  checked={
-                    selectEquipmentDetails.movedInOrOutFlag ? true : false
-                  }
+                  // checked={
+                  //   selectEquipmentDetails.movedInOrOutFlag ? true : false
+                  // }
+                  checked={true}
                 />
               </div>
             </div>
@@ -967,9 +1034,10 @@ const EquipmentMaster = () => {
                 Previous Location
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
-                {isEmpty(selectEquipmentDetails.previousLocation)
+                {/* {isEmpty(selectEquipmentDetails.previousLocation)
                   ? "NA"
-                  : selectEquipmentDetails.previousLocation}
+                  : selectEquipmentDetails.previousLocation} */}
+                Churu, Rajsthan
               </p>
             </div>
             <div className="col-lg-6 col-md-6 col-sm-12 col-12 mt-3">
@@ -977,9 +1045,10 @@ const EquipmentMaster = () => {
                 New Location
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
-                {isEmpty(selectEquipmentDetails.newLocation)
+                {/* {isEmpty(selectEquipmentDetails.newLocation)
                   ? "NA"
-                  : selectEquipmentDetails.newLocation}
+                  : selectEquipmentDetails.newLocation} */}
+                Alwar
               </p>
             </div>
             <div className="col-lg-6 col-md-6 col-sm-12 col-12 mt-3">
@@ -987,9 +1056,10 @@ const EquipmentMaster = () => {
                 Moved In Date
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
-                {isEmpty(selectEquipmentDetails.movedInDate)
+                {/* {isEmpty(selectEquipmentDetails.movedInDate)
                   ? "NA"
-                  : selectEquipmentDetails.movedInDate}
+                  : selectEquipmentDetails.movedInDate} */}
+                45211
               </p>
             </div>
           </div>
@@ -1029,65 +1099,70 @@ const EquipmentMaster = () => {
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
                 ERP ID
               </p>
-              <p className="text-primary font-size-12 mt-1 font-weight-500">
-                Caterpillar
+              <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                E0001096
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                ERP Description
+                {/* ERP Description */}Title
               </p>
-              <p className="text-primary font-size-12 mt-1 font-weight-500">
-                336D2 L
+              <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                Excavator
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
                 Technical Asset Number
               </p>
-              <p className="text-primary font-size-12 mt-1 font-weight-500">
-                268 HP
+              <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                NA
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
                 Fleet Number
               </p>
-              <p className="text-primary font-size-12 mt-1 font-weight-500">
-                C9 ACERT
+              <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                D2L - RAJ - NORTH
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
                 Purchase Date
               </p>
-              <p className="text-primary font-size-12 mt-1 font-weight-500">
-                80648 lb
+              <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                43160
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
                 Serial Number
               </p>
-              <p className="text-primary font-size-12 mt-1 font-weight-500">
-                268 HP
+              <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                ZCT00981
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
                 Functional Location
               </p>
-              <p className="text-primary font-size-12 mt-1 font-weight-500">
-                268 HP
+              <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                F001-32
               </p>
             </div>
           </div>
         </div>
         <EquipmentDataTable
+          columns={warrentyDetailsColumns}
+          data={warrantyDetailsList}
+          title="Warranty"
+        />
+        {/* <EquipmentDataTable
           columns={erpWarrentyItemColumns}
           data={warrentyData}
           title="Warranty"
-        />
+        /> */}
       </>
     );
   };
@@ -1124,7 +1199,7 @@ const EquipmentMaster = () => {
         />
         <EquipmentDataTable
           columns={usageSmuItemColumns}
-          data={warrentyData}
+          data={dailyUsageDetails}
           title="Usage"
         />
       </>
@@ -1160,7 +1235,8 @@ const EquipmentMaster = () => {
                       <div className="bg-white p-3 border-radius-10 ">
                         <div className="d-flex align-items-center justify-content-between equipment-pagination">
                           <h5 className="font-weight-600 mb-0 text-uppercase">
-                            {`${selectEquipmentDetails.description} - ${selectEquipmentDetails.model}`}
+                            {/* {`${selectEquipmentDetails.description} - ${selectEquipmentDetails.model}`} */}
+                            Chain excavator - 336D2 L
                           </h5>
                           <Stack spacing={2}>
                             <Pagination
@@ -1180,7 +1256,8 @@ const EquipmentMaster = () => {
                             {selectEquipmentDetails.equipmentNumber}
                           </h6>
                           <p className="text-light-60 font-size-12 mb-0 text-uppercase">
-                            {selectEquipmentDetails.model}
+                            {/* {selectEquipmentDetails.model} */}
+                            336D2L -2018
                           </p>
                         </div>
                       </div>

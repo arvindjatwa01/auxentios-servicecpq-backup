@@ -7,7 +7,7 @@ import Select from '@mui/material/Select';
 export default function SelectBox(props) {
     let { options } = props;
     return (
-        <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+        <FormControl sx={{ m: 1, minWidth: props.size || 120 }} size="small">
             <InputLabel >{props.label}</InputLabel>
             <Select
                 value={props.value}

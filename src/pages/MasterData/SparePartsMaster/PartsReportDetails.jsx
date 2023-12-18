@@ -7,6 +7,7 @@ import {
   SPARE_PARTS_PRICE_DETAILS,
   SPARE_PARTS_WARRENTY_DETAILS,
 } from "../equipmentMasterConstants";
+import { isEmpty } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/textUtilities";
 
 const PartsReportDetails = ({
   show,
@@ -23,42 +24,58 @@ const PartsReportDetails = ({
           <p className="text-light-60 font-size-12 m-0 font-weight-500">
             Replaced By
           </p>
-          <p className="text-primary font-size-12 mt-1 font-weight-500">
-            2276044
+          <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+            {isEmpty(contetntReportObj.replacedBy)
+              ? "NA"
+              : contetntReportObj.replacedBy}
           </p>
         </div>
         <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
           <p className="text-light-60 font-size-12 m-0 font-weight-500">
             Replaced Quantity
           </p>
-          <p className="text-primary font-size-12 mt-1 font-weight-500">New</p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+            {isEmpty(contetntReportObj.quantity)
+              ? "0"
+              : contetntReportObj.quantity}
+          </p>
         </div>
         <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
           <p className="text-light-60 font-size-12 m-0 font-weight-500">
             Availability
           </p>
-          <p className="text-primary font-size-12 mt-1 font-weight-500">
-            1757896
+          <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+            {isEmpty(contetntReportObj.availablity)
+              ? "NA"
+              : contetntReportObj.availablity}
           </p>
         </div>
         <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
           <p className="text-light-60 font-size-12 m-0 font-weight-500">
             Total Available
           </p>
-          <p className="text-primary font-size-12 mt-1 font-weight-500">1</p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+            {isEmpty(contetntReportObj.totalAvailablity)
+              ? "NA"
+              : contetntReportObj.totalAvailablity}
+          </p>
         </div>
         <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
           <p className="text-light-60 font-size-12 m-0 font-weight-500">
             Sales Unit
           </p>
-          <p className="text-primary font-size-12 mt-1 font-weight-500">9.92</p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+            {isEmpty(contetntReportObj.salesUnit)
+              ? "NA"
+              : contetntReportObj.salesUnit}
+          </p>
         </div>
         <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
           <p className="text-light-60 font-size-12 m-0 font-weight-500">
             Price
           </p>
-          <p className="text-primary font-size-12 mt-1 font-weight-500">
-            94886.38
+          <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+            {isEmpty(contetntReportObj.price) ? "NA" : contetntReportObj.price}
           </p>
         </div>
       </div>
@@ -73,7 +90,7 @@ const PartsReportDetails = ({
           <p className="text-light-60 font-size-12 m-0 font-weight-500">
             Alternate Part #
           </p>
-          <p className="text-primary font-size-12 mt-1 font-weight-500">
+          <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
             2276044
           </p>
         </div>
@@ -81,13 +98,15 @@ const PartsReportDetails = ({
           <p className="text-light-60 font-size-12 m-0 font-weight-500">
             Quantity
           </p>
-          <p className="text-primary font-size-12 mt-1 font-weight-500">New</p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+            New
+          </p>
         </div>
         <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
           <p className="text-light-60 font-size-12 m-0 font-weight-500">
             Availability
           </p>
-          <p className="text-primary font-size-12 mt-1 font-weight-500">
+          <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
             1757896
           </p>
         </div>
@@ -95,19 +114,23 @@ const PartsReportDetails = ({
           <p className="text-light-60 font-size-12 m-0 font-weight-500">
             Total Available
           </p>
-          <p className="text-primary font-size-12 mt-1 font-weight-500">1</p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+            1
+          </p>
         </div>
         <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
           <p className="text-light-60 font-size-12 m-0 font-weight-500">
             Sales Unit
           </p>
-          <p className="text-primary font-size-12 mt-1 font-weight-500">9.92</p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+            9.92
+          </p>
         </div>
         <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
           <p className="text-light-60 font-size-12 m-0 font-weight-500">
             Price
           </p>
-          <p className="text-primary font-size-12 mt-1 font-weight-500">
+          <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
             94886.38
           </p>
         </div>
@@ -123,7 +146,7 @@ const PartsReportDetails = ({
           <p className="text-light-60 font-size-12 m-0 font-weight-500">
             Reman Part #
           </p>
-          <p className="text-primary font-size-12 mt-1 font-weight-500">
+          <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
             2276044
           </p>
         </div>
@@ -131,13 +154,15 @@ const PartsReportDetails = ({
           <p className="text-light-60 font-size-12 m-0 font-weight-500">
             Refurbished Part #
           </p>
-          <p className="text-primary font-size-12 mt-1 font-weight-500">New</p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+            New
+          </p>
         </div>
         <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
           <p className="text-light-60 font-size-12 m-0 font-weight-500">
             Availability
           </p>
-          <p className="text-primary font-size-12 mt-1 font-weight-500">
+          <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
             1757896
           </p>
         </div>
@@ -145,19 +170,23 @@ const PartsReportDetails = ({
           <p className="text-light-60 font-size-12 m-0 font-weight-500">
             Total Available
           </p>
-          <p className="text-primary font-size-12 mt-1 font-weight-500">1</p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+            1
+          </p>
         </div>
         <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
           <p className="text-light-60 font-size-12 m-0 font-weight-500">
             Sales Unit
           </p>
-          <p className="text-primary font-size-12 mt-1 font-weight-500">9.92</p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+            9.92
+          </p>
         </div>
         <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
           <p className="text-light-60 font-size-12 m-0 font-weight-500">
             Price
           </p>
-          <p className="text-primary font-size-12 mt-1 font-weight-500">
+          <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
             94886.38
           </p>
         </div>
@@ -173,56 +202,76 @@ const PartsReportDetails = ({
           <p className="text-light-60 font-size-12 m-0 font-weight-500">
             Group#
           </p>
-          <p className="text-primary font-size-12 mt-1 font-weight-500">
-            2276044
+          <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+            {isEmpty(contetntReportObj.groupNumber)
+              ? "NA"
+              : contetntReportObj.groupNumber}
           </p>
         </div>
         <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
           <p className="text-light-60 font-size-12 m-0 font-weight-500">Type</p>
-          <p className="text-primary font-size-12 mt-1 font-weight-500">New</p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+            {isEmpty(contetntReportObj.type) ? "NA" : contetntReportObj.type}
+          </p>
         </div>
         <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
           <p className="text-light-60 font-size-12 m-0 font-weight-500">
             Part #
           </p>
-          <p className="text-primary font-size-12 mt-1 font-weight-500">
-            1757896
+          <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+            {isEmpty(contetntReportObj.partNumber)
+              ? "NA"
+              : contetntReportObj.partNumber}
           </p>
         </div>
         <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
           <p className="text-light-60 font-size-12 m-0 font-weight-500">
             Sales Unit
           </p>
-          <p className="text-primary font-size-12 mt-1 font-weight-500">1</p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+            {" "}
+            {isEmpty(contetntReportObj.salesUnit)
+              ? "NA"
+              : contetntReportObj.salesUnit}
+          </p>
         </div>
         <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
           <p className="text-light-60 font-size-12 m-0 font-weight-500">
             Quantity
           </p>
-          <p className="text-primary font-size-12 mt-1 font-weight-500">9.92</p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+            {" "}
+            {isEmpty(contetntReportObj.quantity)
+              ? "NA"
+              : contetntReportObj.quantity}
+          </p>
         </div>
         <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
           <p className="text-light-60 font-size-12 m-0 font-weight-500">
             Price
           </p>
-          <p className="text-primary font-size-12 mt-1 font-weight-500">
-            94886.38
+          <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+            {isEmpty(contetntReportObj.price) ? "NA" : contetntReportObj.price}
           </p>
         </div>
         <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
           <p className="text-light-60 font-size-12 m-0 font-weight-500">
             Valid From
           </p>
-          <p className="text-primary font-size-12 mt-1 font-weight-500">
-            01/01/2023
+          <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+            {isEmpty(contetntReportObj.validFrom)
+              ? "NA"
+              : contetntReportObj.validFrom}
           </p>
         </div>
         <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
           <p className="text-light-60 font-size-12 m-0 font-weight-500">
             Valid To
           </p>
-          <p className="text-primary font-size-12 mt-1 font-weight-500">
-            01/01/2023
+          <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+            {isEmpty(contetntReportObj.validTo)
+              ? "NA"
+              : contetntReportObj.validTo}
           </p>
         </div>
       </div>
@@ -237,31 +286,41 @@ const PartsReportDetails = ({
           <p className="text-light-60 font-size-12 m-0 font-weight-500">
             Warranty Type
           </p>
-          <p className="text-primary font-size-12 mt-1 font-weight-500">
-            2276044
+          <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+            {isEmpty(contetntReportObj.warrantyType)
+              ? "NA"
+              : contetntReportObj.warrantyType}
           </p>
         </div>
         <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
           <p className="text-light-60 font-size-12 m-0 font-weight-500">
             Warranty Duration
           </p>
-          <p className="text-primary font-size-12 mt-1 font-weight-500">
-            1757896
+          <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+            {isEmpty(contetntReportObj.warrentyDuration)
+              ? "NA"
+              : contetntReportObj.warrentyDuration}
           </p>
         </div>
         <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
           <p className="text-light-60 font-size-12 m-0 font-weight-500">
             Date Of Sale
           </p>
-          <p className="text-primary font-size-12 mt-1 font-weight-500">
-            1757896
+          <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+            {isEmpty(contetntReportObj.dateOfSale)
+              ? "NA"
+              : contetntReportObj.dateOfSale}
           </p>
         </div>
         <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
           <p className="text-light-60 font-size-12 m-0 font-weight-500">
             Date Of Installation
           </p>
-          <p className="text-primary font-size-12 mt-1 font-weight-500">1</p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+            {isEmpty(contetntReportObj.dateOfInstallation)
+              ? "NA"
+              : contetntReportObj.dateOfInstallation}
+          </p>
         </div>
       </div>
     );

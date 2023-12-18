@@ -208,8 +208,54 @@ const dummySearchServiceList = [
   },
 ];
 
+const dummyPriceDeatilsData = [
+  {
+    chargeCode: "Level I",
+    labourCode: "L3 - Inspetion + Travel",
+    labourType: "Field",
+    serviceType: "Normal",
+    unitOfMeasure: "Hours",
+    unitPrice: "53",
+    currency: "",
+    startDate: "12-10-2020",
+    endDate: "31-12-2023",
+    effectiveFrom: "",
+    lastUpdated: "",
+  },
+  {
+    chargeCode: "Level II",
+    labourCode: "L3 - Inspetion + Travel",
+    labourType: "Field",
+    serviceType: "Normal",
+    unitOfMeasure: "Hours",
+    unitPrice: "78",
+    currency: "",
+    startDate: "12-10-2020",
+    endDate: "31-12-2023",
+    effectiveFrom: "",
+    lastUpdated: "",
+  },
+  {
+    chargeCode: "Level III",
+    labourCode: "L3 - Inspetion + Travel",
+    labourType: "Field",
+    serviceType: "Normal",
+    unitOfMeasure: "Hours",
+    unitPrice: "102",
+    currency: "",
+    startDate: "12-10-2020",
+    endDate: "31-12-2023",
+    effectiveFrom: "",
+    lastUpdated: "",
+  },
+];
+
 const ServiceMaster = () => {
   const [bundleItems, setBundleItems] = useState([...tempdata]);
+
+  const [labourPriceDetails, setlabourPriceDetails] = useState([
+    ...dummyPriceDeatilsData,
+  ]);
   const [showModal, setShowModal] = useState(false);
   const [modelHeaderTitle, setModelHeaderTitle] = useState("");
   const [modelContentReportType, setModelContentReportType] = useState("");
@@ -261,137 +307,75 @@ const ServiceMaster = () => {
 
   const priceLaborColumns = [
     {
-      name: (
-        <>
-          <div>Charge Code</div>
-        </>
-      ),
-      selector: (row) => row.itemName,
+      name: <div>Charge Code</div>,
+      selector: (row) => row.chargeCode,
       wrap: true,
-      sortable: true,
-      format: (row) => row.itemName,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Labor Code</div>
-        </>
-      ),
-      selector: (row) => row.itemDescription,
+      name: <div>Labor Code</div>,
+      selector: (row) => row.labourCode,
       wrap: true,
-      sortable: true,
-      format: (row) => row.itemDescription,
-    },
-
-    {
-      name: (
-        <>
-          <div>Labor Type</div>
-        </>
-      ),
-      selector: (row) => row?.itemHeaderStrategy,
-      wrap: true,
-      sortable: true,
-      format: (row) => row?.itemHeaderStrategy,
-      // minWidth: "150px",
-      // maxWidth: "150px",
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Service Type</div>
-        </>
-      ),
-      selector: (row) => row?.taskType,
+      name: <div>Labor Type</div>,
+      selector: (row) => row?.labourType,
       wrap: true,
-      sortable: true,
-      format: (row) => row?.taskType,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Unit Of Measure</div>
-        </>
-      ),
-      selector: (row) => row?.quantity,
+      name: <div>Service Type</div>,
+      selector: (row) => row?.serviceType,
       wrap: true,
-      sortable: true,
-      format: (row) => row?.quantity,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Unit Price</div>
-        </>
-      ),
-      selector: (row) => row?.recommendedValue,
+      name: <div>Unit Of Measure</div>,
+      selector: (row) => row?.unitOfMeasure,
       wrap: true,
-      sortable: true,
-      format: (row) => row?.recommendedValue,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Currency</div>
-        </>
-      ),
-      selector: (row) => row?.recommendedValue,
+      name: <div>Unit Price</div>,
+      selector: (row) => row?.unitPrice,
       wrap: true,
-      sortable: true,
-      format: (row) => row?.recommendedValue,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Start Date</div>
-        </>
-      ),
-      selector: (row) => row?.recommendedValue,
+      name: <div>Currency</div>,
+      selector: (row) => row?.currency,
       wrap: true,
-      sortable: true,
-      format: (row) => row?.recommendedValue,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>End Date</div>
-        </>
-      ),
-      selector: (row) => row?.recommendedValue,
+      name: <div>Start Date</div>,
+      selector: (row) => row?.startDate,
       wrap: true,
-      sortable: true,
-      format: (row) => row?.recommendedValue,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Effective From</div>
-        </>
-      ),
-      selector: (row) => row?.recommendedValue,
+      name: <div>End Date</div>,
+      selector: (row) => row?.endDate,
       wrap: true,
-      sortable: true,
-      format: (row) => row?.recommendedValue,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Last Updated</div>
-        </>
-      ),
-      selector: (row) => row?.recommendedValue,
+      name: <div>Effective From</div>,
+      selector: (row) => row?.effectiveFrom,
       wrap: true,
-      sortable: true,
-      format: (row) => row?.recommendedValue,
+      sortable: false,
     },
     {
-      name: (
-        <>
-          <div>Actions</div>
-        </>
-      ),
+      name: <div>Last Updated</div>,
+      selector: (row) => row?.lastUpdated,
       wrap: true,
-      sortable: true,
+      sortable: false,
+    },
+    {
+      name: <div>Actions</div>,
+      wrap: true,
+      sortable: false,
       cell: (row) => (
         <div
           className="d-flex justify-content-center align-items-center row-svg-div"
@@ -644,7 +628,7 @@ const ServiceMaster = () => {
                   Service Code
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500">
-                  Full Core Deposit
+                  SO10
                 </p>
               </div>
             </div>
@@ -654,7 +638,7 @@ const ServiceMaster = () => {
                   Service Description
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500">
-                  Reman
+                  Breakdown Service
                 </p>
               </div>
             </div>
@@ -664,7 +648,7 @@ const ServiceMaster = () => {
                   Service Type
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500">
-                  Active
+                  Normal
                 </p>
               </div>
             </div>
@@ -674,7 +658,7 @@ const ServiceMaster = () => {
                   Labor Type
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500">
-                  Caterpillar
+                  Field
                 </p>
               </div>
             </div>
@@ -683,7 +667,7 @@ const ServiceMaster = () => {
                 Charge Code
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
-                336D2 L
+                All
               </p>
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
@@ -692,7 +676,7 @@ const ServiceMaster = () => {
                   Labor Code
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500">
-                  3620656
+                  L3 - Inspetion + Travel
                 </p>
               </div>
             </div>
@@ -702,7 +686,7 @@ const ServiceMaster = () => {
                   Recommended Duration
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500">
-                  REMAN
+                  NA
                 </p>
               </div>
             </div>
@@ -711,7 +695,7 @@ const ServiceMaster = () => {
                 Actual duration
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
-                1PB
+                NA
               </p>
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
@@ -720,7 +704,7 @@ const ServiceMaster = () => {
                   Estimated Duration
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500">
-                  3620656
+                  10 Hours
                 </p>
               </div>
             </div>
@@ -733,7 +717,7 @@ const ServiceMaster = () => {
                 Model
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
-                AA: 0S1619
+                NA
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
@@ -741,7 +725,7 @@ const ServiceMaster = () => {
                 Family
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
-                AA: 0S1619
+                Dozers
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
@@ -749,7 +733,7 @@ const ServiceMaster = () => {
                 Customer
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
-                AA: 0S1619
+                All
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
@@ -757,7 +741,7 @@ const ServiceMaster = () => {
                 Related Job Code
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
-                $ 90534
+                034 - Inspection
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
@@ -765,7 +749,7 @@ const ServiceMaster = () => {
                 Related Component Code
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
-                Stock
+                7000 - Machine
               </p>
             </div>
           </div>
@@ -781,7 +765,7 @@ const ServiceMaster = () => {
         <h6 className="font-weight-500 pl-2 mt-5">Price</h6>
         <WithoutSearchDataTable
           columns={priceLaborColumns}
-          data={bundleItems}
+          data={labourPriceDetails}
           title="Price Details"
           showAddBtn={true}
         />

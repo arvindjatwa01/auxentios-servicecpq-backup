@@ -117,13 +117,52 @@ const warrentydata = [
 ];
 
 const Parts360 = () => {
-  const [bundleItems, setBundleItems] = useState([...tempdata]);
+  const [bundleItems, setBundleItems] = useState([
+    {
+      replacedBy: "OR6159",
+      quantity: "2.00",
+      availablity: "Not available",
+      totalAvailablity: "0",
+      salesUnit: "PC",
+      price: "0",
+    },
+  ]);
+  const [partsPriceDetails, setPartsPriceDetails] = useState([
+    {
+      groupNumber: "3620566",
+      type: "reman",
+      partNumber: "OR6158",
+      salesUnit: "PC",
+      quantity: "1.00",
+      price: "498.00",
+      currency: "USD",
+      validFrom: "44481",
+      validTo: "45291",
+    },
+  ]);
+  const [partsERPPriceDetails, setPartsERPPriceDetails] = useState([
+    {
+      erpCondition: "C12345",
+      amount: "498",
+      costPrice: "335",
+      margin: "",
+      lastPricedDate: "12-10-2021",
+      priceChangeDate: "12-10-2021",
+    },
+  ]);
   const [showModal, setShowModal] = useState(false);
   const [modelHeaderTitle, setModelHeaderTitle] = useState("");
   const [modelContentReportType, setModelContentReportType] = useState("");
   const [modelContentReportObj, setModelContentReportObj] = useState(null);
 
-  const [warrentyItems, setWarrentyItems] = useState([...warrentydata]);
+  const [warrentyItems, setWarrentyItems] = useState([
+    {
+      warrantyType: "Parts",
+      warrentyDuration: "6 Months",
+      dateOfSale: "12-11-2022",
+      dateOfInstallation: "NA",
+    },
+  ]);
   const [searchList, setSearchList] = useState([]);
 
   const [selectedPartsId, setSelectedPartsId] = useState(null);
@@ -154,19 +193,19 @@ const Parts360 = () => {
   const replpacedItemColumns = [
     {
       name: <div>Replaced By</div>,
-      selector: (row) => row.itemName,
+      selector: (row) => row.replacedBy,
       wrap: true,
       sortable: false,
     },
     {
       name: <div>Replaced Quantity</div>,
-      selector: (row) => row.itemDescription,
+      selector: (row) => row.quantity,
       wrap: true,
       sortable: false,
     },
     {
       name: <div>Availability</div>,
-      selector: (row) => row?.itemHeaderStrategy,
+      selector: (row) => row?.availablity,
       wrap: true,
       sortable: false,
       // minWidth: "150px",
@@ -174,19 +213,19 @@ const Parts360 = () => {
     },
     {
       name: <div>Total Available</div>,
-      selector: (row) => row?.taskType,
+      selector: (row) => row?.totalAvailablity,
       wrap: true,
       sortable: false,
     },
     {
       name: <div>Sales Unit</div>,
-      selector: (row) => row?.quantity,
+      selector: (row) => row?.salesUnit,
       wrap: true,
       sortable: false,
     },
     {
       name: <div>Price</div>,
-      selector: (row) => row?.recommendedValue,
+      selector: (row) => row?.price,
       wrap: true,
       sortable: false,
     },
@@ -349,19 +388,19 @@ const Parts360 = () => {
   const priceItemColumns = [
     {
       name: <div>Group#</div>,
-      selector: (row) => row.itemName,
+      selector: (row) => row.groupNumber,
       wrap: true,
       sortable: false,
     },
     {
       name: <div>Type</div>,
-      selector: (row) => row.itemDescription,
+      selector: (row) => row.type,
       wrap: true,
       sortable: false,
     },
     {
       name: <div>Part #</div>,
-      selector: (row) => row?.itemHeaderStrategy,
+      selector: (row) => row?.partNumber,
       wrap: true,
       sortable: false,
       // minWidth: "150px",
@@ -369,7 +408,7 @@ const Parts360 = () => {
     },
     {
       name: <div>Sales Unit</div>,
-      selector: (row) => row?.taskType,
+      selector: (row) => row?.salesUnit,
       wrap: true,
       sortable: false,
     },
@@ -381,19 +420,19 @@ const Parts360 = () => {
     },
     {
       name: <div>Price</div>,
-      selector: (row) => row?.recommendedValue,
+      selector: (row) => row?.price,
       wrap: true,
       sortable: false,
     },
     {
       name: <div>Valid From</div>,
-      selector: (row) => row?.recommendedValue,
+      selector: (row) => row?.validFrom,
       wrap: true,
       sortable: false,
     },
     {
       name: <div>Valid To</div>,
-      selector: (row) => row?.recommendedValue,
+      selector: (row) => row?.validTo,
       wrap: true,
       sortable: false,
     },
@@ -426,19 +465,19 @@ const Parts360 = () => {
   const erpDetailsItemColumns = [
     {
       name: <div>ERP Condition</div>,
-      selector: (row) => row.itemName,
+      selector: (row) => row.erpCondition,
       wrap: true,
       sortable: false,
     },
     {
       name: <div>ERP Amount</div>,
-      selector: (row) => row.itemDescription,
+      selector: (row) => row.amount,
       wrap: true,
       sortable: false,
     },
     {
       name: <div>ERP Cost Price</div>,
-      selector: (row) => row?.itemHeaderStrategy,
+      selector: (row) => row?.costPrice,
       wrap: true,
       sortable: false,
       // minWidth: "150px",
@@ -446,19 +485,19 @@ const Parts360 = () => {
     },
     {
       name: <div>ERP Margin</div>,
-      selector: (row) => row?.taskType,
+      selector: (row) => row?.margin,
       wrap: true,
       sortable: false,
     },
     {
       name: <div>Last Priced Date </div>,
-      selector: (row) => row?.quantity,
+      selector: (row) => row?.lastPricedDate,
       wrap: true,
       sortable: false,
     },
     {
       name: <div>Price Change Date</div>,
-      selector: (row) => row?.recommendedValue,
+      selector: (row) => row?.priceChangeDate,
       wrap: true,
       sortable: false,
     },
@@ -468,25 +507,25 @@ const Parts360 = () => {
   const warrentyItemColumns = [
     {
       name: <div>Warranty Type</div>,
-      selector: (row) => row.itemName,
+      selector: (row) => row.warrantyType,
       wrap: true,
       sortable: false,
     },
     {
       name: <div>Warranty Duration</div>,
-      selector: (row) => row.itemDescription,
+      selector: (row) => row.warrentyDuration,
       wrap: true,
       sortable: false,
     },
     {
       name: <div>Date Of Sale</div>,
-      selector: (row) => row?.itemHeaderStrategy,
+      selector: (row) => row?.dateOfSale,
       wrap: true,
       sortable: false,
     },
     {
       name: <div>Date Of Installation</div>,
-      selector: (row) => row?.taskType,
+      selector: (row) => row?.dateOfInstallation,
       wrap: true,
       sortable: false,
     },
@@ -559,9 +598,10 @@ const Parts360 = () => {
                   Description
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                  {isEmpty(selectedPartsDetails.description)
+                  {/* {isEmpty(selectedPartsDetails.description)
                     ? "NA"
-                    : selectedPartsDetails.description}
+                    : selectedPartsDetails.description} */}
+                  caterpillar turbocharger p/n OR-6158 T6 A/R 1.23 cat TL8118
                 </p>
               </div>
             </div>
@@ -571,9 +611,10 @@ const Parts360 = () => {
                   Type
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                  {isEmpty(selectedPartsDetails.partType)
+                  {/* {isEmpty(selectedPartsDetails.partType)
                     ? "NA"
-                    : selectedPartsDetails.partType}
+                    : selectedPartsDetails.partType} */}
+                  Reman
                 </p>
               </div>
             </div>
@@ -590,9 +631,10 @@ const Parts360 = () => {
                   Manufacturer
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                  {isEmpty(selectedPartsDetails.manufacturer)
+                  {/* {isEmpty(selectedPartsDetails.manufacturer)
                     ? "NA"
-                    : selectedPartsDetails.manufacturer}
+                    : selectedPartsDetails.manufacturer} */}
+                  Caterpillar
                 </p>
               </div>
             </div>
@@ -602,9 +644,10 @@ const Parts360 = () => {
                   Model
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                  {isEmpty(selectedPartsDetails.model)
+                  {/* {isEmpty(selectedPartsDetails.model)
                     ? "NA"
-                    : selectedPartsDetails.model}
+                    : selectedPartsDetails.model} */}
+                  All models
                 </p>
               </div>
             </div>
@@ -613,9 +656,10 @@ const Parts360 = () => {
                 Group Number
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                {isEmpty(selectedPartsDetails.groupNumber)
+                {/* {isEmpty(selectedPartsDetails.groupNumber)
                   ? "NA"
-                  : selectedPartsDetails.groupNumber}
+                  : selectedPartsDetails.groupNumber} */}
+                3620566
               </p>
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
@@ -624,9 +668,10 @@ const Parts360 = () => {
                   Parts Group
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                  {isEmpty(selectedPartsDetails.partsGroup)
+                  {/* {isEmpty(selectedPartsDetails.partsGroup)
                     ? "NA"
-                    : selectedPartsDetails.partsGroup}
+                    : selectedPartsDetails.partsGroup} */}
+                  Turbocharger
                 </p>
               </div>
             </div>
@@ -636,9 +681,10 @@ const Parts360 = () => {
                   BEC Code
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                  {isEmpty(selectedPartsDetails.becCode)
+                  {/* {isEmpty(selectedPartsDetails.becCode)
                     ? "NA"
-                    : selectedPartsDetails.becCode}
+                    : selectedPartsDetails.becCode} */}
+                  NA
                 </p>
               </div>
             </div>
@@ -670,9 +716,10 @@ const Parts360 = () => {
                   Status
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                  {isEmpty(selectedPartsDetails.status)
+                  {/* {isEmpty(selectedPartsDetails.status)
                     ? "NA"
-                    : selectedPartsDetails.status}
+                    : selectedPartsDetails.status} */}
+                  Active
                 </p>
               </div>
             </div>
@@ -686,9 +733,10 @@ const Parts360 = () => {
                 Material Group
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                {isEmpty(selectedPartsDetails.materialGroup)
+                {/* {isEmpty(selectedPartsDetails.materialGroup)
                   ? "NA"
-                  : selectedPartsDetails.materialGroup}
+                  : selectedPartsDetails.materialGroup} */}
+                AA: 0S1619
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
@@ -696,9 +744,10 @@ const Parts360 = () => {
                 Material Number
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                {isEmpty(selectedPartsDetails.erpMaterialNumber)
+                {/* {isEmpty(selectedPartsDetails.erpMaterialNumber)
                   ? "NA"
-                  : selectedPartsDetails.erpMaterialNumber}
+                  : selectedPartsDetails.erpMaterialNumber} */}
+                AA: 0S1619
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
@@ -706,9 +755,10 @@ const Parts360 = () => {
                 Old Material Number
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                {isEmpty(selectedPartsDetails.oldMaterialNumber)
+                {/* {isEmpty(selectedPartsDetails.oldMaterialNumber)
                   ? "NA"
-                  : selectedPartsDetails.manufacturer}
+                  : selectedPartsDetails.manufacturer} */}
+                AA: 0S1619
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
@@ -716,10 +766,10 @@ const Parts360 = () => {
                 Average Cost
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                ${" "}
-                {isEmpty(selectedPartsDetails.costPrice)
+                {/* {isEmpty(selectedPartsDetails.costPrice)
                   ? 0
-                  : selectedPartsDetails.costPrice}
+                  : selectedPartsDetails.costPrice} */}
+                $ 90534
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
@@ -727,9 +777,10 @@ const Parts360 = () => {
                 Availability
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                {isEmpty(selectedPartsDetails.availability)
+                {/* {isEmpty(selectedPartsDetails.availability)
                   ? "NA"
-                  : selectedPartsDetails.availability}
+                  : selectedPartsDetails.availability} */}
+                Stock
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
@@ -737,9 +788,10 @@ const Parts360 = () => {
                 Total Number Available
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                {isEmpty(selectedPartsDetails.totalAvailability)
+                {/* {isEmpty(selectedPartsDetails.totalAvailability)
                   ? "NA"
-                  : selectedPartsDetails.totalAvailability}
+                  : selectedPartsDetails.totalAvailability} */}
+                10
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
@@ -747,9 +799,10 @@ const Parts360 = () => {
                 Status
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                {isEmpty(selectedPartsDetails.status)
+                {/* {isEmpty(selectedPartsDetails.status)
                   ? "NA"
-                  : selectedPartsDetails.status}
+                  : selectedPartsDetails.status} */}
+                Active
               </p>
             </div>
           </div>
@@ -777,25 +830,27 @@ const Parts360 = () => {
         <div className="d-flex align-items-center mt-4">
           <h6 className="m-0 mr-2 font-weight-600">Alternate Parts</h6>
           <div className="equipment-switch">
-            <Switch {...label} defaultChecked size="small" />
+            {/* <Switch {...label} defaultChecked size="small" /> */}
+            <Switch {...label} disabled size="small" />
           </div>
         </div>
-        <EquipmentDataTable
+        {/* <EquipmentDataTable
           columns={alternateItemColumns}
           data={bundleItems}
           title="Alternate Parts"
-        />
+        /> */}
         <div className="d-flex align-items-center mt-4">
           <h6 className="m-0 mr-2 font-weight-600">Reman or Refurb Option</h6>
           <div className="equipment-switch">
-            <Switch {...label} defaultChecked size="small" />
+            {/* <Switch {...label} defaultChecked size="small" /> */}
+            <Switch {...label} disabled size="small" />
           </div>
         </div>
-        <EquipmentDataTable
+        {/* <EquipmentDataTable
           columns={remanItemColumns}
           data={bundleItems}
           title="Reman or Refurb Option"
-        />
+        /> */}
       </>
     );
   };
@@ -859,14 +914,14 @@ const Parts360 = () => {
             </div>
             <WithoutSearchDataTable
               columns={priceItemColumns}
-              data={bundleItems}
+              data={partsPriceDetails}
               title="Price Details"
               showAddBtn={true}
             />
             <h6 className="font-weight-500 pl-2 mt-5">ERP Price</h6>
             <WithoutSearchDataTable
               columns={erpDetailsItemColumns}
-              data={bundleItems}
+              data={partsERPPriceDetails}
               title="ERP Details"
             />
           </TabPanel>
@@ -918,14 +973,14 @@ const Parts360 = () => {
             </div>
             <WithoutSearchDataTable
               columns={priceItemColumns}
-              data={bundleItems}
+              data={partsPriceDetails}
               title="Price Details"
               showAddBtn={true}
             />
             <h6 className="font-weight-500 pl-2 mt-5">ERP Price</h6>
             <WithoutSearchDataTable
               columns={erpDetailsItemColumns}
-              data={bundleItems}
+              data={partsERPPriceDetails}
               title="ERP Details"
             />
           </TabPanel>
@@ -980,7 +1035,7 @@ const Parts360 = () => {
                       <div className="bg-white p-3 border-radius-10 ">
                         <div className="d-flex align-items-center justify-content-between equipment-pagination">
                           <h5 className="font-weight-600 mb-0">
-                            Full Core Deposit
+                            Turbocharger Catridge - Reman
                           </h5>
                           <Stack spacing={2}>
                             <Pagination
@@ -997,8 +1052,9 @@ const Parts360 = () => {
                         </div>
                         <div className="d-block mt-3">
                           <h6 className="text-primary font-weight-600">
-                            {!isEmpty(selectedPartsDetails.partNumber) &&
-                              selectedPartsDetails.partNumber}
+                            {/* {!isEmpty(selectedPartsDetails.partNumber) &&
+                              selectedPartsDetails.partNumber} */}
+                            OR6158
                           </h6>
                           <p className="text-light-60 font-size-12 mb-0">
                             {!isEmpty(selectedPartsDetails.model) &&

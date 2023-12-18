@@ -470,9 +470,9 @@ const EquipmentReportDetail = ({
             Hours On Part
           </p>
           <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-            {isEmpty(contetntReportObj.hoursOfPart)
+            {isEmpty(contetntReportObj.hoursOnPart)
               ? "NA"
-              : contetntReportObj.hoursOfPart}
+              : contetntReportObj.hoursOnPart}
           </p>
         </div>
         <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
@@ -592,39 +592,57 @@ const EquipmentReportDetail = ({
             SMU ID/Sensor ID
           </p>
           <p className="text-primary font-size-12 mt-1 font-weight-500">
-            2276044
+            {isEmpty(contetntReportObj.smuId) ? "NA" : contetntReportObj.smuId}
           </p>
         </div>
         <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
           <p className="text-light-60 font-size-12 m-0 font-weight-500">
             SMU Type
           </p>
-          <p className="text-primary font-size-12 mt-1 font-weight-500">New</p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            {" "}
+            {isEmpty(contetntReportObj.smuType)
+              ? "NA"
+              : contetntReportObj.smuType}
+          </p>
         </div>
         <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
           <p className="text-light-60 font-size-12 m-0 font-weight-500">
             Usage ID
           </p>
           <p className="text-primary font-size-12 mt-1 font-weight-500">
-            1757896
+            {isEmpty(contetntReportObj.usageId)
+              ? "NA"
+              : contetntReportObj.usageId}
           </p>
         </div>
         <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
           <p className="text-light-60 font-size-12 m-0 font-weight-500">
             Reading Date
           </p>
-          <p className="text-primary font-size-12 mt-1 font-weight-500">1</p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            {isEmpty(contetntReportObj.readingDate)
+              ? "NA"
+              : contetntReportObj.readingDate}
+          </p>
         </div>
         <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
           <p className="text-light-60 font-size-12 m-0 font-weight-500">Unit</p>
-          <p className="text-primary font-size-12 mt-1 font-weight-500">9.92</p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            {" "}
+            {isEmpty(contetntReportObj.unitOfMeasure)
+              ? "NA"
+              : contetntReportObj.unitOfMeasure}
+          </p>
         </div>
         <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
           <p className="text-light-60 font-size-12 m-0 font-weight-500">
             Reading Description
           </p>
           <p className="text-primary font-size-12 mt-1 font-weight-500">
-            94886.38
+            {isEmpty(contetntReportObj.readingDescription)
+              ? "NA"
+              : contetntReportObj.readingDescription}
           </p>
         </div>
         <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
@@ -632,7 +650,9 @@ const EquipmentReportDetail = ({
             Overwrite/Error
           </p>
           <p className="text-primary font-size-12 mt-1 font-weight-500">
-            94886.38
+            {isEmpty(contetntReportObj.overWritenError)
+              ? "NA"
+              : contetntReportObj.overWritenError}
           </p>
         </div>
       </div>
