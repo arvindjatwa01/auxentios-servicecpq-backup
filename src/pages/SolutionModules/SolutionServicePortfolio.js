@@ -1,92 +1,72 @@
-import React, { useEffect, useState } from "react";
-import { Dropdown, DropdownButton, Modal } from "react-bootstrap";
-import { DataGrid } from "@mui/x-data-grid";
-import { CommanComponents } from "../../components/index";
-import FormGroup from "@mui/material/FormGroup";
-import Select from "react-select";
-import Select1 from "@mui/material/Select";
-import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
-import ClearIcon from "@mui/icons-material/Clear";
-import Box from "@mui/material/Box";
-import { useTheme } from "@mui/material/styles";
-import OutlinedInput from "@mui/material/OutlinedInput";
-import MonetizationOnOutlinedIcon from "@mui/icons-material/MonetizationOnOutlined";
-import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
-import ModeEditOutlineOutlinedIcon from "@mui/icons-material/ModeEditOutlineOutlined";
-import Tab from "@mui/material/Tab";
+import AddIcon from "@mui/icons-material/Add";
+import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
+import SearchIcon from "@mui/icons-material/Search";
+import TextSnippetIcon from "@mui/icons-material/TextSnippet";
 import TabContext from "@mui/lab/TabContext";
-import Button from "@mui/material/Button";
-import Menu from "@mui/material/Menu";
-import Fade from "@mui/material/Fade";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
-import SearchIcon from "@mui/icons-material/Search";
-import { Link, useHistory } from "react-router-dom";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import AddIcon from "@mui/icons-material/Add";
-import FormControl from "@mui/material/FormControl";
+import Box from "@mui/material/Box";
 import Checkbox from "@mui/material/Checkbox";
+import FormControl from "@mui/material/FormControl";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import FormGroup from "@mui/material/FormGroup";
+import Tab from "@mui/material/Tab";
+import { useTheme } from "@mui/material/styles";
+import { DataGrid } from "@mui/x-data-grid";
+import React, { useEffect, useState } from "react";
+import { Dropdown, DropdownButton, Modal } from "react-bootstrap";
 import DataTable from "react-data-table-component";
 import { FileUploader } from "react-drag-drop-files";
-import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
+import { Link, useHistory } from "react-router-dom";
+import Select from "react-select";
 
 import Cookies from "js-cookie";
 
 // import MuiMenuComponent from "../Operational/MuiMenuComponent";
-import MenuItem from "@mui/material/MenuItem";
+import { faCloudUploadAlt, faFileAlt, faFolderPlus, faPen, faPlus, faShareAlt, faUpload } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFileAlt, faFolderPlus } from "@fortawesome/free-solid-svg-icons";
-import { faShareAlt } from "@fortawesome/free-solid-svg-icons";
-import { faUpload } from "@fortawesome/free-solid-svg-icons";
-import { faPen } from "@fortawesome/free-solid-svg-icons";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import { faCloudUploadAlt } from "@fortawesome/free-solid-svg-icons";
-import shareIcon from "../../assets/icons/svg/share.svg";
-import folderaddIcon from "../../assets/icons/svg/folder-add.svg";
-import uploadIcon from "../../assets/icons/svg/upload.svg";
+import MenuItem from "@mui/material/MenuItem";
 import cpqIcon from "../../assets/icons/svg/CPQ.svg";
-import deleteIcon from "../../assets/icons/svg/delete.svg";
 import copyIcon from "../../assets/icons/svg/Copy.svg";
+import deleteIcon from "../../assets/icons/svg/delete.svg";
 import editIcon from "../../assets/icons/svg/edit.svg";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import folderaddIcon from "../../assets/icons/svg/folder-add.svg";
+import shareIcon from "../../assets/icons/svg/share.svg";
+import uploadIcon from "../../assets/icons/svg/upload.svg";
 import {
   ERROR_MAX_VERSIONS,
-  FONT_STYLE,
-  FONT_STYLE_SELECT,
+  FONT_STYLE_SELECT
 } from "../Repair/CONSTANTS";
 // import SearchBox from "../ /components/SearchBox";
 import SearchBox from "pages/Repair/components/SearchBox";
 import { customerSearch, machineSearch } from "services/searchServices";
 
-import searchstatusIcon from "../../assets/icons/svg/search-status.svg";
-import $ from "jquery";
-import {
-  getSearchCoverageForFamily,
-  getSearchQueryCoverage,
-  getConvertQuoteData,
-  solutionQuoteCreation,
-  updateSolutionQuoteData,
-  searchSolutionQuotes,
-  getQuoteCommonConfig,
-  quotePayerCreation,
-  deleteMasterQuote,
-} from "../../services/index";
-import SelectFilter from "react-select";
 import DateFnsUtils from "@date-io/date-fns";
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
-import { toast } from "react-toastify";
-import LoadingProgress from "pages/Repair/components/Loader";
-import { useDispatch } from "react-redux";
-import ModalCreateVersion from "pages/Repair/components/ModalCreateVersion";
-import { createQuoteVersion, updateQuoteHeader } from "services/repairQuoteServices";
+import { Tooltip } from "@mui/material";
+import $ from "jquery";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
-import QuotePriceSummaryTable from "pages/Repair/components/QuotePriceSummaryTable ";
-import SolutionQuotePriceEstimate from "./SolutionQuotePriceEstimate";
-import SolutionQuotePayerGridTable from "./SolutionQuotePayerGridTable";
-import NotesAddEdit from "./NotesAddEdit";
+import LoadingProgress from "pages/Repair/components/Loader";
+import ModalCreateVersion from "pages/Repair/components/ModalCreateVersion";
+import QuoteSummary from "pages/Repair/components/QuoteSummary";
+import { useDispatch } from "react-redux";
+import SelectFilter from "react-select";
+import { toast } from "react-toastify";
+import { createQuoteVersion, fetchQuoteSummary, updateQuoteHeader } from "services/repairQuoteServices";
+import searchstatusIcon from "../../assets/icons/svg/search-status.svg";
+import {
+  deleteMasterQuote,
+  getConvertQuoteData,
+  getQuoteCommonConfig,
+  quotePayerCreation,
+  searchSolutionQuotes,
+  solutionQuoteCreation,
+  updateSolutionQuoteData
+} from "../../services/index";
 import { QUOTE_STATUS_SELECT, QUOTE_VERSION_SELECT } from "./CONSTANTS";
-import { selectQuoteDropdownOption, selectQuoteStatusList } from "pages/Repair/dropdowns/quoteRepairSlice";
-import { useAppSelector } from "app/hooks";
+import NotesAddEdit from "./NotesAddEdit";
+import SolutionQuotePayerGridTable from "./SolutionQuotePayerGridTable";
+import SolutionQuotePriceEstimate from "./SolutionQuotePriceEstimate";
 const customStyles = {
   rows: {
     style: {
@@ -135,7 +115,7 @@ export function SolutionServicePortfolio(props) {
   const [searchSerialResults, setSearchSerialResults] = useState([]);
 
   const [quoteIdIs, setQuoteIdIs] = useState(0);
-
+  const [portfolioId, setPortfolioId] = useState(undefined);
   const [severity, setSeverity] = useState("");
   const [openSnack, setOpenSnack] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
@@ -855,6 +835,7 @@ export function SolutionServicePortfolio(props) {
             setValue("machine");
             setViewOnlyTab({ ...viewOnlyTab, customerViewOnly: true });
             setQuoteIdIs(solutionRes.data.quoteId);
+            setPortfolioId(solutionRes.data.portfolioId);
             //   setNameIsNotEditAble(true);
           }
         }
@@ -2662,7 +2643,7 @@ export function SolutionServicePortfolio(props) {
     console.log("result ----", result);
 
     setQuoteIdIs(result.quoteId);
-
+    setPortfolioId(result.sbQuoteItems[0].portfolioId)
     // View Only Tabs Data
     setViewOnlyTab({
       customerViewOnly: true,
@@ -3055,14 +3036,14 @@ export function SolutionServicePortfolio(props) {
     // history.push("/portfolio/new")
 
     if (state) {
-      if (state.portfolioId === undefined) {
+      if (portfolioId === undefined) {
         portfolioDetails = {
           portfolioId: "",
           type: "new",
         };
       } else {
         portfolioDetails = {
-          portfolioId: state.portfolioId,
+          portfolioId: portfolioId,
           type: "fetch",
         };
       }
@@ -3826,6 +3807,19 @@ export function SolutionServicePortfolio(props) {
     </>
   );
 
+  const [quoteSummary, setQuoteSummary] = useState("");
+  const [summaryOpen, setSummaryOpen] = useState(false);
+  const fetchSummaryDetails = async (selectedQuoteId) => {
+    await fetchQuoteSummary(selectedQuoteId)
+      .then((summary) => {
+        setQuoteSummary(summary);
+        setSummaryOpen(true);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  };
+
   return (
     <>
       {/* <CommanComponents /> */}
@@ -4022,15 +4016,11 @@ export function SolutionServicePortfolio(props) {
             </Modal.Body>
           </Modal>
           <div className="card p-4 mt-5">
-            <h5 className="d-flex align-items-center mb-0 bg-primary p-3 border-radius-10">
-              <div className="" style={{ display: "contents" }}>
+          <h5 className="d-flex align-items-center mb-0 bg-primary p-2 border-radius-10">
+              <div className="row col-md-11">
                 <span
-                  className="mr-3 text-white"
-                  style={{
-                    fontSize: "20px",
-                    fontWeight: "500",
-                    whiteSpace: "pre",
-                  }}
+                  className="mr-3 ml-2 text-white"
+                  style={{ fontSize: "20px" }}
                 >
                   Quote Header
                 </span>
@@ -4045,6 +4035,15 @@ export function SolutionServicePortfolio(props) {
                   <i className="fa fa-bookmark-o" aria-hidden="true"></i>
                 </a>
                 {/* <a href="#" className="btn-sm text-white"><img style={{ width: '14px' }} src={folderaddIcon}></img></a> */}
+              </div>
+              <div className="col-md-1 float-right-summary">
+                <div className="btn-sm cursor text-white">
+                  <Tooltip title="Summary">
+                    <TextSnippetIcon
+                      onClick={() => fetchSummaryDetails(quoteIdIs)}
+                    />
+                  </Tooltip>
+                </div>
               </div>
               {/* <div className="hr" style={{backgroundColor:"#fff"}}></div> */}
               {/* <div className="input-group icons border-radius-10 border">
@@ -5312,7 +5311,7 @@ export function SolutionServicePortfolio(props) {
                               </div>
                             </div>
                           </div>
-                          <div className="col-md-4 col-sm-4">
+                          {/* <div className="col-md-4 col-sm-4">
                             <div className="form-group">
                               <label className="text-uppercase text-light-dark font-size-12 font-weight-500">
                                 Margin
@@ -5333,8 +5332,8 @@ export function SolutionServicePortfolio(props) {
                                 />
                               </div>
                             </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
+                          </div> */}
+                          {/* <div className="col-md-4 col-sm-4">
                             <div className="form-group">
                               <label className="text-uppercase text-light-dark font-size-12 font-weight-500">
                                 Discount
@@ -5355,7 +5354,7 @@ export function SolutionServicePortfolio(props) {
                                 />
                               </div>
                             </div>
-                          </div>
+                          </div> */}
                           {/* <div className="col-md-3 col-sm-3">
                                                 <div className="form-group">
                                                     <p className="font-size-12 font-weight-500 mb-2">ACCOUNT NAME</p>
@@ -5691,7 +5690,7 @@ export function SolutionServicePortfolio(props) {
                               </h6>
                             </div>
                           </div>
-                          <div className="col-md-4 col-sm-4">
+                          {/* <div className="col-md-4 col-sm-4">
                             <div className="form-group">
                               <p className="font-size-12 font-weight-500 mb-2">
                                 MARGIN
@@ -5720,7 +5719,7 @@ export function SolutionServicePortfolio(props) {
                                   : quoteBillingData.discount}
                               </h6>
                             </div>
-                          </div>
+                          </div> */}
                         </div>
                         <hr />
                         {/* <a onClick={addNewPayer} className="btn bg-primary text-white"><AddIcon className="mr-2" />ADD PAYER</a> */}
@@ -6302,156 +6301,7 @@ export function SolutionServicePortfolio(props) {
                   </div>
                   <div className="col-9">
                     <div className="d-flex justify-content-between align-items-center w-100 ml-4">
-                      <div className="row align-items-center m-0 ">
-                        {querySearchSelector.map((obj, i) => {
-                          return (
-                            <>
-                              <div className="customselect border-primary d-flex align-items-center mr-3 my-2 border-radius-10">
-                                {i > 0 ? (
-                                  <SelectFilter
-                                    isClearable={true}
-                                    defaultValue={{
-                                      label: "And",
-                                      value: "AND",
-                                    }}
-                                    options={[
-                                      { label: "And", value: "AND", id: i },
-                                      { label: "Or", value: "OR", id: i },
-                                    ]}
-                                    placeholder="Search By.."
-                                    onChange={(e) => handleOperator(e, i)}
-                                    // value={querySearchOperator[i]}
-                                    value={obj.selectOperator}
-                                  />
-                                ) : (
-                                  <></>
-                                )}
-
-                                <div>
-                                  <SelectFilter
-                                    // isClearable={true}
-                                    options={[
-                                      { label: "Make", value: "make", id: i },
-                                      {
-                                        label: "Family",
-                                        value: "family",
-                                        id: i,
-                                      },
-                                      {
-                                        label: "Model",
-                                        value: "modelNo",
-                                        id: i,
-                                      },
-                                      {
-                                        label: "Prefix",
-                                        value: "serialNumberPrefix",
-                                        id: i,
-                                      },
-                                      {
-                                        label: "Name",
-                                        value: "itemName",
-                                        id: i,
-                                      },
-                                      {
-                                        label: "Description",
-                                        value: "description",
-                                        id: i,
-                                      },
-                                    ]}
-                                    placeholder="Search By.."
-                                    onChange={(e) => handleFamily(e, i)}
-                                    value={obj.selectFamily}
-                                  />
-                                </div>
-                                <div className="customselectsearch customize">
-                                  <span className="search-icon-postn">
-                                    <SearchIcon className="text-primary" />
-                                  </span>
-                                  <input
-                                    className="custom-input-sleact "
-                                    style={{ position: "relative" }}
-                                    type="text"
-                                    placeholder="Search Parts"
-                                    value={obj.inputSearch}
-                                    onChange={(e) => handleInputSearch(e, i)}
-                                    id={"inputSearch-" + i}
-                                    autoComplete="off"
-                                  />
-                                  <div
-                                    className="bg-primary text-white btn"
-                                    onClick={handleQuoteSearchClick}
-                                  >
-                                    <span className="mr-2">
-                                      <AddIcon />
-                                    </span>
-                                    Add Item
-                                  </div>
-
-                                  {
-                                    <ul
-                                      className={`list-group customselectsearch-list scrollbar scrollbar-${i} style`}
-                                    >
-                                      {obj.selectOptions.map(
-                                        (currentItem, j) => (
-                                          <li
-                                            className="list-group-item"
-                                            key={j}
-                                            onClick={(e) =>
-                                              handleSearchListClick(
-                                                e,
-                                                currentItem,
-                                                obj,
-                                                i
-                                              )
-                                            }
-                                          >
-                                            {currentItem}
-                                          </li>
-                                        )
-                                      )}
-                                    </ul>
-                                  }
-                                </div>
-                              </div>
-                            </>
-                          );
-                        })}
-                        <div onClick={(e) => addSearchQuerryHtml(e)}>
-                          <Link
-                            to="#"
-                            className="btn-sm text-primary border mr-2"
-                            style={{ border: "1px solid #872FF7" }}
-                          >
-                            +
-                          </Link>
-                        </div>
-                        <div onClick={handleDeletQuerySearch}>
-                          <Link to="#" className="btn-sm border">
-                            <svg
-                              data-name="Layer 41"
-                              id="Layer_41"
-                              fill="#872ff7"
-                              viewBox="0 0 50 50"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <title />
-                              <path
-                                className="cls-1"
-                                d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
-                              />
-                              <path
-                                className="cls-1"
-                                d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
-                              />
-                              <path
-                                className="cls-1"
-                                d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
-                              />
-                            </svg>
-                            {/* <DeleteIcon className="font-size-16" /> */}
-                          </Link>
-                        </div>
-                      </div>
+                      
                     </div>
                   </div>
                   <div className="col-2">
@@ -7073,6 +6923,11 @@ export function SolutionServicePortfolio(props) {
         existingVersion={quoteVersionIs}
         quoteName={generalDetails.quoteName}
         newVersion={newVersion}
+      />
+      <QuoteSummary
+        summaryOpen={summaryOpen}
+        handleSummaryClose={() => setSummaryOpen(false)}
+        summary={quoteSummary}
       />
       {showNotes && (
         <NotesAddEdit show={showNotes} hideModal={() => setShowNotes(false)} />

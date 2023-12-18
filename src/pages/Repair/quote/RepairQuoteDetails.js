@@ -2295,12 +2295,11 @@ const RepairQuoteDetails = (props) => {
                               />
                             </div>
                           </div>
-                          <div className="col-md-3 col-sm-3">
+                          {/* <div className="col-md-3 col-sm-3">
                             <div className="form-group">
                               <p className="font-size-12 font-weight-500 mb-2">
                                 MARGIN
                               </p>
-                              {/* <h6 className="font-weight-600"> */}
                               <input
                                 className="form-control border-radius-10 text-primary"
                                 name="reference"
@@ -2312,16 +2311,14 @@ const RepairQuoteDetails = (props) => {
                                   })
                                 }
                               />
-                              {/* </h6> */}
                             </div>
-                          </div>
+                          </div> */}
 
-                          <div className="col-md-3 col-sm-3">
+                          {/* <div className="col-md-3 col-sm-3">
                             <div className="form-group ">
                               <p className="font-size-12 font-weight-500 mb-2">
                                 DISCOUNT
                               </p>
-                              {/* <h6 className="font-weight-600"> */}
                               <input
                                 className="form-control border-radius-10 text-primary"
                                 name="reference"
@@ -2333,9 +2330,8 @@ const RepairQuoteDetails = (props) => {
                                   })
                                 }
                               />
-                              {/* </h6> */}
                             </div>
-                          </div>
+                          </div> */}
                         </div>
                         <div
                           className="row"
