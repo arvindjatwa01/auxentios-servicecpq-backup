@@ -196,7 +196,7 @@ export default function MarginRecommendation(props) {
   const orderOptions = ["Planned", "Breakdown"];
   const partTypeOptions = ["New", "Reman", "Refurbish"];
   const statusOptions = ["Active", "Discontinued", "Inactivate"];
-  const usageOptions = ["Mining", "Construction", "Energy", 'Marine","Any'];
+  const usageOptions = ["Mining", "Construction", "Energy", "Marine", "Any"];
   const machineAgeOptions = ["End of life", "Midlife", "New"];
   const equipmentUsageOptions = ["Critical Operation", "Non-critical"];
   const avgAnnualRevnueOptions = ["<100000", ">100000"];

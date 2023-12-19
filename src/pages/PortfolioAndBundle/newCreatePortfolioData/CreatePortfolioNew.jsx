@@ -801,11 +801,10 @@ export const CreatePortfolio = (props) => {
         _validityTabData.dateFlag = false;
       }
     }
-
     setValidityTabData(_validityTabData);
   };
 
-  //  handle strategy tab input data change
+  // handle strategy tab input data change
   const handleStrategyTabSelectChange = (e, keyName) => {
     try {
       const _strategyTabData = { ...strategyTabData };
@@ -2225,6 +2224,7 @@ export const CreatePortfolio = (props) => {
                 handlePortfolioCoverageIds={(idsData) =>
                   setPortfolioCoverageIds(idsData)
                 }
+                setTableData={setSelectedCoverageData}
               />
             </>
           )}
