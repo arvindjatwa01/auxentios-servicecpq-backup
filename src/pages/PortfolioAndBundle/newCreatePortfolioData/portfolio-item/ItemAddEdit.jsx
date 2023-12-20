@@ -959,9 +959,9 @@ const ItemAddEdit = (props) => {
                         </div>
                       </div>
                     </div>
-                    <p className="font-size-14 text-black font-weight-500 mb-1">
+                    {/* <p className="font-size-14 text-black font-weight-500 mb-1">
                       USAGE
-                    </p>
+                    </p> */}
                     <div className="row">
                       <div className="col-md-6 col-sm-6">
                         <div className="form-group">
@@ -1201,9 +1201,9 @@ const ItemAddEdit = (props) => {
                         </div>
                       </div>
                     </div>
-                    <p className="font-size-14 text-black font-weight-500 mb-1">
+                    {/* <p className="font-size-14 text-black font-weight-500 mb-1">
                       USAGE
-                    </p>
+                    </p> */}
                     <div className="row input-fields">
                       <div className="col-md-6 col-sm-6">
                         <div className="form-group">

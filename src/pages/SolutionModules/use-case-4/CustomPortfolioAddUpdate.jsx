@@ -21,6 +21,8 @@ import { Box, FormControlLabel, FormGroup, Tab } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
+import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
+
 import Select from "react-select";
 import {
   errorMessage,
@@ -63,6 +65,7 @@ import { sparePartSearch } from "services/searchServices";
 import { FONT_STYLE_SELECT } from "pages/Repair/CONSTANTS";
 import SearchInputBox from "./useCase4Common/SearchInputBox";
 import {
+  CUSTOM_COVERAGE_REST,
   CUSTOM_PORTFOLIO_URL,
   GET_CUSTOM_PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE,
   PORTFOLIO_PRICE_AGREEMENT_URL,
@@ -79,6 +82,9 @@ import {
 } from "./Use_Case_4_Constansts";
 import LoadingProgress from "pages/Repair/components/Loader";
 import CustomOptionalServicesModel from "./useCase4Common/CustomOptionalServicesModel";
+import CoveragePaginationTable from "pages/PortfolioAndBundle/newCreatePortfolioData/coverage/CoveragePaginationTable";
+import PortfolioCoverageSearch from "pages/PortfolioAndBundle/newCreatePortfolioData/PortfolioCoverageSearch";
+import { Link } from "react-router-dom";
 
 const CustomPortfolioAddUpdate = (props) => {
   const {
@@ -878,6 +884,64 @@ const CustomPortfolioAddUpdate = (props) => {
     tempArray[i] = obj;
     setPriceAgreementTableRow([...tempArray]);
     $(`.scrollbar-${i}`).css("display", "none");
+  };
+
+  // Coverage Tab
+  // handle Search Coverage Data-table checkbox
+  const handleCheckedCoverageData = () => {
+    let selectedCoverageDataClone = [];
+    checkedCustomCoverageData.map((data, i) => {
+      const exist = selectedCustomCoverageData.some(
+        (item) => item.id === data.id
+      );
+      if (!exist) {
+        selectedCoverageDataClone.push(data);
+      }
+    });
+    setSelectedCustomCoverageData([
+      ...selectedCustomCoverageData,
+      ...selectedCoverageDataClone,
+    ]);
+    setSearchCustomCoverageData([]);
+    setCheckedCustomCoverageData([]);
+  };
+
+  const createCustomCoverageData = async () => {
+    try {
+      for (let coverageData in checkedCustomCoverageData) {
+        let customCoverageReqObj = {
+          customCoverageId: 0,
+          serviceId: 0,
+          modelNo: coverageData.model,
+          serialNumber: "",
+          startSerialNumber: "",
+          endSerialNumber: "",
+          serialNumberPrefix: coverageData.prefix,
+          family: coverageData.family,
+          make: coverageData.make,
+          fleet: "",
+          fleetSize: "SMALL",
+          location: "",
+          startDate: "",
+          endDate: "",
+          actions: "",
+        };
+
+        callPostApi(
+          null,
+          CUSTOM_COVERAGE_REST(),
+          customCoverageReqObj,
+          (response) => {
+            if (response.status === API_SUCCESS) {
+              console.log(first);
+            } else {
+            }
+          },
+          (error) => {}
+        );
+        // console.log(obj)
+      }
+    } catch (error) {}
   };
 
   // Administrative tab text change
@@ -2160,7 +2224,83 @@ const CustomPortfolioAddUpdate = (props) => {
   };
 
   // Solution Header Coverage tab data
-  const viewCoverageTabData = () => {};
+  const viewCoverageTabData = () => {
+    return (
+      <>
+        <ul
+          class="submenu templateResultheading accordion"
+          style={{ display: "block" }}
+        >
+          <li>
+            <a className="cursor result">Search Coverage</a>
+          </li>
+        </ul>
+        <div
+          className="custom-table card p-3"
+          style={{ width: "100%", backgroundColor: "#fff" }}
+        >
+          <div
+            className="row align-items-center m-0"
+            style={{ flexFlow: "unset" }}
+          >
+            <PortfolioCoverageSearch
+              searchFlag="coverage"
+              // handleAddSearchItem={handleSetSearchCoverageData}
+              handleAddSearchItem={(data) => setSearchCustomCoverageData(data)}
+            />
+            <div className=" ml-3">
+              <Link className="btn bg-primary cursor text-white cursor">
+                <FileUploadOutlinedIcon /> <span className="ml-1">Upload</span>
+              </Link>
+            </div>
+          </div>
+          {searchCustomCoverageData.length !== 0 && (
+            <>
+              <hr />
+              <CoveragePaginationTable
+                className=""
+                isSelectAble={true}
+                tableData={searchCustomCoverageData}
+                setCheckedCoverageData={setCheckedCustomCoverageData}
+              />
+              <div>
+                {" "}
+                <div className="text-right">
+                  <input
+                    className="btn bg-primary text-white"
+                    value="+ Add Selected"
+                    onClick={handleCheckedCoverageData}
+                    disabled={checkedCustomCoverageData.length === 0}
+                  />
+                </div>
+              </div>
+            </>
+          )}
+          {selectedCustomCoverageData.length !== 0 && (
+            <>
+              <hr />
+              <label htmlFor="Included-model">
+                <h5 className="font-weight-400 text-black mb-2 mt-1">
+                  Included models
+                </h5>
+              </label>
+              {/* <CoveragePaginationTable
+                className="mt-3"
+                isSelectAble={false}
+                tableData={selectedCustomCoverageData}
+                // handleUpdateCoverageData={handleUpdateCoverageData}
+                // handlePortfolioCoverageIds={handlePortfolioCoverageIds}
+                // handlePortfolioCoverageIds={(idsData) =>
+                //   setCustomPortfolioCoverageIds(idsData)
+                // }
+                setTableData={setSelectedCustomCoverageData}
+              /> */}
+            </>
+          )}
+        </div>
+      </>
+    );
+  };
 
   // Solution Header Administrative tab data
   const viewAdministrativeTabData = () => {

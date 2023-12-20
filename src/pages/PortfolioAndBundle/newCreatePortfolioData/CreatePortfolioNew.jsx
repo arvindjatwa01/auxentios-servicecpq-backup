@@ -801,11 +801,10 @@ export const CreatePortfolio = (props) => {
         _validityTabData.dateFlag = false;
       }
     }
-
     setValidityTabData(_validityTabData);
   };
 
-  //  handle strategy tab input data change
+  // handle strategy tab input data change
   const handleStrategyTabSelectChange = (e, keyName) => {
     try {
       const _strategyTabData = { ...strategyTabData };
@@ -2225,6 +2224,7 @@ export const CreatePortfolio = (props) => {
                 handlePortfolioCoverageIds={(idsData) =>
                   setPortfolioCoverageIds(idsData)
                 }
+                setTableData={setSelectedCoverageData}
               />
             </>
           )}
@@ -3048,6 +3048,8 @@ export const CreatePortfolio = (props) => {
                 setIsActivePortfolio={setIsActivePortfolio}
                 handlePortfolioSupportLevel={handlePortfolioSupportLevel}
                 handlePortfolioStatus={handlePortfolioStatus}
+                portfolioRecordId={portfolioRecordId}
+                history={history}
               />
               <div className="card p-4 mt-5">
                 <h5 className="d-flex justify-content-between align-items-center mb-0">
