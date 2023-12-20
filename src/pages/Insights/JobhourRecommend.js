@@ -507,12 +507,13 @@ export default function JobhourRecommend(props) {
         <Card variant="outlined">
           {jobCode?.jobCode && componentCode.componentCode ? (
             <List>
-              <ListItem sx={{ justifyContent: "center" }}>
-                Average hours to {jobCode?.description} the{" "}
-                {componentCode?.description}
+              <ListItem sx={{ justifyContent: "center", fontSize: "1.20rem", fontWeight: "600"}}>
+                Recommended Hours 
+                {/* Average hours to {jobCode?.description} the{" "}
+                {componentCode?.description} */}
               </ListItem>
               <Divider />
-              <ListItem sx={{ justifyContent: "center" }}>
+              <ListItem className="align-items-center " sx={{ justifyContent: "center", fontSize: "1.05rem" }}>
                 <Typography
                   variant="h4"
                   color={"#872ff7"}
@@ -523,6 +524,7 @@ export default function JobhourRecommend(props) {
                   {jobHours} Hrs{" "}
                 </Typography>
                 average for similar Jobs
+               {/* <p className="text-center" style={{fontSize: "1rem"}}></p> */}
               </ListItem>
               <Divider />
               <ListItem sx={{ justifyContent: "center" }}>
