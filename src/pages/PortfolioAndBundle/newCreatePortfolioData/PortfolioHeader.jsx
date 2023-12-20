@@ -152,7 +152,7 @@ const PortfolioHeader = (props) => {
                     />
                   </div>
                 </div>
-                <div className="col-md-12 col-sm-12">
+                {/* <div className="col-md-12 col-sm-12">
                   <div class="form-group">
                     <label className="text-light-dark font-size-12 font-weight-500">
                       Quote ID
@@ -165,7 +165,7 @@ const PortfolioHeader = (props) => {
                       placeholder="Enter email"
                     />
                   </div>
-                </div>
+                </div> */}
                 <div className="col-md-12 col-sm-12">
                   <div class="form-group">
                     <label className="text-light-dark font-size-12 font-weight-500">
@@ -205,7 +205,7 @@ const PortfolioHeader = (props) => {
                     <h6 class="font-weight-500">SOLUTION</h6>
                   </div>
                 </div>
-                <div class="col-md-12 col-sm-12">
+                {/* <div class="col-md-12 col-sm-12">
                   <div class="form-group mt-3">
                     <p class="font-size-12 font-weight-500 mb-2">Quote ID </p>
                     <h6 class="font-weight-500">
@@ -214,7 +214,7 @@ const PortfolioHeader = (props) => {
                         : quoteRecord.quoteId}
                     </h6>
                   </div>
-                </div>
+                </div> */}
                 <div class="col-md-12 col-sm-12">
                   <div class="form-group mt-3">
                     <p class="font-size-12 font-weight-500 mb-2">

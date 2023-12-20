@@ -2699,15 +2699,18 @@ export const CreatePortfolio = (props) => {
         let reqObj = {
           coverageId: 0,
           serviceId: 0,
-          modelNo: selectedCoverageData[i].model,
+          modelNo: selectedCoverageData[i]?.model,
           serialNumber:
-            selectedCoverageData[i].includedSerialNoModalData[0].serialNumber
-              ?.value || "",
+            (selectedCoverageData[i]?.includedSerialNoModalData &&
+              selectedCoverageData[i]?.includedSerialNoModalData.length !== 0 &&
+              selectedCoverageData[i]?.includedSerialNoModalData[0]
+                ?.serialNumber?.value) ||
+            "",
           startSerialNumber: "",
           endSerialNumber: "",
-          serialNumberPrefix: selectedCoverageData[i].prefix,
-          family: selectedCoverageData[i].family,
-          make: selectedCoverageData[i].make,
+          serialNumberPrefix: selectedCoverageData[i]?.prefix || "",
+          family: selectedCoverageData[i]?.family || "",
+          make: selectedCoverageData[i]?.make || "",
           fleet: "",
           fleetSize: "SMALL",
           location: "",
