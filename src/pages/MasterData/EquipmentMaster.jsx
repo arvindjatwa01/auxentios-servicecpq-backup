@@ -790,10 +790,10 @@ const EquipmentMaster = () => {
                   Manufacturer
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                  {/* {isEmpty(selectEquipmentDetails.maker)
+                  {isEmpty(selectEquipmentDetails.maker)
                     ? "NA"
-                    : selectEquipmentDetails.maker} */}
-                  Caterpillar
+                    : selectEquipmentDetails.maker}
+                  {/* Caterpillar */}
                 </p>
               </div>
             </div>
@@ -803,10 +803,10 @@ const EquipmentMaster = () => {
                   Model
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                  {/* {isEmpty(selectEquipmentDetails.model)
+                  {isEmpty(selectEquipmentDetails.model)
                     ? "NA"
-                    : selectEquipmentDetails.model} */}
-                  336D2 L
+                    : selectEquipmentDetails.model}
+                  {/* 336D2 L */}
                 </p>
               </div>
             </div>
@@ -836,9 +836,10 @@ const EquipmentMaster = () => {
                   Operating Weight
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500">
-                  {isEmpty(selectEquipmentDetails.operator)
+                  {/* {isEmpty(selectEquipmentDetails.operator)
                     ? "NA"
-                    : selectEquipmentDetails.operator}
+                    : selectEquipmentDetails.operator} */}
+                    80648 lb
                 </p>
               </div>
             </div>
@@ -913,10 +914,10 @@ const EquipmentMaster = () => {
                 Customer Name
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase ">
-                {/* {isEmpty(selectEquipmentDetails.customer)
+                {isEmpty(selectEquipmentDetails.customer)
                   ? "NA"
-                  : selectEquipmentDetails.customer} */}
-                UNNATI MARIGOLD REALTORS LLP
+                  : selectEquipmentDetails.customer}
+                {/* UNNATI MARIGOLD REALTORS LLP */}
               </p>
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-3">
@@ -924,13 +925,10 @@ const EquipmentMaster = () => {
                 Contact Person
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                {/* {isEmpty(selectEquipmentDetails.contactPhone)
+                {isEmpty(selectEquipmentDetails.contact)
                   ? "NA"
-                  : selectEquipmentDetails.contactPhone} */}
-                {/* {isEmpty(selectEquipmentDetails.contact)
-                  ? "NA"
-                  : selectEquipmentDetails.contact} */}
-                Vinay Sharma
+                  : selectEquipmentDetails.contact}
+                {/* Vinay Sharma */}
               </p>
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-3">
@@ -1236,7 +1234,8 @@ const EquipmentMaster = () => {
                         <div className="d-flex align-items-center justify-content-between equipment-pagination">
                           <h5 className="font-weight-600 mb-0 text-uppercase">
                             {/* {`${selectEquipmentDetails.description} - ${selectEquipmentDetails.model}`} */}
-                            Chain excavator - 336D2 L
+                            {/* Chain excavator - 336D2 L */}
+                            {`${selectEquipmentDetails.description}`}
                           </h5>
                           <Stack spacing={2}>
                             <Pagination
@@ -1256,8 +1255,8 @@ const EquipmentMaster = () => {
                             {selectEquipmentDetails.equipmentNumber}
                           </h6>
                           <p className="text-light-60 font-size-12 mb-0 text-uppercase">
-                            {/* {selectEquipmentDetails.model} */}
-                            336D2L -2018
+                            {`${selectEquipmentDetails.model}- 2018`}
+                            {/* 336D2L -2018 */}
                           </p>
                         </div>
                       </div>

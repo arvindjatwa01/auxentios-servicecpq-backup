@@ -3048,6 +3048,8 @@ export const CreatePortfolio = (props) => {
                 setIsActivePortfolio={setIsActivePortfolio}
                 handlePortfolioSupportLevel={handlePortfolioSupportLevel}
                 handlePortfolioStatus={handlePortfolioStatus}
+                portfolioRecordId={portfolioRecordId}
+                history={history}
               />
               <div className="card p-4 mt-5">
                 <h5 className="d-flex justify-content-between align-items-center mb-0">

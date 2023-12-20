@@ -601,7 +601,8 @@ const Parts360 = () => {
                   {/* {isEmpty(selectedPartsDetails.description)
                     ? "NA"
                     : selectedPartsDetails.description} */}
-                  caterpillar turbocharger p/n OR-6158 T6 A/R 1.23 cat TL8118
+                  {selectedPartsDetails.partDescription + " " + selectedPartsDetails.modelGroupDescription}
+                  {/* caterpillar turbocharger p/n OR-6158 T6 A/R 1.23 cat TL8118 */}
                 </p>
               </div>
             </div>
@@ -611,10 +612,10 @@ const Parts360 = () => {
                   Type
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                  {/* {isEmpty(selectedPartsDetails.partType)
+                  {isEmpty(selectedPartsDetails.partType)
                     ? "NA"
-                    : selectedPartsDetails.partType} */}
-                  Reman
+                    : selectedPartsDetails.partType}
+                  {/* Reman */}
                 </p>
               </div>
             </div>
@@ -631,10 +632,10 @@ const Parts360 = () => {
                   Manufacturer
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                  {/* {isEmpty(selectedPartsDetails.manufacturer)
+                  {isEmpty(selectedPartsDetails.manufacturer)
                     ? "NA"
-                    : selectedPartsDetails.manufacturer} */}
-                  Caterpillar
+                    : selectedPartsDetails.manufacturer}
+                  {/* Caterpillar */}
                 </p>
               </div>
             </div>
@@ -644,10 +645,10 @@ const Parts360 = () => {
                   Model
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                  {/* {isEmpty(selectedPartsDetails.model)
+                  {isEmpty(selectedPartsDetails.model)
                     ? "NA"
-                    : selectedPartsDetails.model} */}
-                  All models
+                    : selectedPartsDetails.model}
+                  {/* All models */}
                 </p>
               </div>
             </div>
@@ -656,10 +657,10 @@ const Parts360 = () => {
                 Group Number
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                {/* {isEmpty(selectedPartsDetails.groupNumber)
+                {isEmpty(selectedPartsDetails.groupNumber)
                   ? "NA"
-                  : selectedPartsDetails.groupNumber} */}
-                3620566
+                  : selectedPartsDetails.groupNumber}
+                {/* 3620566 */}
               </p>
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
@@ -668,10 +669,10 @@ const Parts360 = () => {
                   Parts Group
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                  {/* {isEmpty(selectedPartsDetails.partsGroup)
+                  {isEmpty(selectedPartsDetails.partsGroup)
                     ? "NA"
-                    : selectedPartsDetails.partsGroup} */}
-                  Turbocharger
+                    : selectedPartsDetails.partsGroup}
+                  {/* Turbocharger */}
                 </p>
               </div>
             </div>
@@ -681,10 +682,10 @@ const Parts360 = () => {
                   BEC Code
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                  {/* {isEmpty(selectedPartsDetails.becCode)
+                  {isEmpty(selectedPartsDetails.becCode)
                     ? "NA"
-                    : selectedPartsDetails.becCode} */}
-                  NA
+                    : selectedPartsDetails.becCode}
+                  {/* NA */}
                 </p>
               </div>
             </div>
@@ -716,10 +717,10 @@ const Parts360 = () => {
                   Status
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                  {/* {isEmpty(selectedPartsDetails.status)
+                  {isEmpty(selectedPartsDetails.status)
                     ? "NA"
-                    : selectedPartsDetails.status} */}
-                  Active
+                    : selectedPartsDetails.status}
+                  {/* Active */}
                 </p>
               </div>
             </div>
@@ -1035,7 +1036,9 @@ const Parts360 = () => {
                       <div className="bg-white p-3 border-radius-10 ">
                         <div className="d-flex align-items-center justify-content-between equipment-pagination">
                           <h5 className="font-weight-600 mb-0">
-                            Turbocharger Catridge - Reman
+                          {!isEmpty(selectedPartsDetails.partDescription) &&
+                              selectedPartsDetails.partDescription}
+                            {/* Turbocharger Catridge - Reman */}
                           </h5>
                           <Stack spacing={2}>
                             <Pagination
@@ -1052,9 +1055,9 @@ const Parts360 = () => {
                         </div>
                         <div className="d-block mt-3">
                           <h6 className="text-primary font-weight-600">
-                            {/* {!isEmpty(selectedPartsDetails.partNumber) &&
-                              selectedPartsDetails.partNumber} */}
-                            OR6158
+                            {!isEmpty(selectedPartsDetails.partNumber) &&
+                              selectedPartsDetails.partNumber}
+                            {/* OR6158 */}
                           </h6>
                           <p className="text-light-60 font-size-12 mb-0">
                             {!isEmpty(selectedPartsDetails.model) &&
