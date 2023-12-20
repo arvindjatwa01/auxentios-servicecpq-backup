@@ -41,7 +41,7 @@ const CardWithEvalWrapper = (props) => <Card variant="outlined"
         marginBlock: 1,
         paddingBlock: 1,
         cursor: 'pointer',
-        ':hover': { borderColor: '#872ff7' },
+        ':hover': { fontWeight: 'bold', borderColor: '#872ff7' },
     }}
     onClick={props.onClick}>{props.children}</Card>
 const customStyles = {
@@ -380,7 +380,7 @@ export const CreateSolutionQuote = (props) => {
             paddingBlock: 1,
             borderColor: "#00000025",
             cursor: 'pointer',
-            ':hover': { borderColor: '#872ff7' },
+            ':hover': { fontWeight: 'bold', borderColor: '#872ff7' },
             color: indAppOption.value === 'gsheet' || indAppOption.value === 'paste' ? 'gray' : "black",
         }}
         onClick={() => handleClick(indAppOption.value)}>
@@ -732,47 +732,46 @@ export const CreateSolutionQuote = (props) => {
                     </div>
                     <Box className="mt-3" sx={{ width: "100%", typography: "body1" }}>
                         {showOptions ?
-                            (<Grid container columnSpacing={8} rowSpacing={5} justifyContent={'center'}>
+                            (<Box className="mt-3 grid-box" sx={{ width: "72%", typography: "body1" }}><Grid container columnSpacing={3} rowSpacing={5} justifyContent={'center'}>
                                 <Grid item xs={12} md={4} >
-                                    <CardWrapper>
-                                        <Typography variant='h6'>
-                                            Start from scratch
-                                        </Typography>
-                                        <Typography variant="body2" paddingY={2}>
-                                            Create a new quote with an evaluation.
-                                        </Typography>
+                                        <CardWrapper>
+                                            <Typography variant='h6'>
+                                                Start from scratch
+                                            </Typography>
+                                            <Typography variant="body2" paddingY={2}>
+                                                Create a new quote with an evaluation.
+                                            </Typography>
 
-                                        <CardWithEvalWrapper
-                                            onClick={() => {
-                                                history.push({
-                                                    pathname: "/portfolio/new",
-                                                    state: {
-                                                        portfolioId: "",
-                                                        type: "new",
-                                                    }
-                                                })
-                                            }}>
-                                            <SettingsSuggestTwoToneIcon sx={{ mx: 2, color: 'green' }} />Create Portfolio
-                                        </CardWithEvalWrapper>
+                                            <CardWithEvalWrapper
+                                                onClick={() => {
+                                                    history.push({
+                                                        pathname: "/portfolio/new",
+                                                        state: {
+                                                            portfolioId: "",
+                                                            type: "new",
+                                                        }
+                                                    })
+                                                }}>
+                                                <SettingsSuggestTwoToneIcon sx={{ mx: 2, color: 'green' }} />Portfolio
+                                            </CardWithEvalWrapper>
 
-                                        <CardWithEvalWrapper
-                                            onClick={() => {
-                                                history.push({
-                                                    pathname: "/solutionBuilder/create",
-                                                    state: {
-                                                        portfolioId: "",
-                                                        type: "new",
-                                                    }
-                                                })
-                                            }}>
-                                            <ManageAccountsTwoToneIcon sx={{ mx: 2, color: 'blue' }} />Create Solution
-                                        </CardWithEvalWrapper>
-                                        {/* <Card variant="outlined" onClick={() => { history.push("/solutionBuilder/analytics") }}
+                                            <CardWithEvalWrapper
+                                                onClick={() => {
+                                                    history.push({
+                                                        pathname: "/solutionBuilder/create",
+                                                        state: {
+                                                            portfolioId: "",
+                                                            type: "new",
+                                                        }
+                                                    })
+                                                }}>
+                                                <ManageAccountsTwoToneIcon sx={{ mx: 2, color: 'blue' }} />Solution
+                                            </CardWithEvalWrapper>
+                                            {/* <Card variant="outlined" onClick={() => { history.push("/solutionBuilder/analytics") }}
                                             sx={{ margin: 'auto', width: "20%", borderRadius: 5, p: 5, my: 2 }}
                                             className="border-primary mouse-pointer"
                                         >+</Card> */}
-                                    </CardWrapper>
-
+                                        </CardWrapper>
                                 </Grid>
                                 <Grid item xs={12} md={4}>
                                     <CardWrapper>
@@ -788,9 +787,11 @@ export const CreateSolutionQuote = (props) => {
                                                     {innerCard(indAppOption, handleClickUpload)}
                                                 </Tooltip>)}
                                         </Grid> */}
-                                        <Grid container>
-                                            {TEMPLATE_OPTIONS.map(indAppOption => innerCard(indAppOption, handleClickTemplate))}
-                                        </Grid>
+                                        
+                                            <Grid container>
+                                                {TEMPLATE_OPTIONS.map(indAppOption => innerCard(indAppOption, handleClickTemplate))}
+                                            </Grid>
+                                        
                                     </CardWrapper>
                                 </Grid>
                                 <Grid item xs={12} md={4}>
@@ -809,7 +810,7 @@ export const CreateSolutionQuote = (props) => {
                                         </Grid>
                                     </CardWrapper>
                                 </Grid>
-                            </Grid>)
+                            </Grid></Box>)
                             :
                             (<div>
                                 {/* {selectedQuoteOption === "with_eval" && <QuoteWithEvaluation setShowOptions={setShowOptions} />} */}
