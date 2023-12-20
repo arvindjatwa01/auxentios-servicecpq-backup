@@ -628,7 +628,7 @@ const ServiceMaster = () => {
                   Service Code
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500">
-                  SO10
+                  S012
                 </p>
               </div>
             </div>
@@ -969,7 +969,7 @@ const ServiceMaster = () => {
                           </Stack>
                         </div>
                         <div className="d-block mt-3">
-                          <h6 className="text-primary font-weight-600">S014</h6>
+                          <h6 className="text-primary font-weight-600">S012</h6>
                           <p className="text-light-60 font-size-12 mb-0">
                             External - Special Service
                           </p>
@@ -1010,7 +1010,7 @@ const ServiceMaster = () => {
                           </Stack>
                         </div>
                         <div className="d-block mt-3">
-                          <h6 className="text-primary font-weight-600">AC03</h6>
+                          <h6 className="text-primary font-weight-600">AC01</h6>
                           <p className="text-light-60 font-size-12 mb-0">
                             Description 3 - Test Agency 3
                           </p>
