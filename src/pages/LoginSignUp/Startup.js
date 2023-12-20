@@ -153,7 +153,7 @@ export const Startup = () => {
                                     </div> */}
                     {/* <h2 className="text-white font-weight-600 text-center mt-3">Log In</h2> */}
                     <div className="text-center">
-                      <img src={loginPageLogo} width={"20%"} alt="Logo"></img>
+                      <img src={loginPageLogo} width={"40%"} alt="Logo"></img>
                     </div>
                     <div className="row m-5">
                       <div className="col-md-12 col-sm-12">

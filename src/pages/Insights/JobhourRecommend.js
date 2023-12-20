@@ -519,7 +519,8 @@ export default function JobhourRecommend(props) {
                   sx={{ mx: 2 }}
                   fontWeight={"600"}
                 >
-                  100 Hrs{" "}
+                  {/* 100 Hrs{" "} */}
+                  {jobHours} Hrs{" "}
                 </Typography>
                 average for similar Jobs
               </ListItem>
@@ -533,11 +534,9 @@ export default function JobhourRecommend(props) {
                 <Typography variant="h5" fontWeight={500} sx={{ mx: 2 }}>
                   {/* 20 Hrs - 200 Hrs */}
                   {jobHours !== 0
-                    ? jobHours < 5
-                      ? `${jobHours - 2} Hrs - ${jobHours + 2} Hrs`
-                      : jobHours > 100
+                    ? jobHours > 100
                       ? `${jobHours - 10} Hrs - ${jobHours + 10} Hrs`
-                      : `${jobHours} Hrs - ${jobHours + 2} Hrs`
+                      : `${jobHours - 2} Hrs - ${jobHours + 2} Hrs`
                     : ""}
                 </Typography>
                 <Typography variant="h6" color={"#00000060"} sx={{ mx: 2 }}>
