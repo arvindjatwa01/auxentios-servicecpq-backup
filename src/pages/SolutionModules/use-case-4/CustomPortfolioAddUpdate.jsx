@@ -933,7 +933,7 @@ const CustomPortfolioAddUpdate = (props) => {
           customCoverageReqObj,
           (response) => {
             if (response.status === API_SUCCESS) {
-              console.log(first);
+              console.log("testst");
             } else {
             }
           },
