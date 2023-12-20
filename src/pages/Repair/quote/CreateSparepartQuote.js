@@ -342,7 +342,7 @@ const CreatePartQuote = () => {
       paddingBlock: 1,
       borderColor: "#00000025",
       cursor: 'pointer',
-      ':hover': { borderColor: '#872ff7' },
+      ':hover': { fontWeight: 'bold', borderColor: '#872ff7' },
       color: indAppOption.value === 'gsheet' || indAppOption.value === 'paste' ? 'gray' : "black",
     }}
     onClick={() => handleClick(indAppOption.value)}>
@@ -377,7 +377,7 @@ const CreatePartQuote = () => {
           </div>
           <Box className="mt-3" sx={{ width: "100%", typography: "body1" }}>
             {showOptions ?
-              (<Grid container columnSpacing={8} rowSpacing={5} justifyContent={'center'}>
+              (<Box className="mt-3 grid-box" sx={{ width: "72%", typography: "body1" }}><Grid container columnSpacing={3} rowSpacing={5} justifyContent={'center'}>
                 <Grid item xs={12} md={4} >
                   <CardWrapper>
                     <Typography variant='h6'>
@@ -395,20 +395,12 @@ const CreatePartQuote = () => {
                         marginBlock: 1,
                         paddingBlock: 1,
                         cursor: 'pointer',
-                        ':hover': { borderColor: '#872ff7' },
+                        ':hover': { fontWeight: 'bold', borderColor: '#872ff7' },
                       }}
                       onClick={() => createNewBuilder()}>
                       <PrecisionManufacturingTwoToneIcon sx={{ mx: 2, color: 'green' }} />Partlist
                     </Card>
 
-
-                    <Card variant="outlined"
-                      sx={{ margin: 'auto', width: "20%", borderRadius: 5, p: 5, my: 5, cursor: 'pointer' }}
-                      className="border-primary"
-                    // onClick={() => { setShowOptions(false); setSelectedQuoteOption("with_eval") }}
-                    >
-                      +
-                    </Card>
                     {/* <Typography variant="body1" sx={{ m: 4 }}>
                       Create A Quote
                     </Typography>
@@ -447,7 +439,7 @@ const CreatePartQuote = () => {
                     </Grid>
                   </CardWrapper>
                 </Grid>
-              </Grid>)
+              </Grid></Box>)
               :
               (<div>
                 {/* {selectedQuoteOption === "with_eval" && <QuoteWithEvaluation setShowOptions={setShowOptions} />} */}

@@ -35,7 +35,7 @@ const CardWithEvalWrapper = (props) => <Card variant="outlined"
     marginBlock: 1,
     paddingBlock: 1,
     cursor: 'pointer',
-    ':hover': { borderColor: '#872ff7' },
+    ':hover': { fontWeight: 'bold', borderColor: '#872ff7' },
   }}
   onClick={props.onClick}>{props.children}</Card>
 export const CreateRepairQuote = (props) => {
@@ -345,7 +345,7 @@ export const CreateRepairQuote = (props) => {
       paddingBlock: 1,
       borderColor: "#00000025",
       cursor: 'pointer',
-      ':hover': { borderColor: '#872ff7' },
+      ':hover': { fontWeight: 'bold', borderColor: '#872ff7' },
       color: indAppOption.value === 'gsheet' || indAppOption.value === 'paste' ? 'gray' : "black",
     }}
     onClick={() => handleClick(indAppOption.value)}>
@@ -380,7 +380,7 @@ export const CreateRepairQuote = (props) => {
           </div>
           <Box className="mt-3" sx={{ width: "100%", typography: "body1" }}>
             {showOptions ?
-              (<Grid container columnSpacing={8} rowSpacing={5} justifyContent={'center'}>
+              (<Box className="mt-3 grid-box" sx={{ width: "72%", typography: "body1" }}><Grid container columnSpacing={3} rowSpacing={5} justifyContent={'center'}>
                 <Grid item xs={12} md={4} >
                   <CardWrapper>
                     <Typography variant='h6'>
@@ -398,10 +398,6 @@ export const CreateRepairQuote = (props) => {
                       onClick={() => createNewBuilder("without")}>
                       <ManageAccountsTwoToneIcon sx={{ mx: 2, color: 'blue' }} />Service Estimate
                     </CardWithEvalWrapper>
-                    <Card variant="outlined"
-                      sx={{ margin: 'auto', width: "20%", borderRadius: 5, p: 5, my: 2 }}
-                      className="border-primary"
-                    >+</Card>
                   </CardWrapper>
 
                 </Grid>
@@ -434,7 +430,7 @@ export const CreateRepairQuote = (props) => {
                     </Grid>
                   </CardWrapper>
                 </Grid>
-              </Grid>)
+              </Grid></Box>)
               :
               (<div>
                 {/* {selectedQuoteOption === "with_eval" && <QuoteWithEvaluation setShowOptions={setShowOptions} />} */}

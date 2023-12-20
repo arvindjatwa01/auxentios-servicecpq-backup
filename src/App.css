@@ -4170,6 +4170,16 @@ input[type="checkbox"]:checked:after {
 /* .equipment-master-chart .css-1hyjym-MuiGrid-root{
   max-width: 100%;
 } */
+.grid-box {
+  margin-left: 14%;
+  margin-right: 14%;
+}
+.MuiGrid-item {
+  font-size: 11px;
+}
+.MuiGrid-item .MuiSvgIcon-root {
+  margin-right: 4px;
+}
 .equipment-master-btn-select .css-1s2u09g-control, .equipment-master-btn-select .css-1pahdxg-control, .equipment-master-btn-select .css-1s2u09g-control:hover{
   border: 1px solid #872FF750 !important;
   border-radius: 10px !important;
