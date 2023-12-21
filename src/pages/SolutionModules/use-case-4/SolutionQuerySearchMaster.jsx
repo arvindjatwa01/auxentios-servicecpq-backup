@@ -1,29 +1,25 @@
-import React from "react";
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import Select from "react-select";
-import $ from "jquery";
+import React, { useState } from "react";
+
 import SearchIcon from "@mui/icons-material/Search";
+
+import $ from "jquery";
+import Select from "react-select";
+import { Link } from "react-router-dom";
+
 import {
-  AND_OR_OPERATOR_OPTIONS,
-  DEFAULT_AND_OR_OPERATOR_VALUE,
-  PORTFOLIO_SEARCH,
-  PORTFOLIO_SEARCH_OPTIONS,
-  SOLUTION_SEARCH,
-} from "./Use_Case_4_Constansts";
-import {
-  CUSTOM_PORTFOLIO_SEARCH_TABLE_DATA_LIST_URL,
-  CUSTOM_PORTFOLIO_URL,
-  PORTFOLIO_SEARCH_TABLE_DATA_LIST_URL,
-  PORTFOLIO_URL,
+  CUSTOM_PORTFOLIO_SEARCH_TABLE_DATA_LIST_URL, CUSTOM_PORTFOLIO_URL,
+  PORTFOLIO_SEARCH_TABLE_DATA_LIST_URL, PORTFOLIO_URL,
 } from "services/CONSTANTS";
-import {
-  isEmpty,
-  isEmptySelect,
-} from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/textUtilities";
-import { errorMessage } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/toastMessage";
-import { API_SUCCESS } from "services/ResponseCode";
 import { callGetApi } from "services/ApiCaller";
+import { API_SUCCESS } from "services/ResponseCode";
+
+import { errorMessage } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/toastMessage";
+import { isEmpty, isEmptySelect, } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/textUtilities";
+import {
+  AND_OR_OPERATOR_OPTIONS, DEFAULT_AND_OR_OPERATOR_VALUE,
+  PORTFOLIO_SEARCH, PORTFOLIO_SEARCH_OPTIONS, SOLUTION_SEARCH,
+} from "pages/Common/PortfolioAndSolutionConstants";
+
 
 const SolutionnQuerySearchMaster = (props) => {
   const { searchFlag, setSearchedResult } = props;
@@ -187,11 +183,10 @@ const SolutionnQuerySearchMaster = (props) => {
       if (searchFlag === SOLUTION_SEARCH || searchFlag === PORTFOLIO_SEARCH) {
         searchStr =
           searchStr + searchSelector[0]?.selectFamily.value === "name" ||
-          searchSelector[0]?.selectFamily.value === "description"
+            searchSelector[0]?.selectFamily.value === "description"
             ? `portfolio_id=${searchSelector[0]?.selectedOption}`
-            : `${searchSelector[0]?.selectFamily.value}=${
-                searchSelector[0]?.inputSearch.split("#")[0]
-              }`;
+            : `${searchSelector[0]?.selectFamily.value}=${searchSelector[0]?.inputSearch.split("#")[0]
+            }`;
       }
       for (let i = 1; i < searchSelector.length; i++) {
         if (isEmptySelect(searchSelector[i].selectFamily?.value)) {
@@ -204,11 +199,10 @@ const SolutionnQuerySearchMaster = (props) => {
             searchStr +
             "&" +
             (searchSelector[i].selectFamily.value === "name" ||
-            searchSelector[i].selectFamily.value === "description"
+              searchSelector[i].selectFamily.value === "description"
               ? `portfolio_id=${searchSelector[i]?.selectedOption}`
-              : `${searchSelector[i].selectFamily.value}=${
-                  searchSelector[0]?.inputSearch.split("#")[0]
-                }`);
+              : `${searchSelector[i].selectFamily.value}=${searchSelector[0]?.inputSearch.split("#")[0]
+              }`);
         }
       }
 
@@ -279,7 +273,7 @@ const SolutionnQuerySearchMaster = (props) => {
                         placeholder="Search string"
                         value={
                           searchFlag === PORTFOLIO_SEARCH ||
-                          searchFlag === SOLUTION_SEARCH
+                            searchFlag === SOLUTION_SEARCH
                             ? selector.inputSearch.split("#")[1]
                             : selector.inputSearch
                         }
@@ -291,7 +285,7 @@ const SolutionnQuerySearchMaster = (props) => {
                         className={`list-group customselectsearch-list scrollbar scrollbar-${i} style`}
                       >
                         {selector.inputSearch.length > 0 &&
-                        selector.selectOptions.length === 0 ? (
+                          selector.selectOptions.length === 0 ? (
                           <li>No Result Found</li>
                         ) : (
                           selector.inputSearch.length > 0 &&
@@ -304,7 +298,7 @@ const SolutionnQuerySearchMaster = (props) => {
                               }
                             >
                               {searchFlag === PORTFOLIO_SEARCH ||
-                              searchFlag === SOLUTION_SEARCH
+                                searchFlag === SOLUTION_SEARCH
                                 ? currentItem.split("#")[1]
                                 : currentItem}
                             </li>

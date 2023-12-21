@@ -1,22 +1,20 @@
 import React, { useState } from "react";
-import { Modal } from "react-bootstrap";
+
 import FormGroup from "@mui/material/FormGroup";
 import { FormControlLabel, Switch } from "@material-ui/core";
+
+import { Modal } from "react-bootstrap";
+
 import deleteIcon from "../../../../assets/icons/svg/delete.svg";
-import { errorMessage } from "../utilities/toastMessage";
+
 import { LINK_ITEM_TO_PORTFOLIO } from "services/CONSTANTS";
-import { callGetApi } from "services/ApiCaller";
 import { API_SUCCESS } from "services/ResponseCode";
+import { callGetApi } from "services/ApiCaller";
+import { errorMessage } from "../utilities/toastMessage";
 
 const InclusionExclusionModal = ({
-  show,
-  hideModal,
-  showOptionalServicesModal,
-  handleOptionalServiceModal,
-  checkedService,
-  setCheckedService,
-  selectedService,
-  setSelectedService,
+  show, hideModal, showOptionalServicesModal, handleOptionalServiceModal, checkedService,
+  setCheckedService, selectedService, setSelectedService,
 }) => {
   const [sparePartsSwitch, setSparePartsSwitch] = useState({
     withParts: false,

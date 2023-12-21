@@ -1,56 +1,39 @@
 import React from "react";
+import { useEffect } from "react";
+import { useState } from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faFileAlt,
-  faFolderPlus,
-  faPlus,
-  faShareAlt,
-  faUpload,
-} from "@fortawesome/free-solid-svg-icons";
-import { useEffect } from "react";
-import { callGetApi } from "services/ApiCaller";
-import { API_SUCCESS } from "services/ResponseCode";
-import { GET_RECENT_SOLUTION_PORTFOLIO_LIST } from "services/CONSTANTS";
-import { useState } from "react";
-import LoadingProgress from "pages/Repair/components/Loader";
-import { getFormatDateTime } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/dateUtilities";
-import { isEmpty } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/textUtilities";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import DesignServicesOutlinedIcon from "@mui/icons-material/DesignServicesOutlined";
-import Portfoliosicon from "../../../assets/icons/svg/Portfolios-icon.svg";
-import contract from "../../../assets/icons/svg/contract.svg";
+import { FormControlLabel, FormHelperText, Radio, RadioGroup, } from "@mui/material";
+import { faFileAlt, faFolderPlus, faPlus, faShareAlt, faUpload, } from "@fortawesome/free-solid-svg-icons";
 
 import { Button, Modal } from "react-bootstrap";
-import {
-  FormControlLabel,
-  FormHelperText,
-  Radio,
-  RadioGroup,
-} from "@mui/material";
-import {
-  IS_PORTFOLIO,
-  IS_SOLUTION,
-  PORTFOLIO_SEARCH,
-  SOLUTION_SEARCH,
-} from "./Use_Case_4_Constansts";
-import SolutionQuerySearchMaster from "./SolutionQuerySearchMaster";
-import SolutionPortfolioTemplateSearch from "./SolutionPortfolioTemplateSearch";
-import { SOLUTION_BUILDER_CUSTOM_PORTFOLIO_CREATE } from "navigation/CONSTANTS";
 import { useHistory } from "react-router-dom";
+
+import { GET_RECENT_SOLUTION_PORTFOLIO_LIST } from "services/CONSTANTS";
+import { callGetApi } from "services/ApiCaller";
+import { API_SUCCESS } from "services/ResponseCode";
+
+import contract from "../../../assets/icons/svg/contract.svg";
+import Portfoliosicon from "../../../assets/icons/svg/Portfolios-icon.svg";
+
+import LoadingProgress from "pages/Repair/components/Loader";
+import SolutionQuerySearchMaster from "./SolutionQuerySearchMaster";
+import { SOLUTION_BUILDER_CUSTOM_PORTFOLIO_CREATE } from "navigation/CONSTANTS";
+import SolutionPortfolioTemplateSearch from "./SolutionPortfolioTemplateSearch";
+import { isEmpty } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/textUtilities";
+import { getFormatDateTime } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/dateUtilities";
+import { IS_PORTFOLIO, IS_SOLUTION, PORTFOLIO_SEARCH, SOLUTION_SEARCH, } from "pages/Common/PortfolioAndSolutionConstants";
 
 const SolutionAnalytics = () => {
   const history = useHistory();
   const [recenetSolutions, setRecenetSolutions] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [showSolutionTypeSelectModel, setShowSolutionTypeSelectModel] =
-    useState(false);
+  const [showSolutionTypeSelectModel, setShowSolutionTypeSelectModel] = useState(false);
   const [showSolutionCreateModel, setShowSolutionCreateModel] = useState(false);
-  const [showSolutionTemplateSearchModel, setShowSolutionTemplateSearchModel] =
-    useState(false);
-  const [selectedSolutionTemplate, setSelectedSolutionTemplate] =
-    useState(null);
-
+  const [showSolutionTemplateSearchModel, setShowSolutionTemplateSearchModel] = useState(false);
+  const [selectedSolutionTemplate, setSelectedSolutionTemplate] = useState(null);
   const [searchedPortfolioList, setSearchedPortfolioList] = useState([]);
   const [searchedSolutionList, setSearchedSolutionList] = useState([]);
 
@@ -384,15 +367,15 @@ const SolutionAnalytics = () => {
                 selectedSolutionTemplate === IS_PORTFOLIO
                   ? PORTFOLIO_SEARCH
                   : selectedSolutionTemplate === IS_SOLUTION
-                  ? SOLUTION_SEARCH
-                  : ""
+                    ? SOLUTION_SEARCH
+                    : ""
               }
               setSearchedResult={
                 selectedSolutionTemplate === IS_PORTFOLIO
                   ? setSearchedPortfolioList
                   : selectedSolutionTemplate === IS_SOLUTION
-                  ? setSearchedSolutionList
-                  : null
+                    ? setSearchedSolutionList
+                    : null
               }
             />
             {!isEmpty(selectedSolutionTemplate) &&
@@ -406,8 +389,8 @@ const SolutionAnalytics = () => {
                     selectedSolutionTemplate === IS_SOLUTION
                       ? searchedSolutionList
                       : selectedSolutionTemplate === IS_PORTFOLIO
-                      ? searchedPortfolioList
-                      : []
+                        ? searchedPortfolioList
+                        : []
                   }
                 />
               )}
@@ -539,8 +522,8 @@ const SolutionAnalytics = () => {
       </div>
       {showSolutionTypeSelectModel && solutionTypeSelectModel()}
       {showSolutionCreateModel && solutionCreateOptionChooseModel()}
-      {showSolutionTemplateSearchModel &&
-        solutionPortfolioTemplateSearchModel()}
+      {showSolutionTemplateSearchModel && solutionPortfolioTemplateSearchModel()}
+
     </>
   );
 };

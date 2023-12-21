@@ -1,19 +1,16 @@
 import React, { useState } from 'react'
+
+import SearchIcon from "@mui/icons-material/Search";
+
 import { Link } from 'react-router-dom';
 import Select from 'react-select';
-
 import $ from "jquery";
-import SearchIcon from "@mui/icons-material/Search";
-import {
-    getSearchCoverageForFamily,
-    // getSearchQueryCoverage, 
-    // getServiceBundleItemPrices, 
-    itemSearchDropdown
-} from '../../../services/index';
-import { isEmpty, isEmptySelect } from './utilities/textUtilities';
-import { errorMessage } from './utilities/toastMessage';
+
 import { GET_SEARCH_COVERAGE, PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE } from 'services/CONSTANTS';
 import { getApiCall } from 'services/searchQueryService';
+import { getSearchCoverageForFamily, itemSearchDropdown } from '../../../services/index';
+import { isEmpty, isEmptySelect } from './utilities/textUtilities';
+import { errorMessage } from './utilities/toastMessage';
 
 const operatorOptions = [
     { label: "And", value: "AND" },

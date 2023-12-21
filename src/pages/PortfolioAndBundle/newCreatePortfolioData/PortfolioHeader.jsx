@@ -10,6 +10,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Divider from "@mui/material/Divider";
 
 // import bootstrap
+import { Modal } from "react-bootstrap";
 import DropdownButton from "react-bootstrap/DropdownButton";
 import Dropdown from "react-bootstrap/Dropdown";
 
@@ -19,9 +20,8 @@ import folderAddIcon from "../../..//assets/icons/svg/folder-add.svg";
 import uploadIcon from "../../..//assets/icons/svg/upload.svg";
 import deleteIcon from "../../..//assets/icons/svg/delete.svg";
 import copyIcon from "../../..//assets/icons/svg/Copy.svg";
-import { Modal } from "react-bootstrap";
-import { isEmpty } from "./utilities/textUtilities";
-import { errorMessage } from "./utilities/toastMessage";
+
+// api caller 
 import { callGetApi, callPutApi } from "services/ApiCaller";
 import {
   CONVERT_PORTFOLIO_TO_QUOTE,
@@ -29,6 +29,9 @@ import {
 } from "services/CONSTANTS";
 import { API_SUCCESS } from "services/ResponseCode";
 import { SOLUTION_SERVICE_PORTFOLIO } from "navigation/CONSTANTS";
+
+import { errorMessage } from "./utilities/toastMessage";
+import { isEmpty } from "./utilities/textUtilities";
 
 const quoteOptions = [{ label: "Solution", value: "SOLUTION" }];
 
@@ -475,7 +478,7 @@ const PortfolioHeader = (props) => {
               <MenuItem
                 className="custommenu"
                 onClick={() => setConvertToQuoteModalShow(true)}
-                // onClick={handleConvertPortfolioToQuote}
+              // onClick={handleConvertPortfolioToQuote}
               >
                 {" "}
                 Quote

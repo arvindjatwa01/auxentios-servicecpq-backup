@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from "react";
-import Select from "react-select";
-import { Modal } from "react-bootstrap";
+
 import { Box, Tab } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
+import DateFnsUtils from "@date-io/date-fns";
+
+import Select from "react-select";
+import { Modal } from "react-bootstrap";
 
 import $ from "jquery";
-import DateFnsUtils from "@date-io/date-fns";
-import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import shareIcon from "../../../assets/icons/svg/share.svg";
 import folderaddIcon from "../../../assets/icons/svg/folder-add.svg";
 import uploadIcon from "../../../assets/icons/svg/upload.svg";
@@ -24,50 +26,24 @@ import ItemAddEdit from "./portfolio-item/ItemAddEdit";
 import ItemPriceCalculator from "./portfolio-item/ItemPriceCalculator";
 import { getFormatDateTime } from "./utilities/dateUtilities";
 import { FONT_STYLE_SELECT } from "pages/Repair/CONSTANTS";
-import {
-  getItemDataById,
-  // getSearchQueryCoverage,
-  itemCreation,
-  updateItemData,
-} from "../../../services/index";
 
-import { updateItemPriceSjRkId } from "./portfolio-item/SJRKIdUpdate";
-import {
-  offerValidityKeyValuePairs,
-  salesOfficeKeyValuePairs,
-  serviceTypeKeyValuePairs,
-  additionalPriceKeyValuePair,
-  discountTypeKeyValuePair,
-  usageTypeKeyValuePair,
-  defaultItemHeaderObj,
-  defaultItemBodyObj,
-  defaultItemPriceObj,
-} from "./itemConstant";
 import { callGetApi, getApiCall } from "services/searchQueryService";
+import { getItemDataById, itemCreation, updateItemData, } from "../../../services/index";
+import { updateItemPriceSjRkId } from "./portfolio-item/SJRKIdUpdate";
 import { GET_SEARCH_COVERAGE } from "services/CONSTANTS";
 import LoadingProgress from "pages/Repair/components/Loader";
 
+import {
+  offerValidityKeyValuePairs, salesOfficeKeyValuePairs, serviceTypeKeyValuePairs, additionalPriceKeyValuePair,
+  discountTypeKeyValuePair, usageTypeKeyValuePair, defaultItemHeaderObj, defaultItemBodyObj, defaultItemPriceObj,
+} from "pages/Common/PortfolioAndSolutionConstants";
 const activityOptions = ["None", "Atria", "Callisto"];
 
 const BundleServiceAddUpdate = (props) => {
   const {
-    show,
-    hideModel,
-    itemFlag,
-    customerSegmentKeyValuePair,
-    machineComponentKeyValuePair,
-    itemVersionKeyValuePairs,
-    itemStatusKeyValuePairs,
-    itemId,
-    setItemId,
-    itemEditModeOn,
-    frequencyKeyValuePairs,
-    unitKeyValuePairs,
-    priceHeadTypeKeyValuePair,
-    priceTypeKeyValuePair,
-    priceMethodKeyValuePair,
-    currencyKeyValuePair,
-    reviewModeActive = false,
+    show, hideModel, itemFlag, customerSegmentKeyValuePair, machineComponentKeyValuePair, itemVersionKeyValuePairs,
+    itemStatusKeyValuePairs, itemId, setItemId, itemEditModeOn, frequencyKeyValuePairs, unitKeyValuePairs, priceHeadTypeKeyValuePair,
+    priceTypeKeyValuePair, priceMethodKeyValuePair, currencyKeyValuePair, reviewModeActive = false,
   } = props;
 
   const [activeTab, setActiveTab] = useState("bundleServiceHeader");
@@ -345,13 +321,13 @@ const BundleServiceAddUpdate = (props) => {
       if (isEmpty(bundleServiceObj.name)) {
         errorMessage(
           (itemFlag === "SERVICE" ? "Service" : "Bundle") +
-            " Name is a required field, you can’t leave it blank"
+          " Name is a required field, you can’t leave it blank"
         );
         return false;
       } else if (isEmpty(bundleServiceObj.description)) {
         errorMessage(
           (itemFlag === "SERVICE" ? "Service" : "Bundle") +
-            " Description is a required field, you can’t leave it blank"
+          " Description is a required field, you can’t leave it blank"
         );
         return false;
       } else if (isEmpty(bundleServiceObj.model)) {
@@ -706,8 +682,8 @@ const BundleServiceAddUpdate = (props) => {
             ...bundleServiceItemBody,
             taskType: [
               bundleServiceItemBody.taskType?.value ||
-                bundleServiceItemBody.taskType[0] ||
-                "EMPTY",
+              bundleServiceItemBody.taskType[0] ||
+              "EMPTY",
             ],
             usageIn:
               bundleServiceItemBody.usageIn?.value ||
@@ -811,8 +787,8 @@ const BundleServiceAddUpdate = (props) => {
                 <TabList
                   className="custom-tabs-div"
                   aria-label="lab API tabs example"
-                  onChange={(e, tabValue) => setActiveTab(tabValue)}
-                  // onChange={(e, newValue) => bundleAndServiceEditAble && setBundleTabs(newValue)}
+                  // onChange={(e, tabValue) => setActiveTab(tabValue)}
+                  onChange={(e, newValue) => itemEditModeOn && setActiveTab(newValue)}
                 >
                   <Tab
                     label={`${itemFlag} HEADER`}
@@ -848,14 +824,12 @@ const BundleServiceAddUpdate = (props) => {
                     <div className="ml-3 green-custom-btn ">
                       {itemFlag === "SERVICE" && (
                         <Select
-                          className={`customselectbtn1 p-${
-                            bundleServiceEdit.bundleServiceHeader ? 0 : 2
-                          } border-radius-10 ${
-                            bundleServiceObj.serviceChargable?.value ==
-                            "chargeable"
+                          className={`customselectbtn1 p-${bundleServiceEdit.bundleServiceHeader ? 0 : 2
+                            } border-radius-10 ${bundleServiceObj.serviceChargable?.value ==
+                              "chargeable"
                               ? "bg-gray-light"
                               : "bg-green-light"
-                          }`}
+                            }`}
                           onChange={(e) =>
                             handleSelectChange(e, "serviceChargable")
                           }
@@ -922,7 +896,7 @@ const BundleServiceAddUpdate = (props) => {
                           onClick={() =>
                             handleBundleServiceEditFlag("bundleServiceHeader")
                           }
-                          // onClick={makeBundleServiceHeaderEditable}
+                        // onClick={makeBundleServiceHeaderEditable}
                         >
                           <i className="fa fa-pencil" aria-hidden="true" />
                         </a>
@@ -1401,9 +1375,9 @@ const BundleServiceAddUpdate = (props) => {
                             {isEmpty(administrative.preparedOn)
                               ? "NA"
                               : getFormatDateTime(
-                                  administrative.preparedOn,
-                                  false
-                                )}
+                                administrative.preparedOn,
+                                false
+                              )}
                           </h6>
                         </div>
                       </div>
@@ -1428,9 +1402,9 @@ const BundleServiceAddUpdate = (props) => {
                             {isEmpty(administrative.revisedOn)
                               ? "NA"
                               : getFormatDateTime(
-                                  administrative.revisedOn,
-                                  false
-                                )}
+                                administrative.revisedOn,
+                                false
+                              )}
                           </h6>
                         </div>
                       </div>
@@ -1618,7 +1592,7 @@ const BundleServiceAddUpdate = (props) => {
                       type="button"
                       className="btn text-white bg-primary"
                       onClick={handleUpateAdministrativeData}
-                      // onClick={editBundleService ? saveAddNewServiceOrBundle : handleUpdateNewServiceOrBundle}
+                    // onClick={editBundleService ? saveAddNewServiceOrBundle : handleUpdateNewServiceOrBundle}
                     >
                       {" "}
                       {bundleServiceEdit.bundleServiceAdministrative

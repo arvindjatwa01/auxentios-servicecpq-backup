@@ -21,7 +21,7 @@ const PortfolioTabsData = () => {
                                 }
                             />
                             <div className="css-w8dmq8">*Mandatory</div>
-                           </div>
+                        </div>
                     </div>
                 </div>
                 <div className="row input-fields">
@@ -102,58 +102,57 @@ const PortfolioTabsData = () => {
                     </button>
                 </div>
             </> :
-                <>
-                    <div className="row mt-4">
-                        <div className="col-md-4 col-sm-3">
-                            <div className="form-group">
-                                <p className="font-size-12 font-weight-500 mb-2">
-                                    PORTFOLIO NAME
-                                </p>
-                                <h6 className="font-weight-500 text-primary font-size-17">
-                                    {generalComponentData.name == "" || generalComponentData.name == null ? "NA" : generalComponentData.name}
-                                </h6>
-                            </div>
-                        </div>
-                        <div className="col-md-4 col-sm-3">
-                            <div className="form-group">
-                                <p className="font-size-12 font-weight-500 mb-2">
-                                    PORTFOLIO DESCRIPTION
-                                </p>
-                                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                    {generalComponentData.description == "" || generalComponentData.description == null ? "NA" : generalComponentData.description}
-                                </h6>
-                            </div>
-                        </div>
-                        <div className="col-md-4 col-sm-3">
-                            <div className="form-group">
-                                <p className="font-size-12 font-weight-500 mb-2">
-                                    REFERENCE
-                                </p>
-                                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                    {generalComponentData.externalReference == "" ||
-                                        generalComponentData.externalReference == null ||
-                                        generalComponentData.externalReference == "string"
-                                        ? "NA" : generalComponentData.externalReference}
-                                </h6>
-                            </div>
-                        </div>
-                        <div className="col-md-4 col-sm-3">
-                            <div className="form-group">
-                                <p className="font-size-12 font-weight-500 mb-2">
-                                    CUSTOMER SEGMENT
-                                </p>
-                                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                    {generalComponentData?.customerSegment == "" ||
-                                        generalComponentData?.customerSegment == null ||
-                                        generalComponentData?.customerSegment == undefined ||
-                                        generalComponentData?.customerSegment?.label == "string"
-                                        ? "NA" : generalComponentData?.customerSegment?.label}
-                                    {/* {generalComponentData?.customerSegment?.label} */}
-                                </h6>
-                            </div>
+                <div className="row mt-4">
+                    <div className="col-md-4 col-sm-3">
+                        <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                                PORTFOLIO NAME
+                            </p>
+                            <h6 className="font-weight-500 text-primary font-size-17">
+                                {generalComponentData.name == "" || generalComponentData.name == null ? "NA" : generalComponentData.name}
+                            </h6>
                         </div>
                     </div>
-                </>}
+                    <div className="col-md-4 col-sm-3">
+                        <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                                PORTFOLIO DESCRIPTION
+                            </p>
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                {generalComponentData.description == "" || generalComponentData.description == null ? "NA" : generalComponentData.description}
+                            </h6>
+                        </div>
+                    </div>
+                    <div className="col-md-4 col-sm-3">
+                        <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                                REFERENCE
+                            </p>
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                {generalComponentData.externalReference == "" ||
+                                    generalComponentData.externalReference == null ||
+                                    generalComponentData.externalReference == "string"
+                                    ? "NA" : generalComponentData.externalReference}
+                            </h6>
+                        </div>
+                    </div>
+                    <div className="col-md-4 col-sm-3">
+                        <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                                CUSTOMER SEGMENT
+                            </p>
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                {generalComponentData?.customerSegment == "" ||
+                                    generalComponentData?.customerSegment == null ||
+                                    generalComponentData?.customerSegment == undefined ||
+                                    generalComponentData?.customerSegment?.label == "string"
+                                    ? "NA" : generalComponentData?.customerSegment?.label}
+                                {/* {generalComponentData?.customerSegment?.label} */}
+                            </h6>
+                        </div>
+                    </div>
+                </div>
+            }
         </>
     )
 }

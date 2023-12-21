@@ -1,36 +1,29 @@
-import $ from "jquery";
 import React, { useState } from "react";
-import { Button, Modal } from "react-bootstrap";
-import DataTable from "react-data-table-component";
-import { Link } from "react-router-dom";
-import Select from "react-select";
 
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 
+import { Link } from "react-router-dom";
+import { Button, Modal } from "react-bootstrap";
+import DataTable from "react-data-table-component";
+import Select from "react-select";
+import $ from "jquery";
+
 import { isEmpty, isEmptySelect } from "../utilities/textUtilities";
 import { getValidateCoverage, machineSearch } from "services/searchServices";
 
-import {
-  createCoverage,
-  // getSearchQueryCoverage,
-  updateCoverage,
-} from "../../../../services/index";
-
-import { dataTableCustomStyle } from "../itemConstant";
-import { successMessage } from "../utilities/toastMessage";
 import { getApiCall } from "services/searchQueryService";
 import { GET_SEARCH_COVERAGE } from "services/CONSTANTS";
 
+import { createCoverage, updateCoverage, } from "../../../../services/index";
+
+import { successMessage } from "../utilities/toastMessage";
+import { dataTableCustomStyle } from "pages/Common/PortfolioAndSolutionConstants";
+
 const CoveragePaginationTable = (props) => {
   const {
-    tableData,
-    isSelectAble,
-    setCheckedCoverageData,
-    className,
-    handleUpdateCoverageData,
-    handlePortfolioCoverageIds,
-    setTableData,
+    tableData, isSelectAble, setCheckedCoverageData, className,
+    handleUpdateCoverageData, handlePortfolioCoverageIds, setTableData,
   } = props;
   const [showCoverageEditModal, setShowCoverageEditModal] = useState(false);
   const [searchedModalList, setSearchedModalList] = useState([]);
@@ -578,7 +571,7 @@ const CoveragePaginationTable = (props) => {
             columns={includedSerialNoColumns}
             data={tableData[selectedCoverageIndex]?.includedSerialNoModalData}
             customStyles={dataTableCustomStyle}
-            // pagination
+          // pagination
           />
         </Modal.Body>
         <Modal.Footer>
@@ -615,8 +608,8 @@ const CoveragePaginationTable = (props) => {
                     placeholder="Search by Customer Id"
                     autoComplete="off"
                     onChange={(e) => handleSerialNoSearch(e)}
-                    // id={"inputSearch-" + i}
-                    // value={(props.compoFlag === "bundleSearch") ? obj.inputSearch === "" ? "" : obj.inputSearch.split("#")[1] : obj.inputSearch}
+                  // id={"inputSearch-" + i}
+                  // value={(props.compoFlag === "bundleSearch") ? obj.inputSearch === "" ? "" : obj.inputSearch.split("#")[1] : obj.inputSearch}
                   />
                 </div>
               </div>
@@ -779,7 +772,7 @@ const CoveragePaginationTable = (props) => {
             onChange={(e) => handleSelectIncludedModelSerialNo(e, i, row)}
             value={row.serialNumber}
             options={includedCoverageSerialOptions}
-            // isOptionDisabled={(e) => handleDisableSerialNoChangesOptions(e,i,row)}
+          // isOptionDisabled={(e) => handleDisableSerialNoChangesOptions(e,i,row)}
           />
         </div>
       ),

@@ -1,11 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
-import $ from "jquery";
-import Select from "react-select";
-import Loader from "react-js-loader";
+
 import { Box, Tab } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
-
 import SearchIcon from "@mui/icons-material/Search";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
@@ -14,26 +10,18 @@ import { faFileAlt, faFolderPlus } from "@fortawesome/free-solid-svg-icons";
 import { faShareAlt } from "@fortawesome/free-solid-svg-icons";
 import { faUpload } from "@fortawesome/free-solid-svg-icons";
 
+import { useSelector } from "react-redux";
+
+import { useHistory } from "react-router-dom";
+import $ from "jquery";
+import Select from "react-select";
+import Loader from "react-js-loader";
+
 import { getFormatDateTime } from "./utilities/dateUtilities";
 import { errorMessage } from "./utilities/toastMessage";
 import { isEmpty } from "./utilities/textUtilities";
 import DataTable from "react-data-table-component";
-import BundleServiceAddUpdate from "./BundleServiceAddUpdate";
-import {
-  getPortfolioAndSolutionCommonConfig,
-  getPortfolioCommonConfig,
-  getSearchCoverageForFamily,
-  // getSearchForRecentPortfolio,
-  // getServiceBundleItemPrices,
-  getSolutionPriceCommonConfig,
-  getTypeKeyValue,
-  itemSearchDropdown,
-  portfolioSearchDropdownList,
-  portfolioSearchTableDataList,
-  recentItemsList,
-} from "../../../services/index";
 
-import { selectCustomStyle, dataTableCustomStyle } from "./itemConstant";
 import {
   GET_RECENT_ITEMS_LIST_URL,
   PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE,
@@ -42,26 +30,22 @@ import {
 import { getApiCall } from "services/searchQueryService";
 import { callGetApi } from "services/ApiCaller";
 import { API_SUCCESS } from "services/ResponseCode";
+
+import {
+  getPortfolioAndSolutionCommonConfig,
+  getPortfolioCommonConfig,
+  getSearchCoverageForFamily,
+  getSolutionPriceCommonConfig,
+  getTypeKeyValue,
+  itemSearchDropdown,
+  portfolioSearchDropdownList,
+  portfolioSearchTableDataList,
+  recentItemsList,
+} from "services/index";
+
+import BundleServiceAddUpdate from "./BundleServiceAddUpdate";
+import { selectCustomStyle, dataTableCustomStyle, bundleServiceSearchOptions, portfolioSearchOptions } from "pages/Common/PortfolioAndSolutionConstants";
 import LoadingProgress from "pages/Repair/components/Loader";
-import { useSelector } from "react-redux";
-
-const portfolioSearchOptions = [
-  { label: "Make", value: "make" },
-  { label: "Model", value: "model" },
-  { label: "Prefix", value: "prefix" },
-  { label: "Family", value: "family" },
-  { label: "Name", value: "name" },
-  { label: "Description", value: "description" },
-];
-
-const bundleServiceSearchOptions = [
-  { label: "Make", value: "itemHeaderMake" },
-  { label: "Family", value: "itemHeaderFamily" },
-  { label: "Model", value: "model" },
-  { label: "Prefix", value: "prefix" },
-  { label: "Name", value: "itemName" },
-  { label: "Description", value: "itemHeaderDescription" },
-];
 
 export const PortfolioSummary = () => {
   const history = useHistory();
@@ -534,20 +518,20 @@ export const PortfolioSummary = () => {
     let obj = _searchParameter[id];
     obj.inputSearch =
       searchParameter[0].itemType?.value === "PORTFOLIO" &&
-      obj.selectFamily.value !== "name" &&
-      obj.selectFamily.value !== "description"
+        obj.selectFamily.value !== "name" &&
+        obj.selectFamily.value !== "description"
         ? currentItem
         : currentItem.split("#")[1];
     obj.selectedOption =
       searchParameter[0].itemType?.value === "PORTFOLIO" &&
-      obj.selectFamily.value !== "name" &&
-      obj.selectFamily.value !== "description"
+        obj.selectFamily.value !== "name" &&
+        obj.selectFamily.value !== "description"
         ? currentItem
         : currentItem.split("#")[1];
     obj.selectedKeyValue =
       searchParameter[0].itemType?.value === "PORTFOLIO" &&
-      obj.selectFamily.value !== "name" &&
-      obj.selectFamily.value !== "description"
+        obj.selectFamily.value !== "name" &&
+        obj.selectFamily.value !== "description"
         ? currentItem
         : currentItem.split("#")[0];
     _searchParameter[id] = obj;
@@ -592,11 +576,11 @@ export const PortfolioSummary = () => {
       if (searchParameter[0].itemType?.value === "PORTFOLIO") {
         searchUrl =
           searchParameter[0]?.selectFamily?.value === "name" ||
-          searchParameter[0]?.selectFamily?.value === "description"
+            searchParameter[0]?.selectFamily?.value === "description"
             ? "portfolio_id=" + searchParameter[0]?.selectedKeyValue
             : searchParameter[0]?.selectFamily?.value +
-              "=" +
-              searchParameter[0]?.inputSearch;
+            "=" +
+            searchParameter[0]?.inputSearch;
       } else {
         searchUrl = "itemIds=" + searchParameter[0]?.selectedKeyValue;
       }
@@ -613,13 +597,13 @@ export const PortfolioSummary = () => {
         if (searchParameter[0].itemType?.value === "PORTFOLIO") {
           searchUrl =
             searchUrl +
-            "&" +
-            (searchParameter[0]?.selectFamily?.value === "name" ||
-              searchParameter[0]?.selectFamily?.value === "description")
+              "&" +
+              (searchParameter[0]?.selectFamily?.value === "name" ||
+                searchParameter[0]?.selectFamily?.value === "description")
               ? "portfolio_id=" + searchParameter[i]?.selectedKeyValue
               : searchParameter[i]?.selectFamily?.value +
-                "=" +
-                searchParameter[i]?.inputSearch;
+              "=" +
+              searchParameter[i]?.inputSearch;
         } else {
           searchUrl =
             searchUrl +
@@ -1153,9 +1137,8 @@ export const PortfolioSummary = () => {
                         <div className="row align-items-center m-0">
                           {searchParameter.map((obj, i) => (
                             <div
-                              className={`customselect ${
-                                i < searchParameter.length - 1 ? "p-2" : ""
-                              } border-white d-flex align-items-center mr-3 my-2 border-radius-10`}
+                              className={`customselect ${i < searchParameter.length - 1 ? "p-2" : ""
+                                } border-white d-flex align-items-center mr-3 my-2 border-radius-10`}
                             >
                               {i === 0 && (
                                 <Select
@@ -1189,8 +1172,8 @@ export const PortfolioSummary = () => {
                                       ? []
                                       : searchParameter[0].itemType?.value ===
                                         "PORTFOLIO"
-                                      ? portfolioSearchOptions
-                                      : bundleServiceSearchOptions
+                                        ? portfolioSearchOptions
+                                        : bundleServiceSearchOptions
                                   }
                                   onChange={(e) => handleSelectFamily(e, i)}
                                   value={obj.selectFamily}
@@ -1235,8 +1218,8 @@ export const PortfolioSummary = () => {
                                       >
                                         {searchParameter[0].itemType?.value ===
                                           "PORTFOLIO" &&
-                                        obj.selectFamily.value !== "name" &&
-                                        obj.selectFamily.value !== "description"
+                                          obj.selectFamily.value !== "name" &&
+                                          obj.selectFamily.value !== "description"
                                           ? currentItem
                                           : currentItem.split("#")[1]}
                                       </li>

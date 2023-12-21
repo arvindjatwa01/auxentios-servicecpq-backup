@@ -1,16 +1,11 @@
 import React, { useState } from "react";
+
 import SearchIcon from "@mui/icons-material/Search";
+
+import $ from "jquery";
 import Select from "react-select";
-import {
-  IS_PORTFOLIO,
-  IS_SOLUTION,
-  PORTFOLIO_SEARCH_OPTIONS,
-} from "../Use_Case_4_Constansts";
 import { Link } from "react-router-dom";
-import {
-  isEmpty,
-  isEmptySelect,
-} from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/textUtilities";
+
 import {
   CUSTOM_PORTFOLIO_SEARCH_TABLE_DATA_LIST_URL,
   CUSTOM_PORTFOLIO_URL,
@@ -23,19 +18,18 @@ import {
   SOLUTION_COVERAGE_SEARCH_DROPDOWN,
   SOLUTION_PORTFOLIO_ITEM_PRICE_HIERARCHY_SEARCH,
 } from "services/CONSTANTS";
-import { errorMessage } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/toastMessage";
 import { callGetApi } from "services/ApiCaller";
 import { API_SUCCESS } from "services/ResponseCode";
-import $ from "jquery";
+
+import { errorMessage } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/toastMessage";
+import { isEmpty, isEmptySelect, } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/textUtilities";
+import { IS_PORTFOLIO, IS_SOLUTION, PORTFOLIO_SEARCH_OPTIONS, } from "pages/Common/PortfolioAndSolutionConstants";
 
 const PortfolioSolutionSearch = (props) => {
   const {
-    customPortfolioId,
-    setCustomItemsTableList,
-    setSearchPortfolioSolutionItems,
-    setSelectedSearchSolutionItems,
-    setSearchBySolutionOrPortlio,
-  } = props;
+    customPortfolioId, setCustomItemsTableList, setSearchPortfolioSolutionItems,
+    setSelectedSearchSolutionItems, setSearchBySolutionOrPortlio, } = props;
+
   const [searchSelector, setSearchSelector] = useState({
     id: 0,
     selectFamily: "",
@@ -122,8 +116,8 @@ const PortfolioSolutionSearch = (props) => {
             searchSelector.selectFamily.value === "model"
               ? "modelNo"
               : searchSelector.selectFamily.value === "prefix"
-              ? "serialNumberPrefix"
-              : searchSelector.selectFamily.value;
+                ? "serialNumberPrefix"
+                : searchSelector.selectFamily.value;
 
           handleSolutionCoverageSearch(
             `${selectedFamilyVal}/${e.target.value}`,
@@ -605,7 +599,7 @@ const PortfolioSolutionSearch = (props) => {
         } else {
         }
       },
-      (error) => {}
+      (error) => { }
     );
   };
 
@@ -684,7 +678,7 @@ const PortfolioSolutionSearch = (props) => {
         } else {
         }
       },
-      (error) => {}
+      (error) => { }
     );
   };
 
@@ -728,14 +722,13 @@ const PortfolioSolutionSearch = (props) => {
           </div>
           <div
             className={`customselectsearch 
-            ${
-              isEmpty(searchSelector.selectFamily)
+            ${isEmpty(searchSelector.selectFamily)
                 ? "family-search"
                 : searchSelector.selectFamily?.value === "name" ||
                   searchSelector.selectFamily?.value === "description"
-                ? "family-search"
-                : "family-search-add"
-            }`}
+                  ? "family-search"
+                  : "family-search-add"
+              }`}
           >
             <input
               className="custom-input-sleact pr-1"
@@ -760,7 +753,7 @@ const PortfolioSolutionSearch = (props) => {
                       onClick={() => handleSearchDataSelect(currentItem)}
                     >
                       {searchSelector.selectFamily.value === "name" ||
-                      searchSelector.selectFamily.value === "description"
+                        searchSelector.selectFamily.value === "description"
                         ? currentItem.split("#")[1]
                         : currentItem}
                     </li>
@@ -795,7 +788,7 @@ const PortfolioSolutionSearch = (props) => {
             className="btn bg-primary text-white border-radius-10 cursor"
             style={{ zIndex: 0 }}
             onClick={handleSearch}
-            // onClick={showSearchPortfolioData}
+          // onClick={showSearchPortfolioData}
           >
             <SearchIcon />
             <span className="ml-1">Search</span>

@@ -1,83 +1,47 @@
 import React, { useEffect, useState } from "react";
 
-import ModeEditOutlineOutlinedIcon from "@mui/icons-material/ModeEditOutlineOutlined";
-import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
-import SearchIcon from "@mui/icons-material/Search";
-import AddIcon from "@mui/icons-material/Add";
 import Tooltip from "@mui/material/Tooltip";
+import AddIcon from "@mui/icons-material/Add";
+import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
-import { TabContext, TabList, TabPanel } from "@mui/lab";
-import { Box, Tab } from "@mui/material";
+import ModeEditOutlineOutlinedIcon from "@mui/icons-material/ModeEditOutlineOutlined";
 
-import { Modal, Dropdown, DropdownButton } from "react-bootstrap";
+import { Dropdown, DropdownButton } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import DataTable from "react-data-table-component";
-import Select from "react-select";
 
 import cpqIcon from "../../../../assets/icons/svg/CPQ.svg";
 
 import {
-  IS_PORTFOLIO,
-  IS_SOLUTION,
-  PORTFOLIO_SEARCH,
-  PORTFOLIO_SEARCH_OPTIONS,
-  additionalPriceKeyValuePair,
-  dataTableCustomStyles,
-  defaultCustomItemBodyModel,
-  defaultCustomItemHeaderModel,
-  discountTypeKeyValuePair,
-  usageTypeKeyValuePair,
-} from "../Use_Case_4_Constansts";
-
-import PortfolioSolutionSearch from "./PortfolioSolutionSearch";
-import CustomItemTabsModal from "./CustomItemTabsModal";
-import { isEmpty } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/textUtilities";
+  COPY_MASTER_TO_CUSTOM_PORTFOLIO, GET_CUSTOM_PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE,
+} from "services/CONSTANTS";
 import { callGetApi } from "services/ApiCaller";
 import { API_SUCCESS } from "services/ResponseCode";
-import {
-  COPY_MASTER_TO_CUSTOM_PORTFOLIO,
-  GET_CUSTOM_PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE,
-} from "services/CONSTANTS";
-
-import CustomItemAddEdit from "./CustomItemAddEdit";
-import PortfolioCoverageSearch from "pages/PortfolioAndBundle/newCreatePortfolioData/PortfolioCoverageSearch";
-import ComponentCodeAddEdit from "./ComponentCodeAddEdit";
-import CustomItemPriceCalculator from "./CustomItemPriceCalculator";
 import { getPortfolioAndSolutionCommonConfig } from "services";
-import CustomItemInclusionExclusionModel from "../useCase4Common/CustomItemInclusionExclusionModel";
+
+import CustomItemTabsModal from "./CustomItemTabsModal";
+import PortfolioSolutionSearch from "./PortfolioSolutionSearch";
+import { isEmpty } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/textUtilities";
 import BundleServiceItemsModel from "../useCase4Common/BundleServiceItemsModel";
+import CustomItemInclusionExclusionModel from "../useCase4Common/CustomItemInclusionExclusionModel";
 import CustomBundleServiceComponentCodeUpdate from "../useCase4Common/CustomBundleServiceComponentCodeUpdate";
+import {
+  IS_PORTFOLIO, IS_SOLUTION, additionalPriceKeyValuePair, dataTableCustomStyle, defaultCustomItemBodyModel,
+  defaultCustomItemHeaderModel, discountTypeKeyValuePair, usageTypeKeyValuePair,
+} from "pages/Common/PortfolioAndSolutionConstants";
 
 const CustomPortfolioItemsList = (props) => {
   const {
-    customPortfolioId,
-    customItemsTableList,
-    setCustomItemsTableList,
-    setCustomItemReviewTabItemList,
-    customItemReviewTabItemList,
-    customItemIds,
-    setCustomItemIds,
-    priceMethodKeyValuePair,
-    priceTypeKeyValuePair,
-    priceHeadTypeKeyValuePair,
-    currencyKeyValuePair,
-    handleUpdateSolutionHeader,
-    showOptionalServicesModal,
-    handleOptionalServiceModal,
-    checkedService,
-    setCheckedService,
-    selectedService,
-    setSelectedService,
+    customPortfolioId, customItemsTableList, setCustomItemsTableList, setCustomItemReviewTabItemList,
+    customItemReviewTabItemList, customItemIds, setCustomItemIds, priceMethodKeyValuePair, priceTypeKeyValuePair,
+    priceHeadTypeKeyValuePair, currencyKeyValuePair, handleUpdateSolutionHeader, showOptionalServicesModal,
+    handleOptionalServiceModal, checkedService, setCheckedService, selectedService, setSelectedService,
   } = props;
 
-  const [searchPortfolioSolutionItems, setSearchPortfolioSolutionItems] =
-    useState([]);
-  const [selectedSearchSolutionItems, setSelectedSearchSolutionItems] =
-    useState([]);
+  const [searchPortfolioSolutionItems, setSearchPortfolioSolutionItems] = useState([]);
+  const [selectedSearchSolutionItems, setSelectedSearchSolutionItems] = useState([]);
   const [showCustomItemModal, setShowCustomItemModal] = useState(false);
-  const [searchBySolutionOrPortlio, setSearchBySolutionOrPortlio] =
-    useState("");
-
+  const [searchBySolutionOrPortlio, setSearchBySolutionOrPortlio] = useState("");
   const [activeTab, setActiveTab] = useState(1);
   const [bundleServiceNeed, setBundleServiceNeed] = useState(true);
 
@@ -91,18 +55,10 @@ const CustomPortfolioItemsList = (props) => {
     itemName: "",
   });
 
-  const [customItemHeaderModelObj, setCustomItemHeaderModelObj] = useState({
-    ...defaultCustomItemHeaderModel,
-  });
-
-  const [customItemBodyModelObj, setCustomItemBodyModelObj] = useState({
-    ...defaultCustomItemBodyModel,
-  });
-
-  const [showInclusionExclusionModal, setShowInclusionExclusionModal] =
-    useState(false);
-  const [inclusionExclusionItemId, setInclusionExclusionItemId] =
-    useState(null);
+  const [customItemHeaderModelObj, setCustomItemHeaderModelObj] = useState({ ...defaultCustomItemHeaderModel, });
+  const [customItemBodyModelObj, setCustomItemBodyModelObj] = useState({ ...defaultCustomItemBodyModel, });
+  const [showInclusionExclusionModal, setShowInclusionExclusionModal] = useState(false);
+  const [inclusionExclusionItemId, setInclusionExclusionItemId] = useState(null);
 
   // Search Bundle || Servicec items state data
   const [searchBundleServiceItem, setSearchBundleServiceItem] = useState([]);
@@ -111,20 +67,10 @@ const CustomPortfolioItemsList = (props) => {
   const [existBundleServiceItems, setExistBundleServiceItems] = useState([]);
   const [reviewTabItemList, setReviewTabItemList] = useState([]);
   const [expendCustomItemRow, setExpendCustomItemRow] = useState(null);
-  const [expendeCustomItemBundleService, setExpendeCustomItemBundleService] =
-    useState([]);
-  const [
-    expendCustomItemBundleServiceRow,
-    setExpendCustomItemBundleServiceRow,
-  ] = useState(null);
-
-  const [showBundleServiceSearchModal, setShowBundleServiceSearchModal] =
-    useState(false);
-
-  const [
-    showBundleServiceComponentDataModal,
-    setShowBundleServiceComponentDataModal,
-  ] = useState(false);
+  const [expendeCustomItemBundleService, setExpendeCustomItemBundleService] = useState([]);
+  const [expendCustomItemBundleServiceRow, setExpendCustomItemBundleServiceRow,] = useState(null);
+  const [showBundleServiceSearchModal, setShowBundleServiceSearchModal] = useState(false);
+  const [showBundleServiceComponentDataModal, setShowBundleServiceComponentDataModal,] = useState(false);
 
   useEffect(() => {
     // get frequency key-value pair
@@ -367,8 +313,8 @@ const CustomPortfolioItemsList = (props) => {
         !isEmpty(row?.standardJobId)
           ? row?.standardJobId
           : !isEmpty(row?.repairKitId)
-          ? row?.repairKitId
-          : "NA",
+            ? row?.repairKitId
+            : "NA",
       sortable: false,
       wrap: true,
     },
@@ -406,7 +352,7 @@ const CustomPortfolioItemsList = (props) => {
                   style={{ whiteSpace: "pre" }}
                   className="btn-sm cursor"
                   onClick={handleAddMoreBundleService}
-                  // onClick={showAddBundleServiceItemPopup}
+                // onClick={showAddBundleServiceItemPopup}
                 >
                   <span className="mr-2">
                     <AddIcon />
@@ -418,7 +364,7 @@ const CustomPortfolioItemsList = (props) => {
           </div>
           {bundelServiceItems.associatedServiceOrBundle.length !== 0 && (
             <DataTable
-              customStyles={dataTableCustomStyles}
+              customStyles={dataTableCustomStyle}
               data={bundelServiceItems.associatedServiceOrBundle}
               columns={searchBundleServiceItemColumns}
               expandableRows
@@ -512,9 +458,8 @@ const CustomPortfolioItemsList = (props) => {
 
   // get Select Portfolio item item price data
   const handleShowSelectPortfolioItemInTable = (rUrlEndPoint) => {
-    const rUrl = `${
-      GET_CUSTOM_PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE + rUrlEndPoint
-    }`;
+    const rUrl = `${GET_CUSTOM_PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE + rUrlEndPoint
+      }`;
     callGetApi(null, rUrl, (response) => {
       if (response.status === API_SUCCESS) {
         const res = response.data;
@@ -730,7 +675,7 @@ const CustomPortfolioItemsList = (props) => {
               style={{ whiteSpace: "pre" }}
               className="btn-sm cursor"
               onClick={handleShowItemCreateModal}
-              // onClick={handleNewBundleItem}
+            // onClick={handleNewBundleItem}
             >
               <span className="mr-2">
                 <AddIcon />
@@ -757,7 +702,7 @@ const CustomPortfolioItemsList = (props) => {
                   onSelectedRowsChange={(row) =>
                     setSelectedSearchSolutionItems(row.selectedRows)
                   }
-                  customStyles={dataTableCustomStyles}
+                  customStyles={dataTableCustomStyle}
                   pagination={true}
                 />
                 <div>
@@ -818,7 +763,7 @@ const CustomPortfolioItemsList = (props) => {
                             </Dropdown.Item>
                             <Dropdown.Item
                               className=""
-                              // onClick={(e) => handleServiceItemDelete(e, row)}
+                            // onClick={(e) => handleServiceItemDelete(e, row)}
                             >
                               <Tooltip title="Delete">
                                 <Link to="#" className="px-1">
@@ -863,7 +808,7 @@ const CustomPortfolioItemsList = (props) => {
                   setExpendCustomItemRow(row);
                   setExpendCustomItemBundleServiceRow(null);
                 }}
-                customStyles={dataTableCustomStyles}
+                customStyles={dataTableCustomStyle}
                 pagination={true}
               />
             )}

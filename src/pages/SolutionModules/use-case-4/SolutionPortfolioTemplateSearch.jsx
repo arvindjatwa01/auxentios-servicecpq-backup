@@ -1,24 +1,18 @@
 import React from "react";
-import {
-  IS_PORTFOLIO,
-  IS_SOLUTION,
-  dataTableCustomStyles,
-} from "./Use_Case_4_Constansts";
-import DataTable from "react-data-table-component";
+
 import { useHistory } from "react-router-dom";
+import DataTable from "react-data-table-component";
+
 import { COPY_PORTFOLIO_ITEMS_TO_CUSTOM_PORTFOLIO } from "services/CONSTANTS";
 import { callGetApi } from "services/ApiCaller";
 import { API_SUCCESS } from "services/ResponseCode";
+
 import { SOLUTION_BUILDER_CUSTOM_PORTFOLIO_CREATE } from "navigation/CONSTANTS";
 import { errorMessage } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/toastMessage";
+import { IS_PORTFOLIO, IS_SOLUTION, dataTableCustomStyle, } from "pages/Common/PortfolioAndSolutionConstants";
 
 const SolutionPortfolioTemplateSearch = (props) => {
-  const {
-    selectedSolutionTemplate,
-    searchedPortfolioList,
-    searchedSolutionList,
-    searchedTemplateList,
-  } = props;
+  const { selectedSolutionTemplate, searchedPortfolioList, searchedSolutionList, searchedTemplateList, } = props;
 
   let history = useHistory();
   const solutionColumns = [
@@ -76,9 +70,9 @@ const SolutionPortfolioTemplateSearch = (props) => {
             <li
               key={i}
               className="border-bottom cursor "
-              // onClick={() =>
-              //   handleOnPortfolioResultRow(portfolioRow.portfolioId, portfolioRow.name)
-              // }
+            // onClick={() =>
+            //   handleOnPortfolioResultRow(portfolioRow.portfolioId, portfolioRow.name)
+            // }
             >
               <div className="d-flex align-items-center p-3">
                 <div className="d-flex mr-4">
@@ -88,15 +82,14 @@ const SolutionPortfolioTemplateSearch = (props) => {
                 </div>
                 <div
                   className={`px-3 py-1 mr-4 text-white 
-                           ${
-                             portfolioRow.version == "STANDARD"
-                               ? "bg-green"
-                               : portfolioRow.version == "PREMIUM"
-                               ? "bg-yellow"
-                               : portfolioRow.version == "SUPERIOR"
-                               ? "bg-gray"
-                               : "text-dark"
-                           } font-size-12 border-radius-5`}
+                           ${portfolioRow.version == "STANDARD"
+                      ? "bg-green"
+                      : portfolioRow.version == "PREMIUM"
+                        ? "bg-yellow"
+                        : portfolioRow.version == "SUPERIOR"
+                          ? "bg-gray"
+                          : "text-dark"
+                    } font-size-12 border-radius-5`}
                 >
                   {portfolioRow.version}
                 </div>
@@ -132,7 +125,7 @@ const SolutionPortfolioTemplateSearch = (props) => {
             className="mt-3"
             columns={solutionColumns}
             data={searchedSolutionList}
-            customStyles={dataTableCustomStyles}
+            customStyles={dataTableCustomStyle}
             pagination
           />
         </div>
@@ -168,15 +161,14 @@ const SolutionPortfolioTemplateSearch = (props) => {
                 </div>
                 <div
                   className={`px-3 py-1 mr-4 text-white 
-                           ${
-                             templateRow.version == "STANDARD"
-                               ? "bg-green"
-                               : templateRow.version == "PREMIUM"
-                               ? "bg-yellow"
-                               : templateRow.version == "SUPERIOR"
-                               ? "bg-gray"
-                               : "text-dark"
-                           } font-size-12 border-radius-5`}
+                           ${templateRow.version == "STANDARD"
+                      ? "bg-green"
+                      : templateRow.version == "PREMIUM"
+                        ? "bg-yellow"
+                        : templateRow.version == "SUPERIOR"
+                          ? "bg-gray"
+                          : "text-dark"
+                    } font-size-12 border-radius-5`}
                 >
                   {templateRow.version}
                 </div>
