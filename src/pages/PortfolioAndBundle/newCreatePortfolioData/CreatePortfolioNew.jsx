@@ -1,13 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { useHistory, useLocation, Link } from "react-router-dom";
 
-import folderAddIcon from "../../../assets/icons/svg/folder-add.svg";
-import editIcon from "../../../assets/icons/svg/edit.svg";
-import shareIcon from "../../../assets/icons/svg/share.svg";
-
-import PortfolioHeader from "./PortfolioHeader";
-import { ToastContainer, toast } from "react-toastify";
 import { Box } from "@mui/material";
+import { ToastContainer } from "react-toastify";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
@@ -17,62 +11,52 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
 import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
-
-import $ from "jquery";
-import Select from "react-select";
-import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
+import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
+
+import folderAddIcon from "../../../assets/icons/svg/folder-add.svg";
+import editIcon from "../../../assets/icons/svg/edit.svg";
+import shareIcon from "../../../assets/icons/svg/share.svg";
+
+import { useHistory, useLocation, Link } from "react-router-dom";
+import Select from "react-select";
+import $ from "jquery";
+
+import { useDispatch, useSelector } from "react-redux";
+import { useAppSelector } from "../../../app/hooks";
+
 import {
-  createCoverage,
-  createPortfolio,
-  getPortfolioCommonConfig,
-  getSolutionPriceCommonConfig,
-  getTypeKeyValue,
-  getValidityKeyValue,
-  portfolioPriceAgreementCreation,
-  portfolioPriceCreation,
-  updatePortfolio,
-  updatePortfolioPrice,
-} from "../../../services/index";
+  CREATE_PORTFOLIO_ITEM, PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE, PORTFOLIO_URL,
+} from "services/CONSTANTS";
+import { callGetApi, callPutApi } from "services/ApiCaller";
+import { API_SUCCESS } from "services/ResponseCode";
+
+import { getFormatDateTime } from "./utilities/dateUtilities";
+
 import { FONT_STYLE_SELECT } from "../../Repair/CONSTANTS";
 import { isEmpty, isEmptySelect } from "./utilities/textUtilities";
 import { errorMessage, successMessage } from "./utilities/toastMessage";
-import { useAppSelector } from "../../../app/hooks";
 import {
-  selectCategoryList,
-  selectGeographicalList,
-  selectProductList,
-  selectResponseTimeList,
-  selectStrategyTaskOption,
-  selectUpdateList,
-  selectUpdateTaskList,
-  taskActions,
+  createCoverage, createPortfolio, portfolioPriceAgreementCreation, portfolioPriceCreation,
+  updatePortfolio, updatePortfolioPrice,
+} from "../../../services/index";
+import {
+  selectCategoryList, selectGeographicalList, selectProductList, selectResponseTimeList,
+  selectStrategyTaskOption, selectUpdateList, selectUpdateTaskList, taskActions,
 } from "../customerSegment/strategySlice";
-import { useDispatch, useSelector } from "react-redux";
-import { getFormatDateTime } from "./utilities/dateUtilities";
+import {
+  offerValidityKeyValuePairs, salesOfficeKeyValuePairs, additionalPriceKeyValuePair, brackdownPrices,
+  priceAgreementItemsKeyValuePair, defaultSupportLevel, defaultStatus,
+} from "pages/Common/PortfolioAndSolutionConstants";
 import { sparePartSearch } from "services/searchServices";
-import PortfolioCoverageSearch from "./PortfolioCoverageSearch";
-import CoveragePaginationTable from "./coverage/CoveragePaginationTable";
-import PortfolioItemsList from "./portfolio-item/PortfolioItemsList";
 
-import {
-  offerValidityKeyValuePairs,
-  salesOfficeKeyValuePairs,
-  additionalPriceKeyValuePair,
-  brackdownPrices,
-  priceAgreementItemsKeyValuePair,
-  defaultSupportLevel,
-  defaultStatus,
-} from "./itemConstant";
-import { API_SUCCESS } from "services/ResponseCode";
-import {
-  CREATE_PORTFOLIO_ITEM,
-  PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE,
-  PORTFOLIO_URL,
-} from "services/CONSTANTS";
-import { callGetApi, callPutApi } from "services/ApiCaller";
-import OptionalServiceModal from "./common/OptionalServiceModal";
 import LoadingProgress from "pages/Repair/components/Loader";
+
+import PortfolioHeader from "./PortfolioHeader";
+import OptionalServiceModal from "./common/OptionalServiceModal";
+import CoveragePaginationTable from "./coverage/CoveragePaginationTable";
+import PortfolioCoverageSearch from "./PortfolioCoverageSearch";
+import PortfolioItemsList from "./portfolio-item/PortfolioItemsList";
 
 const portfolioHeaderType = [
   { label: "PORTFOLIO", value: "PORTFOLIO" },
@@ -90,17 +74,9 @@ export const CreatePortfolio = (props) => {
   const dispatch = useDispatch();
 
   const {
-    supportLevelKeyValuePair,
-    portfolioStatusKeyValuePair,
-    customerSegmentKeyValuePair,
-    machineComponentKeyValuePair,
-    validityKeyValuePair,
-    priceListKeyValuePair,
-    priceMethodKeyValuePair,
-    priceTypeKeyValuePair,
-    priceHeadTypeKeyValuePair,
-    currencyKeyValuePair,
-    ...newdataResponse
+    supportLevelKeyValuePair, portfolioStatusKeyValuePair, customerSegmentKeyValuePair, machineComponentKeyValuePair,
+    validityKeyValuePair, priceListKeyValuePair, priceMethodKeyValuePair, priceTypeKeyValuePair,
+    priceHeadTypeKeyValuePair, currencyKeyValuePair, frequencyKeyValuePairs, unitKeyValuePairs, ...newdataResponse
   } = useSelector((state) => state.commonAPIReducer);
 
   const categoryUsageKeyValuePair = useAppSelector(
@@ -122,21 +98,10 @@ export const CreatePortfolio = (props) => {
     selectStrategyTaskOption(selectGeographicalList)
   );
 
-  // Price tab Key-Value -pair list
-  // const [priceListKeyValuePair, setPriceListKeyValuePair] = useState([]);
-  // const [priceMethodKeyValuePair, setPriceMethodKeyValuePair] = useState([]);
-  // const [priceTypeKeyValuePair, setPriceTypeKeyValuePair] = useState([]);
-  // const [priceHeadTypeKeyValuePair, setPriceHeadTypeKeyValuePair] = useState(
-  //   []
-  // );
-  // const [currencyKeyValuePair, setCurrencyKeyValuePair] = useState([]);
 
-  // const [supportLevelKeyValuePair, setSupportLevelKeyValuePair] = useState([]);
   const [portfolioSupportLevel, setPortfolioSupportLevel] = useState({
     ...defaultSupportLevel,
   });
-  // const [portfolioStatusKeyValuePair, setPortfolioStatusKeyValuePair] =
-  //   useState([]);
   const [portfolioStatus, setPortfolioStatus] = useState({ ...defaultStatus });
   const [isActivePortfolio, setIsActivePortfolio] = useState(false);
 
@@ -154,13 +119,6 @@ export const CreatePortfolio = (props) => {
   });
 
   const [isPriceAgreementDisable, setIsPriceAgreementDisable] = useState(false);
-  // const [customerSegmentKeyValuePair, setCustomerSegmentKeyValue] = useState(
-  //   []
-  // );
-  // const [validityKeyValuePair, setValidityKeyValuePair] = useState([]);
-  // const [machineComponentKeyValuePair, setMachineComponentKeyValuePair] =
-  //   useState([]);
-
   const [loading, setLoading] = useState(false);
 
   const [generalTabData, setGeneralTabData] = useState({
@@ -246,151 +204,6 @@ export const CreatePortfolio = (props) => {
   useEffect(() => {
     dispatch(taskActions.fetchTaskList());
   }, [dispatch]);
-
-  useEffect(() => {
-    // // get Portfolio support-level Options Key-Value List
-    // getSolutionPriceCommonConfig("support-level")
-    //   .then((res) => {
-    //     const supportLevelOptions = [];
-    //     res.map((d) => {
-    //       if (d.key != "EMPTY") {
-    //         supportLevelOptions.push({ value: d.key, label: d.value });
-    //       }
-    //     });
-    //     setSupportLevelKeyValuePair(supportLevelOptions);
-    //   })
-    //   .catch((err) => {
-    //     toast.error(err);
-    //   });
-    // // get Portfolio Status Options Key-value List
-    // getSolutionPriceCommonConfig("status")
-    //   .then((res) => {
-    //     const portfolioStatusOptions = [];
-    //     res.map((d) => {
-    //       if (d.key != "EMPTY") {
-    //         portfolioStatusOptions.push({ value: d.key, label: d.value });
-    //       }
-    //     });
-    //     setPortfolioStatusKeyValuePair(portfolioStatusOptions);
-    //   })
-    //   .catch((err) => {
-    //     toast.error(err);
-    //   });
-    // // get customer segment key value pair list
-    // getPortfolioCommonConfig("customer-segment")
-    //   .then((res) => {
-    //     const customerSegmentOptions =
-    //       res.length !== 0 &&
-    //       res.map((d) => ({
-    //         value: d.key,
-    //         label: d.value,
-    //       }));
-    //     setCustomerSegmentKeyValue(customerSegmentOptions);
-    //   })
-    //   .catch((err) => {
-    //     toast.error(err);
-    //   });
-    // // get machine component key value Pair
-    // getTypeKeyValue()
-    //   .then((res) => {
-    //     const options = [];
-    //     res.length !== 0 &&
-    //       res.map((d) => {
-    //         if (d.key !== "EMPTY") {
-    //           options.push({ value: d.key, label: d.value });
-    //         }
-    //       });
-    //     setMachineComponentKeyValuePair(options);
-    //   })
-    //   .catch((error) => {
-    //     return;
-    //   });
-    // // get Validity Key-Value Pair list
-    // getValidityKeyValue()
-    //   .then((res) => {
-    //     const validityOptions = [];
-    //     res.map((d) => {
-    //       if (d.key !== "EMPTY") {
-    //         validityOptions.push({ value: d.key, label: d.value });
-    //       }
-    //     });
-    //     setValidityKeyValuePair(validityOptions);
-    //   })
-    //   .catch((err) => {
-    //     toast.error(err);
-    //   });
-    // // get Price-List key-value pair
-    // getSolutionPriceCommonConfig("price-list")
-    //   .then((res) => {
-    //     const priceListOptions = [];
-    //     res.map((d) => {
-    //       if (d.key != "EMPTY") {
-    //         priceListOptions.push({ value: d.key, label: d.value });
-    //       }
-    //     });
-    //     setPriceListKeyValuePair(priceListOptions);
-    //   })
-    //   .catch((err) => {
-    //     toast.error(err);
-    //   });
-    // // get PRice-method key-value Pair
-    // getSolutionPriceCommonConfig("price-method")
-    //   .then((res) => {
-    //     const priceMethodOptions = [];
-    //     res.map((d) => {
-    //       if (d.key != "EMPTY") {
-    //         priceMethodOptions.push({ value: d.key, label: d.value });
-    //       }
-    //     });
-    //     setPriceMethodKeyValuePair(priceMethodOptions);
-    //   })
-    //   .catch((err) => {
-    //     toast.error(err);
-    //   });
-    // // get Price-Type key-value Pair
-    // getSolutionPriceCommonConfig("price-type")
-    //   .then((res) => {
-    //     const priceTypeOptions = [];
-    //     res.map((d) => {
-    //       if (d.key != "EMPTY") {
-    //         priceTypeOptions.push({ value: d.key, label: d.value });
-    //       }
-    //     });
-    //     setPriceTypeKeyValuePair(priceTypeOptions);
-    //   })
-    //   .catch((err) => {
-    //     toast.error(err);
-    //   });
-    // //get price-head-type key-value pair
-    // getSolutionPriceCommonConfig("price-head-type")
-    //   .then((res) => {
-    //     const priceHeadTypeOptions = [];
-    //     res.map((d) => {
-    //       if (d.key != "EMPTY") {
-    //         priceHeadTypeOptions.push({ value: d.key, label: d.value });
-    //       }
-    //     });
-    //     setPriceHeadTypeKeyValuePair(priceHeadTypeOptions);
-    //   })
-    //   .catch((err) => {
-    //     toast.error(err);
-    //   });
-    // //  get currency  key-value pair
-    // getSolutionPriceCommonConfig("currency")
-    //   .then((res) => {
-    //     const currencyOptions = [];
-    //     res.length !== 0 &&
-    //       res.map((d) => {
-    //         if (d.key != "EMPTY") {
-    //           currencyOptions.push({ value: d, label: d });
-    //         }
-    //       });
-    //     setCurrencyKeyValuePair(currencyOptions);
-    //   })
-    //   .catch((err) => {
-    //     return;
-    //   });
-  }, []);
 
   useEffect(() => {
     // existing Portfolio
@@ -705,17 +518,7 @@ export const CreatePortfolio = (props) => {
   const handlePortfolioHeaderTabDataViews = () => {
     try {
       if (portfolioStatus.value === "ACTIVE") {
-        const errorMessage =
-          "The portfolio data cannot be changed on active status, change to revise status to edit";
-        toast("😐 " + errorMessage, {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
+        errorMessage("The portfolio data cannot be changed on active status, change to revise status to edit");
       } else {
         if (
           portfolioHeaderActiveTab === "general" &&
@@ -915,15 +718,7 @@ export const CreatePortfolio = (props) => {
         setPriceAgreementTableRow([...tempArray]);
       }
     } catch (error) {
-      toast("😐" + error, {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
+      errorMessage(error);
     }
   };
 
@@ -1195,11 +990,10 @@ export const CreatePortfolio = (props) => {
                       <DatePicker
                         variant="inline"
                         format="dd/MM/yyyy"
-                        className={`form-controldate text-primary border-radius-10 ${
-                          portfolioTabsEditView.validityTabEdit
-                            ? "dateNotEditable"
-                            : ""
-                        }`}
+                        className={`form-controldate text-primary border-radius-10 ${portfolioTabsEditView.validityTabEdit
+                          ? "dateNotEditable"
+                          : ""
+                          }`}
                         label=""
                         value={validityTabData.fromDate}
                         onChange={(e) =>
@@ -1219,11 +1013,10 @@ export const CreatePortfolio = (props) => {
                     <MuiPickersUtilsProvider utils={DateFnsUtils}>
                       <DatePicker
                         variant="inline"
-                        className={`form-controldate text-primary border-radius-10 ${
-                          portfolioTabsEditView.validityTabEdit
-                            ? "dateNotEditable"
-                            : ""
-                        }`}
+                        className={`form-controldate text-primary border-radius-10 ${portfolioTabsEditView.validityTabEdit
+                          ? "dateNotEditable"
+                          : ""
+                          }`}
                         label=""
                         format="dd/MM/yyyy"
                         value={validityTabData.toDate}
@@ -1308,7 +1101,7 @@ export const CreatePortfolio = (props) => {
                           isDisabled={true}
                           options={validityKeyValuePair}
                           placeholder="Select "
-                          // isDisabled={portfolioTabsEditView.validityTabEdit}
+                        // isDisabled={portfolioTabsEditView.validityTabEdit}
                         />
                         <div>
                           <input
@@ -1810,26 +1603,26 @@ export const CreatePortfolio = (props) => {
                         priceTabData.priceBreakDownType?.value === "PARTS"
                           ? "sparePartsPrice"
                           : priceTabData.priceBreakDownType?.value === "LABOR"
-                          ? "labourPrice"
-                          : priceTabData.priceBreakDownType?.value ===
-                            "MISCELLANEOUS"
-                          ? "miscPrice"
-                          : priceTabData.priceBreakDownType?.value === "SERVICE"
-                          ? "servicePrice"
-                          : ""
+                            ? "labourPrice"
+                            : priceTabData.priceBreakDownType?.value ===
+                              "MISCELLANEOUS"
+                              ? "miscPrice"
+                              : priceTabData.priceBreakDownType?.value === "SERVICE"
+                                ? "servicePrice"
+                                : ""
                       }
                       // value={priceTabData.priceBreakDownValue}
                       value={
                         priceTabData.priceBreakDownType?.value === "PARTS"
                           ? priceBrackdownValues.sparePartsPrice
                           : priceTabData.priceBreakDownType?.value === "LABOR"
-                          ? priceBrackdownValues.labourPrice
-                          : priceTabData.priceBreakDownType?.value ===
-                            "MISCELLANEOUS"
-                          ? priceBrackdownValues.miscPrice
-                          : priceTabData.priceBreakDownType?.value === "SERVICE"
-                          ? priceBrackdownValues.servicePrice
-                          : 0
+                            ? priceBrackdownValues.labourPrice
+                            : priceTabData.priceBreakDownType?.value ===
+                              "MISCELLANEOUS"
+                              ? priceBrackdownValues.miscPrice
+                              : priceTabData.priceBreakDownType?.value === "SERVICE"
+                                ? priceBrackdownValues.servicePrice
+                                : 0
                       }
                       onChange={(e) =>
                         handlePriceTabTextChange(
@@ -2459,9 +2252,9 @@ export const CreatePortfolio = (props) => {
                     {isEmpty(administrativeTabData.preparedOn)
                       ? "NA"
                       : getFormatDateTime(
-                          administrativeTabData.preparedBy,
-                          false
-                        )}
+                        administrativeTabData.preparedBy,
+                        false
+                      )}
                   </h6>
                 </div>
               </div>
@@ -2486,9 +2279,9 @@ export const CreatePortfolio = (props) => {
                     {isEmpty(administrativeTabData.revisedOn)
                       ? "NA"
                       : getFormatDateTime(
-                          administrativeTabData.revisedOn,
-                          false
-                        )}
+                        administrativeTabData.revisedOn,
+                        false
+                      )}
                   </h6>
                 </div>
               </div>
@@ -2542,7 +2335,7 @@ export const CreatePortfolio = (props) => {
       } else if (isEmpty(generalTabData.name)) {
         errorMessage(
           generalTabData.headerType?.value +
-            " Name is a required field, you can’t leave it blank"
+          " Name is a required field, you can’t leave it blank"
         );
         return false;
       } else if (isEmpty(generalTabData.externalReference)) {
@@ -2773,8 +2566,8 @@ export const CreatePortfolio = (props) => {
         portfolioPrice: isEmpty(priceTabData.portfolioPriceId)
           ? null
           : {
-              portfolioPriceId: priceTabData.portfolioPriceId,
-            },
+            portfolioPriceId: priceTabData.portfolioPriceId,
+          },
 
         preparedBy: administrativeTabData.preparedBy,
         approvedBy: administrativeTabData.approvedBy,
@@ -2862,8 +2655,8 @@ export const CreatePortfolio = (props) => {
         portfolioPrice: isEmpty(priceTabData.portfolioPriceId)
           ? null
           : {
-              portfolioPriceId: priceTabData.portfolioPriceId,
-            },
+            portfolioPriceId: priceTabData.portfolioPriceId,
+          },
 
         preparedBy: administrativeTabData.preparedBy,
         approvedBy: administrativeTabData.approvedBy,
@@ -2904,9 +2697,9 @@ export const CreatePortfolio = (props) => {
           if (portfolioCreate.status === 200) {
             successMessage(
               capitalizeFirstLetter(generalTabData.headerType?.value) +
-                " " +
-                generalTabData.name +
-                " Created successfully"
+              " " +
+              generalTabData.name +
+              " Created successfully"
             );
             setPortfolioRecordId(portfolioCreate.data.portfolioId);
             setPortfolioHeaderActiveTab("validity");
@@ -2923,8 +2716,8 @@ export const CreatePortfolio = (props) => {
           if (portfolioUpdate.status === 200) {
             successMessage(
               capitalizeFirstLetter(generalTabData.headerType?.value) +
-                generalTabData.name +
-                " Updated successfully"
+              generalTabData.name +
+              " Updated successfully"
             );
             setPortfolioHeaderActiveTab("validity");
             setPortfolioTabsEditView((prev) => ({
@@ -2941,8 +2734,8 @@ export const CreatePortfolio = (props) => {
         if (portfolioUpdate.status === 200) {
           successMessage(
             capitalizeFirstLetter(generalTabData.headerType?.value) +
-              generalTabData.name +
-              " Updated successfully"
+            generalTabData.name +
+            " Updated successfully"
           );
         }
         setPortfolioHeaderActiveTab("strategy");
@@ -2958,8 +2751,8 @@ export const CreatePortfolio = (props) => {
         if (portfolioUpdate.status === 200) {
           successMessage(
             capitalizeFirstLetter(generalTabData.headerType?.value) +
-              generalTabData.name +
-              " Updated successfully"
+            generalTabData.name +
+            " Updated successfully"
           );
           setPortfolioHeaderActiveTab(
             isPriceAgreementDisable ? "priceAgreement" : "price"
@@ -2978,8 +2771,8 @@ export const CreatePortfolio = (props) => {
           if (portfolioUpdate.status === 200) {
             successMessage(
               capitalizeFirstLetter(generalTabData.headerType?.value) +
-                generalTabData.name +
-                " Updated successfully"
+              generalTabData.name +
+              " Updated successfully"
             );
             setPortfolioHeaderActiveTab("coverage");
             setPortfolioTabsEditView((prev) => ({
@@ -3010,8 +2803,8 @@ export const CreatePortfolio = (props) => {
         if (portfolioUpdate.status === 200) {
           successMessage(
             capitalizeFirstLetter(generalTabData.headerType?.value) +
-              generalTabData.name +
-              " Updated successfully"
+            generalTabData.name +
+            " Updated successfully"
           );
           setPortfolioTabsEditView((prev) => ({
             ...prev,
@@ -3020,15 +2813,7 @@ export const CreatePortfolio = (props) => {
         }
       }
     } catch (error) {
-      toast("😐" + error, {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
+      errorMessage(error);
       return;
     }
   };
@@ -3163,6 +2948,8 @@ export const CreatePortfolio = (props) => {
                 portfolioStatusKeyValuePair={portfolioStatusKeyValuePair}
                 customerSegmentKeyValuePair={customerSegmentKeyValuePair}
                 machineComponentKeyValuePair={machineComponentKeyValuePair}
+                frequencyKeyValuePairs={frequencyKeyValuePairs}
+                unitKeyValuePairs={unitKeyValuePairs}
               />
             </div>
           </>

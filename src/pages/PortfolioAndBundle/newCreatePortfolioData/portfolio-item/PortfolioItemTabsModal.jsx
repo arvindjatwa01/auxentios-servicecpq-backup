@@ -1,25 +1,25 @@
 import React, { useEffect, useState } from 'react'
-import { Modal } from 'react-bootstrap';
+
 import Box from "@mui/material/Box";
 import TabContext from "@mui/lab/TabContext";
 import Tab from "@mui/material/Tab";
 import { TabList, TabPanel } from '@mui/lab';
-import ItemAddEdit from './ItemAddEdit';
-import PortfolioCoverageSearch from '../PortfolioCoverageSearch';
-import SearchBox from "../../../Repair/components/SearchBox";
-
 import SellOutlinedIcon from "@mui/icons-material/SellOutlined";
 import FormatListBulletedOutlinedIcon from "@mui/icons-material/FormatListBulletedOutlined";
 import AccessAlarmOutlinedIcon from "@mui/icons-material/AccessAlarmOutlined";
 
-import {
-    getPortfolioAndSolutionCommonConfig
-} from "../../../../services/index"
+import { Modal } from 'react-bootstrap';
 import Select from 'react-select';
-import ItemPriceCalculator from './ItemPriceCalculator';
 import DataTable from 'react-data-table-component';
+
+import ItemAddEdit from './ItemAddEdit';
+import PortfolioCoverageSearch from '../PortfolioCoverageSearch';
+import SearchBox from "../../../Repair/components/SearchBox";
+
+import { getPortfolioAndSolutionCommonConfig } from "../../../../services/index"
+import ItemPriceCalculator from './ItemPriceCalculator';
 import { isEmpty } from '../utilities/textUtilities';
-import { dataTableCustomStyle } from "../itemConstant"
+import { dataTableCustomStyle } from 'pages/Common/PortfolioAndSolutionConstants';
 
 const PortfolioItemTabsModal = (props) => {
     const { show, hideModal, componentDataTabShow } = props;

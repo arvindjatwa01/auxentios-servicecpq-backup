@@ -1,63 +1,42 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Select from "react-select";
 
 import SellOutlinedIcon from "@mui/icons-material/SellOutlined";
 import FormatListBulletedOutlinedIcon from "@mui/icons-material/FormatListBulletedOutlined";
 import AccessAlarmOutlinedIcon from "@mui/icons-material/AccessAlarmOutlined";
-import SearchBox from "pages/Repair/components/SearchBox";
-import SearchInputBox from "../useCase4Common/SearchInputBox";
-import {
-  SEARCH_FLAG_COMPONENT_CODE_SEARCH,
-  SEARCH_FLAG_MODEL_SEARCH,
-  defaultCustomItemBodyModel,
-  defaultCustomItemHeaderModel,
-} from "../Use_Case_4_Constansts";
+
+import { CREATE_CUSTOM_PORTFOLIO_ITEM, SEARCH_COMPONENT_CODE, SEARCH_MACHINE, } from "services/CONSTANTS";
 import { callGetApi } from "services/ApiCaller";
 import { API_SUCCESS } from "services/ResponseCode";
+
 import {
-  CREATE_CUSTOM_PORTFOLIO_ITEM,
-  SEARCH_COMPONENT_CODE,
-  SEARCH_MACHINE,
-} from "services/CONSTANTS";
+  SEARCH_FLAG_COMPONENT_CODE_SEARCH, SEARCH_FLAG_MODEL_SEARCH,
+  defaultCustomItemBodyModel, defaultCustomItemHeaderModel,
+} from "pages/Common/PortfolioAndSolutionConstants";
+import SearchInputBox from "../useCase4Common/SearchInputBox";
 import { isEmpty } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/textUtilities";
-import { useState } from "react";
 import { errorMessage } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/toastMessage";
 
 const ComponentCodeAddEdit = (props) => {
   const {
-    itemType,
-    isPortfolioItem,
-    portfolioId,
-    itemId,
-    isEditable = false,
-    handelSaveComponentCodeData,
-    buttonClassName = "",
-  } = props;
+    itemType, isPortfolioItem, portfolioId, itemId, isEditable = false,
+    handelSaveComponentCodeData, buttonClassName = "", } = props;
 
   const [itemRequestObj, setItemRequestObj] = useState({
     customItemId: 0,
     itemName: "",
   });
-  const [customItemHeaderModelObj, setCustomItemHeaderModelObj] = useState({
-    ...defaultCustomItemHeaderModel,
-  });
-  const [customItemBodyModelObj, setCustomItemBodyModelObj] = useState({
-    ...defaultCustomItemBodyModel,
-  });
+  const [customItemHeaderModelObj, setCustomItemHeaderModelObj] = useState({ ...defaultCustomItemHeaderModel, });
+
+  const [customItemBodyModelObj, setCustomItemBodyModelObj] = useState({ ...defaultCustomItemBodyModel, });
   const [componentDataEdit, setComponentDataEdit] = useState(isEditable);
 
-  const [componentCodeSearchResult, setComponentCodeSearchResult] = useState(
-    []
-  );
-  const [componentCodeSearchNoOptions, setComponentCodeSearchNoOptions] =
-    useState(false);
-  const [componentCodeSearchLoading, setComponentCodeSearchLoading] =
-    useState(false);
-
+  const [componentCodeSearchResult, setComponentCodeSearchResult] = useState([]);
+  const [componentCodeSearchNoOptions, setComponentCodeSearchNoOptions] = useState(false);
+  const [componentCodeSearchLoading, setComponentCodeSearchLoading] = useState(false);
   const [modelSearchResult, setModelSearchResult] = useState([]);
   const [modelSearchNoOptions, setModelSearchNoOptions] = useState(false);
   const [modelSearchLoading, setModelSearchLoading] = useState(false);
-
   const [seialNoSearchResult, setSeialNoSearchResult] = useState([]);
   const [serialNoSearchNoOptions, setSerialNoSearchNoOptions] = useState(false);
   const [serialNoSearchLoading, setSerialNoSearchLoading] = useState(false);
@@ -281,6 +260,7 @@ const ComponentCodeAddEdit = (props) => {
     return true;
   };
 
+  // save component code changes 
   const handleSaveChanges = () => {
     try {
       if (!componentDataEdit && !checkComponetDataValidation()) {
@@ -424,7 +404,7 @@ const ComponentCodeAddEdit = (props) => {
                   placeholder="Optional"
                   disabled
                   value={customItemHeaderModelObj.componentDescription}
-                  // onChange={handleComponentChange}
+                // onChange={handleComponentChange}
                 />
               </div>
             </div>
@@ -441,7 +421,7 @@ const ComponentCodeAddEdit = (props) => {
                   name="itemHeaderMake"
                   disabled
                   value={customItemHeaderModelObj.itemHeaderMake}
-                  // onChange={handleMachineDataChange}
+                // onChange={handleMachineDataChange}
                 />
               </div>
             </div>
@@ -665,7 +645,7 @@ const ComponentCodeAddEdit = (props) => {
           type="button"
           className="btn text-white bg-primary cursor"
           onClick={handleSaveChanges}
-          // onClick={handleSaveBundleServiceComponentData}
+        // onClick={handleSaveBundleServiceComponentData}
         >
           {componentDataEdit ? "Next" : "Save and Continue"}
         </button>

@@ -1,48 +1,35 @@
 import React, { useEffect, useState } from "react";
+
 import MonetizationOnOutlinedIcon from "@mui/icons-material/MonetizationOnOutlined";
 import SellOutlinedIcon from "@mui/icons-material/SellOutlined";
-import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
-import DateFnsUtils from "@date-io/date-fns";
-import Select from "react-select";
 import FormGroup from "@mui/material/FormGroup";
 import { FormControlLabel } from "@material-ui/core";
-import { Switch } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import { isEmpty } from "../utilities/textUtilities";
-import { getItemDataById, getItemPriceData } from "services";
+import { Switch } from "@mui/material";
+import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
+import DateFnsUtils from "@date-io/date-fns";
 
-import {
-  defaultItemBodyObj,
-  defaultItemHeaderObj,
-  defaultItemPriceObj,
-} from "../itemConstant";
-import { getFormatDateTime } from "../utilities/dateUtilities";
+import Select from "react-select";
+import { isEmpty } from "../utilities/textUtilities";
+import { getItemDataById } from "services";
+
 import { callGetApi, callPostApi, callPutApi } from "services/ApiCaller";
 import { PORTFOLIO_ITEM_PRICE_BY_ITEM_ID } from "services/CONSTANTS";
 import { API_SUCCESS } from "services/ResponseCode";
+
+import { defaultItemBodyObj, defaultItemHeaderObj, defaultItemPriceObj, } from "pages/Common/PortfolioAndSolutionConstants";
+import { getFormatDateTime } from "../utilities/dateUtilities";
 import { errorMessage } from "../utilities/toastMessage";
 import { updateItemPriceSjRkId } from "./SJRKIdUpdate";
 import LoadingProgress from "pages/Repair/components/Loader";
 
+
 const ItemPriceCalculator = (props) => {
   const {
-    priceMethodKeyValuePair,
-    priceTypeKeyValuePair,
-    priceHeadTypeKeyValuePair,
-    unitKeyValuePairs,
-    frequencyKeyValuePairs,
-    currencyKeyValuePair,
-    additionalPriceKeyValuePair,
-    discountTypeKeyValuePair,
-    usageTypeKeyValuePair,
-    itemId,
-    isEditable,
-    handleSavePriceChanges,
-    reviewModeActive = false,
-    priceModalView = false,
-    hidePriceViewModal = null,
+    priceMethodKeyValuePair, priceTypeKeyValuePair, priceHeadTypeKeyValuePair, unitKeyValuePairs, frequencyKeyValuePairs,
+    currencyKeyValuePair, additionalPriceKeyValuePair, discountTypeKeyValuePair, usageTypeKeyValuePair,
+    itemId, isEditable, handleSavePriceChanges, reviewModeActive = false, priceModalView = false, hidePriceViewModal = null,
   } = props;
-
   const [itemPriceRecordObj, setItemPriceRecordObj] = useState({
     itemPriceDataId: 0,
     priceMethod: "",
@@ -262,15 +249,15 @@ const ItemPriceCalculator = (props) => {
                   res.servicePriceBreakDownPercentage || 0,
                 priceBrackdownselectValue:
                   priceHeadTypeKeyValuePair[
-                    !isEmpty(res.sparePartsPriceBreakDownPercentage)
-                      ? 0
-                      : !isEmpty(res.labourPriceBreakDownPercentage)
+                  !isEmpty(res.sparePartsPriceBreakDownPercentage)
+                    ? 0
+                    : !isEmpty(res.labourPriceBreakDownPercentage)
                       ? 1
                       : !isEmpty(res.miscPriceBreakDownPercentage)
-                      ? 2
-                      : !isEmpty(res.servicePriceBreakDownPercentage)
-                      ? 3
-                      : 0
+                        ? 2
+                        : !isEmpty(res.servicePriceBreakDownPercentage)
+                          ? 3
+                          : 0
                   ],
               });
 
@@ -313,7 +300,7 @@ const ItemPriceCalculator = (props) => {
             return;
           }
         );
-      }else{
+      } else {
         setLoading(false);
       }
     } else {
@@ -630,9 +617,9 @@ const ItemPriceCalculator = (props) => {
                         {isEmpty(itemPriceRequestObj.priceDate)
                           ? getFormatDateTime(new Date(), false)
                           : getFormatDateTime(
-                              itemPriceRequestObj.priceDate,
-                              false
-                            )}
+                            itemPriceRequestObj.priceDate,
+                            false
+                          )}
                       </h6>
                     </div>
                   </div>
@@ -675,20 +662,19 @@ const ItemPriceCalculator = (props) => {
                           ? "NA"
                           : itemPriceRequestObj.priceEscalation?.label}
                         {!isEmpty(itemPriceRequestObj.priceEscalation?.value) &&
-                          `(${
-                            itemPriceRequestObj.priceEscalation?.value ===
+                          `(${itemPriceRequestObj.priceEscalation?.value ===
                             "PARTS"
-                              ? priceEscalationValues.sparePartsEscalation
-                              : itemPriceRequestObj.priceEscalation?.value ===
-                                "LABOR"
+                            ? priceEscalationValues.sparePartsEscalation
+                            : itemPriceRequestObj.priceEscalation?.value ===
+                              "LABOR"
                               ? priceEscalationValues.labourEscalation
                               : itemPriceRequestObj.priceEscalation?.value ===
                                 "MISCELLANEOUS"
-                              ? priceEscalationValues.miscEscalation
-                              : itemPriceRequestObj.priceEscalation?.value ===
-                                "SERVICE"
-                              ? priceEscalationValues.serviceEscalation
-                              : "NA"
+                                ? priceEscalationValues.miscEscalation
+                                : itemPriceRequestObj.priceEscalation?.value ===
+                                  "SERVICE"
+                                  ? priceEscalationValues.serviceEscalation
+                                  : "NA"
                           })`}
                       </h6>
                     </div>
@@ -744,24 +730,23 @@ const ItemPriceCalculator = (props) => {
                         )
                           ? "NA"
                           : priceBrackdownValues.priceBrackdownselectValue
-                              ?.label}
+                            ?.label}
                         {!isEmpty(
                           priceBrackdownValues.priceBrackdownselectValue?.value
                         ) &&
-                          `(${
-                            priceBrackdownValues.priceBrackdownselectValue
-                              ?.value === "PARTS"
-                              ? priceBrackdownValues.sparePartsPriceBreakDownPercentage
-                              : priceBrackdownValues.priceBrackdownselectValue
-                                  ?.value === "LABOR"
+                          `(${priceBrackdownValues.priceBrackdownselectValue
+                            ?.value === "PARTS"
+                            ? priceBrackdownValues.sparePartsPriceBreakDownPercentage
+                            : priceBrackdownValues.priceBrackdownselectValue
+                              ?.value === "LABOR"
                               ? priceBrackdownValues.labourPriceBreakDownPercentage
                               : priceBrackdownValues.priceBrackdownselectValue
-                                  ?.value === "MISCELLANEOUS"
-                              ? priceBrackdownValues.miscPriceBreakDownPercentage
-                              : priceBrackdownValues.priceBrackdownselectValue
+                                ?.value === "MISCELLANEOUS"
+                                ? priceBrackdownValues.miscPriceBreakDownPercentage
+                                : priceBrackdownValues.priceBrackdownselectValue
                                   ?.value === "SERVICE"
-                              ? priceBrackdownValues.servicePriceBreakDownPercentage
-                              : "NA"
+                                  ? priceBrackdownValues.servicePriceBreakDownPercentage
+                                  : "NA"
                           })`}
                       </h6>
                     </div>
@@ -1036,18 +1021,18 @@ const ItemPriceCalculator = (props) => {
                           )}
                           value={
                             itemPriceRequestObj.priceEscalation?.value ===
-                            "PARTS"
+                              "PARTS"
                               ? priceEscalationValues.sparePartsEscalation
                               : itemPriceRequestObj.priceEscalation?.value ===
                                 "LABOR"
-                              ? priceEscalationValues.labourEscalation
-                              : itemPriceRequestObj.priceEscalation?.value ===
-                                "MISCELLANEOUS"
-                              ? priceEscalationValues.miscEscalation
-                              : itemPriceRequestObj.priceEscalation?.value ===
-                                "SERVICE"
-                              ? priceEscalationValues.serviceEscalation
-                              : 0
+                                ? priceEscalationValues.labourEscalation
+                                : itemPriceRequestObj.priceEscalation?.value ===
+                                  "MISCELLANEOUS"
+                                  ? priceEscalationValues.miscEscalation
+                                  : itemPriceRequestObj.priceEscalation?.value ===
+                                    "SERVICE"
+                                    ? priceEscalationValues.serviceEscalation
+                                    : 0
                           }
                           onChange={priceEscalationPriceInput}
                         />
@@ -1164,15 +1149,15 @@ const ItemPriceCalculator = (props) => {
                               ?.value === "PARTS"
                               ? priceBrackdownValues.sparePartsPriceBreakDownPercentage
                               : priceBrackdownValues.priceBrackdownselectValue
-                                  ?.value === "LABOR"
-                              ? priceBrackdownValues.labourPriceBreakDownPercentage
-                              : priceBrackdownValues.priceBrackdownselectValue
+                                ?.value === "LABOR"
+                                ? priceBrackdownValues.labourPriceBreakDownPercentage
+                                : priceBrackdownValues.priceBrackdownselectValue
                                   ?.value === "MISCELLANEOUS"
-                              ? priceBrackdownValues.miscPriceBreakDownPercentage
-                              : priceBrackdownValues.priceBrackdownselectValue
-                                  ?.value === "SERVICE"
-                              ? priceBrackdownValues.servicePriceBreakDownPercentage
-                              : 0
+                                  ? priceBrackdownValues.miscPriceBreakDownPercentage
+                                  : priceBrackdownValues.priceBrackdownselectValue
+                                    ?.value === "SERVICE"
+                                    ? priceBrackdownValues.servicePriceBreakDownPercentage
+                                    : 0
                           }
                           disabled={isEmpty(
                             priceBrackdownValues.priceBrackdownselectValue
@@ -1363,8 +1348,8 @@ const ItemPriceCalculator = (props) => {
                               ? "Select unit"
                               : (itemPriceRequestObj.usageUnit?.value).toLowerCase() ===
                                 "year"
-                              ? "Month"
-                              : itemPriceRequestObj.usageUnit?.label}
+                                ? "Month"
+                                : itemPriceRequestObj.usageUnit?.label}
                           </span>
                         </div>
                         <div className="css-w8dmq8">*Mandatory</div>
@@ -1537,13 +1522,13 @@ const ItemPriceCalculator = (props) => {
                 <a
                   className="btn text-white bg-primary cursor"
                   onClick={handleSaveItemPriceChanges}
-                  // onClick={handleItemPriceCalculatorSave}
+                // onClick={handleItemPriceCalculatorSave}
                 >
                   {priceModalView
                     ? "Close"
                     : editItemPrice
-                    ? "Next"
-                    : "Save & Next"}
+                      ? "Next"
+                      : "Save & Next"}
                   {/* {portfolioItemPriceEditable ? "Next" : "Save & Next"} */}
                 </a>
               </div>

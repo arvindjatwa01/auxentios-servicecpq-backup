@@ -1,26 +1,21 @@
-import LoadingProgress from "pages/Repair/components/Loader";
-import React from "react";
-import { useCallback } from "react";
-import { useEffect } from "react";
-import { useState } from "react";
-import { Button, Modal } from "react-bootstrap";
-import { callGetApi } from "services/ApiCaller";
+import React, { useState, useEffect, useCallback } from "react";
+
 import Pagination from "@mui/material/Pagination";
-import { CREATE_PORTFOLIO_ITEM } from "services/CONSTANTS";
-import { errorMessage } from "../utilities/toastMessage";
 import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
+
+import { Button, Modal } from "react-bootstrap";
+
+import { callGetApi } from "services/ApiCaller";
+import { CREATE_PORTFOLIO_ITEM } from "services/CONSTANTS";
+
+import { errorMessage } from "../utilities/toastMessage";
+import LoadingProgress from "pages/Repair/components/Loader";
 
 const pageSize = 6;
 
 const OptionalServiceModal = ({
-  showOptionalServicesModal,
-  handleOptionalServiceModal,
-  checkedService,
-  setCheckedService,
-  selectedService,
-  setSelectedService,
-  showSelectedServicesModal,
-  handleSelectedServiceModal,
+  showOptionalServicesModal, handleOptionalServiceModal, checkedService, setCheckedService,
+  selectedService, setSelectedService, showSelectedServicesModal, handleSelectedServiceModal,
 }) => {
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -29,8 +24,8 @@ const OptionalServiceModal = ({
   const [optionalServicesList, setOptionalServicesList] = useState([]);
 
   useEffect(() => {
-    if(showOptionalServicesModal){
-        getOptionalServiceList();
+    if (showOptionalServicesModal) {
+      getOptionalServiceList();
     }
   }, [showOptionalServicesModal]);
 
@@ -107,12 +102,12 @@ const OptionalServiceModal = ({
 
   // remove Selected service 
   const handleRemoveService = (serviceObj) => {
-      // remove from selected list
+    // remove from selected list
     const _selectedService = [...selectedService];
     const serviceIndex = _selectedService.findIndex(obj => obj.itemId === serviceObj.itemId);
     _selectedService.splice(serviceIndex, 1);
     setSelectedService(_selectedService);
-    
+
     // remove from checked list
     const _checkedService = [...checkedService];
     const checkedServiceIndex = _checkedService.findIndex(obj => obj.itemId === serviceObj.itemId);

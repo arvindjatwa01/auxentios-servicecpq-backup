@@ -1,26 +1,26 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import { faCloudUploadAlt } from "@fortawesome/free-solid-svg-icons";
-import { Modal, Dropdown, DropdownButton, Button } from "react-bootstrap";
-import { FileUploader } from "react-drag-drop-files";
-
-import { DataGrid } from "@mui/x-data-grid";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import Checkbox from "@mui/material/Checkbox";
 
 import Box from "@mui/material/Box";
 import TabContext from "@mui/lab/TabContext";
 import Tab from "@mui/material/Tab";
 import { TabList, TabPanel } from "@mui/lab";
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faCloudUploadAlt } from "@fortawesome/free-solid-svg-icons";
+import { DataGrid } from "@mui/x-data-grid";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Checkbox from "@mui/material/Checkbox";
 import SellOutlinedIcon from "@mui/icons-material/SellOutlined";
 import FormatListBulletedOutlinedIcon from "@mui/icons-material/FormatListBulletedOutlined";
 import AccessAlarmOutlinedIcon from "@mui/icons-material/AccessAlarmOutlined";
-import Tooltip from "@mui/material/Tooltip";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
+import Tooltip from "@mui/material/Tooltip";
+
+import { Link } from "react-router-dom";
+import { Modal, Dropdown, DropdownButton, Button } from "react-bootstrap";
+import { FileUploader } from "react-drag-drop-files";
+
 import DataTable from "react-data-table-component";
 import Select from "react-select";
 
@@ -39,52 +39,31 @@ import link1Icon from "../../../../assets/images/link1.png";
 import penIcon from "../../../../assets/images/pen.png";
 
 import { MuiMenuComponent } from "../../../Operational/index";
-// import PortfolioItemTabsModal from "./PortfolioItemTabsModal";
 import PortfolioCoverageSearch from "../PortfolioCoverageSearch";
 import ItemAddEdit from "./ItemAddEdit";
 
-// import {
-//   selectUpdateTaskList,
-//   selectStrategyTaskOption,
-//   selectCategoryList,
-//   selectUpdateList,
-//   taskActions,
-// } from "../../customerSegment/strategySlice";
-
-import { getPortfolioAndSolutionCommonConfig } from "../../../../services/index";
 import { isEmpty } from "../utilities/textUtilities";
 import ItemPriceCalculator from "./ItemPriceCalculator";
 import { useDispatch } from "react-redux";
 import ExpendBundleServiceItem from "./ExpendBundleServiceItem";
 
-import {
-  additionalPriceKeyValuePair,
-  dataTableCustomStyle,
-  discountTypeKeyValuePair,
-  usageTypeKeyValuePair,
-  defaultItemHeaderObj,
-  defaultItemBodyObj,
-  // defaultItemPriceObj,
-} from "../itemConstant";
 import InclusionExclusionModal from "../common/InclusionExclusionModal";
 import { API_SUCCESS } from "services/ResponseCode";
 import { errorMessage, successMessage } from "../utilities/toastMessage";
 import {
-  callDeleteApi,
-  callGetApi,
-  callPostApi,
-  callPutApi,
+  callDeleteApi, callGetApi, callPostApi, callPutApi,
 } from "services/ApiCaller";
 import {
-  CREATE_PORTFOLIO_ITEM,
-  LINK_ITEM_TO_PORTFOLIO,
-  PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE,
+  CREATE_PORTFOLIO_ITEM, LINK_ITEM_TO_PORTFOLIO, PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE,
 } from "services/CONSTANTS";
 import { updateItemPriceSjRkId } from "./SJRKIdUpdate";
 import BundleServiceAddUpdate from "../BundleServiceAddUpdate";
+import {
+  additionalPriceKeyValuePair, dataTableCustomStyle, discountTypeKeyValuePair,
+  usageTypeKeyValuePair, defaultItemHeaderObj, defaultItemBodyObj,
+} from "pages/Common/PortfolioAndSolutionConstants";
 
 const fileTypes = ["JPG", "PNG", "GIF"];
-
 const menuComponentOptions = ["Create Versions", "Show Errors", "Review"];
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
@@ -234,6 +213,8 @@ const PortfolioItemsList = (props) => {
     portfolioStatusKeyValuePair,
     customerSegmentKeyValuePair,
     machineComponentKeyValuePair,
+    frequencyKeyValuePairs,
+    unitKeyValuePairs,
   } = props;
 
   const dispatch = useDispatch();
@@ -247,8 +228,6 @@ const PortfolioItemsList = (props) => {
   const [activeTab, setActiveTab] = useState(1);
   const [bundleServiceNeed, setBundleServiceNeed] = useState(true);
 
-  const [frequencyKeyValuePairs, setFrequencyKeyValuePairs] = useState([]);
-  const [unitKeyValuePairs, setUnitKeyValuePairs] = useState([]);
   const [searchBundleServiceItem, setSearchBundleServiceItem] = useState([]);
   const [selectedSearchedItems, setSelectedSearchedItems] = useState([]);
   const [bundleServiceItemsList, setBundleServiceItemsList] = useState([]);
@@ -285,42 +264,6 @@ const PortfolioItemsList = (props) => {
   const [itemBodyModelObj, setItemBodyModelObj] = useState({
     ...defaultItemBodyObj,
   });
-
-  useEffect(() => {
-    // get frequency key-value pair
-    getPortfolioAndSolutionCommonConfig("frequency")
-      .then((res) => {
-        if (res.status === 200) {
-          const options = [];
-          res.data.map((d) => {
-            if (d.key !== "EMPTY") {
-              options.push({ value: d.key, label: d.value });
-            }
-          });
-          setFrequencyKeyValuePairs(options);
-        }
-      })
-      .catch((err) => {
-        return;
-      });
-
-    // get unit key-value pairs
-    getPortfolioAndSolutionCommonConfig("unit")
-      .then((res) => {
-        if (res.status === 200) {
-          const options = [];
-          res.data.map((d) => {
-            if (d.key !== "EMPTY" && d.key !== "MONTH") {
-              options.push({ value: d.key, label: d.value });
-            }
-          });
-          setUnitKeyValuePairs(options);
-        }
-      })
-      .catch((err) => {
-        return;
-      });
-  }, []);
 
   useEffect(() => {
     if (!showAddItemModal) {
@@ -393,8 +336,8 @@ const PortfolioItemsList = (props) => {
         !isEmpty(row?.standardJobId)
           ? row?.standardJobId
           : !isEmpty(row?.repairKitId)
-          ? row?.repairKitId
-          : "NA",
+            ? row?.repairKitId
+            : "NA",
       sortable: false,
       wrap: true,
     },
@@ -698,7 +641,7 @@ const PortfolioItemsList = (props) => {
   };
 
   // handle Item Input Text change
-  const handlePortfolioItemTextChange = (e, keyName = false) => {};
+  const handlePortfolioItemTextChange = (e, keyName = false) => { };
 
   // Search Items
   const handleAddSearchItems = (items) => {
@@ -750,13 +693,15 @@ const PortfolioItemsList = (props) => {
           const { itemId, itemName, itemHeaderModel, itemBodyModel } =
             response.data;
           const _portfolioItemIds = [...itemHeaderModel["portfolioItemIds"]];
+          const removeDuplicatePortfolioItemIds = Array.from([...new Set(_portfolioItemIds)]);
           _portfolioItemIds.push(recorItemId);
           const requestObj = {
             itemId: itemId,
             itemName: itemName,
             itemHeaderModel: {
               ...itemHeaderModel,
-              portfolioItemIds: _portfolioItemIds,
+              // portfolioItemIds: _portfolioItemIds,
+              portfolioItemIds: removeDuplicatePortfolioItemIds,
               bundleFlag: itemHeaderModel.bundleFlag,
             },
             itemBodyModel: {
@@ -868,7 +813,7 @@ const PortfolioItemsList = (props) => {
         .join("&");
       linkItemReqUrl = `${linkItemReqUrl}&portfolio_item_id=${recorItemId}&portfolio_id=${portfolioRecordId}`;
 
-      handleLinkItemToPortfolio(linkItemReqUrl).then((res) => {});
+      handleLinkItemToPortfolio(linkItemReqUrl).then((res) => { });
 
       for (let i = 0; i < selectedItemsLength; i++) {
         _portfolioItemsIds.push({
@@ -1207,8 +1152,8 @@ const PortfolioItemsList = (props) => {
         ...bodyModelObj,
         taskType: [
           itemBodyModelObj?.taskType?.value ||
-            itemBodyModelObj?.taskType ||
-            "EMPTY",
+          itemBodyModelObj?.taskType ||
+          "EMPTY",
         ],
         usageIn:
           itemBodyModelObj?.usageIn?.value || itemBodyModelObj?.usageIn || "",
@@ -1452,7 +1397,7 @@ const PortfolioItemsList = (props) => {
                 <TabList
                   className="custom-tabs-div"
                   onChange={(e, tabIndex) => editItem && setActiveTab(tabIndex)}
-                  // onChange={(e, newValue) => { portfolioItemDataEditable && setTabs(newValue) }}
+                // onChange={(e, newValue) => { portfolioItemDataEditable && setTabs(newValue) }}
                 >
                   <Tab label="Portfolio Item" value={1} />
                   <Tab
@@ -1570,7 +1515,7 @@ const PortfolioItemsList = (props) => {
                         onClick={handleContinueWithSelectebundleService}
                       >
                         {existBundleServiceItems.length ===
-                        bundleServiceItemsList.length
+                          bundleServiceItemsList.length
                           ? "Next"
                           : "Save & Continue"}
                       </button>
@@ -1616,8 +1561,8 @@ const PortfolioItemsList = (props) => {
                             type="text"
                             name="componentCode"
                             autoComplete="off"
-                            // value={componentData.componentCode}
-                            // onChange={handleComponentChange}
+                          // value={componentData.componentCode}
+                          // onChange={handleComponentChange}
                           />
                           {/* {<ul className={`list-group customselectsearch-list scrollbar scrolbarCode style`}>
                                                     {componentData.codeSuggestions.map(
@@ -1643,8 +1588,8 @@ const PortfolioItemsList = (props) => {
                           name="description"
                           placeholder="Optional"
                           disabled
-                          // value={componentData.description}
-                          // onChange={handleComponentChange}
+                        // value={componentData.description}
+                        // onChange={handleComponentChange}
                         />
                       </div>
                     </div>
@@ -1660,8 +1605,8 @@ const PortfolioItemsList = (props) => {
                           id="make-id"
                           name="make"
                           disabled
-                          // value={componentData.make}
-                          // onChange={handleMachineDataChange}
+                        // value={componentData.make}
+                        // onChange={handleMachineDataChange}
                         />
                       </div>
                     </div>
@@ -1750,16 +1695,16 @@ const PortfolioItemsList = (props) => {
                           <input
                             type="text"
                             className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
-                            // placeholder="10%"
-                            // defaultValue={props?.priceCalculator?.priceAdditionalInput}
-                            // value={priceCalculator.priceAdditionalInput}
-                            // name="priceAdditionalInput"
-                            // onChange={(e) =>
-                            //     setPriceCalculator({
-                            //         ...priceCalculator,
-                            //         priceAdditionalInput: e.target.value,
-                            //     })
-                            // }
+                          // placeholder="10%"
+                          // defaultValue={props?.priceCalculator?.priceAdditionalInput}
+                          // value={priceCalculator.priceAdditionalInput}
+                          // name="priceAdditionalInput"
+                          // onChange={(e) =>
+                          //     setPriceCalculator({
+                          //         ...priceCalculator,
+                          //         priceAdditionalInput: e.target.value,
+                          //     })
+                          // }
                           />
                         </div>
                       </div>
@@ -1774,25 +1719,25 @@ const PortfolioItemsList = (props) => {
                           <Select
                             className="select-input text-primary"
                             id="priceEscalationSelect"
-                            // options={priceHeadTypeKeyValue}
-                            // placeholder="placeholder "
-                            // value={priceCalculator.escalationPriceOptionsValue1}
-                            // onChange={(e) =>
-                            //     handleEscalationPriceValue(e)
-                            // }
+                          // options={priceHeadTypeKeyValue}
+                          // placeholder="placeholder "
+                          // value={priceCalculator.escalationPriceOptionsValue1}
+                          // onChange={(e) =>
+                          //     handleEscalationPriceValue(e)
+                          // }
                           />
                           <input
                             type="text"
                             className="form-control rounded-top-left-0 rounded-bottom-left-0"
                             placeholder="20%"
                             id="priceEscalationInput"
-                            // value={priceCalculator.escalationPriceInputValue}
-                            // onChange={(e) =>
-                            //     setPriceCalculator({
-                            //         ...priceCalculator,
-                            //         escalationPriceInputValue: e.target.value,
-                            //     })
-                            // }
+                          // value={priceCalculator.escalationPriceInputValue}
+                          // onChange={(e) =>
+                          //     setPriceCalculator({
+                          //         ...priceCalculator,
+                          //         escalationPriceInputValue: e.target.value,
+                          //     })
+                          // }
                           />
                         </div>
                       </div>
@@ -1809,13 +1754,13 @@ const PortfolioItemsList = (props) => {
                           name="calculatedPrice"
                           placeholder="$100"
                           disabled
-                          // value={priceCalculator.calculatedPrice}
-                          // onChange={(e) =>
-                          //     setPriceCalculator({
-                          //         ...priceCalculator,
-                          //         calculatedPrice: e.target.value,
-                          //     })
-                          // }
+                        // value={priceCalculator.calculatedPrice}
+                        // onChange={(e) =>
+                        //     setPriceCalculator({
+                        //         ...priceCalculator,
+                        //         calculatedPrice: e.target.value,
+                        //     })
+                        // }
                         />
                       </div>
                     </div>
@@ -1829,13 +1774,13 @@ const PortfolioItemsList = (props) => {
                           type="text"
                           name="flatPrice"
                           placeholder="0"
-                          // value={priceCalculator.flatPrice}
-                          // onChange={(e) =>
-                          //     setPriceCalculator({
-                          //         ...priceCalculator,
-                          //         flatPrice: e.target.value,
-                          //     })
-                          // }
+                        // value={priceCalculator.flatPrice}
+                        // onChange={(e) =>
+                        //     setPriceCalculator({
+                        //         ...priceCalculator,
+                        //         flatPrice: e.target.value,
+                        //     })
+                        // }
                         />
                       </div>
                     </div>
@@ -1850,15 +1795,15 @@ const PortfolioItemsList = (props) => {
                               className="text-primary"
                               name="discountTypeSelect"
                               placeholder="Select"
-                              // value={priceCalculator.discountTypeSelect}
-                              // onChange={(e) =>
-                              //     setPriceCalculator({
-                              //         ...priceCalculator,
-                              //         discountTypeSelect: e,
-                              //     })
-                              // }
-                              // isClearable={true}
-                              // options={discountTypeOptions}
+                            // value={priceCalculator.discountTypeSelect}
+                            // onChange={(e) =>
+                            //     setPriceCalculator({
+                            //         ...priceCalculator,
+                            //         discountTypeSelect: e,
+                            //     })
+                            // }
+                            // isClearable={true}
+                            // options={discountTypeOptions}
                             />
                           </div>
                           <input
@@ -1866,13 +1811,13 @@ const PortfolioItemsList = (props) => {
                             type="text"
                             name="discountTypeInput"
                             placeholder="10%"
-                            // value={priceCalculator.discountTypeInput}
-                            // onChange={(e) =>
-                            //     setPriceCalculator({
-                            //         ...priceCalculator,
-                            //         discountTypeInput: e.target.value,
-                            //     })
-                            // }
+                          // value={priceCalculator.discountTypeInput}
+                          // onChange={(e) =>
+                          //     setPriceCalculator({
+                          //         ...priceCalculator,
+                          //         discountTypeInput: e.target.value,
+                          //     })
+                          // }
                           />
                         </div>
                       </div>
@@ -2266,8 +2211,8 @@ const PortfolioItemsList = (props) => {
             {isEmpty(row?.standardJobId) && isEmpty(row?.repairKitId)
               ? "NA"
               : isEmpty(row?.standardJobId)
-              ? row?.repairKitId
-              : row?.standardJobId}
+                ? row?.repairKitId
+                : row?.standardJobId}
           </div>
         </div>
       ),
@@ -2581,7 +2526,7 @@ const PortfolioItemsList = (props) => {
             <div
               className="col-md-6 col-sm-6"
               onClick={handleAddItem}
-              // onClick={handleNewBundleItem}
+            // onClick={handleNewBundleItem}
             >
               <Link className="add-new-recod cursor">
                 <div>
