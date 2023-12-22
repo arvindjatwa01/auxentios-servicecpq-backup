@@ -13,7 +13,7 @@ import editIcon from "../../../assets/icons/svg/edit.svg";
 import shareIcon from "../../../assets/icons/svg/share.svg";
 import folderAddIcon from "../../../assets/icons/svg/folder-add.svg";
 
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import $ from "jquery";
 import Select from "react-select";
@@ -47,11 +47,6 @@ import CoveragePaginationTable from "pages/PortfolioAndBundle/newCreatePortfolio
 import PortfolioCoverageSearch from "pages/PortfolioAndBundle/newCreatePortfolioData/PortfolioCoverageSearch";
 
 import {
-  createCoverage, createPortfolio, getPortfolioCommonConfig, getSolutionPriceCommonConfig,
-  getValidityKeyValue, portfolioPriceAgreementCreation, portfolioPriceCreation, updatePortfolio,
-  updatePortfolioPrice,
-} from "../../../services/index";
-import {
   selectCategoryList, selectGeographicalList, selectProductList, selectResponseTimeList, selectStrategyTaskOption,
   selectUpdateList, selectUpdateTaskList, taskActions, selectSolutionTaskList, selectSolutionLevelList,
 } from "pages/PortfolioAndBundle/customerSegment/strategySlice";
@@ -63,6 +58,11 @@ import {
 
 const CustomPortfolioAddUpdate = (props) => {
   const { location: { state: portfolioRecordData }, ...restProps } = props;
+
+  const {
+    supportLevelKeyValuePair, portfolioStatusKeyValuePair, customerSegmentKeyValuePair, machineComponentKeyValuePair,
+    priceMethodKeyValuePair, priceTypeKeyValuePair, priceHeadTypeKeyValuePair, currencyKeyValuePair, frequencyKeyValuePairs, unitKeyValuePairs, validityKeyValuePair, priceListKeyValuePair,
+  } = useSelector((state) => state.commonAPIReducer);
 
   const history = useHistory();
   const dispatch = useDispatch();
@@ -76,8 +76,6 @@ const CustomPortfolioAddUpdate = (props) => {
   const solutionTypeKeyValuePair = useAppSelector(selectStrategyTaskOption(selectSolutionTaskList));
   const solutionLevelKeyValuePair = useAppSelector(selectStrategyTaskOption(selectSolutionLevelList));
 
-  const [portfolioStatusKeyValuePair, setPortfolioStatusKeyValuePair] = useState([]);
-  const [supportLevelKeyValuePair, setSupportLevelKeyValuePair] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const [portfolioSupportLevel, setPortfolioSupportLevel] = useState({ ...defaultSupportLevel, });
@@ -106,15 +104,6 @@ const CustomPortfolioAddUpdate = (props) => {
     administrativeTabEdit: false,
   });
   const [isPriceAgreementDisable, setIsPriceAgreementDisable] = useState(false);
-  const [customerSegmentKeyValuePair, setCustomerSegmentKeyValue] = useState([]);
-  const [validityKeyValuePair, setValidityKeyValuePair] = useState([]);
-
-  // Price tab Key-Value -pair list
-  const [priceListKeyValuePair, setPriceListKeyValuePair] = useState([]);
-  const [priceMethodKeyValuePair, setPriceMethodKeyValuePair] = useState([]);
-  const [priceTypeKeyValuePair, setPriceTypeKeyValuePair] = useState([]);
-  const [priceHeadTypeKeyValuePair, setPriceHeadTypeKeyValuePair] = useState([]);
-  const [currencyKeyValuePair, setCurrencyKeyValuePair] = useState([]);
 
   const [customerSearchResult, setCustomerSearchResult] = useState([]);
   const [customerSearchNoOptions, setCustomerSearchNoOptions] = useState(false);
@@ -200,113 +189,6 @@ const CustomPortfolioAddUpdate = (props) => {
   }, [dispatch]);
 
   useEffect(() => {
-    // get Validity Key-Value Pair list
-    getValidityKeyValue()
-      .then((res) => {
-        const validityOptions = [];
-        res.map((d) => {
-          if (d.key !== "EMPTY") {
-            validityOptions.push({ value: d.key, label: d.value });
-          }
-        });
-        setValidityKeyValuePair(validityOptions);
-      })
-      .catch((err) => {
-        errorMessage(err);
-      });
-
-    // get Price-List key-value pair
-    getSolutionPriceCommonConfig("price-list")
-      .then((res) => {
-        const priceListOptions = [];
-        res.map((d) => {
-          if (d.key != "EMPTY") {
-            priceListOptions.push({ value: d.key, label: d.value });
-          }
-        });
-        setPriceListKeyValuePair(priceListOptions);
-      })
-      .catch((err) => {
-        errorMessage(err);
-      });
-
-    // get Price-method key-value Pair
-    getSolutionPriceCommonConfig("price-method")
-      .then((res) => {
-        const priceMethodOptions = [];
-        res.map((d) => {
-          if (d.key != "EMPTY") {
-            priceMethodOptions.push({ value: d.key, label: d.value });
-          }
-        });
-        setPriceMethodKeyValuePair(priceMethodOptions);
-      })
-      .catch((err) => {
-        errorMessage(err);
-      });
-
-    // get Price-Type key-value Pair
-    getSolutionPriceCommonConfig("price-type")
-      .then((res) => {
-        const priceTypeOptions = [];
-        res.map((d) => {
-          if (d.key != "EMPTY") {
-            priceTypeOptions.push({ value: d.key, label: d.value });
-          }
-        });
-        setPriceTypeKeyValuePair(priceTypeOptions);
-      })
-      .catch((err) => {
-        errorMessage(err);
-      });
-
-    //get price-head-type key-value pair
-    getSolutionPriceCommonConfig("price-head-type")
-      .then((res) => {
-        const priceHeadTypeOptions = [];
-        res.map((d) => {
-          if (d.key != "EMPTY") {
-            priceHeadTypeOptions.push({ value: d.key, label: d.value });
-          }
-        });
-        setPriceHeadTypeKeyValuePair(priceHeadTypeOptions);
-      })
-      .catch((err) => {
-        errorMessage(err);
-      });
-
-    //  get currency  key-value pair
-    getSolutionPriceCommonConfig("currency")
-      .then((res) => {
-        const currencyOptions = [];
-        res.length !== 0 &&
-          res.map((d) => {
-            if (d.key != "EMPTY") {
-              currencyOptions.push({ value: d, label: d });
-            }
-          });
-        setCurrencyKeyValuePair(currencyOptions);
-      })
-      .catch((err) => {
-        errorMessage(err);
-        return;
-      });
-
-    // get customer segment key value pair list
-    getPortfolioCommonConfig("customer-segment")
-      .then((res) => {
-        const customerSegmentOptions = res.map((d) => ({
-          value: d.key,
-          label: d.value,
-        }));
-        setCustomerSegmentKeyValue(customerSegmentOptions);
-      })
-      .catch((err) => {
-        errorMessage(err);
-      });
-  }, []);
-
-  useEffect(() => {
     // existing Portfolio
     if (portfolioRecordData.type === "fetch") {
       setCustomPortfolioRecordId(portfolioRecordData.portfolioId);
@@ -348,13 +230,13 @@ const CustomPortfolioAddUpdate = (props) => {
     const _portfolioSupportLevel = supportLevelKeyValuePair.find(
       (obj) => obj.value === recordData.supportLevel
     );
-    setPortfolioSupportLevel(_portfolioSupportLevel || "");
+    setPortfolioSupportLevel(_portfolioSupportLevel || supportLevelKeyValuePair[0]);
 
     // set Portfolio Status
     const _portfolioStatus = portfolioStatusKeyValuePair.find(
       (obj) => obj.value === recordData.status
     );
-    setPortfolioStatus(_portfolioStatus || "");
+    setPortfolioStatus(_portfolioStatus || portfolioStatusKeyValuePair[0]);
 
     // set Portfolio Tab Edit Mode true
     setPortfolioTabsEditView({
@@ -3067,8 +2949,10 @@ const CustomPortfolioAddUpdate = (props) => {
               supportLevelKeyValuePair={supportLevelKeyValuePair}
               portfolioStatusKeyValuePair={portfolioStatusKeyValuePair}
               setIsActivePortfolio={setIsActivePortfolio}
+              customPortfolioId={customPortfolioRecordId}
               handlePortfolioSupportLevel={(e) => setPortfolioSupportLevel(e)}
               handlePortfolioStatus={(e) => setPortfolioStatus(e)}
+              history={history}
             />
             <div className="card p-4 mt-5">
               <h5 className="d-flex justify-content-between align-items-center mb-0">
@@ -3150,17 +3034,13 @@ const CustomPortfolioAddUpdate = (props) => {
               customItemReviewTabItemList={customItemReviewTabItemList}
               customItemIds={customItemIds}
               setCustomItemIds={setCustomItemIds}
-              priceMethodKeyValuePair={priceMethodKeyValuePair}
-              priceTypeKeyValuePair={priceTypeKeyValuePair}
-              priceHeadTypeKeyValuePair={priceHeadTypeKeyValuePair}
-              currencyKeyValuePair={currencyKeyValuePair}
+              selectedService={selectedService}
+              setSelectedService={setSelectedService}
+              setCheckedService={setCheckedService}
               handleUpdateSolutionHeader={handleUpdateSolutionHeader}
               showOptionalServicesModal={showOptionalServicesModal}
               handleOptionalServiceModal={handleOptionalServiceModal}
               checkedService={checkedService}
-              setCheckedService={setCheckedService}
-              selectedService={selectedService}
-              setSelectedService={setSelectedService}
             />
           </div>
         )}

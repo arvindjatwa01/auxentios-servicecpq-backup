@@ -18,20 +18,25 @@ import ComponentCodeAddEdit from "./ComponentCodeAddEdit";
 import CustomItemPriceCalculator from "./CustomItemPriceCalculator";
 import ExpendCustomBundleServiceItem from "../useCase4Common/ExpendCustomBundleServiceItem";
 import PortfolioCoverageSearch from "pages/PortfolioAndBundle/newCreatePortfolioData/PortfolioCoverageSearch";
-import { dataTableCustomStyle, defaultCustomItemBodyModel, defaultCustomItemHeaderModel, } from "pages/Common/PortfolioAndSolutionConstants";
+import {
+  dataTableCustomStyle, defaultCustomItemBodyModel, defaultCustomItemHeaderModel,
+  additionalPriceKeyValuePair, usageTypeKeyValuePair, discountTypeKeyValuePair,
+} from "pages/Common/PortfolioAndSolutionConstants";
 import { updateCustomItemPricesSjRkId } from "pages/PortfolioAndBundle/newCreatePortfolioData/portfolio-item/SJRKIdUpdate";
 import { isEmpty } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/textUtilities";
 import { errorMessage } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/toastMessage";
+import { useSelector } from "react-redux";
 
 const CustomItemTabsModal = (props) => {
-  const { show, hideModal, customPortfolioId, searchBundleServiceItem, setSearchBundleServiceItem, selectedSearchedItems,
-    setSelectedSearchedItems, isPortfolioItem, frequencyKeyValuePairs, unitKeyValuePairs, editItem,
-    recordCustomItemId, setRecordCustomItemId, customItemIds, setCustomItemIds,
-    bundleServiceItemsList, existBundleServiceItems, setBundleServiceItemsList, priceMethodKeyValuePair,
-    priceTypeKeyValuePair, priceHeadTypeKeyValuePair, currencyKeyValuePair, additionalPriceKeyValuePair,
-    discountTypeKeyValuePair, usageTypeKeyValuePair, customItemsTableList, setCustomItemsTableList,
-    handleUpdateSolutionHeader, setCustomItemReviewTabItemList, customItemReviewTabItemList,
-  } = props;
+  const { show, hideModal, customPortfolioId, searchBundleServiceItem, setSearchBundleServiceItem,
+    selectedSearchedItems, setSelectedSearchedItems, isPortfolioItem, editItem, recordCustomItemId,
+    setRecordCustomItemId, customItemIds, setCustomItemIds, bundleServiceItemsList, existBundleServiceItems,
+    setBundleServiceItemsList, customItemsTableList, setCustomItemsTableList, handleUpdateSolutionHeader,
+    setCustomItemReviewTabItemList, customItemReviewTabItemList, } = props;
+
+  const {
+    priceMethodKeyValuePair, priceTypeKeyValuePair, priceHeadTypeKeyValuePair, currencyKeyValuePair,
+    frequencyKeyValuePairs, unitKeyValuePairs, } = useSelector((state) => state.commonAPIReducer);
 
   const [activeTab, setActiveTab] = useState(1);
   const [bundleServiceNeed, setBundleServiceNeed] = useState(true);
@@ -1167,11 +1172,7 @@ const CustomItemTabsModal = (props) => {
                   isEditable={editItem}
                   isPortfolioItem={true}
                   bundleServiceNeed={bundleServiceNeed}
-                  handleBundleServiceNeed={() =>
-                    setBundleServiceNeed(!bundleServiceNeed)
-                  }
-                  frequencyKeyValuePairs={frequencyKeyValuePairs}
-                  unitKeyValuePairs={unitKeyValuePairs}
+                  handleBundleServiceNeed={() => setBundleServiceNeed(!bundleServiceNeed)}
                   handleGetPortfolioItemsData={handleGetCustomPortfolioItemData}
                   itemId={recordCustomItemId}
                   portfolioId={customPortfolioId}
@@ -1272,15 +1273,6 @@ const CustomItemTabsModal = (props) => {
               )}
               {activeTab === 4 && (
                 <CustomItemPriceCalculator
-                  priceMethodKeyValuePair={priceMethodKeyValuePair}
-                  priceTypeKeyValuePair={priceTypeKeyValuePair}
-                  priceHeadTypeKeyValuePair={priceHeadTypeKeyValuePair}
-                  unitKeyValuePairs={unitKeyValuePairs}
-                  frequencyKeyValuePairs={frequencyKeyValuePairs}
-                  currencyKeyValuePair={currencyKeyValuePair}
-                  additionalPriceKeyValuePair={additionalPriceKeyValuePair}
-                  discountTypeKeyValuePair={discountTypeKeyValuePair}
-                  usageTypeKeyValuePair={usageTypeKeyValuePair}
                   itemId={recordCustomItemId}
                   isEditable={editItem}
                   handleSavePriceChanges={handleSaveItemPriceChanges}

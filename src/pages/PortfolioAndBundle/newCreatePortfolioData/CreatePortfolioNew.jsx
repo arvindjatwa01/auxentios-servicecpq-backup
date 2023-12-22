@@ -28,7 +28,7 @@ import { useAppSelector } from "../../../app/hooks";
 import {
   CREATE_PORTFOLIO_ITEM, PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE, PORTFOLIO_URL,
 } from "services/CONSTANTS";
-import { callGetApi, callPutApi } from "services/ApiCaller";
+import { callGetApi, callPostApi, callPutApi } from "services/ApiCaller";
 import { API_SUCCESS } from "services/ResponseCode";
 
 import { getFormatDateTime } from "./utilities/dateUtilities";
@@ -70,7 +70,6 @@ export const CreatePortfolio = (props) => {
   } = props;
 
   const history = useHistory();
-  const location = useLocation();
   const dispatch = useDispatch();
 
   const {
@@ -512,6 +511,89 @@ export const CreatePortfolio = (props) => {
   // handle Portfolio Status
   const handlePortfolioStatus = (e) => {
     setPortfolioStatus(e);
+    if (!isEmpty(portfolioRecordId)) {
+      // optionsalSerivce
+      let _optionalServices = "";
+      if (selectedService.length !== 0) {
+        _optionalServices = selectedService.map((obj) => obj.itemId).join(",");
+      }
+      // strategyTabData
+      let requestObj = {
+        portfolioId: portfolioRecordId,
+        headerType: generalTabData.headerType?.value || "",
+        name: generalTabData.name,
+        description: generalTabData.description,
+        externalReference: generalTabData.externalReference,
+        customerSegment: generalTabData.customerSegment?.value || "",
+
+        validFrom: validityTabData.fromDate,
+        validTo: validityTabData.toDate,
+        startUsage: validityTabData.fromInput,
+        endUsage: validityTabData.toInput,
+        unit: validityTabData.from?.value || "EMPTY",
+
+        usageCategory: strategyTabData.categoryUsage?.value || "EMPTY",
+        strategyTask: strategyTabData.strategyTask?.value || "EMPTY",
+        taskType: strategyTabData.taskType?.value || "EMPTY",
+        optionalServices: _optionalServices,
+        responseTime: strategyTabData.responseTime?.value || "EMPTY",
+        productHierarchy: strategyTabData.productHierarchy?.value || "EMPTY",
+        geographic: strategyTabData.geographic?.value || "EMPTY",
+
+        portfolioPrice: isEmpty(priceTabData.portfolioPriceId)
+          ? null
+          : {
+            portfolioPriceId: priceTabData.portfolioPriceId,
+          },
+
+        preparedBy: administrativeTabData.preparedBy,
+        approvedBy: administrativeTabData.approvedBy,
+        preparedOn: administrativeTabData.preparedOn,
+        revisedBy: administrativeTabData.revisedBy,
+        revisedOn: administrativeTabData.revisedOn,
+        salesOffice: administrativeTabData.salesOffice?.value || "",
+        offerValidity: administrativeTabData.offerValidity?.value || "",
+
+        items: portfolioItemsIds,
+        coverages: portfolioCoverageIds,
+
+        status: e?.value,
+        supportLevel: portfolioSupportLevel?.value,
+
+        machineType: "EMPTY",
+        searchTerm: "",
+        lubricant: true,
+        customerId: 0,
+        customerGroup: "",
+        availability: "EMPTY",
+        type: "EMPTY",
+        application: "EMPTY",
+        contractOrSupport: "EMPTY",
+        lifeStageOfMachine: "EMPTY",
+        numberOfEvents: 0,
+        rating: "",
+        additionals: "",
+        template: true,
+        visibleInCommerce: true,
+      };
+      handleUpdatePortfolio(requestObj)
+        .then((response) => {
+          if (response) {
+            if (e.value === "ACTIVE") {
+              setPortfolioTabsEditView({
+                generalTabEdit: true,
+                validityTabEdit: true,
+                strategyTabEdit: true,
+                priceTabEdit: true,
+                priceAgreementTabEdit: true,
+                coverageTabEdit: true,
+                administrativeTabEdit: true,
+              });
+            }
+            successMessage(`${capitalizeFirstLetter(generalTabData.headerType?.value)} ${generalTabData.name}  Status updated successfully`);
+          }
+        })
+    }
   };
 
   // handle portfolio tabs edit flag
@@ -2252,7 +2334,7 @@ export const CreatePortfolio = (props) => {
                     {isEmpty(administrativeTabData.preparedOn)
                       ? "NA"
                       : getFormatDateTime(
-                        administrativeTabData.preparedBy,
+                        administrativeTabData.preparedOn,
                         false
                       )}
                   </h6>
@@ -2664,7 +2746,7 @@ export const CreatePortfolio = (props) => {
         revisedBy: administrativeTabData.revisedBy,
         revisedOn: administrativeTabData.revisedOn,
         salesOffice: administrativeTabData.salesOffice?.value || "",
-        offerValidity: administrativeTabData.preparedBy?.value || "",
+        offerValidity: administrativeTabData.offerValidity?.value || "",
 
         items: portfolioItemsIds,
         coverages: portfolioCoverageIds,
@@ -2693,38 +2775,21 @@ export const CreatePortfolio = (props) => {
       }
       if (id == "general") {
         if (isEmpty(portfolioRecordId)) {
-          const portfolioCreate = await createPortfolio(requestObj);
-          if (portfolioCreate.status === 200) {
-            successMessage(
-              capitalizeFirstLetter(generalTabData.headerType?.value) +
-              " " +
-              generalTabData.name +
-              " Created successfully"
-            );
-            setPortfolioRecordId(portfolioCreate.data.portfolioId);
-            setPortfolioHeaderActiveTab("validity");
-            setPortfolioTabsEditView((prev) => ({
-              ...prev,
-              generalTabEdit: true,
-            }));
-          }
+          handelCreatePortfolio(requestObj).then((response) => {
+            if (response) {
+              successMessage(`${capitalizeFirstLetter(generalTabData.headerType?.value)} ${generalTabData.name}  Created successfully`);
+              setPortfolioHeaderActiveTab("validity");
+              setPortfolioTabsEditView((prev) => ({ ...prev, generalTabEdit: true, }));
+            }
+          })
         } else {
-          const portfolioUpdate = await updatePortfolio(
-            portfolioRecordId,
-            requestObj
-          );
-          if (portfolioUpdate.status === 200) {
-            successMessage(
-              capitalizeFirstLetter(generalTabData.headerType?.value) +
-              generalTabData.name +
-              " Updated successfully"
-            );
-            setPortfolioHeaderActiveTab("validity");
-            setPortfolioTabsEditView((prev) => ({
-              ...prev,
-              generalTabEdit: true,
-            }));
-          }
+          handleUpdatePortfolio(requestObj).then((response) => {
+            if (response) {
+              successMessage(`${capitalizeFirstLetter(generalTabData.headerType?.value)} ${generalTabData.name}  Updated successfully`);
+              setPortfolioHeaderActiveTab("validity");
+              setPortfolioTabsEditView((prev) => ({ ...prev, generalTabEdit: true, }));
+            }
+          })
         }
       } else if (id == "validity") {
         const portfolioUpdate = await updatePortfolio(
@@ -2817,6 +2882,40 @@ export const CreatePortfolio = (props) => {
       return;
     }
   };
+
+  // Portfolio create handler
+  const handelCreatePortfolio = (reqObj) => {
+    return new Promise((resolve, reject) => {
+      const rUrl = PORTFOLIO_URL();
+      callPostApi(null, rUrl, reqObj, (response) => {
+        if (response.status === API_SUCCESS) {
+          const responseData = response.data;
+          setPortfolioRecordId(responseData.portfolioId);
+          resolve(true);
+        } else {
+          resolve(false);
+        }
+      }, (error) => {
+        resolve(false);
+      })
+    })
+  }
+
+  // portfolio update handler
+  const handleUpdatePortfolio = (reqObj) => {
+    return new Promise((resolve, reject) => {
+      const rUrl = PORTFOLIO_URL() + "/" + portfolioRecordId;
+      callPutApi(null, rUrl, reqObj, (response) => {
+        if (response.statusCode === 200) {
+          resolve(true);
+        } else {
+          resolve(false);
+        }
+      }, (error) => {
+        resolve(false);
+      })
+    })
+  }
 
   return (
     <>
@@ -2933,17 +3032,17 @@ export const CreatePortfolio = (props) => {
                 setPortfolioItemsList={setPortfolioItemsList}
                 portfolioItemsIds={portfolioItemsIds}
                 setPortfolioItemsIds={setPortfolioItemsIds}
+                showOptionalServicesModal={showOptionalServicesModal}
+                handleOptionalServiceModal={handleOptionalServiceModal}
+                checkedService={checkedService}
+                selectedService={selectedService}
+                setCheckedService={setCheckedService}
+                setSelectedService={setSelectedService}
+                handleUpdatePortfolio={handleUpdatePortfolioOnItem}
                 priceMethodKeyValuePair={priceMethodKeyValuePair}
                 priceTypeKeyValuePair={priceTypeKeyValuePair}
                 priceHeadTypeKeyValuePair={priceHeadTypeKeyValuePair}
                 currencyKeyValuePair={currencyKeyValuePair}
-                showOptionalServicesModal={showOptionalServicesModal}
-                handleOptionalServiceModal={handleOptionalServiceModal}
-                checkedService={checkedService}
-                setCheckedService={setCheckedService}
-                selectedService={selectedService}
-                setSelectedService={setSelectedService}
-                handleUpdatePortfolio={handleUpdatePortfolioOnItem}
                 supportLevelKeyValuePair={supportLevelKeyValuePair}
                 portfolioStatusKeyValuePair={portfolioStatusKeyValuePair}
                 customerSegmentKeyValuePair={customerSegmentKeyValuePair}

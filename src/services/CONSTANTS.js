@@ -285,6 +285,7 @@ export const FETCH_QUOTE_VALIDITY = () => QUOTE_COMMON_REST_SERVICE + `/common-c
 
 export const QUOTE_CREATION = () => QUOTE_REST_SERVICE;
 export const CONVERT_PORTFOLIO_TO_QUOTE = QUOTE_REST_SERVICE + "/convert-potfolio-to-quote?portfolioId=";
+export const CONVERT_CUSTOM_PORTFOLIO_TO_QUOTE = QUOTE_REST_SERVICE + "/convert-custom-potfolio-to-quote?portfolioId=";
 export const GET_COVERT_QUOTE_DETAILS = QUOTE_REST_SERVICE;
 
 /* ===================== Solution Quote Service ============================= */
@@ -337,12 +338,12 @@ export const SEARCH_EQUIPMENT = (endPath) => DATA_SVC_EQUIPMENT() + `/search?sea
 export const Get_Equipment_Datails_By_Id_GET = DATA_SVC_EQUIPMENT() + "/";
 
 // Master Parts
-export const DATA_SVC_PARTS =  DATA_SERVICE_URI + "sparepart/";
-export const SEARCH_SPARC_PART = (endPath) =>  DATA_SVC_PARTS  + `/search?search=${endPath}`;
+export const DATA_SVC_PARTS = DATA_SERVICE_URI + "sparepart/";
+export const SEARCH_SPARC_PART = (endPath) => DATA_SVC_PARTS + `/search?search=${endPath}`;
 export const Get_Spare_Parts_Datails_By_Id_GET = DATA_SVC_PARTS;
 
 // Master Customer
-export const DATA_SVC_CUSTOMER =  DATA_SERVICE_URI + "customer/";
+export const DATA_SVC_CUSTOMER = DATA_SERVICE_URI + "customer/";
 export const SEARCH_CUSTOMER_MASTER = (endPath) => DATA_SVC_CUSTOMER + `/search?search=${endPath}`;
 export const Get_Customer_Master_Details_By_Id_GET = DATA_SVC_CUSTOMER;
 

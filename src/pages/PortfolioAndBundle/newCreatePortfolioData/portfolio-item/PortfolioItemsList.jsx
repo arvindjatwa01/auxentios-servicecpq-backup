@@ -44,7 +44,7 @@ import ItemAddEdit from "./ItemAddEdit";
 
 import { isEmpty } from "../utilities/textUtilities";
 import ItemPriceCalculator from "./ItemPriceCalculator";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import ExpendBundleServiceItem from "./ExpendBundleServiceItem";
 
 import InclusionExclusionModal from "../common/InclusionExclusionModal";
@@ -192,30 +192,16 @@ const coverageColumns = [
 
 const PortfolioItemsList = (props) => {
   const {
-    componentDataTabShow,
-    portfolioRecordId,
-    itemsList,
-    setPortfolioItemsList,
-    portfolioItemsIds,
-    setPortfolioItemsIds,
-    priceMethodKeyValuePair,
-    priceTypeKeyValuePair,
-    priceHeadTypeKeyValuePair,
-    currencyKeyValuePair,
-    showOptionalServicesModal,
-    handleOptionalServiceModal,
-    checkedService,
-    setCheckedService,
-    selectedService,
-    setSelectedService,
-    handleUpdatePortfolio,
-    supportLevelKeyValuePair,
-    portfolioStatusKeyValuePair,
-    customerSegmentKeyValuePair,
-    machineComponentKeyValuePair,
-    frequencyKeyValuePairs,
-    unitKeyValuePairs,
+    componentDataTabShow, portfolioRecordId, itemsList, setPortfolioItemsList, portfolioItemsIds,
+    setPortfolioItemsIds, showOptionalServicesModal, handleOptionalServiceModal, checkedService,
+    setCheckedService, selectedService, setSelectedService, handleUpdatePortfolio,
   } = props;
+
+  const {
+    supportLevelKeyValuePair, portfolioStatusKeyValuePair, customerSegmentKeyValuePair, machineComponentKeyValuePair,
+    priceMethodKeyValuePair, priceTypeKeyValuePair, priceHeadTypeKeyValuePair, currencyKeyValuePair, frequencyKeyValuePairs, unitKeyValuePairs,
+    ...newdataResponse
+  } = useSelector((state) => state.commonAPIReducer);
 
   const dispatch = useDispatch();
   const [showDragAndDropModal, setShowDragAndDropModal] = useState(false);
@@ -1419,17 +1405,10 @@ const PortfolioItemsList = (props) => {
                   isPortfolioItem={true}
                   bundleServiceNeed={bundleServiceNeed}
                   componentDataTabShow={componentDataTabShow}
-                  handleBundleServiceNeed={() =>
-                    setBundleServiceNeed(!bundleServiceNeed)
-                  }
-                  frequencyKeyValuePairs={frequencyKeyValuePairs}
-                  unitKeyValuePairs={unitKeyValuePairs}
-                  handleGetPortfolioItemsData={handleGetPortfolioItemsData}
-                  itemHeaderModelObj={itemHeaderModelObj}
-                  itemBodyModelObj={itemBodyModelObj}
-                  itemRequestObj={itemRequestObj}
+                  handleBundleServiceNeed={() => setBundleServiceNeed(!bundleServiceNeed)}
                   itemId={recorItemId}
                   portfolioId={portfolioRecordId}
+                  handleGetPortfolioItemsData={handleGetPortfolioItemsData}
                   hideItemAddUpdateModel={hideItemAddUpdateModel}
                 />
               </TabPanel>
@@ -1827,15 +1806,6 @@ const PortfolioItemsList = (props) => {
               </TabPanel>
               <TabPanel value={4}>
                 <ItemPriceCalculator
-                  priceMethodKeyValuePair={priceMethodKeyValuePair}
-                  priceTypeKeyValuePair={priceTypeKeyValuePair}
-                  priceHeadTypeKeyValuePair={priceHeadTypeKeyValuePair}
-                  unitKeyValuePairs={unitKeyValuePairs}
-                  frequencyKeyValuePairs={frequencyKeyValuePairs}
-                  currencyKeyValuePair={currencyKeyValuePair}
-                  additionalPriceKeyValuePair={additionalPriceKeyValuePair}
-                  discountTypeKeyValuePair={discountTypeKeyValuePair}
-                  usageTypeKeyValuePair={usageTypeKeyValuePair}
                   itemId={recorItemId}
                   isEditable={editItem}
                   handleSavePriceChanges={handleSaveItemPriceChanges}
@@ -1928,13 +1898,6 @@ const PortfolioItemsList = (props) => {
       ),
       selector: "id",
       format: (row, i) => {
-        // if(i === 0){
-
-        // }else{
-        //     const previousRow = itemsList[i-1];
-        //     const totalAssociatedRows = previousRow["associatedServiceOrBundle"].length;
-        // }
-        // const preiousData = i > 0 ?
         return 10 * (i + 1);
       },
     },
@@ -2468,21 +2431,12 @@ const PortfolioItemsList = (props) => {
       >
         <Modal.Body>
           <ItemPriceCalculator
-            priceMethodKeyValuePair={priceMethodKeyValuePair}
-            priceTypeKeyValuePair={priceTypeKeyValuePair}
-            priceHeadTypeKeyValuePair={priceHeadTypeKeyValuePair}
-            unitKeyValuePairs={unitKeyValuePairs}
-            frequencyKeyValuePairs={frequencyKeyValuePairs}
-            currencyKeyValuePair={currencyKeyValuePair}
-            additionalPriceKeyValuePair={additionalPriceKeyValuePair}
-            discountTypeKeyValuePair={discountTypeKeyValuePair}
-            usageTypeKeyValuePair={usageTypeKeyValuePair}
             itemId={bundleServiceItemId}
             isEditable={true}
-            handleSavePriceChanges={handleSaveItemPriceChanges}
             reviewModeActive={true}
             priceModalView={true}
             hidePriceViewModal={() => setShowBundleServicePriceModel(false)}
+            handleSavePriceChanges={handleSaveItemPriceChanges}
           />
         </Modal.Body>
       </Modal>
@@ -2586,29 +2540,13 @@ const PortfolioItemsList = (props) => {
           show={showBundleServiceModel}
           hideModel={() => setShowBundleServiceModel(false)}
           itemFlag={bunleServiceItemFlag}
-          customerSegmentKeyValuePair={customerSegmentKeyValuePair}
-          machineComponentKeyValuePair={machineComponentKeyValuePair}
-          itemVersionKeyValuePairs={supportLevelKeyValuePair}
-          itemStatusKeyValuePairs={portfolioStatusKeyValuePair}
           itemId={bundleServiceItemId}
           setItemId={setBundleServiceItemId}
           itemEditModeOn={true}
-          frequencyKeyValuePairs={frequencyKeyValuePairs}
-          unitKeyValuePairs={unitKeyValuePairs}
-          priceHeadTypeKeyValuePair={priceHeadTypeKeyValuePair}
-          priceTypeKeyValuePair={priceTypeKeyValuePair}
-          priceMethodKeyValuePair={priceMethodKeyValuePair}
-          currencyKeyValuePair={currencyKeyValuePair}
           reviewModeActive={true}
         />
       )}
       {showBundleServicePriceModel && viewBundleServiceItemPriceDetails()}
-
-      {/* {showAddItemModal && <PortfolioItemTabsModal
-                show={showAddItemModal}
-                hideModal={() => setShowAddItemModal(false)}
-                componentDataTabShow={componentDataTabShow}
-            />} */}
     </>
   );
 };
