@@ -33,8 +33,7 @@ import {
 const CustomPortfolioItemsList = (props) => {
   const {
     customPortfolioId, customItemsTableList, setCustomItemsTableList, setCustomItemReviewTabItemList,
-    customItemReviewTabItemList, customItemIds, setCustomItemIds, priceMethodKeyValuePair, priceTypeKeyValuePair,
-    priceHeadTypeKeyValuePair, currencyKeyValuePair, handleUpdateSolutionHeader, showOptionalServicesModal,
+    customItemReviewTabItemList, customItemIds, setCustomItemIds, handleUpdateSolutionHeader, showOptionalServicesModal,
     handleOptionalServiceModal, checkedService, setCheckedService, selectedService, setSelectedService,
   } = props;
 
@@ -44,9 +43,6 @@ const CustomPortfolioItemsList = (props) => {
   const [searchBySolutionOrPortlio, setSearchBySolutionOrPortlio] = useState("");
   const [activeTab, setActiveTab] = useState(1);
   const [bundleServiceNeed, setBundleServiceNeed] = useState(true);
-
-  const [frequencyKeyValuePairs, setFrequencyKeyValuePairs] = useState([]);
-  const [unitKeyValuePairs, setUnitKeyValuePairs] = useState([]);
 
   const [recordCustomItemId, setRecordCustomItemId] = useState(null);
   const [editItem, setEditItem] = useState(false);
@@ -71,42 +67,6 @@ const CustomPortfolioItemsList = (props) => {
   const [expendCustomItemBundleServiceRow, setExpendCustomItemBundleServiceRow,] = useState(null);
   const [showBundleServiceSearchModal, setShowBundleServiceSearchModal] = useState(false);
   const [showBundleServiceComponentDataModal, setShowBundleServiceComponentDataModal,] = useState(false);
-
-  useEffect(() => {
-    // get frequency key-value pair
-    getPortfolioAndSolutionCommonConfig("frequency")
-      .then((res) => {
-        if (res.status === 200) {
-          const options = [];
-          res.data.map((d) => {
-            if (d.key !== "EMPTY") {
-              options.push({ value: d.key, label: d.value });
-            }
-          });
-          setFrequencyKeyValuePairs(options);
-        }
-      })
-      .catch((err) => {
-        return;
-      });
-
-    // get unit key-value pairs
-    getPortfolioAndSolutionCommonConfig("unit")
-      .then((res) => {
-        if (res.status === 200) {
-          const options = [];
-          res.data.map((d) => {
-            if (d.key !== "EMPTY" && d.key !== "MONTH") {
-              options.push({ value: d.key, label: d.value });
-            }
-          });
-          setUnitKeyValuePairs(options);
-        }
-      })
-      .catch((err) => {
-        return;
-      });
-  }, []);
 
   useEffect(() => {
     if (!showCustomItemModal) {
@@ -825,23 +785,14 @@ const CustomPortfolioItemsList = (props) => {
           selectedSearchedItems={selectedSearchedItems}
           setSelectedSearchedItems={setSelectedSearchedItems}
           isPortfolioItem={true}
-          frequencyKeyValuePairs={frequencyKeyValuePairs}
-          unitKeyValuePairs={unitKeyValuePairs}
           editItem={editItem}
-          recordCustomItemId={recordCustomItemId}
-          setRecordCustomItemId={setRecordCustomItemId}
           customItemIds={customItemIds}
           setCustomItemIds={setCustomItemIds}
+          recordCustomItemId={recordCustomItemId}
+          setRecordCustomItemId={setRecordCustomItemId}
           bundleServiceItemsList={bundleServiceItemsList}
           existBundleServiceItems={existBundleServiceItems}
           setBundleServiceItemsList={setBundleServiceItemsList}
-          priceMethodKeyValuePair={priceMethodKeyValuePair}
-          priceTypeKeyValuePair={priceTypeKeyValuePair}
-          priceHeadTypeKeyValuePair={priceHeadTypeKeyValuePair}
-          currencyKeyValuePair={currencyKeyValuePair}
-          additionalPriceKeyValuePair={additionalPriceKeyValuePair}
-          discountTypeKeyValuePair={discountTypeKeyValuePair}
-          usageTypeKeyValuePair={usageTypeKeyValuePair}
           customItemsTableList={customItemsTableList}
           setCustomItemsTableList={setCustomItemsTableList}
           handleUpdateSolutionHeader={handleUpdateSolutionHeader}
@@ -878,10 +829,6 @@ const CustomPortfolioItemsList = (props) => {
           handleUpdateSolutionHeader={handleUpdateSolutionHeader}
           setCustomItemsTableList={setCustomItemsTableList}
           setCustomItemReviewTabItemList={setCustomItemReviewTabItemList}
-          priceMethodKeyValuePair={priceMethodKeyValuePair}
-          priceTypeKeyValuePair={priceTypeKeyValuePair}
-          frequencyKeyValuePairs={frequencyKeyValuePairs}
-          unitKeyValuePairs={unitKeyValuePairs}
         />
       )}
 

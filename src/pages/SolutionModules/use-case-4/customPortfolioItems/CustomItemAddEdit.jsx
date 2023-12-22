@@ -8,7 +8,7 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import SearchIcon from "@mui/icons-material/Search";
 import { FormControlLabel, FormGroup, Switch } from "@mui/material";
 
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { useHistory } from "react-router-dom";
 import { Link } from "react-router-dom";
@@ -66,8 +66,10 @@ const itemRequestDefaultObj = {
 
 const CustomItemAddEdit = (props) => {
   const { itemType, isEditable, isPortfolioItem, bundleServiceNeed, handleBundleServiceNeed,
-    frequencyKeyValuePairs = [], unitKeyValuePairs = [], componentDataTabShow, handleGetPortfolioItemsData,
+    componentDataTabShow, handleGetPortfolioItemsData,
     itemId, portfolioId, hideItemAddUpdateModel = null, } = props;
+
+  const { frequencyKeyValuePairs, unitKeyValuePairs, } = useSelector((state) => state.commonAPIReducer);
 
   const dispatch = useDispatch();
   const history = useHistory();

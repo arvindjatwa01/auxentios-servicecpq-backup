@@ -248,6 +248,10 @@ export const brackdownPrices = {
     servicePrice: 0,
 };
 
+export const ITEM_BUNDLE_FLAG_PORTFOLIO = "PORTFOLIO";
+export const ITEM_BUNDLE_FLAG_SERVICE = "SERVICE";
+export const ITEM_BUNDLE_FLAG_BUNDLE_ITEM = "BUNDLE_ITEM";
+
 export const IS_PORTFOLIO = "PORTFOLIO";
 export const IS_SOLUTION = "SOLUTION";
 

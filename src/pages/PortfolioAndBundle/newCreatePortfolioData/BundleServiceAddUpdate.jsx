@@ -6,10 +6,11 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 
-import Select from "react-select";
-import { Modal } from "react-bootstrap";
+import { useSelector } from "react-redux";
 
 import $ from "jquery";
+import Select from "react-select";
+import { Modal } from "react-bootstrap";
 
 import shareIcon from "../../../assets/icons/svg/share.svg";
 import folderaddIcon from "../../../assets/icons/svg/folder-add.svg";
@@ -40,24 +41,25 @@ import {
 const activityOptions = ["None", "Atria", "Callisto"];
 
 const BundleServiceAddUpdate = (props) => {
+  // const {
+  //   show, hideModel, itemFlag, customerSegmentKeyValuePair, machineComponentKeyValuePair, itemVersionKeyValuePairs,
+  //   itemStatusKeyValuePairs, itemId, setItemId, itemEditModeOn, frequencyKeyValuePairs, unitKeyValuePairs, priceHeadTypeKeyValuePair,
+  //   priceTypeKeyValuePair, priceMethodKeyValuePair, currencyKeyValuePair, reviewModeActive = false,
+  // } = props;
+  const { show, hideModel, itemFlag, itemId, setItemId, itemEditModeOn, reviewModeActive = false, } = props;
+
   const {
-    show, hideModel, itemFlag, customerSegmentKeyValuePair, machineComponentKeyValuePair, itemVersionKeyValuePairs,
-    itemStatusKeyValuePairs, itemId, setItemId, itemEditModeOn, frequencyKeyValuePairs, unitKeyValuePairs, priceHeadTypeKeyValuePair,
-    priceTypeKeyValuePair, priceMethodKeyValuePair, currencyKeyValuePair, reviewModeActive = false,
-  } = props;
+    supportLevelKeyValuePair, portfolioStatusKeyValuePair, customerSegmentKeyValuePair, machineComponentKeyValuePair,
+    priceMethodKeyValuePair, priceTypeKeyValuePair, priceHeadTypeKeyValuePair, currencyKeyValuePair,
+    frequencyKeyValuePairs, unitKeyValuePairs, ...newdataResponse
+  } = useSelector((state) => state.commonAPIReducer);
 
   const [activeTab, setActiveTab] = useState("bundleServiceHeader");
   const [itemActive, setItemActive] = useState(false);
 
-  const [bundleServiceItemHeader, setBundleServiceItemHeader] = useState({
-    ...defaultItemHeaderObj,
-  });
-  const [bundleServiceItemBody, setBundleServiceItemBody] = useState({
-    ...defaultItemBodyObj,
-  });
-  const [bundleServicePriceObj, setBundleServicePriceObj] = useState({
-    ...defaultItemPriceObj,
-  });
+  const [bundleServiceItemHeader, setBundleServiceItemHeader] = useState({ ...defaultItemHeaderObj, });
+  const [bundleServiceItemBody, setBundleServiceItemBody] = useState({ ...defaultItemBodyObj, });
+  const [bundleServicePriceObj, setBundleServicePriceObj] = useState({ ...defaultItemPriceObj, });
 
   const [bundleServiceEdit, setBundleServiceEdit] = useState({
     bundleServiceHeader: false,
@@ -138,7 +140,7 @@ const BundleServiceAddUpdate = (props) => {
       );
 
       // set Item Status
-      const _status = itemStatusKeyValuePairs.find(
+      const _status = portfolioStatusKeyValuePair.find(
         (obj) => obj.value === itemHeaderModel.status
       );
 
@@ -787,8 +789,8 @@ const BundleServiceAddUpdate = (props) => {
                 <TabList
                   className="custom-tabs-div"
                   aria-label="lab API tabs example"
-                  // onChange={(e, tabValue) => setActiveTab(tabValue)}
-                  onChange={(e, newValue) => itemEditModeOn && setActiveTab(newValue)}
+                  onChange={(e, tabValue) => setActiveTab(tabValue)}
+                // onChange={(e, newValue) => itemEditModeOn && setActiveTab(newValue)}
                 >
                   <Tab
                     label={`${itemFlag} HEADER`}
@@ -846,7 +848,7 @@ const BundleServiceAddUpdate = (props) => {
                           onChange={(e) =>
                             handleSelectChange(e, "supportLevel")
                           }
-                          options={itemVersionKeyValuePairs}
+                          options={supportLevelKeyValuePair}
                           value={bundleServiceObj.supportLevel}
                           isDisabled={bundleServiceEdit.bundleServiceHeader}
                         />
@@ -855,7 +857,7 @@ const BundleServiceAddUpdate = (props) => {
                         <Select
                           className="customselectbtn"
                           onChange={(e) => handleSelectChange(e, "status")}
-                          options={itemStatusKeyValuePairs}
+                          options={portfolioStatusKeyValuePair}
                           value={bundleServiceObj.status}
                           isOptionDisabled={(option) =>
                             handleStatusOptionsDisable(option)
@@ -1294,30 +1296,17 @@ const BundleServiceAddUpdate = (props) => {
                   itemType="bundleItem"
                   isEditable={bundleServiceEdit.bundleServiceItems}
                   isPortfolioItem={false}
-                  // bundleServiceNeed={bundleServiceNeed}
-                  // handleBundleServiceNeed={() => setBundleServiceNeed(!bundleServiceNeed)}
-                  frequencyKeyValuePairs={frequencyKeyValuePairs}
-                  unitKeyValuePairs={unitKeyValuePairs}
                   itemId={itemId}
-                  handleGetPortfolioItemsData={handleBundleServiceItems}
                   reviewModeActive={reviewModeActive}
+                  handleGetPortfolioItemsData={handleBundleServiceItems}
                 />
               </TabPanel>
               <TabPanel value="bundleServicePrice">
                 <ItemPriceCalculator
-                  priceMethodKeyValuePair={priceMethodKeyValuePair}
-                  priceTypeKeyValuePair={priceTypeKeyValuePair}
-                  priceHeadTypeKeyValuePair={priceHeadTypeKeyValuePair}
-                  unitKeyValuePairs={unitKeyValuePairs}
-                  frequencyKeyValuePairs={frequencyKeyValuePairs}
-                  currencyKeyValuePair={currencyKeyValuePair}
-                  additionalPriceKeyValuePair={additionalPriceKeyValuePair}
-                  discountTypeKeyValuePair={discountTypeKeyValuePair}
-                  usageTypeKeyValuePair={usageTypeKeyValuePair}
                   itemId={itemId}
-                  handleSavePriceChanges={handleSaveItemPriceChanges}
-                  isEditable={bundleServiceEdit.bundleServicePrice}
                   reviewModeActive={reviewModeActive}
+                  isEditable={bundleServiceEdit.bundleServicePrice}
+                  handleSavePriceChanges={handleSaveItemPriceChanges}
                 />
               </TabPanel>
               <TabPanel value="bundleServiceAdministrative">

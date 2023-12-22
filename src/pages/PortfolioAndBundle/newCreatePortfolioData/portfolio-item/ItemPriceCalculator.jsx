@@ -17,19 +17,26 @@ import { callGetApi, callPostApi, callPutApi } from "services/ApiCaller";
 import { PORTFOLIO_ITEM_PRICE_BY_ITEM_ID } from "services/CONSTANTS";
 import { API_SUCCESS } from "services/ResponseCode";
 
-import { defaultItemBodyObj, defaultItemHeaderObj, defaultItemPriceObj, } from "pages/Common/PortfolioAndSolutionConstants";
+import {
+  defaultItemBodyObj, defaultItemHeaderObj, defaultItemPriceObj, additionalPriceKeyValuePair,
+  discountTypeKeyValuePair, usageTypeKeyValuePair, ITEM_BUNDLE_FLAG_SERVICE,
+} from "pages/Common/PortfolioAndSolutionConstants";
 import { getFormatDateTime } from "../utilities/dateUtilities";
 import { errorMessage } from "../utilities/toastMessage";
 import { updateItemPriceSjRkId } from "./SJRKIdUpdate";
 import LoadingProgress from "pages/Repair/components/Loader";
+import { useSelector } from "react-redux";
 
 
 const ItemPriceCalculator = (props) => {
   const {
-    priceMethodKeyValuePair, priceTypeKeyValuePair, priceHeadTypeKeyValuePair, unitKeyValuePairs, frequencyKeyValuePairs,
-    currencyKeyValuePair, additionalPriceKeyValuePair, discountTypeKeyValuePair, usageTypeKeyValuePair,
     itemId, isEditable, handleSavePriceChanges, reviewModeActive = false, priceModalView = false, hidePriceViewModal = null,
   } = props;
+  const {
+    priceMethodKeyValuePair, priceTypeKeyValuePair, priceHeadTypeKeyValuePair, frequencyKeyValuePairs,
+    unitKeyValuePairs, currencyKeyValuePair, ...newdataResponse
+  } = useSelector((state) => state.commonAPIReducer);
+
   const [itemPriceRecordObj, setItemPriceRecordObj] = useState({
     itemPriceDataId: 0,
     priceMethod: "",
@@ -461,6 +468,7 @@ const ItemPriceCalculator = (props) => {
         miscEscalation: priceEscalationValues.miscEscalation || 0,
         serviceEscalation: priceEscalationValues.serviceEscalation || 0,
         flatPrice: itemPriceRequestObj.flatPrice || 0,
+        servicePrice: itemHeaderModelObj?.bundleFlag === ITEM_BUNDLE_FLAG_SERVICE ? itemPriceRequestObj.flatPrice : itemPriceRequestObj.servicePrice || 0,
         discountType:
           itemPriceRequestObj.discountType?.value || "PORTFOLIO_DISCOUNT",
         discountValue: itemPriceRequestObj.discountValue || 0,

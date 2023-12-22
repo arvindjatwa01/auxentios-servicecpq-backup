@@ -19,19 +19,20 @@ import { API_SUCCESS } from "services/ResponseCode";
 
 import {
   defaultCustomItemHeaderModel, defaultCustomItemBodyModel, defaultCustomItemPriceObj,
+  additionalPriceKeyValuePair, discountTypeKeyValuePair, usageTypeKeyValuePair,
 } from "pages/Common/PortfolioAndSolutionConstants";
 import { updateCustomItemPricesSjRkId } from "pages/PortfolioAndBundle/newCreatePortfolioData/portfolio-item/SJRKIdUpdate";
 import { getFormatDateTime } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/dateUtilities";
 import { isEmpty } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/textUtilities";
 import { errorMessage } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/toastMessage";
 import LoadingProgress from "pages/Repair/components/Loader";
+import { useSelector } from "react-redux";
 
 const CustomItemPriceCalculator = (props) => {
-  const {
-    priceMethodKeyValuePair, priceTypeKeyValuePair, priceHeadTypeKeyValuePair, unitKeyValuePairs,
-    frequencyKeyValuePairs, currencyKeyValuePair, additionalPriceKeyValuePair, discountTypeKeyValuePair,
-    usageTypeKeyValuePair, itemId, isEditable, handleSavePriceChanges,
-  } = props;
+  const { itemId, isEditable, handleSavePriceChanges, } = props;
+
+  const { priceMethodKeyValuePair, priceTypeKeyValuePair, priceHeadTypeKeyValuePair, currencyKeyValuePair,
+    frequencyKeyValuePairs, unitKeyValuePairs, } = useSelector((state) => state.commonAPIReducer);
 
   const [itemPriceRecordObj, setItemPriceRecordObj] = useState({
     customItemPriceDataId: 0,

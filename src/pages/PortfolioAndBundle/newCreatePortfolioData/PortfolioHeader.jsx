@@ -37,15 +37,15 @@ const quoteOptions = [{ label: "Solution", value: "SOLUTION" }];
 
 const PortfolioHeader = (props) => {
   const {
-    portfolioSupportLevel,
-    supportLevelKeyValuePair,
-    portfolioStatus,
-    portfolioStatusKeyValuePair,
-    setIsActivePortfolio,
-    handlePortfolioSupportLevel,
-    handlePortfolioStatus,
     portfolioRecordId,
+    handlePortfolioStatus,
+    portfolioStatus,
+    setIsActivePortfolio,
+    portfolioSupportLevel,
+    handlePortfolioSupportLevel,
     history,
+    supportLevelKeyValuePair,
+    portfolioStatusKeyValuePair,
   } = props;
 
   const [openConvertToMenu, setOpenConvertToMenu] = useState(false);
