@@ -40,60 +40,116 @@ import SearchInputBox from "./useCase4Common/SearchInputBox";
 import { SOLUTION_BUILDER_ANALYTICS } from "navigation/CONSTANTS";
 import CustomOptionalServicesModel from "./useCase4Common/CustomOptionalServicesModel";
 import CustomPortfolioItemsList from "./customPortfolioItems/CustomPortfolioItemsList";
-import { isEmpty, isEmptySelect, } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/textUtilities";
-import { errorMessage, successMessage, } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/toastMessage";
+import {
+  isEmpty,
+  isEmptySelect,
+} from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/textUtilities";
+import {
+  errorMessage,
+  successMessage,
+} from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/toastMessage";
 import { getFormatDateTime } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/dateUtilities";
 import CoveragePaginationTable from "pages/PortfolioAndBundle/newCreatePortfolioData/coverage/CoveragePaginationTable";
 import PortfolioCoverageSearch from "pages/PortfolioAndBundle/newCreatePortfolioData/PortfolioCoverageSearch";
 
 import {
-  selectCategoryList, selectGeographicalList, selectProductList, selectResponseTimeList, selectStrategyTaskOption,
-  selectUpdateList, selectUpdateTaskList, taskActions, selectSolutionTaskList, selectSolutionLevelList,
+  selectCategoryList,
+  selectGeographicalList,
+  selectProductList,
+  selectResponseTimeList,
+  selectStrategyTaskOption,
+  selectUpdateList,
+  selectUpdateTaskList,
+  taskActions,
+  selectSolutionTaskList,
+  selectSolutionLevelList,
 } from "pages/PortfolioAndBundle/customerSegment/strategySlice";
 import {
-  SEARCH_FLAG_CUSTOMER_SEARCH, defaultCustomPortfolioObj, defaultSupportLevel, defaultStatus,
-  additionalPriceKeyValuePair, brackdownPrices, priceAgreementItemsKeyValuePair,
-  salesOfficeKeyValuePairs, offerValidityKeyValuePairs,
+  SEARCH_FLAG_CUSTOMER_SEARCH,
+  defaultCustomPortfolioObj,
+  defaultSupportLevel,
+  defaultStatus,
+  additionalPriceKeyValuePair,
+  brackdownPrices,
+  priceAgreementItemsKeyValuePair,
+  salesOfficeKeyValuePairs,
+  offerValidityKeyValuePairs,
 } from "pages/Common/PortfolioAndSolutionConstants";
+import { createCustomCoverage } from "services";
 
 const CustomPortfolioAddUpdate = (props) => {
-  const { location: { state: portfolioRecordData }, ...restProps } = props;
+  const {
+    location: { state: portfolioRecordData },
+    ...restProps
+  } = props;
 
   const {
-    supportLevelKeyValuePair, portfolioStatusKeyValuePair, customerSegmentKeyValuePair, machineComponentKeyValuePair,
-    priceMethodKeyValuePair, priceTypeKeyValuePair, priceHeadTypeKeyValuePair, currencyKeyValuePair, frequencyKeyValuePairs, unitKeyValuePairs, validityKeyValuePair, priceListKeyValuePair,
+    supportLevelKeyValuePair,
+    portfolioStatusKeyValuePair,
+    customerSegmentKeyValuePair,
+    machineComponentKeyValuePair,
+    priceMethodKeyValuePair,
+    priceTypeKeyValuePair,
+    priceHeadTypeKeyValuePair,
+    currencyKeyValuePair,
+    frequencyKeyValuePairs,
+    unitKeyValuePairs,
+    validityKeyValuePair,
+    priceListKeyValuePair,
   } = useSelector((state) => state.commonAPIReducer);
 
   const history = useHistory();
   const dispatch = useDispatch();
 
-  const categoryUsageKeyValuePair = useAppSelector(selectStrategyTaskOption(selectCategoryList));
-  const strategyTaskKeyValuePair = useAppSelector(selectStrategyTaskOption(selectUpdateList));
-  const taskTypeKeyValuePair = useAppSelector(selectStrategyTaskOption(selectUpdateTaskList));
-  const responseTimeKeyValuePair = useAppSelector(selectStrategyTaskOption(selectResponseTimeList));
-  const productHierarchyKeyValuePair = useAppSelector(selectStrategyTaskOption(selectProductList));
-  const geographicKeyValuePair = useAppSelector(selectStrategyTaskOption(selectGeographicalList));
-  const solutionTypeKeyValuePair = useAppSelector(selectStrategyTaskOption(selectSolutionTaskList));
-  const solutionLevelKeyValuePair = useAppSelector(selectStrategyTaskOption(selectSolutionLevelList));
+  const categoryUsageKeyValuePair = useAppSelector(
+    selectStrategyTaskOption(selectCategoryList)
+  );
+  const strategyTaskKeyValuePair = useAppSelector(
+    selectStrategyTaskOption(selectUpdateList)
+  );
+  const taskTypeKeyValuePair = useAppSelector(
+    selectStrategyTaskOption(selectUpdateTaskList)
+  );
+  const responseTimeKeyValuePair = useAppSelector(
+    selectStrategyTaskOption(selectResponseTimeList)
+  );
+  const productHierarchyKeyValuePair = useAppSelector(
+    selectStrategyTaskOption(selectProductList)
+  );
+  const geographicKeyValuePair = useAppSelector(
+    selectStrategyTaskOption(selectGeographicalList)
+  );
+  const solutionTypeKeyValuePair = useAppSelector(
+    selectStrategyTaskOption(selectSolutionTaskList)
+  );
+  const solutionLevelKeyValuePair = useAppSelector(
+    selectStrategyTaskOption(selectSolutionLevelList)
+  );
 
   const [loading, setLoading] = useState(false);
 
-  const [portfolioSupportLevel, setPortfolioSupportLevel] = useState({ ...defaultSupportLevel, });
+  const [portfolioSupportLevel, setPortfolioSupportLevel] = useState({
+    ...defaultSupportLevel,
+  });
   const [portfolioStatus, setPortfolioStatus] = useState({ ...defaultStatus });
   const [isActivePortfolio, setIsActivePortfolio] = useState(false);
   const [customPortfolioRecordId, setCustomPortfolioRecordId] = useState(null);
   const [customItemsTableList, setCustomItemsTableList] = useState([]);
-  const [customItemReviewTabItemList, setCustomItemReviewTabItemList] = useState([]);
+  const [customItemReviewTabItemList, setCustomItemReviewTabItemList] =
+    useState([]);
   const [customItemIds, setCustomItemIds] = useState([]);
 
   // Optional Service
   const [checkedService, setCheckedService] = useState([]);
   const [selectedService, setSelectedService] = useState([]);
   const [inclusionService, setInclusionService] = useState([]);
-  const [showOptionalServicesModal, setShowOptionalServicesModal] = useState(false);
-  const [showSelectedServicesModal, setShowSelectedServicesModal] = useState(false);
+  const [showOptionalServicesModal, setShowOptionalServicesModal] =
+    useState(false);
+  const [showSelectedServicesModal, setShowSelectedServicesModal] =
+    useState(false);
 
-  const [portfolioHeaderActiveTab, setPortfolioHeaderActiveTab] = useState("general");
+  const [portfolioHeaderActiveTab, setPortfolioHeaderActiveTab] =
+    useState("general");
   const [portfolioTabsEditView, setPortfolioTabsEditView] = useState({
     generalTabEdit: false,
     validityTabEdit: false,
@@ -165,14 +221,21 @@ const CustomPortfolioAddUpdate = (props) => {
     priceBreakDownType: "",
     priceBreakDownValue: "",
   });
-  const [priceBrackdownValues, setPriceBrackdownValues] = useState(brackdownPrices);
+  const [priceBrackdownValues, setPriceBrackdownValues] =
+    useState(brackdownPrices);
   const [priceAgreementTableRow, setPriceAgreementTableRow] = useState([]);
   const [priceAgreementIds, setPriceAgreementIds] = useState([]);
 
   const [searchCustomCoverageData, setSearchCustomCoverageData] = useState([]);
-  const [checkedCustomCoverageData, setCheckedCustomCoverageData] = useState([]);
-  const [selectedCustomCoverageData, setSelectedCustomCoverageData] = useState([]);
-  const [customPortfolioCoverageIds, setCustomPortfolioCoverageIds] = useState([]);
+  const [checkedCustomCoverageData, setCheckedCustomCoverageData] = useState(
+    []
+  );
+  const [selectedCustomCoverageData, setSelectedCustomCoverageData] = useState(
+    []
+  );
+  const [customPortfolioCoverageIds, setCustomPortfolioCoverageIds] = useState(
+    []
+  );
 
   const [administrativeTabData, setAdministrativeTabData] = useState({
     preparedBy: null,
@@ -230,7 +293,9 @@ const CustomPortfolioAddUpdate = (props) => {
     const _portfolioSupportLevel = supportLevelKeyValuePair.find(
       (obj) => obj.value === recordData.supportLevel
     );
-    setPortfolioSupportLevel(_portfolioSupportLevel || supportLevelKeyValuePair[0]);
+    setPortfolioSupportLevel(
+      _portfolioSupportLevel || supportLevelKeyValuePair[0]
+    );
 
     // set Portfolio Status
     const _portfolioStatus = portfolioStatusKeyValuePair.find(
@@ -701,22 +766,75 @@ const CustomPortfolioAddUpdate = (props) => {
 
   // Coverage Tab
   // handle Search Coverage Data-table checkbox
-  const handleCheckedCoverageData = () => {
-    let selectedCoverageDataClone = [];
-    checkedCustomCoverageData.map((data, i) => {
-      const exist = selectedCustomCoverageData.some(
-        (item) => item.id === data.id
-      );
-      if (!exist) {
-        selectedCoverageDataClone.push(data);
+  const handleCheckedCoverageData = async () => {
+    try {
+      const _customPortfolioCoverageIds = [...customPortfolioCoverageIds];
+      let selectedCoverageDataClone = [];
+      for (let coverageData of checkedCustomCoverageData) {
+        let customCoverageReqObj = {
+          customCoverageId: 0,
+          serviceId: 0,
+          modelNo: coverageData.model,
+          serialNumber: "",
+          startSerialNumber: "",
+          endSerialNumber: "",
+          serialNumberPrefix: coverageData.prefix,
+          family: coverageData.family,
+          make: coverageData.make,
+          fleet: "",
+          fleetSize: "SMALL",
+          location: "",
+          startDate: "",
+          endDate: "",
+          actions: "",
+        };
+        const customCoverageResult =  await createCustomCoverage(customCoverageReqObj);
+        _customPortfolioCoverageIds.push({
+          coverageId: customCoverageResult.customCoverageId,
+        });
+        selectedCoverageDataClone.push(customCoverageResult);
+        // await callPostApi(
+        //   null,
+        //   CUSTOM_COVERAGE_REST(),
+        //   customCoverageReqObj,
+        //   (response) => {
+        //     if (response.status === API_SUCCESS) {
+        //       const responseData = response.data;
+        //       console.log("response : ====== ", response);
+        //       console.log("responseData : ====== ", responseData);
+        //       _customPortfolioCoverageIds.push({
+        //         coverageId: responseData.customCoverageId,
+        //       });
+        //       selectedCoverageDataClone.push(responseData);
+        //     }
+        //   }
+        // );
       }
-    });
-    setSelectedCustomCoverageData([
-      ...selectedCustomCoverageData,
-      ...selectedCoverageDataClone,
-    ]);
-    setSearchCustomCoverageData([]);
-    setCheckedCustomCoverageData([]);
+      setCustomPortfolioCoverageIds(_customPortfolioCoverageIds);
+      console.log("selectedCoverageDataClone ", selectedCoverageDataClone)
+      setSelectedCustomCoverageData([
+        ...selectedCustomCoverageData,
+        ...selectedCoverageDataClone,
+      ]);
+      setSearchCustomCoverageData([]);
+      setCheckedCustomCoverageData([]);
+      // checkedCustomCoverageData.map((data, i) => {
+      //   const exist = selectedCustomCoverageData.some(
+      //     (item) => item.id === data.id
+      //   );
+      //   if (!exist) {
+      //     selectedCoverageDataClone.push(data);
+      //   }
+      // });
+      // setSelectedCustomCoverageData([
+      //   ...selectedCustomCoverageData,
+      //   ...selectedCoverageDataClone,
+      // ]);
+      // setSearchCustomCoverageData([]);
+      // setCheckedCustomCoverageData([]);
+    } catch (error) {
+      return;
+    }
   };
 
   const createCustomCoverageData = async () => {
@@ -750,11 +868,11 @@ const CustomPortfolioAddUpdate = (props) => {
             } else {
             }
           },
-          (error) => { }
+          (error) => {}
         );
         // console.log(obj)
       }
-    } catch (error) { }
+    } catch (error) {}
   };
 
   // Administrative tab text change
@@ -896,7 +1014,7 @@ const CustomPortfolioAddUpdate = (props) => {
                     placeholder="Customer Name"
                     value={generalTabCustomerData.customerName}
                     disabled
-                  // onChange={handleGeneralTabTextChange}
+                    // onChange={handleGeneralTabTextChange}
                   />
                 </div>
               </div>
@@ -912,7 +1030,7 @@ const CustomPortfolioAddUpdate = (props) => {
                     placeholder="Customer Email"
                     value={generalTabCustomerData.contactEmail}
                     disabled
-                  // onChange={handleGeneralTabTextChange}
+                    // onChange={handleGeneralTabTextChange}
                   />
                 </div>
               </div>
@@ -946,7 +1064,7 @@ const CustomPortfolioAddUpdate = (props) => {
                     placeholder="Customer Group"
                     value={generalTabCustomerData.customerGroup}
                     disabled
-                  // onChange={handleGeneralTabTextChange}
+                    // onChange={handleGeneralTabTextChange}
                   />
                 </div>
               </div>
@@ -1160,10 +1278,11 @@ const CustomPortfolioAddUpdate = (props) => {
                       <DatePicker
                         variant="inline"
                         format="dd/MM/yyyy"
-                        className={`form-controldate text-primary border-radius-10 ${portfolioTabsEditView.validityTabEdit
-                          ? "dateNotEditable"
-                          : ""
-                          }`}
+                        className={`form-controldate text-primary border-radius-10 ${
+                          portfolioTabsEditView.validityTabEdit
+                            ? "dateNotEditable"
+                            : ""
+                        }`}
                         label=""
                         value={validityTabData.fromDate}
                         onChange={(e) =>
@@ -1183,10 +1302,11 @@ const CustomPortfolioAddUpdate = (props) => {
                     <MuiPickersUtilsProvider utils={DateFnsUtils}>
                       <DatePicker
                         variant="inline"
-                        className={`form-controldate text-primary border-radius-10 ${portfolioTabsEditView.validityTabEdit
-                          ? "dateNotEditable"
-                          : ""
-                          }`}
+                        className={`form-controldate text-primary border-radius-10 ${
+                          portfolioTabsEditView.validityTabEdit
+                            ? "dateNotEditable"
+                            : ""
+                        }`}
                         label=""
                         format="dd/MM/yyyy"
                         value={validityTabData.toDate}
@@ -1271,7 +1391,7 @@ const CustomPortfolioAddUpdate = (props) => {
                           isDisabled={true}
                           options={validityKeyValuePair}
                           placeholder="Select "
-                        // isDisabled={portfolioTabsEditView.validityTabEdit}
+                          // isDisabled={portfolioTabsEditView.validityTabEdit}
                         />
                         <div>
                           <input
@@ -1705,13 +1825,13 @@ const CustomPortfolioAddUpdate = (props) => {
                         priceTabData.priceBreakDownType?.value === "PARTS"
                           ? priceBrackdownValues.sparePartsPrice
                           : priceTabData.priceBreakDownType?.value === "LABOR"
-                            ? priceBrackdownValues.labourPrice
-                            : priceTabData.priceBreakDownType?.value ===
-                              "MISCELLANEOUS"
-                              ? priceBrackdownValues.miscPrice
-                              : priceTabData.priceBreakDownType?.value === "SERVICE"
-                                ? priceBrackdownValues.servicePrice
-                                : 0
+                          ? priceBrackdownValues.labourPrice
+                          : priceTabData.priceBreakDownType?.value ===
+                            "MISCELLANEOUS"
+                          ? priceBrackdownValues.miscPrice
+                          : priceTabData.priceBreakDownType?.value === "SERVICE"
+                          ? priceBrackdownValues.servicePrice
+                          : 0
                       }
                       onChange={(e) =>
                         handlePriceTabTextChange(
@@ -2073,6 +2193,7 @@ const CustomPortfolioAddUpdate = (props) => {
                 isSelectAble={true}
                 tableData={searchCustomCoverageData}
                 setCheckedCoverageData={setCheckedCustomCoverageData}
+                useCase4={true}
               />
               <div>
                 {" "}
@@ -2095,17 +2216,18 @@ const CustomPortfolioAddUpdate = (props) => {
                   Included models
                 </h5>
               </label>
-              {/* <CoveragePaginationTable
+              <CoveragePaginationTable
                 className="mt-3"
                 isSelectAble={false}
                 tableData={selectedCustomCoverageData}
-                // handleUpdateCoverageData={handleUpdateCoverageData}
+                // handleFilterUpdateCoverageData={handleFilterUpdateCoverageData}
                 // handlePortfolioCoverageIds={handlePortfolioCoverageIds}
-                // handlePortfolioCoverageIds={(idsData) =>
-                //   setCustomPortfolioCoverageIds(idsData)
-                // }
+                handlePortfolioCoverageIds={(idsData) =>
+                  setCustomPortfolioCoverageIds(idsData)
+                }
                 setTableData={setSelectedCustomCoverageData}
-              /> */}
+                useCase4={true}
+              />
             </>
           )}
         </div>
@@ -2327,9 +2449,9 @@ const CustomPortfolioAddUpdate = (props) => {
                     {isEmpty(administrativeTabData.preparedOn)
                       ? "NA"
                       : getFormatDateTime(
-                        administrativeTabData.preparedBy,
-                        false
-                      )}
+                          administrativeTabData.preparedBy,
+                          false
+                        )}
                   </h6>
                 </div>
               </div>
@@ -2354,9 +2476,9 @@ const CustomPortfolioAddUpdate = (props) => {
                     {isEmpty(administrativeTabData.revisedOn)
                       ? "NA"
                       : getFormatDateTime(
-                        administrativeTabData.revisedOn,
-                        false
-                      )}
+                          administrativeTabData.revisedOn,
+                          false
+                        )}
                   </h6>
                 </div>
               </div>
@@ -2507,8 +2629,9 @@ const CustomPortfolioAddUpdate = (props) => {
           }
         );
       } else {
-        const rUrl = `${PORTFOLIO_PRICE_CREATE()}/${priceTabData.portfolioPriceId
-          }`;
+        const rUrl = `${PORTFOLIO_PRICE_CREATE()}/${
+          priceTabData.portfolioPriceId
+        }`;
         callPutApi(
           null,
           rUrl,
@@ -2717,8 +2840,8 @@ const CustomPortfolioAddUpdate = (props) => {
         portfolioPrice: isEmpty(priceTabData.portfolioPriceId)
           ? null
           : {
-            portfolioPriceId: priceTabData.portfolioPriceId,
-          },
+              portfolioPriceId: priceTabData.portfolioPriceId,
+            },
 
         preparedBy: administrativeTabData.preparedBy,
         approvedBy: administrativeTabData.approvedBy,
@@ -2784,8 +2907,8 @@ const CustomPortfolioAddUpdate = (props) => {
                     portfolioPrice: isEmpty(priceResult.responsePacket)
                       ? null
                       : {
-                        portfolioPriceId: priceResult.responsePacket,
-                      },
+                          portfolioPriceId: priceResult.responsePacket,
+                        },
                   };
                 }
                 handleUpdateCustomPortfolio(requestObjWithPriceId).then(
@@ -2907,8 +3030,8 @@ const CustomPortfolioAddUpdate = (props) => {
       portfolioPrice: isEmpty(priceTabData.portfolioPriceId)
         ? null
         : {
-          portfolioPriceId: priceTabData.portfolioPriceId,
-        },
+            portfolioPriceId: priceTabData.portfolioPriceId,
+          },
 
       preparedBy: administrativeTabData.preparedBy,
       approvedBy: administrativeTabData.approvedBy,

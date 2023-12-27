@@ -454,3 +454,6 @@ export const defaultCustomItemPriceObj = {
     miscRequired: true,
     serviceRequired: false,
 };
+
+export const USE_CASE_3 = "USE_CASE_3";
+export const USE_CASE_4 = "USE_CASE_4";

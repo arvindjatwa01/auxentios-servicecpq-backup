@@ -51,17 +51,27 @@ import InclusionExclusionModal from "../common/InclusionExclusionModal";
 import { API_SUCCESS } from "services/ResponseCode";
 import { errorMessage, successMessage } from "../utilities/toastMessage";
 import {
-  callDeleteApi, callGetApi, callPostApi, callPutApi,
+  callDeleteApi,
+  callGetApi,
+  callPostApi,
+  callPutApi,
 } from "services/ApiCaller";
 import {
-  CREATE_PORTFOLIO_ITEM, LINK_ITEM_TO_PORTFOLIO, PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE,
+  CREATE_PORTFOLIO_ITEM,
+  LINK_ITEM_TO_PORTFOLIO,
+  PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE,
 } from "services/CONSTANTS";
 import { updateItemPriceSjRkId } from "./SJRKIdUpdate";
 import BundleServiceAddUpdate from "../BundleServiceAddUpdate";
 import {
-  additionalPriceKeyValuePair, dataTableCustomStyle, discountTypeKeyValuePair,
-  usageTypeKeyValuePair, defaultItemHeaderObj, defaultItemBodyObj,
+  additionalPriceKeyValuePair,
+  dataTableCustomStyle,
+  discountTypeKeyValuePair,
+  usageTypeKeyValuePair,
+  defaultItemHeaderObj,
+  defaultItemBodyObj,
 } from "pages/Common/PortfolioAndSolutionConstants";
+import PortfolioComponentCodeAddEdit from "../common/PortfolioComponentCodeAddEdit";
 
 const fileTypes = ["JPG", "PNG", "GIF"];
 const menuComponentOptions = ["Create Versions", "Show Errors", "Review"];
@@ -192,14 +202,32 @@ const coverageColumns = [
 
 const PortfolioItemsList = (props) => {
   const {
-    componentDataTabShow, portfolioRecordId, itemsList, setPortfolioItemsList, portfolioItemsIds,
-    setPortfolioItemsIds, showOptionalServicesModal, handleOptionalServiceModal, checkedService,
-    setCheckedService, selectedService, setSelectedService, handleUpdatePortfolio,
+    componentDataTabShow,
+    portfolioRecordId,
+    itemsList,
+    setPortfolioItemsList,
+    portfolioItemsIds,
+    setPortfolioItemsIds,
+    showOptionalServicesModal,
+    handleOptionalServiceModal,
+    checkedService,
+    setCheckedService,
+    selectedService,
+    setSelectedService,
+    handleUpdatePortfolio,
   } = props;
 
   const {
-    supportLevelKeyValuePair, portfolioStatusKeyValuePair, customerSegmentKeyValuePair, machineComponentKeyValuePair,
-    priceMethodKeyValuePair, priceTypeKeyValuePair, priceHeadTypeKeyValuePair, currencyKeyValuePair, frequencyKeyValuePairs, unitKeyValuePairs,
+    supportLevelKeyValuePair,
+    portfolioStatusKeyValuePair,
+    customerSegmentKeyValuePair,
+    machineComponentKeyValuePair,
+    priceMethodKeyValuePair,
+    priceTypeKeyValuePair,
+    priceHeadTypeKeyValuePair,
+    currencyKeyValuePair,
+    frequencyKeyValuePairs,
+    unitKeyValuePairs,
     ...newdataResponse
   } = useSelector((state) => state.commonAPIReducer);
 
@@ -322,8 +350,8 @@ const PortfolioItemsList = (props) => {
         !isEmpty(row?.standardJobId)
           ? row?.standardJobId
           : !isEmpty(row?.repairKitId)
-            ? row?.repairKitId
-            : "NA",
+          ? row?.repairKitId
+          : "NA",
       sortable: false,
       wrap: true,
     },
@@ -627,7 +655,7 @@ const PortfolioItemsList = (props) => {
   };
 
   // handle Item Input Text change
-  const handlePortfolioItemTextChange = (e, keyName = false) => { };
+  const handlePortfolioItemTextChange = (e, keyName = false) => {};
 
   // Search Items
   const handleAddSearchItems = (items) => {
@@ -679,7 +707,9 @@ const PortfolioItemsList = (props) => {
           const { itemId, itemName, itemHeaderModel, itemBodyModel } =
             response.data;
           const _portfolioItemIds = [...itemHeaderModel["portfolioItemIds"]];
-          const removeDuplicatePortfolioItemIds = Array.from([...new Set(_portfolioItemIds)]);
+          const removeDuplicatePortfolioItemIds = Array.from([
+            ...new Set(_portfolioItemIds),
+          ]);
           _portfolioItemIds.push(recorItemId);
           const requestObj = {
             itemId: itemId,
@@ -799,7 +829,7 @@ const PortfolioItemsList = (props) => {
         .join("&");
       linkItemReqUrl = `${linkItemReqUrl}&portfolio_item_id=${recorItemId}&portfolio_id=${portfolioRecordId}`;
 
-      handleLinkItemToPortfolio(linkItemReqUrl).then((res) => { });
+      handleLinkItemToPortfolio(linkItemReqUrl).then((res) => {});
 
       for (let i = 0; i < selectedItemsLength; i++) {
         _portfolioItemsIds.push({
@@ -1102,6 +1132,55 @@ const PortfolioItemsList = (props) => {
     }
   };
 
+  // Save the Component tab data Changes
+  const handleSaveItemComponentCodeData = (
+    isEditable,
+    requestItemObj,
+    requestItemHeaderObj,
+    requestItemBodyObj
+  ) => {
+    if (isEditable) {
+      setActiveTab(4);
+    } else {
+      setItemHeaderModelObj({
+        ...itemHeaderModelObj,
+        componentCode: requestItemHeaderObj.componentCode,
+        componentDescription: requestItemHeaderObj.componentDescription,
+        itemHeaderMake: requestItemHeaderObj.itemHeaderMake,
+        itemHeaderFamily: requestItemHeaderObj.itemHeaderFamily,
+        model: requestItemHeaderObj.model,
+        prefix: requestItemHeaderObj.prefix,
+        serialNumber: requestItemHeaderObj.serialNumber,
+      });
+      const rUrl = `${CREATE_PORTFOLIO_ITEM()}/${recorItemId}`;
+      const requestObj = {
+        itemId: requestItemObj.itemId,
+        itemName: requestItemObj.itemName,
+        itemHeaderModel: {
+          ...requestItemHeaderObj,
+        },
+        itemBodyModel: {
+          ...requestItemBodyObj,
+        },
+      };
+      callPutApi(
+        null,
+        rUrl,
+        requestObj,
+        (response) => {
+          if (response.status === API_SUCCESS) {
+            setActiveTab(4);
+          } else {
+            errorMessage(response?.data.message);
+          }
+        },
+        (error) => {
+          errorMessage(error);
+        }
+      );
+    }
+  };
+
   // Save item price changes
   const handleSaveItemPriceChanges = async (
     requestItemObj,
@@ -1138,8 +1217,8 @@ const PortfolioItemsList = (props) => {
         ...bodyModelObj,
         taskType: [
           itemBodyModelObj?.taskType?.value ||
-          itemBodyModelObj?.taskType ||
-          "EMPTY",
+            itemBodyModelObj?.taskType ||
+            "EMPTY",
         ],
         usageIn:
           itemBodyModelObj?.usageIn?.value || itemBodyModelObj?.usageIn || "",
@@ -1383,7 +1462,7 @@ const PortfolioItemsList = (props) => {
                 <TabList
                   className="custom-tabs-div"
                   onChange={(e, tabIndex) => editItem && setActiveTab(tabIndex)}
-                // onChange={(e, newValue) => { portfolioItemDataEditable && setTabs(newValue) }}
+                  // onChange={(e, tabIndex) => setActiveTab(tabIndex)}
                 >
                   <Tab label="Portfolio Item" value={1} />
                   <Tab
@@ -1405,7 +1484,9 @@ const PortfolioItemsList = (props) => {
                   isPortfolioItem={true}
                   bundleServiceNeed={bundleServiceNeed}
                   componentDataTabShow={componentDataTabShow}
-                  handleBundleServiceNeed={() => setBundleServiceNeed(!bundleServiceNeed)}
+                  handleBundleServiceNeed={() =>
+                    setBundleServiceNeed(!bundleServiceNeed)
+                  }
                   itemId={recorItemId}
                   portfolioId={portfolioRecordId}
                   handleGetPortfolioItemsData={handleGetPortfolioItemsData}
@@ -1494,7 +1575,7 @@ const PortfolioItemsList = (props) => {
                         onClick={handleContinueWithSelectebundleService}
                       >
                         {existBundleServiceItems.length ===
-                          bundleServiceItemsList.length
+                        bundleServiceItemsList.length
                           ? "Next"
                           : "Save & Continue"}
                       </button>
@@ -1503,306 +1584,14 @@ const PortfolioItemsList = (props) => {
                 )}
               </TabPanel>
               <TabPanel value={3}>
-                <>
-                  <div className="ligt-greey-bg p-3 mb-5">
-                    <div>
-                      <span className="mr-3 cursor">
-                        <i
-                          className="fa fa-pencil font-size-12"
-                          aria-hidden="true"
-                        ></i>
-                        <span className="ml-2">Edit</span>
-                      </span>
-                      <span className="mr-3">
-                        <SellOutlinedIcon className=" font-size-16" />
-                        <span className="ml-2">Related repair option</span>
-                      </span>
-                      <span className="mr-3">
-                        <FormatListBulletedOutlinedIcon className=" font-size-16" />
-                        <span className="ml-2">Related Standard Job</span>
-                      </span>
-                      <span className="mr-3">
-                        <AccessAlarmOutlinedIcon className=" font-size-16" />
-                        <span className="ml-2">Related Kit</span>
-                      </span>
-                    </div>
-                  </div>
-                  <div className="row input-fields">
-                    <div className="col-md-6 col-sm-6">
-                      <div className="form-group">
-                        <label className="text-light-dark font-size-14 font-weight-500">
-                          {" "}
-                          Component Code
-                        </label>
-                        <div className="customselectsearch">
-                          <input
-                            className="form-control border-radius-10 text-primary"
-                            type="text"
-                            name="componentCode"
-                            autoComplete="off"
-                          // value={componentData.componentCode}
-                          // onChange={handleComponentChange}
-                          />
-                          {/* {<ul className={`list-group customselectsearch-list scrollbar scrolbarCode style`}>
-                                                    {componentData.codeSuggestions.map(
-                                                        (currentItem, j) => (
-                                                            <li className="list-group-item" key={j} onClick={(e) => handleComponentCodeSuggetionsClick(e, j)}
-                                                            >
-                                                                {currentItem.componentCode}
-                                                            </li>
-                                                        )
-                                                    )}
-                                                </ul>} */}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div className="form-group">
-                        <label className="text-light-dark font-size-14 font-weight-500">
-                          Component Description
-                        </label>
-                        <input
-                          className="form-control border-radius-10 text-primary"
-                          type="text"
-                          name="description"
-                          placeholder="Optional"
-                          disabled
-                        // value={componentData.description}
-                        // onChange={handleComponentChange}
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div className="form-group">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          Make
-                        </label>
-                        <input
-                          className="form-control border-radius-10 text-primary"
-                          type="text"
-                          placeholder="Auto Filled"
-                          id="make-id"
-                          name="make"
-                          disabled
-                        // value={componentData.make}
-                        // onChange={handleMachineDataChange}
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div className="form-group">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          MODEL
-                        </label>
-                        <SearchBox
-                        // value={componentData.model}
-                        // onChange={(e) =>
-                        //     handleMachineSearch(
-                        //         "model",
-                        //         e.target.value
-                        //     )
-                        // }
-                        // type="model"
-                        // result={searchModelResults}
-                        // onSelect={handleModelSelect}
-                        // noOptions={noOptionsModel}
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div className="form-group">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          SERIAL #
-                        </label>
-                        <SearchBox
-                        // value={componentData.serialNo}
-                        // onChange={(e) =>
-                        //     handleMachineSearch(
-                        //         "serialNo",
-                        //         e.target.value
-                        //     )
-                        // }
-                        // type="equipmentNumber"
-                        // result={searchSerialResults}
-                        // onSelect={handleModelSelect}
-                        // noOptions={noOptionsSerial}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="row mt-3 input-fields">
-                    <div className="col-md-6 col-sm-6">
-                      <div className="form-group">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          {" "}
-                          PRICE METHOD
-                        </label>
-                        <Select
-                          // options={priceMethodKeyValue}
-                          className="text-primary"
-                          // value={priceCalculator.priceMethod}
-                          // name="priceMethod"
-                          // onChange={(e) =>
-                          //     setPriceCalculator({ ...priceCalculator, priceMethod: e })
-                          // }
-                          placeholder="placeholder (Optional)"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div className="form-group date-box">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          ADDITIONAL
-                        </label>
-                        <div className=" d-flex form-control-date">
-                          <div className="">
-                            <Select
-                              // isClearable={true}
-                              // className="text-primary"
-                              // value={priceCalculator.priceAdditionalSelect}
-                              // name="priceAdditionalSelect"
-                              // onChange={(e) =>
-                              //     setPriceCalculator({
-                              //         ...priceCalculator,
-                              //         priceAdditionalSelect: e,
-                              //     })
-                              // }
-                              // options={additionalPriceHeadTypeKeyValue}
-                              placeholder="Select"
-                            />
-                          </div>
-                          <input
-                            type="text"
-                            className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
-                          // placeholder="10%"
-                          // defaultValue={props?.priceCalculator?.priceAdditionalInput}
-                          // value={priceCalculator.priceAdditionalInput}
-                          // name="priceAdditionalInput"
-                          // onChange={(e) =>
-                          //     setPriceCalculator({
-                          //         ...priceCalculator,
-                          //         priceAdditionalInput: e.target.value,
-                          //     })
-                          // }
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div className="form-group date-box">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          {" "}
-                          PRICE ESCALATION{" "}
-                        </label>
-                        <div className=" d-flex align-items-center form-control-date">
-                          <Select
-                            className="select-input text-primary"
-                            id="priceEscalationSelect"
-                          // options={priceHeadTypeKeyValue}
-                          // placeholder="placeholder "
-                          // value={priceCalculator.escalationPriceOptionsValue1}
-                          // onChange={(e) =>
-                          //     handleEscalationPriceValue(e)
-                          // }
-                          />
-                          <input
-                            type="text"
-                            className="form-control rounded-top-left-0 rounded-bottom-left-0"
-                            placeholder="20%"
-                            id="priceEscalationInput"
-                          // value={priceCalculator.escalationPriceInputValue}
-                          // onChange={(e) =>
-                          //     setPriceCalculator({
-                          //         ...priceCalculator,
-                          //         escalationPriceInputValue: e.target.value,
-                          //     })
-                          // }
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div className="form-group">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          {" "}
-                          CALCULATED PRICE
-                        </label>
-                        <input
-                          className="form-control border-radius-10 text-primary"
-                          type="text"
-                          name="calculatedPrice"
-                          placeholder="$100"
-                          disabled
-                        // value={priceCalculator.calculatedPrice}
-                        // onChange={(e) =>
-                        //     setPriceCalculator({
-                        //         ...priceCalculator,
-                        //         calculatedPrice: e.target.value,
-                        //     })
-                        // }
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div className="form-group">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          FLAT PRICE / ADJUSTED PRICE
-                        </label>
-                        <input
-                          className="form-control border-radius-10 text-primary"
-                          type="text"
-                          name="flatPrice"
-                          placeholder="0"
-                        // value={priceCalculator.flatPrice}
-                        // onChange={(e) =>
-                        //     setPriceCalculator({
-                        //         ...priceCalculator,
-                        //         flatPrice: e.target.value,
-                        //     })
-                        // }
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div className="form-group date-box">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          DISCOUNT TYPE
-                        </label>
-                        <div className=" d-flex form-control-date">
-                          <div className="">
-                            <Select
-                              className="text-primary"
-                              name="discountTypeSelect"
-                              placeholder="Select"
-                            // value={priceCalculator.discountTypeSelect}
-                            // onChange={(e) =>
-                            //     setPriceCalculator({
-                            //         ...priceCalculator,
-                            //         discountTypeSelect: e,
-                            //     })
-                            // }
-                            // isClearable={true}
-                            // options={discountTypeOptions}
-                            />
-                          </div>
-                          <input
-                            className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
-                            type="text"
-                            name="discountTypeInput"
-                            placeholder="10%"
-                          // value={priceCalculator.discountTypeInput}
-                          // onChange={(e) =>
-                          //     setPriceCalculator({
-                          //         ...priceCalculator,
-                          //         discountTypeInput: e.target.value,
-                          //     })
-                          // }
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </>
+                <PortfolioComponentCodeAddEdit
+                  itemType="portfolioItem"
+                  isPortfolioItem={true}
+                  portfolioId={portfolioRecordId}
+                  itemId={recorItemId}
+                  isEditable={editItem}
+                  handelSaveComponentCodeData={handleSaveItemComponentCodeData}
+                />
               </TabPanel>
               <TabPanel value={4}>
                 <ItemPriceCalculator
@@ -2174,8 +1963,8 @@ const PortfolioItemsList = (props) => {
             {isEmpty(row?.standardJobId) && isEmpty(row?.repairKitId)
               ? "NA"
               : isEmpty(row?.standardJobId)
-                ? row?.repairKitId
-                : row?.standardJobId}
+              ? row?.repairKitId
+              : row?.standardJobId}
           </div>
         </div>
       ),
@@ -2480,7 +2269,7 @@ const PortfolioItemsList = (props) => {
             <div
               className="col-md-6 col-sm-6"
               onClick={handleAddItem}
-            // onClick={handleNewBundleItem}
+              // onClick={handleNewBundleItem}
             >
               <Link className="add-new-recod cursor">
                 <div>

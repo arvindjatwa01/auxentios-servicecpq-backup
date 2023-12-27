@@ -15,15 +15,25 @@ import { getValidateCoverage, machineSearch } from "services/searchServices";
 import { getApiCall } from "services/searchQueryService";
 import { GET_SEARCH_COVERAGE } from "services/CONSTANTS";
 
-import { createCoverage, updateCoverage, } from "../../../../services/index";
+import {
+  createCoverage,
+  createCustomCoverage,
+  updateCoverage,
+} from "../../../../services/index";
 
 import { successMessage } from "../utilities/toastMessage";
 import { dataTableCustomStyle } from "pages/Common/PortfolioAndSolutionConstants";
 
 const CoveragePaginationTable = (props) => {
   const {
-    tableData, isSelectAble, setCheckedCoverageData, className,
-    handleUpdateCoverageData, handlePortfolioCoverageIds, setTableData,
+    tableData,
+    isSelectAble,
+    setCheckedCoverageData,
+    className,
+    handleFilterUpdateCoverageData,
+    handlePortfolioCoverageIds,
+    setTableData,
+    useCase4 = false,
   } = props;
   const [showCoverageEditModal, setShowCoverageEditModal] = useState(false);
   const [searchedModalList, setSearchedModalList] = useState([]);
@@ -109,13 +119,13 @@ const CoveragePaginationTable = (props) => {
     }
 
     let obj = {
-      coverageId: row.id,
+      coverageId: row.coverageId,
       make: row.make,
       family: row.family,
-      modelNo: row.model,
-      serialNoPrefix: isEmpty(row.prefix)
+      modelNo: row.modelNo,
+      serialNoPrefix: isEmpty(row.serialNumberPrefix)
         ? ""
-        : { label: row.prefix, value: row.prefix },
+        : { label: row.serialNumberPrefix, value: row.serialNumberPrefix },
       startSerialNo: row.startSerialNo,
       endSerialNo: row.endSerialNo,
       fleet: row.fleet,
@@ -123,9 +133,9 @@ const CoveragePaginationTable = (props) => {
       serialNo: editSerialNo,
     };
 
-    let prefixKeyValuePair = isEmpty(row.prefix)
+    let prefixKeyValuePair = isEmpty(row.serialNumberPrefix)
       ? []
-      : [{ label: row.prefix, value: row.prefix }];
+      : [{ label: row.serialNumberPrefix, value: row.serialNumberPrefix }];
     setModalPrefixKeyValuePair([...prefixKeyValuePair]);
     setEditCoverageData(obj);
     setSelectedCoverageIndex(i);
@@ -134,10 +144,13 @@ const CoveragePaginationTable = (props) => {
 
   // delete selected coverage
   const handleDeleteCoverage = (row) => {
-    const updatedDate = tableData.filter((obj) => {
-      if (obj.id !== row.id) return obj;
-    });
-    handleUpdateCoverageData(updatedDate, true);
+    if (!useCase4) {
+      const updatedDate = tableData.filter((obj) => {
+        if (obj.coverageId !== row.coverageId) return obj;
+      });
+      handleFilterUpdateCoverageData(updatedDate, true);
+    } else {
+    }
   };
 
   // Show included serial no list modal
@@ -151,7 +164,7 @@ const CoveragePaginationTable = (props) => {
         includedSerialNoModalData: [
           {
             family: row.family,
-            model: row.model,
+            model: row.modelNo,
             noSeriese: "",
             location: "",
             startDate: new Date(),
@@ -161,7 +174,7 @@ const CoveragePaginationTable = (props) => {
         ],
       };
       _tableData[i] = tempObj;
-      handleUpdateCoverageData(_tableData);
+      handleFilterUpdateCoverageData(_tableData);
     }
     var searchQueryMachine = row.model ? "model~" + row.model : "";
     var serialArr = [];
@@ -221,7 +234,7 @@ const CoveragePaginationTable = (props) => {
             family: coverageRes.data.family,
           };
           _tableData[selectedCoverageIndex] = tempObj;
-          handleUpdateCoverageData(_tableData);
+          handleFilterUpdateCoverageData(_tableData);
           handleCoverageEditModal();
         }
       }
@@ -245,7 +258,7 @@ const CoveragePaginationTable = (props) => {
         ...obj.includedSerialNoModalData,
         {
           family: obj.family,
-          model: obj.model,
+          model: obj.modelNo,
           noSeriese: "",
           location: "",
           startDate: new Date(),
@@ -255,7 +268,7 @@ const CoveragePaginationTable = (props) => {
       ],
     };
     _tableData[selectedCoverageIndex] = obj;
-    handleUpdateCoverageData(_tableData);
+    handleFilterUpdateCoverageData(_tableData);
   };
 
   // text change included serial no row fields
@@ -281,32 +294,59 @@ const CoveragePaginationTable = (props) => {
           i++
         ) {
           if (i !== 0) {
-            let reqObj = {
-              coverageId: 0,
-              serviceId: 0,
-              modelNo: selectedRowObj.model,
-              // serialNumber: selectedRowObj.includedSerialNoModalData[i].serialNumber?.value ? selectedRowObj.includedSerialNoModalData[i].serialNumber?.value : "",
-              serialNumber: selectedRowObj.includedSerialNoModalData[i]
-                .serialNumber
-                ? selectedRowObj.includedSerialNoModalData[i].serialNumber
-                : "",
-              startSerialNumber: "",
-              endSerialNumber: "",
-              serialNumberPrefix: "",
-              family: selectedRowObj.family,
-              make: selectedRowObj.make,
-              fleet: "",
-              fleetSize: "SMALL",
-              location: "",
-              // startDate: selectedRowObj.associatedIncludedModelData[i].startDate,
-              // endDate: selectedRowObj.associatedIncludedModelData[i].endDate,
-              startDate: "",
-              endDate: "",
-              actions: "",
-              createdAt: "",
-            };
-            const cvgRes = await createCoverage(reqObj);
-            cvgIds.push({ coverageId: cvgRes.coverageId });
+            if (!useCase4) {
+              let reqObj = {
+                coverageId: 0,
+                serviceId: 0,
+                modelNo: selectedRowObj.model,
+                serialNumber: selectedRowObj.includedSerialNoModalData[i]
+                  .serialNumber
+                  ? selectedRowObj.includedSerialNoModalData[i].serialNumber
+                  : "",
+                startSerialNumber: "",
+                endSerialNumber: "",
+                serialNumberPrefix: "",
+                family: selectedRowObj.family,
+                make: selectedRowObj.make,
+                fleet: "",
+                fleetSize: "SMALL",
+                location: "",
+                // startDate: selectedRowObj.associatedIncludedModelData[i].startDate,
+                // endDate: selectedRowObj.associatedIncludedModelData[i].endDate,
+                startDate: "",
+                endDate: "",
+                actions: "",
+                createdAt: "",
+              };
+              const cvgRes = await createCoverage(reqObj);
+              cvgIds.push({ coverageId: cvgRes.coverageId });
+            } else {
+              let reqObj = {
+                customCoverageId: 0,
+                serviceId: 0,
+                modelNo: selectedRowObj.model,
+                serialNumber: selectedRowObj.includedSerialNoModalData[i]
+                  .serialNumber
+                  ? selectedRowObj.includedSerialNoModalData[i].serialNumber
+                  : "",
+                startSerialNumber: "",
+                endSerialNumber: "",
+                serialNumberPrefix: "",
+                family: selectedRowObj.family,
+                make: selectedRowObj.make,
+                fleet: "",
+                fleetSize: "SMALL",
+                location: "",
+                // startDate: selectedRowObj.associatedIncludedModelData[i].startDate,
+                // endDate: selectedRowObj.associatedIncludedModelData[i].endDate,
+                startDate: "",
+                endDate: "",
+                actions: "",
+                createdAt: "",
+              };
+              const cvgRes = await createCustomCoverage(reqObj);
+              cvgIds.push({ coverageId: cvgRes.customCoverageId });
+            }
           }
         }
         handlePortfolioCoverageIds(cvgIds);
@@ -571,7 +611,7 @@ const CoveragePaginationTable = (props) => {
             columns={includedSerialNoColumns}
             data={tableData[selectedCoverageIndex]?.includedSerialNoModalData}
             customStyles={dataTableCustomStyle}
-          // pagination
+            // pagination
           />
         </Modal.Body>
         <Modal.Footer>
@@ -608,8 +648,8 @@ const CoveragePaginationTable = (props) => {
                     placeholder="Search by Customer Id"
                     autoComplete="off"
                     onChange={(e) => handleSerialNoSearch(e)}
-                  // id={"inputSearch-" + i}
-                  // value={(props.compoFlag === "bundleSearch") ? obj.inputSearch === "" ? "" : obj.inputSearch.split("#")[1] : obj.inputSearch}
+                    // id={"inputSearch-" + i}
+                    // value={(props.compoFlag === "bundleSearch") ? obj.inputSearch === "" ? "" : obj.inputSearch.split("#")[1] : obj.inputSearch}
                   />
                 </div>
               </div>
@@ -639,17 +679,17 @@ const CoveragePaginationTable = (props) => {
     },
     {
       name: <div>Model</div>,
-      selector: (row) => row.model,
+      selector: (row) => (isSelectAble ? row.model : row.modelNo),
       wrap: true,
       sortable: true,
-      format: (row) => row.model,
+      format: (row) => (isSelectAble ? row.model : row.modelNo),
     },
     {
       name: <div>Prefix</div>,
-      selector: (row) => row.prefix,
+      selector: (row) => (isSelectAble ? row.prefix : row.serialNumberPrefix),
       wrap: true,
       sortable: true,
-      format: (row) => row.prefix,
+      format: (row) => (isSelectAble ? row.prefix : row.serialNumberPrefix),
     },
     {
       name: <div>Action</div>,
@@ -772,7 +812,7 @@ const CoveragePaginationTable = (props) => {
             onChange={(e) => handleSelectIncludedModelSerialNo(e, i, row)}
             value={row.serialNumber}
             options={includedCoverageSerialOptions}
-          // isOptionDisabled={(e) => handleDisableSerialNoChangesOptions(e,i,row)}
+            // isOptionDisabled={(e) => handleDisableSerialNoChangesOptions(e,i,row)}
           />
         </div>
       ),
@@ -824,9 +864,7 @@ const CoveragePaginationTable = (props) => {
               className="form-controldate border-radius-10"
               label=""
               value={row.endDate}
-              onChange={(e) =>
-                handleIncludeSerialNoTextChange(e, i, "endDate")
-              }
+              onChange={(e) => handleIncludeSerialNoTextChange(e, i, "endDate")}
             />
           </MuiPickersUtilsProvider>
         </div>

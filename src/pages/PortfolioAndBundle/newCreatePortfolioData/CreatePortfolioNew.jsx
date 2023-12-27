@@ -26,7 +26,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { useAppSelector } from "../../../app/hooks";
 
 import {
-  CREATE_PORTFOLIO_ITEM, PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE, PORTFOLIO_URL,
+  CREATE_PORTFOLIO_ITEM,
+  PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE,
+  PORTFOLIO_URL,
 } from "services/CONSTANTS";
 import { callGetApi, callPostApi, callPutApi } from "services/ApiCaller";
 import { API_SUCCESS } from "services/ResponseCode";
@@ -37,16 +39,32 @@ import { FONT_STYLE_SELECT } from "../../Repair/CONSTANTS";
 import { isEmpty, isEmptySelect } from "./utilities/textUtilities";
 import { errorMessage, successMessage } from "./utilities/toastMessage";
 import {
-  createCoverage, createPortfolio, portfolioPriceAgreementCreation, portfolioPriceCreation,
-  updatePortfolio, updatePortfolioPrice,
+  createCoverage,
+  updateCoverage,
+  createPortfolio,
+  portfolioPriceAgreementCreation,
+  portfolioPriceCreation,
+  updatePortfolio,
+  updatePortfolioPrice,
 } from "../../../services/index";
 import {
-  selectCategoryList, selectGeographicalList, selectProductList, selectResponseTimeList,
-  selectStrategyTaskOption, selectUpdateList, selectUpdateTaskList, taskActions,
+  selectCategoryList,
+  selectGeographicalList,
+  selectProductList,
+  selectResponseTimeList,
+  selectStrategyTaskOption,
+  selectUpdateList,
+  selectUpdateTaskList,
+  taskActions,
 } from "../customerSegment/strategySlice";
 import {
-  offerValidityKeyValuePairs, salesOfficeKeyValuePairs, additionalPriceKeyValuePair, brackdownPrices,
-  priceAgreementItemsKeyValuePair, defaultSupportLevel, defaultStatus,
+  offerValidityKeyValuePairs,
+  salesOfficeKeyValuePairs,
+  additionalPriceKeyValuePair,
+  brackdownPrices,
+  priceAgreementItemsKeyValuePair,
+  defaultSupportLevel,
+  defaultStatus,
 } from "pages/Common/PortfolioAndSolutionConstants";
 import { sparePartSearch } from "services/searchServices";
 
@@ -73,9 +91,19 @@ export const CreatePortfolio = (props) => {
   const dispatch = useDispatch();
 
   const {
-    supportLevelKeyValuePair, portfolioStatusKeyValuePair, customerSegmentKeyValuePair, machineComponentKeyValuePair,
-    validityKeyValuePair, priceListKeyValuePair, priceMethodKeyValuePair, priceTypeKeyValuePair,
-    priceHeadTypeKeyValuePair, currencyKeyValuePair, frequencyKeyValuePairs, unitKeyValuePairs, ...newdataResponse
+    supportLevelKeyValuePair,
+    portfolioStatusKeyValuePair,
+    customerSegmentKeyValuePair,
+    machineComponentKeyValuePair,
+    validityKeyValuePair,
+    priceListKeyValuePair,
+    priceMethodKeyValuePair,
+    priceTypeKeyValuePair,
+    priceHeadTypeKeyValuePair,
+    currencyKeyValuePair,
+    frequencyKeyValuePairs,
+    unitKeyValuePairs,
+    ...newdataResponse
   } = useSelector((state) => state.commonAPIReducer);
 
   const categoryUsageKeyValuePair = useAppSelector(
@@ -96,7 +124,6 @@ export const CreatePortfolio = (props) => {
   const geographicKeyValuePair = useAppSelector(
     selectStrategyTaskOption(selectGeographicalList)
   );
-
 
   const [portfolioSupportLevel, setPortfolioSupportLevel] = useState({
     ...defaultSupportLevel,
@@ -398,6 +425,7 @@ export const CreatePortfolio = (props) => {
         priceEscaltonValue: "",
         calculatedPrice: recordData.portfolioPrice?.calculatedPrice,
         priceBreakDownType: priceHeadTypeKeyValuePair[0],
+        // priceBreakDownType: "",
         priceBreakDownValue: "",
       });
 
@@ -543,8 +571,8 @@ export const CreatePortfolio = (props) => {
         portfolioPrice: isEmpty(priceTabData.portfolioPriceId)
           ? null
           : {
-            portfolioPriceId: priceTabData.portfolioPriceId,
-          },
+              portfolioPriceId: priceTabData.portfolioPriceId,
+            },
 
         preparedBy: administrativeTabData.preparedBy,
         approvedBy: administrativeTabData.approvedBy,
@@ -576,23 +604,26 @@ export const CreatePortfolio = (props) => {
         template: true,
         visibleInCommerce: true,
       };
-      handleUpdatePortfolio(requestObj)
-        .then((response) => {
-          if (response) {
-            if (e.value === "ACTIVE") {
-              setPortfolioTabsEditView({
-                generalTabEdit: true,
-                validityTabEdit: true,
-                strategyTabEdit: true,
-                priceTabEdit: true,
-                priceAgreementTabEdit: true,
-                coverageTabEdit: true,
-                administrativeTabEdit: true,
-              });
-            }
-            successMessage(`${capitalizeFirstLetter(generalTabData.headerType?.value)} ${generalTabData.name}  Status updated successfully`);
+      handleUpdatePortfolio(requestObj).then((response) => {
+        if (response) {
+          if (e.value === "ACTIVE") {
+            setPortfolioTabsEditView({
+              generalTabEdit: true,
+              validityTabEdit: true,
+              strategyTabEdit: true,
+              priceTabEdit: true,
+              priceAgreementTabEdit: true,
+              coverageTabEdit: true,
+              administrativeTabEdit: true,
+            });
           }
-        })
+          successMessage(
+            `${capitalizeFirstLetter(generalTabData.headerType?.value)} ${
+              generalTabData.name
+            }  Status updated successfully`
+          );
+        }
+      });
     }
   };
 
@@ -600,7 +631,9 @@ export const CreatePortfolio = (props) => {
   const handlePortfolioHeaderTabDataViews = () => {
     try {
       if (portfolioStatus.value === "ACTIVE") {
-        errorMessage("The portfolio data cannot be changed on active status, change to revise status to edit");
+        errorMessage(
+          "The portfolio data cannot be changed on active status, change to revise status to edit"
+        );
       } else {
         if (
           portfolioHeaderActiveTab === "general" &&
@@ -820,24 +853,55 @@ export const CreatePortfolio = (props) => {
   };
 
   // handle Search Coverage Data-table checkbox
-  const handleCheckedCoverageData = () => {
+  const handleCheckedCoverageData = async () => {
+    let _portfolioCoverageIds = [...portfolioCoverageIds];
     let selectedCoverageDataClone = [];
-    checkedCoverageData.map((data, i) => {
-      const exist = selectedCoverageData.some((item) => item.id === data.id);
-      if (!exist) {
-        selectedCoverageDataClone.push(data);
-      }
-    });
+    for (let coverageData of checkedCoverageData) {
+      const coverageReqObj = {
+        coverageId: 0,
+        serviceId: 0,
+        modelNo: coverageData.model,
+        serialNumber: "",
+        startSerialNumber: "",
+        endSerialNumber: "",
+        serialNumberPrefix: coverageData.prefix,
+        family: coverageData.family,
+        make: coverageData.make,
+        fleet: "",
+        fleetSize: "SMALL",
+        location: "",
+        startDate: "",
+        endDate: "",
+        actions: "",
+      };
+      const coverageCreate = await createCoverage(coverageReqObj);
+      _portfolioCoverageIds.push({ coverageId: coverageCreate.coverageId });
+      selectedCoverageDataClone.push(coverageCreate);
+    }
+    setPortfolioCoverageIds(_portfolioCoverageIds);
     setSelectedCoverageData([
       ...selectedCoverageData,
       ...selectedCoverageDataClone,
     ]);
     setSearchCoverageData([]);
     setCheckedCoverageData([]);
+    // let selectedCoverageDataClone = [];
+    // checkedCoverageData.map((data, i) => {
+    //   const exist = selectedCoverageData.some((item) => item.id === data.id);
+    //   if (!exist) {
+    //     selectedCoverageDataClone.push(data);
+    //   }
+    // });
+    // setSelectedCoverageData([
+    //   ...selectedCoverageData,
+    //   ...selectedCoverageDataClone,
+    // ]);
+    // setSearchCoverageData([]);
+    // setCheckedCoverageData([]);
   };
 
-  // ****TODO
-  const handleUpdateCoverageData = (updatedData, isFiltered = false) => {
+  // Filter Update/Chnaged Coverage data
+  const handleFilterUpdateCoverageData = (updatedData, isFiltered = false) => {
     setSelectedCoverageData(updatedData);
     if (isFiltered) {
       setCheckedCoverageData(updatedData);
@@ -1072,10 +1136,11 @@ export const CreatePortfolio = (props) => {
                       <DatePicker
                         variant="inline"
                         format="dd/MM/yyyy"
-                        className={`form-controldate text-primary border-radius-10 ${portfolioTabsEditView.validityTabEdit
-                          ? "dateNotEditable"
-                          : ""
-                          }`}
+                        className={`form-controldate text-primary border-radius-10 ${
+                          portfolioTabsEditView.validityTabEdit
+                            ? "dateNotEditable"
+                            : ""
+                        }`}
                         label=""
                         value={validityTabData.fromDate}
                         onChange={(e) =>
@@ -1095,10 +1160,11 @@ export const CreatePortfolio = (props) => {
                     <MuiPickersUtilsProvider utils={DateFnsUtils}>
                       <DatePicker
                         variant="inline"
-                        className={`form-controldate text-primary border-radius-10 ${portfolioTabsEditView.validityTabEdit
-                          ? "dateNotEditable"
-                          : ""
-                          }`}
+                        className={`form-controldate text-primary border-radius-10 ${
+                          portfolioTabsEditView.validityTabEdit
+                            ? "dateNotEditable"
+                            : ""
+                        }`}
                         label=""
                         format="dd/MM/yyyy"
                         value={validityTabData.toDate}
@@ -1183,7 +1249,7 @@ export const CreatePortfolio = (props) => {
                           isDisabled={true}
                           options={validityKeyValuePair}
                           placeholder="Select "
-                        // isDisabled={portfolioTabsEditView.validityTabEdit}
+                          // isDisabled={portfolioTabsEditView.validityTabEdit}
                         />
                         <div>
                           <input
@@ -1685,26 +1751,26 @@ export const CreatePortfolio = (props) => {
                         priceTabData.priceBreakDownType?.value === "PARTS"
                           ? "sparePartsPrice"
                           : priceTabData.priceBreakDownType?.value === "LABOR"
-                            ? "labourPrice"
-                            : priceTabData.priceBreakDownType?.value ===
-                              "MISCELLANEOUS"
-                              ? "miscPrice"
-                              : priceTabData.priceBreakDownType?.value === "SERVICE"
-                                ? "servicePrice"
-                                : ""
+                          ? "labourPrice"
+                          : priceTabData.priceBreakDownType?.value ===
+                            "MISCELLANEOUS"
+                          ? "miscPrice"
+                          : priceTabData.priceBreakDownType?.value === "SERVICE"
+                          ? "servicePrice"
+                          : ""
                       }
                       // value={priceTabData.priceBreakDownValue}
                       value={
                         priceTabData.priceBreakDownType?.value === "PARTS"
                           ? priceBrackdownValues.sparePartsPrice
                           : priceTabData.priceBreakDownType?.value === "LABOR"
-                            ? priceBrackdownValues.labourPrice
-                            : priceTabData.priceBreakDownType?.value ===
-                              "MISCELLANEOUS"
-                              ? priceBrackdownValues.miscPrice
-                              : priceTabData.priceBreakDownType?.value === "SERVICE"
-                                ? priceBrackdownValues.servicePrice
-                                : 0
+                          ? priceBrackdownValues.labourPrice
+                          : priceTabData.priceBreakDownType?.value ===
+                            "MISCELLANEOUS"
+                          ? priceBrackdownValues.miscPrice
+                          : priceTabData.priceBreakDownType?.value === "SERVICE"
+                          ? priceBrackdownValues.servicePrice
+                          : 0
                       }
                       onChange={(e) =>
                         handlePriceTabTextChange(
@@ -1808,10 +1874,13 @@ export const CreatePortfolio = (props) => {
                   <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                     {isEmptySelect(priceTabData.additionalPriceType?.value)
                       ? "NA"
-                      : priceTabData?.additionalPriceType?.label}
-                    {isEmpty(priceTabData.additionalPriceValue)
+                      : priceTabData?.additionalPriceType?.label +
+                          " " +
+                          !isEmpty(priceTabData.additionalPriceValue) &&
+                        parseInt(priceTabData.additionalPriceValue)}
+                    {/* {isEmptySelect(priceTabData.additionalPriceType?.value) && isEmpty(priceTabData.additionalPriceValue)
                       ? "NA"
-                      : parseInt(priceTabData.additionalPriceValue)}
+                      : parseInt(priceTabData.additionalPriceValue)} */}
                   </h6>
                 </div>
               </div>
@@ -1823,10 +1892,13 @@ export const CreatePortfolio = (props) => {
                   <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                     {isEmptySelect(priceTabData.priceEscalatonType?.value)
                       ? "NA"
-                      : priceTabData?.priceEscalatonType?.label}
-                    {isEmpty(priceTabData.priceEscaltonValue)
+                      : priceTabData?.priceEscalatonType?.label +
+                          " " +
+                          !isEmpty(priceTabData.priceEscaltonValue) &&
+                        parseInt(priceTabData.priceEscaltonValue)}
+                    {/* {isEmpty(priceTabData.priceEscaltonValue)
                       ? "NA"
-                      : parseInt(priceTabData.priceEscaltonValue)}
+                      : parseInt(priceTabData.priceEscaltonValue)} */}
                   </h6>
                 </div>
               </div>
@@ -1854,9 +1926,21 @@ export const CreatePortfolio = (props) => {
                     {isEmptySelect(priceTabData.priceBreakDownType?.value)
                       ? "NA"
                       : priceTabData?.priceBreakDownType?.label}
-                    {isEmpty(priceTabData.priceBreakDownValue)
+                       {" "}
+                    {!isEmptySelect(priceTabData.priceBreakDownType?.value) &&
+                      (priceTabData.priceBreakDownType?.value === "PARTS"
+                        ? priceBrackdownValues.sparePartsPrice
+                        : priceTabData.priceBreakDownType?.value === "LABOR"
+                        ? priceBrackdownValues.labourPrice
+                        : priceTabData.priceBreakDownType?.value ===
+                          "MISCELLANEOUS"
+                        ? priceBrackdownValues.miscPrice
+                        : priceTabData.priceBreakDownType?.value === "SERVICE"
+                        ? priceBrackdownValues.servicePrice
+                        : "NA")}
+                    {/* {isEmpty(priceTabData.priceBreakDownValue)
                       ? "NA"
-                      : parseInt(priceTabData.priceBreakDownValue)}
+                      : parseInt(priceTabData.priceBreakDownValue)} */}
                   </h6>
                 </div>
               </div>
@@ -2094,7 +2178,7 @@ export const CreatePortfolio = (props) => {
                 className="mt-3"
                 isSelectAble={false}
                 tableData={selectedCoverageData}
-                handleUpdateCoverageData={handleUpdateCoverageData}
+                handleFilterUpdateCoverageData={handleFilterUpdateCoverageData}
                 // handlePortfolioCoverageIds={handlePortfolioCoverageIds}
                 handlePortfolioCoverageIds={(idsData) =>
                   setPortfolioCoverageIds(idsData)
@@ -2111,6 +2195,7 @@ export const CreatePortfolio = (props) => {
               className="btn btn-light"
               id="coverage"
               onClick={handleNextClick}
+              // onClick={updatePortfolioCoverageData}
             >
               Save & Next
             </button>
@@ -2334,9 +2419,9 @@ export const CreatePortfolio = (props) => {
                     {isEmpty(administrativeTabData.preparedOn)
                       ? "NA"
                       : getFormatDateTime(
-                        administrativeTabData.preparedOn,
-                        false
-                      )}
+                          administrativeTabData.preparedOn,
+                          false
+                        )}
                   </h6>
                 </div>
               </div>
@@ -2361,9 +2446,9 @@ export const CreatePortfolio = (props) => {
                     {isEmpty(administrativeTabData.revisedOn)
                       ? "NA"
                       : getFormatDateTime(
-                        administrativeTabData.revisedOn,
-                        false
-                      )}
+                          administrativeTabData.revisedOn,
+                          false
+                        )}
                   </h6>
                 </div>
               </div>
@@ -2417,7 +2502,7 @@ export const CreatePortfolio = (props) => {
       } else if (isEmpty(generalTabData.name)) {
         errorMessage(
           generalTabData.headerType?.value +
-          " Name is a required field, you can’t leave it blank"
+            " Name is a required field, you can’t leave it blank"
         );
         return false;
       } else if (isEmpty(generalTabData.externalReference)) {
@@ -2605,6 +2690,34 @@ export const CreatePortfolio = (props) => {
     }
   };
 
+  // uupdate coverage
+  const updatePortfolioCoverageData = async () => {
+    try {
+      for (let coverageData of selectedCoverageData) {
+        let coverageReqObj = {
+          ...coverageData,
+          serialNumber:
+            (coverageData?.includedSerialNoModalData &&
+              coverageData?.includedSerialNoModalData.length !== 0 &&
+              coverageData?.includedSerialNoModalData[0]?.serialNumber
+                ?.value) ||
+            "",
+        };
+
+        const updateCoverageResult = updateCoverage(
+          coverageData.coverageId,
+          coverageReqObj
+        );
+
+        if (updateCoverageResult.status === 200) {
+          console.log(
+            `${updateCoverageResult.data?.coverageId} updated successfully`
+          );
+        }
+      }
+    } catch (error) {}
+  };
+
   // Optional Services Modal Show|Hide
   const handleOptionalServiceModal = () => {
     setShowOptionalServicesModal(!showOptionalServicesModal);
@@ -2648,8 +2761,8 @@ export const CreatePortfolio = (props) => {
         portfolioPrice: isEmpty(priceTabData.portfolioPriceId)
           ? null
           : {
-            portfolioPriceId: priceTabData.portfolioPriceId,
-          },
+              portfolioPriceId: priceTabData.portfolioPriceId,
+            },
 
         preparedBy: administrativeTabData.preparedBy,
         approvedBy: administrativeTabData.approvedBy,
@@ -2737,8 +2850,8 @@ export const CreatePortfolio = (props) => {
         portfolioPrice: isEmpty(priceTabData.portfolioPriceId)
           ? null
           : {
-            portfolioPriceId: priceTabData.portfolioPriceId,
-          },
+              portfolioPriceId: priceTabData.portfolioPriceId,
+            },
 
         preparedBy: administrativeTabData.preparedBy,
         approvedBy: administrativeTabData.approvedBy,
@@ -2777,19 +2890,33 @@ export const CreatePortfolio = (props) => {
         if (isEmpty(portfolioRecordId)) {
           handelCreatePortfolio(requestObj).then((response) => {
             if (response) {
-              successMessage(`${capitalizeFirstLetter(generalTabData.headerType?.value)} ${generalTabData.name}  Created successfully`);
+              successMessage(
+                `${capitalizeFirstLetter(generalTabData.headerType?.value)} ${
+                  generalTabData.name
+                }  Created successfully`
+              );
               setPortfolioHeaderActiveTab("validity");
-              setPortfolioTabsEditView((prev) => ({ ...prev, generalTabEdit: true, }));
+              setPortfolioTabsEditView((prev) => ({
+                ...prev,
+                generalTabEdit: true,
+              }));
             }
-          })
+          });
         } else {
           handleUpdatePortfolio(requestObj).then((response) => {
             if (response) {
-              successMessage(`${capitalizeFirstLetter(generalTabData.headerType?.value)} ${generalTabData.name}  Updated successfully`);
+              successMessage(
+                `${capitalizeFirstLetter(generalTabData.headerType?.value)} ${
+                  generalTabData.name
+                }  Updated successfully`
+              );
               setPortfolioHeaderActiveTab("validity");
-              setPortfolioTabsEditView((prev) => ({ ...prev, generalTabEdit: true, }));
+              setPortfolioTabsEditView((prev) => ({
+                ...prev,
+                generalTabEdit: true,
+              }));
             }
-          })
+          });
         }
       } else if (id == "validity") {
         const portfolioUpdate = await updatePortfolio(
@@ -2799,8 +2926,8 @@ export const CreatePortfolio = (props) => {
         if (portfolioUpdate.status === 200) {
           successMessage(
             capitalizeFirstLetter(generalTabData.headerType?.value) +
-            generalTabData.name +
-            " Updated successfully"
+              generalTabData.name +
+              " Updated successfully"
           );
         }
         setPortfolioHeaderActiveTab("strategy");
@@ -2816,8 +2943,8 @@ export const CreatePortfolio = (props) => {
         if (portfolioUpdate.status === 200) {
           successMessage(
             capitalizeFirstLetter(generalTabData.headerType?.value) +
-            generalTabData.name +
-            " Updated successfully"
+              generalTabData.name +
+              " Updated successfully"
           );
           setPortfolioHeaderActiveTab(
             isPriceAgreementDisable ? "priceAgreement" : "price"
@@ -2836,8 +2963,8 @@ export const CreatePortfolio = (props) => {
           if (portfolioUpdate.status === 200) {
             successMessage(
               capitalizeFirstLetter(generalTabData.headerType?.value) +
-              generalTabData.name +
-              " Updated successfully"
+                generalTabData.name +
+                " Updated successfully"
             );
             setPortfolioHeaderActiveTab("coverage");
             setPortfolioTabsEditView((prev) => ({
@@ -2854,12 +2981,24 @@ export const CreatePortfolio = (props) => {
           priceAgreementTabEdit: true,
         }));
       } else if (id == "coverage") {
-        createPortfolioCoverage();
-        setPortfolioHeaderActiveTab("administrative");
-        setPortfolioTabsEditView((prev) => ({
-          ...prev,
-          coverageTabEdit: true,
-        }));
+        // createPortfolioCoverage(); // create coverage || previous working process
+        updatePortfolioCoverageData(); // update the coverage data || new Working
+        const portfolioUpdate = await updatePortfolio(
+          portfolioRecordId,
+          requestObj
+        );
+        if (portfolioUpdate.status === 200) {
+          successMessage(
+            capitalizeFirstLetter(generalTabData.headerType?.value) +
+              generalTabData.name +
+              " Updated successfully"
+          );
+          setPortfolioHeaderActiveTab("administrative");
+          setPortfolioTabsEditView((prev) => ({
+            ...prev,
+            coverageTabEdit: true,
+          }));
+        }
       } else if (id == "administrative") {
         const portfolioUpdate = await updatePortfolio(
           portfolioRecordId,
@@ -2868,8 +3007,8 @@ export const CreatePortfolio = (props) => {
         if (portfolioUpdate.status === 200) {
           successMessage(
             capitalizeFirstLetter(generalTabData.headerType?.value) +
-            generalTabData.name +
-            " Updated successfully"
+              generalTabData.name +
+              " Updated successfully"
           );
           setPortfolioTabsEditView((prev) => ({
             ...prev,
@@ -2887,35 +3026,47 @@ export const CreatePortfolio = (props) => {
   const handelCreatePortfolio = (reqObj) => {
     return new Promise((resolve, reject) => {
       const rUrl = PORTFOLIO_URL();
-      callPostApi(null, rUrl, reqObj, (response) => {
-        if (response.status === API_SUCCESS) {
-          const responseData = response.data;
-          setPortfolioRecordId(responseData.portfolioId);
-          resolve(true);
-        } else {
+      callPostApi(
+        null,
+        rUrl,
+        reqObj,
+        (response) => {
+          if (response.status === API_SUCCESS) {
+            const responseData = response.data;
+            setPortfolioRecordId(responseData.portfolioId);
+            resolve(true);
+          } else {
+            resolve(false);
+          }
+        },
+        (error) => {
           resolve(false);
         }
-      }, (error) => {
-        resolve(false);
-      })
-    })
-  }
+      );
+    });
+  };
 
   // portfolio update handler
   const handleUpdatePortfolio = (reqObj) => {
     return new Promise((resolve, reject) => {
       const rUrl = PORTFOLIO_URL() + "/" + portfolioRecordId;
-      callPutApi(null, rUrl, reqObj, (response) => {
-        if (response.statusCode === 200) {
-          resolve(true);
-        } else {
+      callPutApi(
+        null,
+        rUrl,
+        reqObj,
+        (response) => {
+          if (response.statusCode === 200) {
+            resolve(true);
+          } else {
+            resolve(false);
+          }
+        },
+        (error) => {
           resolve(false);
         }
-      }, (error) => {
-        resolve(false);
-      })
-    })
-  }
+      );
+    });
+  };
 
   return (
     <>
