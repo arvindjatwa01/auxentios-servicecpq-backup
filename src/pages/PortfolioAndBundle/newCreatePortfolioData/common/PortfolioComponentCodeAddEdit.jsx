@@ -1,38 +1,58 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 import SellOutlinedIcon from "@mui/icons-material/SellOutlined";
 import FormatListBulletedOutlinedIcon from "@mui/icons-material/FormatListBulletedOutlined";
 import AccessAlarmOutlinedIcon from "@mui/icons-material/AccessAlarmOutlined";
 
-import { CREATE_CUSTOM_PORTFOLIO_ITEM, SEARCH_COMPONENT_CODE, SEARCH_MACHINE, } from "services/CONSTANTS";
+import {
+    SEARCH_FLAG_COMPONENT_CODE_SEARCH,
+  SEARCH_FLAG_MODEL_SEARCH,
+  defaultItemBodyObj,
+  defaultItemHeaderObj,
+} from "pages/Common/PortfolioAndSolutionConstants";
+import { isEmpty } from "../utilities/textUtilities";
+import {
+  CREATE_PORTFOLIO_ITEM,
+  SEARCH_COMPONENT_CODE,
+  SEARCH_MACHINE,
+} from "services/CONSTANTS";
 import { callGetApi } from "services/ApiCaller";
 import { API_SUCCESS } from "services/ResponseCode";
+import { errorMessage } from "../utilities/toastMessage";
+import SearchInputBox from "pages/SolutionModules/use-case-4/useCase4Common/SearchInputBox";
 
-import {
-  SEARCH_FLAG_COMPONENT_CODE_SEARCH, SEARCH_FLAG_MODEL_SEARCH,
-  defaultCustomItemBodyModel, defaultCustomItemHeaderModel,
-} from "pages/Common/PortfolioAndSolutionConstants";
-import SearchInputBox from "../useCase4Common/SearchInputBox";
-import { isEmpty } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/textUtilities";
-import { errorMessage } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/toastMessage";
-
-const ComponentCodeAddEdit = (props) => {
+const PortfolioComponentCodeAddEdit = (props) => {
   const {
-    itemType, isPortfolioItem, portfolioId, itemId, isEditable = false,
-    handelSaveComponentCodeData, buttonClassName = "", } = props;
+    itemType,
+    isPortfolioItem,
+    portfolioId,
+    itemId,
+    isEditable = false,
+    handelSaveComponentCodeData,
+    buttonClassName = "",
+  } = props;
 
   const [itemRequestObj, setItemRequestObj] = useState({
-    customItemId: 0,
+    itemId: 0,
     itemName: "",
   });
-  const [customItemHeaderModelObj, setCustomItemHeaderModelObj] = useState({ ...defaultCustomItemHeaderModel, });
 
-  const [customItemBodyModelObj, setCustomItemBodyModelObj] = useState({ ...defaultCustomItemBodyModel, });
+  const [itemHeaderModelObj, setItemHeaderModelObj] = useState({
+    ...defaultItemHeaderObj,
+  });
+
+  const [itemBodyModelObj, setItemBodyModelObj] = useState({
+    ...defaultItemBodyObj,
+  });
   const [componentDataEdit, setComponentDataEdit] = useState(isEditable);
 
-  const [componentCodeSearchResult, setComponentCodeSearchResult] = useState([]);
-  const [componentCodeSearchNoOptions, setComponentCodeSearchNoOptions] = useState(false);
-  const [componentCodeSearchLoading, setComponentCodeSearchLoading] = useState(false);
+  const [componentCodeSearchResult, setComponentCodeSearchResult] = useState(
+    []
+  );
+  const [componentCodeSearchNoOptions, setComponentCodeSearchNoOptions] =
+    useState(false);
+  const [componentCodeSearchLoading, setComponentCodeSearchLoading] =
+    useState(false);
   const [modelSearchResult, setModelSearchResult] = useState([]);
   const [modelSearchNoOptions, setModelSearchNoOptions] = useState(false);
   const [modelSearchLoading, setModelSearchLoading] = useState(false);
@@ -42,22 +62,18 @@ const ComponentCodeAddEdit = (props) => {
 
   useEffect(() => {
     if (!isEmpty(itemId)) {
-      const rUrl = `${CREATE_CUSTOM_PORTFOLIO_ITEM()}/${itemId}`;
+      const rUrl = `${CREATE_PORTFOLIO_ITEM()}/${itemId}`;
       callGetApi(null, rUrl, (response) => {
         if (response.status === API_SUCCESS) {
-          const {
-            customItemId,
-            itemName,
-            customItemHeaderModel,
-            customItemBodyModel,
-          } = response.data;
+          const { itemId, itemName, itemHeaderModel, itemBodyModel } =
+            response.data;
 
           setItemRequestObj({
-            customItemId: customItemId,
+            itemId: itemId,
             itemName: itemName,
           });
-          setCustomItemHeaderModelObj({ ...customItemHeaderModel });
-          setCustomItemBodyModelObj({ ...customItemBodyModel });
+          setItemHeaderModelObj({ ...itemHeaderModel });
+          setItemBodyModelObj({ ...itemBodyModel });
         }
       });
     }
@@ -67,8 +83,8 @@ const ComponentCodeAddEdit = (props) => {
   const handleComponentCodeSearch = async (e) => {
     const { value } = e.target;
     setComponentCodeSearchNoOptions(true);
-    setCustomItemHeaderModelObj({
-      ...customItemHeaderModelObj,
+    setItemHeaderModelObj({
+      ...itemHeaderModelObj,
       componentCode: value,
     });
     if (!isEmpty(value) && value.length !== 0) {
@@ -102,8 +118,8 @@ const ComponentCodeAddEdit = (props) => {
   // handle Select Searched Component Code
   const handleComponentCodeSelect = (selectComponentData) => {
     setComponentCodeSearchNoOptions(false);
-    setCustomItemHeaderModelObj({
-      ...customItemHeaderModelObj,
+    setItemHeaderModelObj({
+      ...itemHeaderModelObj,
       componentCode: selectComponentData.componentCode,
       componentDescription: selectComponentData.description,
     });
@@ -114,8 +130,8 @@ const ComponentCodeAddEdit = (props) => {
   const handleModelSearch = async (e) => {
     const { value } = e.target;
     setModelSearchNoOptions(true);
-    setCustomItemHeaderModelObj({
-      ...customItemHeaderModelObj,
+    setItemHeaderModelObj({
+      ...itemHeaderModelObj,
       model: value,
     });
     if (!isEmpty(value) && value.length !== 0) {
@@ -149,8 +165,8 @@ const ComponentCodeAddEdit = (props) => {
   // handle Select Searched Model
   const handleModelDataSelect = (selectedModel) => {
     setModelSearchNoOptions(false);
-    setCustomItemHeaderModelObj({
-      ...customItemHeaderModelObj,
+    setItemHeaderModelObj({
+      ...itemHeaderModelObj,
       model: selectedModel.model,
       itemHeaderMake: selectedModel.maker,
       itemHeaderFamily: selectedModel?.family || "",
@@ -163,15 +179,15 @@ const ComponentCodeAddEdit = (props) => {
   const handleSerialNoSearch = (e) => {
     const { value } = e.target;
     setSerialNoSearchNoOptions(true);
-    setCustomItemHeaderModelObj({
-      ...customItemHeaderModelObj,
+    setItemHeaderModelObj({
+      ...itemHeaderModelObj,
       serialNumber: value,
     });
     if (!isEmpty(value) && value.length !== 0) {
       setSerialNoSearchLoading(true);
       let searchParametes = "";
-      if (!isEmpty(customItemHeaderModelObj.model)) {
-        searchParametes = `${searchParametes}model:${customItemHeaderModelObj.model} AND `;
+      if (!isEmpty(itemHeaderModelObj.model)) {
+        searchParametes = `${searchParametes}model:${itemHeaderModelObj.model} AND `;
       }
       const rUrl = SEARCH_MACHINE(`${searchParametes}equipmentNumber~${value}`);
       callGetApi(
@@ -202,8 +218,8 @@ const ComponentCodeAddEdit = (props) => {
   // handle Select Seached Serial No
   const handleSerialNoSelect = (selectedSerialNo) => {
     setSerialNoSearchNoOptions(false);
-    setCustomItemHeaderModelObj({
-      ...customItemHeaderModelObj,
+    setItemHeaderModelObj({
+      ...itemHeaderModelObj,
       serialNumber: selectedSerialNo.equipmentNumber,
       model: selectedSerialNo.model,
       itemHeaderMake: selectedSerialNo.maker,
@@ -215,7 +231,7 @@ const ComponentCodeAddEdit = (props) => {
 
   // Check input fields validation
   const checkComponetDataValidation = () => {
-    // else  if (isEmpty(customItemHeaderModelObj.componentCode)) {
+    // else  if (isEmpty(itemHeaderModelObj.componentCode)) {
     //   errorMessage(
     //     "Component code is a required Fields, you can't leave it blank."
     //   );
@@ -223,7 +239,7 @@ const ComponentCodeAddEdit = (props) => {
     // } else
     if (isPortfolioItem && isEmpty(portfolioId)) {
       errorMessage(
-        "Create Solution First, then you can modify component data,"
+        "Create Portfolio First, then you can modify component data,"
       );
       return false;
     } else if (isPortfolioItem && isEmpty(itemId)) {
@@ -259,7 +275,7 @@ const ComponentCodeAddEdit = (props) => {
     return true;
   };
 
-  // save component code changes 
+  // save component code changes
   const handleSaveChanges = () => {
     try {
       if (!componentDataEdit && !checkComponetDataValidation()) {
@@ -268,8 +284,8 @@ const ComponentCodeAddEdit = (props) => {
       handelSaveComponentCodeData(
         componentDataEdit,
         itemRequestObj,
-        customItemHeaderModelObj,
-        customItemBodyModelObj
+        itemHeaderModelObj,
+        itemBodyModelObj
       );
     } catch (error) {
       errorMessage(error);
@@ -310,9 +326,9 @@ const ComponentCodeAddEdit = (props) => {
                   COMPONENT CODE
                 </p>
                 <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                  {isEmpty(customItemHeaderModelObj.componentCode)
+                  {isEmpty(itemHeaderModelObj.componentCode)
                     ? "NA"
-                    : customItemHeaderModelObj.componentCode}
+                    : itemHeaderModelObj.componentCode}
                 </h6>
               </div>
             </div>
@@ -322,9 +338,9 @@ const ComponentCodeAddEdit = (props) => {
                   COMPONENT DESCRIPTION
                 </p>
                 <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                  {isEmpty(customItemHeaderModelObj.componentDescription)
+                  {isEmpty(itemHeaderModelObj.componentDescription)
                     ? "NA"
-                    : customItemHeaderModelObj.componentDescription}
+                    : itemHeaderModelObj.componentDescription}
                 </h6>
               </div>
             </div>
@@ -334,9 +350,9 @@ const ComponentCodeAddEdit = (props) => {
                   MAKE
                 </p>
                 <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                  {isEmpty(customItemHeaderModelObj.itemHeaderMake)
+                  {isEmpty(itemHeaderModelObj.itemHeaderMake)
                     ? "NA"
-                    : customItemHeaderModelObj.itemHeaderMake}
+                    : itemHeaderModelObj.itemHeaderMake}
                 </h6>
               </div>
             </div>
@@ -346,9 +362,9 @@ const ComponentCodeAddEdit = (props) => {
                   MODEL
                 </p>
                 <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                  {isEmpty(customItemHeaderModelObj.model)
+                  {isEmpty(itemHeaderModelObj.model)
                     ? "NA"
-                    : customItemHeaderModelObj.model}
+                    : itemHeaderModelObj.model}
                 </h6>
               </div>
             </div>
@@ -358,9 +374,9 @@ const ComponentCodeAddEdit = (props) => {
                   SERIAL #
                 </p>
                 <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                  {isEmpty(customItemHeaderModelObj.serialNumber)
+                  {isEmpty(itemHeaderModelObj.serialNumber)
                     ? "NA"
-                    : customItemHeaderModelObj.serialNumber}
+                    : itemHeaderModelObj.serialNumber}
                 </h6>
               </div>
             </div>
@@ -378,7 +394,7 @@ const ComponentCodeAddEdit = (props) => {
                   style={{ position: "relative" }}
                 >
                   <SearchInputBox
-                    value={customItemHeaderModelObj.componentCode}
+                    value={itemHeaderModelObj.componentCode}
                     placeHolder="Search Component Code Here"
                     searchType="componentCode"
                     handleSearch={handleComponentCodeSearch}
@@ -402,8 +418,8 @@ const ComponentCodeAddEdit = (props) => {
                   name="description"
                   placeholder="Optional"
                   disabled
-                  value={customItemHeaderModelObj.componentDescription}
-                // onChange={handleComponentChange}
+                  value={itemHeaderModelObj.componentDescription}
+                  // onChange={handleComponentChange}
                 />
               </div>
             </div>
@@ -419,8 +435,8 @@ const ComponentCodeAddEdit = (props) => {
                   id="make-id"
                   name="itemHeaderMake"
                   disabled
-                  value={customItemHeaderModelObj.itemHeaderMake}
-                // onChange={handleMachineDataChange}
+                  value={itemHeaderModelObj.itemHeaderMake}
+                  // onChange={handleMachineDataChange}
                 />
               </div>
             </div>
@@ -430,7 +446,7 @@ const ComponentCodeAddEdit = (props) => {
                   MODEL
                 </label>
                 <SearchInputBox
-                  value={customItemHeaderModelObj.model}
+                  value={itemHeaderModelObj.model}
                   placeHolder="Search Model"
                   searchType="model"
                   handleSearch={handleModelSearch}
@@ -448,7 +464,7 @@ const ComponentCodeAddEdit = (props) => {
                   SERIAL #
                 </label>
                 <SearchInputBox
-                  value={customItemHeaderModelObj.serialNumber}
+                  value={itemHeaderModelObj.serialNumber}
                   placeHolder="Search Serial Number"
                   searchType="equipmentNumber"
                   handleSearch={handleSerialNoSearch}
@@ -644,7 +660,7 @@ const ComponentCodeAddEdit = (props) => {
           type="button"
           className="btn text-white bg-primary cursor"
           onClick={handleSaveChanges}
-        // onClick={handleSaveBundleServiceComponentData}
+          // onClick={handleSaveBundleServiceComponentData}
         >
           {componentDataEdit ? "Next" : "Save and Continue"}
         </button>
@@ -653,4 +669,4 @@ const ComponentCodeAddEdit = (props) => {
   );
 };
 
-export default ComponentCodeAddEdit;
+export default PortfolioComponentCodeAddEdit;

@@ -272,13 +272,13 @@ export function WorkListDash(props) {
           </div>
           <div className="col-md-6 col-sm-6">
             <div className="row justify-content-end">
-            <a
+            {/* <a
               href={undefined}
               className="text-primary cursor"
               onClick={() => setCreateWorlistShow(true)}
             >
               + Create Worklist
-            </a>
+            </a> */}
             </div>
           </div>
         </div>
