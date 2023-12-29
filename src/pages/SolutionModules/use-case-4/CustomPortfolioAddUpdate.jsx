@@ -75,7 +75,8 @@ import {
   salesOfficeKeyValuePairs,
   offerValidityKeyValuePairs,
 } from "pages/Common/PortfolioAndSolutionConstants";
-import { createCustomCoverage } from "services";
+import { createCustomCoverage, updateCustomCoverage } from "services";
+import { generateUUID } from "pages/Common/utils/UserUtils";
 
 const CustomPortfolioAddUpdate = (props) => {
   const {
@@ -464,9 +465,10 @@ const CustomPortfolioAddUpdate = (props) => {
       }
     );
     setCustomPortfolioCoverageIds(_customPortfolioCoverageIds);
+    getCustomPortfolioCoverageDetails(_customPortfolioCoverageIds);
 
-    // set Coverage Data
-    setSelectedCustomCoverageData(recordData.customCoverages);
+    // // set Coverage Data
+    // setSelectedCustomCoverageData(recordData.customCoverages);
 
     // Map|Fetch the Portfolio Items for Table List
     fetchCustomPortfolioItemsTableList(
@@ -543,6 +545,23 @@ const CustomPortfolioAddUpdate = (props) => {
           });
           setCustomItemsTableList(_portfolioItems);
           setCustomItemReviewTabItemList(_portfolioItems);
+        }
+      });
+    }
+  };
+
+  // get Soution(Custom Portfolio) Custom Coverage Details
+  const getCustomPortfolioCoverageDetails = (_customPortfolioCoverageIds) => {
+    if (_customPortfolioCoverageIds.length !== 0) {
+      let rUrl =
+        `${CUSTOM_COVERAGE_REST()}/coverage-details?` +
+        _customPortfolioCoverageIds
+          .map((data) => `coverageIds=${data.coverageId}`)
+          .join("&");
+      callGetApi(null, rUrl, (response) => {
+        if (response.status === API_SUCCESS) {
+          const res = response.data;
+          setSelectedCustomCoverageData(res);
         }
       });
     }
@@ -788,55 +807,59 @@ const CustomPortfolioAddUpdate = (props) => {
           endDate: "",
           actions: "",
         };
-        const customCoverageResult =  await createCustomCoverage(customCoverageReqObj);
+        const customCoverageResult = await createCustomCoverage(
+          customCoverageReqObj
+        );
         _customPortfolioCoverageIds.push({
           coverageId: customCoverageResult.customCoverageId,
         });
-        selectedCoverageDataClone.push(customCoverageResult);
-        // await callPostApi(
-        //   null,
-        //   CUSTOM_COVERAGE_REST(),
-        //   customCoverageReqObj,
-        //   (response) => {
-        //     if (response.status === API_SUCCESS) {
-        //       const responseData = response.data;
-        //       console.log("response : ====== ", response);
-        //       console.log("responseData : ====== ", responseData);
-        //       _customPortfolioCoverageIds.push({
-        //         coverageId: responseData.customCoverageId,
-        //       });
-        //       selectedCoverageDataClone.push(responseData);
-        //     }
-        //   }
-        // );
+
+        // new Create Coverage Object set as coverage-details api response
+        const createCoverageObj = {
+          // uuid: "0a7e1ebf-4216-3cd0-89f7-9d71a77534b2",
+          uuid: generateUUID(),
+          modelNo: customCoverageResult.modelNo,
+          startSerialNumber: customCoverageResult.startSerialNumber,
+          endSerialNumber: customCoverageResult.endSerialNumber,
+          serialNumberPrefix: customCoverageResult.serialNumberPrefix,
+          family: customCoverageResult.family,
+          make: customCoverageResult.make,
+          fleet: customCoverageResult.fleet,
+          fleetSize: customCoverageResult.fleetSize,
+          coverageSubDetails: [
+            {
+              coverageId: customCoverageResult.customCoverageId,
+              serialNumber: customCoverageResult.serialNumber,
+              location: customCoverageResult.location,
+              startDate: customCoverageResult.startDate,
+              endDate: customCoverageResult.endDate,
+            },
+          ],
+        };
+        // selectedCoverageDataClone.push(customCoverageResult);
+        selectedCoverageDataClone.push(createCoverageObj);
       }
       setCustomPortfolioCoverageIds(_customPortfolioCoverageIds);
-      console.log("selectedCoverageDataClone ", selectedCoverageDataClone)
       setSelectedCustomCoverageData([
         ...selectedCustomCoverageData,
         ...selectedCoverageDataClone,
       ]);
       setSearchCustomCoverageData([]);
       setCheckedCustomCoverageData([]);
-      // checkedCustomCoverageData.map((data, i) => {
-      //   const exist = selectedCustomCoverageData.some(
-      //     (item) => item.id === data.id
-      //   );
-      //   if (!exist) {
-      //     selectedCoverageDataClone.push(data);
-      //   }
-      // });
-      // setSelectedCustomCoverageData([
-      //   ...selectedCustomCoverageData,
-      //   ...selectedCoverageDataClone,
-      // ]);
-      // setSearchCustomCoverageData([]);
-      // setCheckedCustomCoverageData([]);
     } catch (error) {
       return;
     }
   };
 
+  // Filter Update/Chnaged Coverage data
+  const handleFilterUpdateCoverageData = (updatedData, isFiltered = false) => {
+    setSelectedCustomCoverageData(updatedData);
+    if (isFiltered) {
+      setCheckedCustomCoverageData(updatedData);
+    }
+  };
+
+  // ***Todo Create Custom Coverage Data ***
   const createCustomCoverageData = async () => {
     try {
       for (let coverageData in checkedCustomCoverageData) {
@@ -871,6 +894,33 @@ const CustomPortfolioAddUpdate = (props) => {
           (error) => {}
         );
         // console.log(obj)
+      }
+    } catch (error) {}
+  };
+
+  // Update Cutom Coverage data
+  const hanleUpdateCustomCoverageData = async () => {
+    try {
+      for (let coverageData of selectedCustomCoverageData) {
+        let coverageReqObj = {
+          ...coverageData,
+          serialNumber:
+            (coverageData?.includedSerialNoModalData &&
+              coverageData?.includedSerialNoModalData.length !== 0 &&
+              coverageData?.includedSerialNoModalData[0]?.serialNumber
+                ?.value) ||
+            "",
+        };
+        const updateCoverageResult = updateCustomCoverage(
+          coverageData.customCoverageId,
+          coverageReqObj
+        );
+
+        if (updateCoverageResult.status === 200) {
+          console.log(
+            `${updateCoverageResult.data?.customCoverageId} updated successfully`
+          );
+        }
       }
     } catch (error) {}
   };
@@ -1978,9 +2028,20 @@ const CustomPortfolioAddUpdate = (props) => {
                     {isEmptySelect(priceTabData.priceBreakDownType?.value)
                       ? "NA"
                       : priceTabData?.priceBreakDownType?.label}
-                    {isEmpty(priceTabData.priceBreakDownValue)
+                    {!isEmptySelect(priceTabData.priceBreakDownType?.value) &&
+                      (priceTabData.priceBreakDownType?.value === "PARTS"
+                        ? priceBrackdownValues.sparePartsPrice
+                        : priceTabData.priceBreakDownType?.value === "LABOR"
+                        ? priceBrackdownValues.labourPrice
+                        : priceTabData.priceBreakDownType?.value ===
+                          "MISCELLANEOUS"
+                        ? priceBrackdownValues.miscPrice
+                        : priceTabData.priceBreakDownType?.value === "SERVICE"
+                        ? priceBrackdownValues.servicePrice
+                        : "NA")}
+                    {/* {isEmpty(priceTabData.priceBreakDownValue)
                       ? "NA"
-                      : parseInt(priceTabData.priceBreakDownValue)}
+                      : parseInt(priceTabData.priceBreakDownValue)} */}
                   </h6>
                 </div>
               </div>
@@ -2220,15 +2281,28 @@ const CustomPortfolioAddUpdate = (props) => {
                 className="mt-3"
                 isSelectAble={false}
                 tableData={selectedCustomCoverageData}
-                // handleFilterUpdateCoverageData={handleFilterUpdateCoverageData}
-                // handlePortfolioCoverageIds={handlePortfolioCoverageIds}
+                handleFilterUpdateCoverageData={handleFilterUpdateCoverageData}
                 handlePortfolioCoverageIds={(idsData) =>
                   setCustomPortfolioCoverageIds(idsData)
                 }
                 setTableData={setSelectedCustomCoverageData}
                 useCase4={true}
+                setCoverageIds={setCustomPortfolioCoverageIds}
               />
             </>
+          )}
+        </div>
+        <div className="row" style={{ justifyContent: "right" }}>
+          {selectedCustomCoverageData.length !== 0 && (
+            <button
+              type="button"
+              className="btn btn-light"
+              id="coverage"
+              onClick={handleNextClick}
+              // onClick={updatePortfolioCoverageData}
+            >
+              Save & Next
+            </button>
           )}
         </div>
       </>
@@ -2939,6 +3013,20 @@ const CustomPortfolioAddUpdate = (props) => {
                 setPortfolioTabsEditView((prev) => ({
                   ...prev,
                   priceAgreementTabEdit: true,
+                }));
+              }
+            });
+          } else if (id === "coverage") {
+            hanleUpdateCustomCoverageData();
+            handleUpdateCustomPortfolio(requestObj).then((res) => {
+              if (res.apiSuccess) {
+                successMessage(
+                  `Solution ${generalTabData.name} Updated Successfully`
+                );
+                setPortfolioHeaderActiveTab("administrative");
+                setPortfolioTabsEditView((prev) => ({
+                  ...prev,
+                  coverageTabEdit: true,
                 }));
               }
             });
