@@ -171,10 +171,10 @@ export const RouterConfig = () => {
         <ProtectedRoute path={PORTFOLIO_SUMMARY} component={PortfolioSummary} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]} />
 
         {/* Solution Routes */}
-        <ProtectedRoute path={SOLUTION_BUILDER_ANALYTICS} component={Analytics} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]} />
-        <ProtectedRoute path={SOLUTION_BUILDER_CUSTOM_PORTFOLIO_CREATE} component={CreateCustomPortfolio} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]} />
-        {/* <ProtectedRoute path={SOLUTION_BUILDER_ANALYTICS} component={SolutionAnalytics} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]} />
-        <ProtectedRoute path={SOLUTION_BUILDER_CUSTOM_PORTFOLIO_CREATE} component={CustomPortfolioAddUpdate} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]} /> */}
+        {/* <ProtectedRoute path={SOLUTION_BUILDER_ANALYTICS} component={Analytics} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]} />
+        <ProtectedRoute path={SOLUTION_BUILDER_CUSTOM_PORTFOLIO_CREATE} component={CreateCustomPortfolio} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]} /> */}
+        <ProtectedRoute path={SOLUTION_BUILDER_ANALYTICS} component={SolutionAnalytics} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]} />
+        <ProtectedRoute path={SOLUTION_BUILDER_CUSTOM_PORTFOLIO_CREATE} component={CustomPortfolioAddUpdate} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]} />
 
         {/* Solution Quote Routes */}
         <ProtectedRoute path={GUIDED_SOLUTION_BUILDER} component={GuidedSolution} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]} />

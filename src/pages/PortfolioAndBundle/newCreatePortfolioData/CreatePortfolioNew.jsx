@@ -26,6 +26,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useAppSelector } from "../../../app/hooks";
 
 import {
+  COVERAGE_REST,
   CREATE_PORTFOLIO_ITEM,
   PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE,
   PORTFOLIO_URL,
@@ -75,6 +76,7 @@ import OptionalServiceModal from "./common/OptionalServiceModal";
 import CoveragePaginationTable from "./coverage/CoveragePaginationTable";
 import PortfolioCoverageSearch from "./PortfolioCoverageSearch";
 import PortfolioItemsList from "./portfolio-item/PortfolioItemsList";
+import { generateUUID } from "pages/Common/utils/UserUtils";
 
 const portfolioHeaderType = [
   { label: "PORTFOLIO", value: "PORTFOLIO" },
@@ -443,9 +445,10 @@ export const CreatePortfolio = (props) => {
       return { coverageId: obj.coverageId };
     });
     setPortfolioCoverageIds(_portfolioCoverageIds);
+    getPortfolioCoverageDetails(_portfolioCoverageIds);
 
-    // set Coverage Data
-    setSelectedCoverageData(recordData.coverages);
+    // // set Coverage Data
+    // setSelectedCoverageData(recordData.coverages);
 
     // Map|Fetch the Portfolio Items for Table List
     fetchPortfolioItemsTableList(recordData.items, recordData.portfolioId);
@@ -506,6 +509,23 @@ export const CreatePortfolio = (props) => {
             }
           });
           setPortfolioItemsList(_portfolioItems);
+        }
+      });
+    }
+  };
+
+  // get Portfolio Coverage Details
+  const getPortfolioCoverageDetails = (_portfolioCoverageIds) => {
+    if (_portfolioCoverageIds.length !== 0) {
+      let rUrl =
+        `${COVERAGE_REST()}/coverage-details?` +
+        _portfolioCoverageIds
+          .map((data) => `coverageIds=${data.coverageId}`)
+          .join("&");
+      callGetApi(null, rUrl, (response) => {
+        if (response.status === API_SUCCESS) {
+          const res = response.data;
+          setSelectedCoverageData(res);
         }
       });
     }
@@ -876,7 +896,31 @@ export const CreatePortfolio = (props) => {
       };
       const coverageCreate = await createCoverage(coverageReqObj);
       _portfolioCoverageIds.push({ coverageId: coverageCreate.coverageId });
-      selectedCoverageDataClone.push(coverageCreate);
+
+      // new Create Coverage Object set as coverage-details api response
+      const createCoverageObj = {
+        // uuid: "0a7e1ebf-4216-3cd0-89f7-9d71a77534b2",
+        uuid: generateUUID(),
+        modelNo: coverageCreate.modelNo,
+        startSerialNumber: coverageCreate.startSerialNumber,
+        endSerialNumber: coverageCreate.endSerialNumber,
+        serialNumberPrefix: coverageCreate.serialNumberPrefix,
+        family: coverageCreate.family,
+        make: coverageCreate.make,
+        fleet: coverageCreate.fleet,
+        fleetSize: coverageCreate.fleetSize,
+        coverageSubDetails: [
+          {
+            coverageId: coverageCreate.coverageId,
+            serialNumber: coverageCreate.serialNumber,
+            location: coverageCreate.location,
+            startDate: coverageCreate.startDate,
+            endDate: coverageCreate.endDate,
+          },
+        ],
+      };
+      // selectedCoverageDataClone.push(coverageCreate);
+      selectedCoverageDataClone.push(createCoverageObj);
     }
     setPortfolioCoverageIds(_portfolioCoverageIds);
     setSelectedCoverageData([
@@ -1925,8 +1969,7 @@ export const CreatePortfolio = (props) => {
                   <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                     {isEmptySelect(priceTabData.priceBreakDownType?.value)
                       ? "NA"
-                      : priceTabData?.priceBreakDownType?.label}
-                       {" "}
+                      : priceTabData?.priceBreakDownType?.label}{" "}
                     {!isEmptySelect(priceTabData.priceBreakDownType?.value) &&
                       (priceTabData.priceBreakDownType?.value === "PARTS"
                         ? priceBrackdownValues.sparePartsPrice
@@ -2184,6 +2227,7 @@ export const CreatePortfolio = (props) => {
                   setPortfolioCoverageIds(idsData)
                 }
                 setTableData={setSelectedCoverageData}
+                setCoverageIds={setPortfolioCoverageIds}
               />
             </>
           )}

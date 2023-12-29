@@ -317,7 +317,8 @@ export const HomePage = () => {
                     }}
                     onClick={() => setCreateWorlistShow(!createWorklistShow)}
                   >
-                    + New Task
+                    {/* + New Task */}
+                    + Create Worklist
                   </Card>
                 </Card>
               </Grid>
