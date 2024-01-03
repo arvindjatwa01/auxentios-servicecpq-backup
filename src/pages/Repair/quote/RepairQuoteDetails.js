@@ -218,13 +218,6 @@ const RepairQuoteDetails = (props) => {
       format: (row) => row.description,
     },
     {
-      name: <div>Part List ID</div>,
-      selector: (row) => row.partListId,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.partListId,
-    },
-    {
       name: <div>Parts $</div>,
       selector: (row) => row.partsPrice,
       wrap: true,
@@ -339,8 +332,8 @@ const RepairQuoteDetails = (props) => {
       estViewOnly: result.preparedBy ? true : false,
       priceViewOnly:
         result.billingType !== "EMPTY" &&
-        result.billingType !== null &&
-        result.billingType !== ""
+          result.billingType !== null &&
+          result.billingType !== ""
           ? true
           : false,
       shippingViewOnly: result.leadTime ? true : false,
@@ -429,8 +422,8 @@ const RepairQuoteDetails = (props) => {
       revisedOn: result.revisedOn ? result.revisedOn : new Date(),
       salesOffice: result.salesOffice
         ? salesOfficeOptions.find(
-            (element) => element.value === result.salesOffice
-          )
+          (element) => element.value === result.salesOffice
+        )
         : { label: "", value: "" },
     });
   };
@@ -444,14 +437,14 @@ const RepairQuoteDetails = (props) => {
       billingFrequency:
         result.billingFrequency && result.billingFrequency !== "EMPTY"
           ? billingFreqOptions.find(
-              (element) => element.value === result.billingFrequency
-            )
+            (element) => element.value === result.billingFrequency
+          )
           : { label: "", value: "" },
       billingType:
         result.billingType && result.billingType !== "EMPTY"
           ? billingTypeOptions.find(
-              (element) => element.value === result.billingType
-            )
+            (element) => element.value === result.billingType
+          )
           : { label: "", value: "" },
       currency: result.currency,
       discount: result.discount,
@@ -461,8 +454,8 @@ const RepairQuoteDetails = (props) => {
       paymentTerms:
         result.paymentTerms && result.paymentTerms !== "EMPTY"
           ? paymentTermOptions.find(
-              (element) => element.value === result.paymentTerms
-            )
+            (element) => element.value === result.paymentTerms
+          )
           : { label: "", value: "" },
     });
     // setPricingData({
@@ -499,13 +492,13 @@ const RepairQuoteDetails = (props) => {
     setShippingDetail({
       deliveryPriority: result.deliveryPriority
         ? deliveryPriorityOptions.find(
-            (element) => element.value === result.deliveryPriority
-          )
+          (element) => element.value === result.deliveryPriority
+        )
         : { label: "", value: "" },
       deliveryType: result.deliveryType
         ? deliveryTypeOptions.find(
-            (element) => element.value === result.deliveryType
-          )
+          (element) => element.value === result.deliveryType
+        )
         : { label: "", value: "" },
       leadTime:
         leadTimeandUnit && leadTimeandUnit.length === 2
@@ -514,8 +507,8 @@ const RepairQuoteDetails = (props) => {
       unit:
         leadTimeandUnit && leadTimeandUnit.length === 2
           ? OPTIONS_LEADTIME_UNIT.find(
-              (element) => element.value === leadTimeandUnit[1]
-            )
+            (element) => element.value === leadTimeandUnit[1]
+          )
           : { label: "Day", value: "DAY" },
       serviceRecipientAddress: result.serviceRecipientAddress
         ? result.serviceRecipientAddress
@@ -875,7 +868,7 @@ const RepairQuoteDetails = (props) => {
   };
 
   const [value, setValue] = React.useState("customer");
-  
+
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -1247,6 +1240,7 @@ const RepairQuoteDetails = (props) => {
               </div>
             </div>
             <div className="d-flex justify-content-center align-items-center">
+              <button onClick={() => { history.push("/repair-quote") }} className="btn bg-primary text-white cursor">Back</button>
               <a
                 href={undefined}
                 className="cursor btn ml-3 font-size-14 bg-primary text-white"
@@ -1366,7 +1360,7 @@ const RepairQuoteDetails = (props) => {
                         className="heading-tabs"
                       />
                       <Tab
-                        label="Billing"
+                        label="Pricing"
                         value="price"
                         className="heading-tabs"
                       />
@@ -2644,8 +2638,8 @@ const RepairQuoteDetails = (props) => {
                           value={
                             shippingDetail.leadTime &&
                             shippingDetail.leadTime +
-                              " " +
-                              shippingDetail.unit?.label
+                            " " +
+                            shippingDetail.unit?.label
                           }
                           className="col-md-4 col-sm-4"
                         />
@@ -2692,16 +2686,16 @@ const RepairQuoteDetails = (props) => {
               className=""
               style={{ height: 400, width: "100%", backgroundColor: "#fff" }}
             > */}
-              <DataTable
-                className=""
-                title=""
-                columns={quoteItemsColumns}
-                data={quoteItems}
-                customStyles={STYLE_QUOTEITEM_TABLE}
-                pagination
-                // onRowClicked={(e) => handleRowClick(e)}
-                // selectableRows
-              />
+            <DataTable
+              className=""
+              title=""
+              columns={quoteItemsColumns}
+              data={quoteItems}
+              customStyles={STYLE_QUOTEITEM_TABLE}
+              pagination
+            // onRowClicked={(e) => handleRowClick(e)}
+            // selectableRows
+            />
             {/* </div> */}
           </div>
         </div>

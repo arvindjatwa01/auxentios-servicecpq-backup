@@ -708,8 +708,8 @@ export const CreateSolutionQuote = (props) => {
             />
             <div className="content-body" style={{ minHeight: "884px" }}>
                 <div className="container-fluid mt-4">
-                    <div className="d-flex align-items-center justify-content-between mt-2">
-                        <h5 className="font-weight-600 mb-0">Create Solution Quote</h5>
+                    <div className="align-items-center justify-content-between mt-2">
+                        <h4 className="text-center font-weight-600 mb-0 ">Create Solution Quote</h4>
                         {showOptions ? <></> : <button
                             className="btn bg-primary text-white mr-2"
                             onClick={() => {

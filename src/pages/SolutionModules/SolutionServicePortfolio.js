@@ -67,6 +67,12 @@ import { QUOTE_STATUS_SELECT, QUOTE_VERSION_SELECT } from "./CONSTANTS";
 import NotesAddEdit from "./NotesAddEdit";
 import SolutionQuotePayerGridTable from "./SolutionQuotePayerGridTable";
 import SolutionQuotePriceEstimate from "./SolutionQuotePriceEstimate";
+import { useAppSelector } from "app/hooks";
+import { selectQuoteDropdownOption, selectQuoteStatusList } from "pages/Repair/dropdowns/quoteRepairSlice";
+import { FETCH_QUOTE_STATUS } from "services/CONSTANTS";
+import axios from "axios";
+import { getQuoteStatus } from "services/solutionQuoteServices";
+
 const customStyles = {
   rows: {
     style: {
@@ -338,12 +344,16 @@ export function SolutionServicePortfolio(props) {
 
   const [selQuoteStatus, setSelQuoteStatus] = useState("");
 
-  const statusOptions = [
-    { label: "Draft", value: "draft" },
-    { label: "Active", value: "active" },
-    { label: "Revised", value: "revised" },
-    { label: "Archived", value: "archived" },
-  ];
+  const [statusOptions, setStatusOptions] = useState([]);
+  // const statusOptions = [
+  //   { label: "Draft", value: "draft" },
+  //   { label: "Active", value: "active" },
+  //   { label: "Revised", value: "revised" },
+  //   { label: "Archived", value: "archived" },
+  // ];
+
+
+
 
   function getStyles(name, personName, theme) {
     return {
@@ -2391,28 +2401,6 @@ export function SolutionServicePortfolio(props) {
     {
       name: (
         <>
-          <div>Model</div>
-        </>
-      ),
-      selector: (row) => row?.modelNo,
-      wrap: true,
-      sortable: true,
-      format: (row) => row?.modelNO,
-    },
-    {
-      name: (
-        <>
-          <div>Serial No.</div>
-        </>
-      ),
-      selector: (row) => row?.serialNumberPrefix,
-      wrap: true,
-      sortable: true,
-      format: (row) => row?.serialNumberPrefix,
-    },
-    {
-      name: (
-        <>
           <div>Valid From</div>
         </>
       ),
@@ -2519,6 +2507,21 @@ export function SolutionServicePortfolio(props) {
   const handleClose1 = () => setOpen1(false);
   const handleCoveragetable = () => setOpenCoveragetable(false);
   const [subQuoteItems, setSubQuoteItems] = useState([]);
+
+
+
+
+  useEffect(() => {
+    getQuoteStatus().then((res) => {
+      if (res.status === 200) {
+        setStatusOptions(res.data);
+        setTimeout(() => {
+          console.log("Status Options: ", statusOptions);
+        }, 5000);
+      }
+
+    })
+  }, []);
 
   useEffect(() => {
     if (state && state.type === "new") {
@@ -2653,9 +2656,12 @@ export function SolutionServicePortfolio(props) {
       priceViewOnly: true,
       shippingOrBillingViewOnly: true,
     });
-    setSelQuoteStatus(
-      statusOptions.filter((x) => x.value.toUpperCase() === result.status)[0]
-    );
+    setTimeout(() => {
+      setSelQuoteStatus(
+        statusOptions.filter((x) => x.value.toUpperCase() === result.status)[0]
+      );
+    }, 2000);
+
 
     var customerAddressAre = "";
     // Set Customer Tab Data
@@ -3007,9 +3013,19 @@ export function SolutionServicePortfolio(props) {
         }
       }
     }
+    if (result.payers.length == 0) {
+      let defaultPayer = [{
+        payerId: 1,
+        id: 1,
+        payerName: 'Default',
+        billingSplit: 100,
+        price: ""
+      }]
+      setAddPayerData(defaultPayer);
+    }
     console.log("_sbQuoteItems ", _sbQuoteItems);
-    // setQuoteItemsMaster(result.sbQuoteItems);
-    setQuoteItemsMaster(_sbQuoteItems);
+    setQuoteItemsMaster(result.sbQuoteItems);
+    // setQuoteItemsMaster(_sbQuoteItems);
     setSubQuoteItems(result.sbQuoteItems);
 
     const addPayerTableData = [];
@@ -3885,6 +3901,7 @@ export function SolutionServicePortfolio(props) {
                             </div> */}
 
               <div className="d-flex justify-content-center align-items-center">
+                <button onClick={() => { history.push("/solution-quote") }} className="btn bg-primary text-white cursor">Back</button>
                 <a
                   href={undefined}
                   className="cursor btn ml-3 font-size-14 bg-primary text-white"
@@ -4016,7 +4033,7 @@ export function SolutionServicePortfolio(props) {
             </Modal.Body>
           </Modal>
           <div className="card p-4 mt-5">
-          <h5 className="d-flex align-items-center mb-0 bg-primary p-2 border-radius-10">
+            <h5 className="d-flex align-items-center mb-0 bg-primary p-2 border-radius-10">
               <div className="row col-md-11">
                 <span
                   className="mr-3 ml-2 text-white"
@@ -4089,7 +4106,7 @@ export function SolutionServicePortfolio(props) {
                         className="heading-tabs"
                       />
                       <Tab
-                        label="Billing"
+                        label="Pricing"
                         value="price"
                         className="heading-tabs"
                       />
@@ -6301,7 +6318,7 @@ export function SolutionServicePortfolio(props) {
                   </div>
                   <div className="col-9">
                     <div className="d-flex justify-content-between align-items-center w-100 ml-4">
-                      
+
                     </div>
                   </div>
                   <div className="col-2">
