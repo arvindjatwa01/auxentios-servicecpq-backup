@@ -27,6 +27,7 @@ export default function JobhourRecommend(props) {
   const [selectedPrefix, setSelectedPrefix] = useState(null);
   const [selectedJobCode, setSelectedJobCode] = useState(null);
   const [selectedComponentCode, setSelectedComponentCode] = useState(null);
+  const [make, setMake] = useState(null);
   const [family, setFamily] = useState([]);
   const [model, setModel] = useState([]);
   const [prefix, setPrefix] = useState([]);
@@ -432,6 +433,7 @@ export default function JobhourRecommend(props) {
   const handleSelectSubService = (e) => {
     setSelectedSubService(e);
   };
+
   function getStyle(component) {
     return {
       mr: 1,
@@ -445,10 +447,26 @@ export default function JobhourRecommend(props) {
           ? "#FFFFFF"
           : "",
       "&:hover": {
-        color: "#000",
+        backgroundColor: "#6315c7 !important",
+        color: "#FFFFFF",
       },
     };
   }
+
+  // select fields Style
+  const getSelectedDataStyle = () => {
+    return {
+      mr: 1,
+      my: 1,
+      backgroundColor: "#872FF7",
+      color: "#FFFFFF",
+      "&:hover": {
+        backgroundColor: "#6315c7 !important",
+        color: "#FFFFFF",
+      },
+    };
+  };
+
   // Search Job Code
   const handleJobCodeSearch = async (searchText) => {
     setSearchJobCodeResults([]);
@@ -507,13 +525,22 @@ export default function JobhourRecommend(props) {
         <Card variant="outlined">
           {jobCode?.jobCode && componentCode.componentCode ? (
             <List>
-              <ListItem sx={{ justifyContent: "center", fontSize: "1.20rem", fontWeight: "600"}}>
-                Recommended Hours 
+              <ListItem
+                sx={{
+                  justifyContent: "center",
+                  fontSize: "1.20rem",
+                  fontWeight: "600",
+                }}
+              >
+                Recommended Hours
                 {/* Average hours to {jobCode?.description} the{" "}
                 {componentCode?.description} */}
               </ListItem>
               <Divider />
-              <ListItem className="align-items-center " sx={{ justifyContent: "center", fontSize: "1.05rem" }}>
+              <ListItem
+                className="align-items-center "
+                sx={{ justifyContent: "center", fontSize: "1.05rem" }}
+              >
                 <Typography
                   variant="h4"
                   color={"#872ff7"}
@@ -524,7 +551,7 @@ export default function JobhourRecommend(props) {
                   {jobHours} Hrs{" "}
                 </Typography>
                 average for similar Jobs
-               {/* <p className="text-center" style={{fontSize: "1rem"}}></p> */}
+                {/* <p className="text-center" style={{fontSize: "1rem"}}></p> */}
               </ListItem>
               <Divider />
               <ListItem sx={{ justifyContent: "center" }}>
@@ -559,6 +586,61 @@ export default function JobhourRecommend(props) {
       </Card>
     );
   }
+
+  const getListDataStyle = (subService, selectedData) => {
+    return {
+      mr: 1,
+      my: 1,
+      backgroundColor:
+        subService === "family" &&
+        selectedFamily &&
+        selectedData.family === selectedFamily?.family
+          ? "#872FF7"
+          : subService === "model" &&
+            selectedModel &&
+            selectedData.modelNo === selectedModel?.modelNo
+          ? "#872FF7"
+          : subService === "prefix" &&
+            selectedPrefix &&
+            selectedData.prefixNo === selectedPrefix?.prefixNo
+          ? "#872FF7"
+          : subService === "jobCode" &&
+            selectedJobCode &&
+            selectedData.jobCode === selectedJobCode?.jobCode
+          ? "#872FF7"
+          : subService === "componentCode" &&
+            componentCode &&
+            selectedData.componentCode === componentCode?.componentCode
+          ? "#872FF7"
+          : "#FFFFFF",
+      color:
+        subService === "family" &&
+        selectedFamily &&
+        selectedData.family === selectedFamily?.family
+          ? "#FFFFFF"
+          : subService === "model" &&
+            selectedModel &&
+            selectedData.modelNo === selectedModel?.modelNo
+          ? "#FFFFFF"
+          : subService === "prefix" &&
+            selectedPrefix &&
+            selectedData.prefixNo === selectedPrefix?.prefixNo
+          ? "#FFFFFF"
+          : subService === "jobCode" &&
+            selectedJobCode &&
+            selectedData.jobCode === selectedJobCode?.jobCode
+          ? "#FFFFFF"
+          : subService === "componentCode" &&
+            componentCode &&
+            selectedData.componentCode === componentCode?.componentCode
+          ? "#FFFFFF"
+          : "",
+      "&:hover": {
+        backgroundColor: "#6315c7 !important",
+        color: "#FFFFFF",
+      },
+    };
+  };
 
   const getFamilyStyle = (familyData) => {
     return {
@@ -720,75 +802,224 @@ export default function JobhourRecommend(props) {
           }}
           variant="outlined"
         >
-          <Typography sx={{ fontSize: 16, fontWeight: 600, margin: 2 }}>
+          <Typography
+            sx={{ fontSize: 18, fontWeight: 600, margin: 2, marginBottom: 0 }}
+          >
             Job Hour Recommendation
           </Typography>
+          <Typography
+            sx={{
+              fontSize: 16,
+              fontWeight: 400,
+              margin: 2,
+              marginTop: 0,
+              marginBottom: 1,
+            }}
+          >
+            Service Attributes
+          </Typography>
+          <Grid container marginX={1}>
+            <Grid item xs={12} md={6}>
+              <Fragment>
+                <Chip
+                  variant="outlined"
+                  label="Family"
+                  size="small"
+                  onClick={(e) => handleSelectSubService("family")}
+                  // sx={() => getStyle("family")}
+                  sx={{
+                    mr: 1,
+                    my: 1,
+                    backgroundColor:
+                      selectedSubService === "family" || selectedFamily
+                        ? "#872FF7"
+                        : "#FFF",
+                    color:
+                      selectedSubService === "family" || selectedFamily
+                        ? "#FFFFFF"
+                        : "",
+                    "&:hover": {
+                      backgroundColor: "#6315c7 !important",
+                      color: "#FFFFFF",
+                    },
+                  }}
+                />
+                <KeyboardArrowDownIcon />
+                <Chip
+                  variant="outlined"
+                  label="Model"
+                  size="small"
+                  // deleteIcon={<KeyboardArrowDownIcon />}
+                  onClick={(e) => handleSelectSubService("model")}
+                  // sx={() => getStyle("model")}
+                  sx={{
+                    mr: 1,
+                    my: 1,
+                    backgroundColor:
+                      selectedSubService === "model" || selectedModel
+                        ? "#872FF7"
+                        : "#FFF",
+                    color:
+                      selectedSubService === "model" || selectedModel
+                        ? "#FFFFFF"
+                        : "",
+                    "&:hover": {
+                      backgroundColor: "#6315c7 !important",
+                      color: "#FFFFFF",
+                    },
+                  }}
+                  disabled={selectedFamily ? false : true}
+                />
+                <KeyboardArrowDownIcon />
+                <Chip
+                  variant="outlined"
+                  label="Prefix"
+                  size="small"
+                  // deleteIcon={<KeyboardArrowDownIcon />}
+                  onClick={(e) => handleSelectSubService("prefix")}
+                  // sx={() => getStyle("prefix")}
+                  disabled={selectedModel ? false : true}
+                  sx={{
+                    mr: 1,
+                    my: 1,
+                    backgroundColor:
+                      selectedSubService === "prefix" || selectedPrefix
+                        ? "#872FF7"
+                        : "#FFF",
+                    color:
+                      selectedSubService === "prefix" || selectedPrefix
+                        ? "#FFFFFF"
+                        : "",
+                    "&:hover": {
+                      backgroundColor: "#6315c7 !important",
+                      color: "#FFFFFF",
+                    },
+                  }}
+                />
+                <KeyboardArrowDownIcon />
+                <Chip
+                  variant="outlined"
+                  label="Job Code"
+                  size="small"
+                  // deleteIcon={<KeyboardArrowDownIcon />}
+                  onClick={(e) => handleSelectSubService("jobCode")}
+                  // sx={() => getStyle("jobCode")}
+                  disabled={selectedPrefix ? false : true}
+                  sx={{
+                    mr: 1,
+                    my: 1,
+                    backgroundColor:
+                      selectedSubService === "jobCode" || selectedJobCode
+                        ? "#872FF7"
+                        : "#FFF",
+                    color:
+                      selectedSubService === "jobCode" || selectedJobCode
+                        ? "#FFFFFF"
+                        : "",
+                    "&:hover": {
+                      backgroundColor: "#6315c7 !important",
+                      color: "#FFFFFF",
+                    },
+                  }}
+                />
+                <KeyboardArrowDownIcon />
+                <Chip
+                  variant="outlined"
+                  label="Component Code"
+                  size="small"
+                  // deleteIcon={<KeyboardArrowDownIcon />}
+                  onClick={(e) => handleSelectSubService("componentCode")}
+                  // sx={() => getStyle("componentCode")}
+                  disabled={selectedJobCode ? false : true}
+                  sx={{
+                    mr: 1,
+                    my: 1,
+                    backgroundColor:
+                      selectedSubService === "componentCode" || componentCode
+                        ? "#872FF7"
+                        : "#FFF",
+                    color:
+                      selectedSubService === "componentCode" || componentCode
+                        ? "#FFFFFF"
+                        : "",
+                    "&:hover": {
+                      backgroundColor: "#6315c7 !important",
+                      color: "#FFFFFF",
+                    },
+                  }}
+                />
+              </Fragment>
+            </Grid>
+          </Grid>
+          <Grid container marginX={1}>
+            <Grid item xs={12} md={6}>
+              <Fragment>
+                {selectedFamily && (
+                  <>
+                    <Chip
+                      variant="outlined"
+                      label={selectedFamily.family}
+                      size="small"
+                      sx={getSelectedDataStyle}
+                    />
+                  </>
+                )}
+                {selectedModel && (
+                  <>
+                    <KeyboardArrowDownIcon />
+                    <Chip
+                      variant="outlined"
+                      label={selectedModel.modelNo}
+                      size="small"
+                      // deleteIcon={<KeyboardArrowDownIcon />}
+                      sx={getSelectedDataStyle}
+                    />
+                  </>
+                )}
+                {selectedPrefix && (
+                  <>
+                    <KeyboardArrowDownIcon />
+                    <Chip
+                      variant="outlined"
+                      label={selectedPrefix.prefixNo}
+                      size="small"
+                      // deleteIcon={<KeyboardArrowDownIcon />}
+                      sx={getSelectedDataStyle}
+                    />
+                  </>
+                )}
+                {selectedJobCode && (
+                  <>
+                    <KeyboardArrowDownIcon />
+                    <Chip
+                      variant="outlined"
+                      label={selectedJobCode.jobCode}
+                      size="small"
+                      // deleteIcon={<KeyboardArrowDownIcon />}
+                      sx={getSelectedDataStyle}
+                    />
+                  </>
+                )}
+                {componentCode && (
+                  <>
+                    <KeyboardArrowDownIcon />
+                    <Chip
+                      variant="outlined"
+                      label={componentCode.componentCode}
+                      size="small"
+                      // deleteIcon={<KeyboardArrowDownIcon />}
+                      sx={getSelectedDataStyle}
+                    />
+                  </>
+                )}
+              </Fragment>
+            </Grid>
+          </Grid>
+          <Grid item xs={12}>
+            <Divider />
+          </Grid>
           <Grid container marginX={1}>
             <Grid item xs={12} md={3}>
-              <Chip
-                variant="outlined"
-                label="Service Attributes"
-                size="small"
-                onClick={(e) => handleSelectCategory("service")}
-                sx={() => getStyle("service")}
-                // icon={selectedCategory === "service" ? <CheckIcon color={"#fff"} /> : <></>}
-              />
-              {selectedCategory === "service" && (
-                <Fragment>
-                  <KeyboardArrowDownIcon />
-                  <Chip
-                    variant="outlined"
-                    label="Family"
-                    size="small"
-                    // deleteIcon={<KeyboardArrowDownIcon />}
-                    onClick={(e) => handleSelectSubService("family")}
-                    // onDelete={e => handleSelectSubService("family")}
-                    sx={() => getStyle("family")}
-                  />
-                  <KeyboardArrowDownIcon />
-                  <Chip
-                    variant="outlined"
-                    label="Model"
-                    size="small"
-                    // deleteIcon={<KeyboardArrowDownIcon />}
-                    onClick={(e) => handleSelectSubService("model")}
-                    sx={() => getStyle("model")}
-                    disabled={selectedFamily ? false : true}
-                  />
-                  <KeyboardArrowDownIcon />
-                  <Chip
-                    variant="outlined"
-                    label="Prefix"
-                    size="small"
-                    // deleteIcon={<KeyboardArrowDownIcon />}
-                    onClick={(e) => handleSelectSubService("prefix")}
-                    sx={() => getStyle("prefix")}
-                    disabled={selectedModel ? false : true}
-                  />
-                  <KeyboardArrowDownIcon />
-                  <Chip
-                    variant="outlined"
-                    label="Job Code"
-                    size="small"
-                    // deleteIcon={<KeyboardArrowDownIcon />}
-                    onClick={(e) => handleSelectSubService("jobCode")}
-                    sx={() => getStyle("jobCode")}
-                    disabled={selectedPrefix ? false : true}
-                  />
-                  <KeyboardArrowDownIcon />
-                  <Chip
-                    variant="outlined"
-                    label="Component Code"
-                    size="small"
-                    // deleteIcon={<KeyboardArrowDownIcon />}
-                    onClick={(e) => handleSelectSubService("componentCode")}
-                    sx={() => getStyle("componentCode")}
-                    disabled={selectedJobCode ? false : true}
-                  />
-                </Fragment>
-              )}
-
-              <Divider className="mb-2" />
               {selectedSubService === "family" &&
                 defaultServiceAttributeValue.length !== 0 &&
                 defaultServiceAttributeValue.map((familyData, i) => {
@@ -799,7 +1030,7 @@ export default function JobhourRecommend(props) {
                       size="small"
                       // deleteIcon={<KeyboardArrowDownIcon />}
                       onClick={(e) => handleFamilySelect(familyData)}
-                      sx={() => getFamilyStyle(familyData)}
+                      sx={() => getListDataStyle("family", familyData)}
                     />
                   );
                 })}
@@ -814,7 +1045,7 @@ export default function JobhourRecommend(props) {
                       size="small"
                       // deleteIcon={<KeyboardArrowDownIcon />}
                       onClick={(e) => handleModelSelect(modelData)}
-                      sx={() => getModelStyle(modelData)}
+                      sx={() => getListDataStyle("model", modelData)}
                     />
                   );
                 })}
@@ -829,7 +1060,7 @@ export default function JobhourRecommend(props) {
                       size="small"
                       // deleteIcon={<KeyboardArrowDownIcon />}
                       onClick={(e) => handlePrefixSelect(prefixData)}
-                      sx={() => getPrefixStyle(prefixData)}
+                      sx={() => getListDataStyle("prefix", prefixData)}
                     />
                   );
                 })}
@@ -844,7 +1075,7 @@ export default function JobhourRecommend(props) {
                       size="small"
                       // deleteIcon={<KeyboardArrowDownIcon />}
                       onClick={(e) => handleSelectJobCode(jobCodeData)}
-                      sx={() => getJobCodeStyle(jobCodeData)}
+                      sx={() => getListDataStyle("jobCode", jobCodeData)}
                     />
                   );
                 })}
@@ -859,61 +1090,14 @@ export default function JobhourRecommend(props) {
                       size="small"
                       // deleteIcon={<KeyboardArrowDownIcon />}
                       onClick={(e) => handleSelectComponentCode(component)}
-                      sx={() => getComponentCodeStyle(component)}
+                      sx={() => getListDataStyle("componentCode", component)}
                     />
                   );
                 })}
             </Grid>
-            <Grid item xs={1} md={1}>
-              <Divider orientation="vertical" sx={{ mx: 1 }} />
-            </Grid>
 
             <Grid item xs={12} md={7}>
               <Grid item container xs={12}>
-                {/* <Grid
-                  item
-                  container
-                  xs={12}
-                  md={12}
-                  justifyContent={"center"}
-                  sx={{ my: 2 }}
-                >
-                  <Autocomplete
-                    size={"small"}
-                    options={searchJobCodeResults}
-                    // getOptionLabel={(option) => option.description}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        size={"small"}
-                        label="Job Code"
-                        // onChange={(e) => handleJobCodeSearch(e.target.value)}
-                      />
-                    )}
-                    sx={{ width: "38%", mr: 3 }}
-                    filterOptions={(x) => x}
-                    onChange={handleJobCodeSelect}
-                  />
-                  <Autocomplete
-                    size={"small"}
-                    options={searchCompCodeResults}
-                    getOptionLabel={(option) => option.description}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        sx={{ fontSize: 13 }}
-                        label="Component Code"
-                        onChange={(e) =>
-                          handleComponentCodeSearch(e.target.value)
-                        }
-                      />
-                    )}
-                    onChange={handleCompCodeSelect}
-                    sx={{ width: "38%" }}
-                    filterOptions={(x) => x}
-                  />
-                </Grid> */}
-
                 <Grid item xs={12} sx={{ my: 2 }}>
                   <JobHour />
                 </Grid>

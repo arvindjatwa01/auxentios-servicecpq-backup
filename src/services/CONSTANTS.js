@@ -354,3 +354,7 @@ export const Get_Consumable_Master_Details_By_Id_GET = DATA_SVC_CONSUMABLE;
 //WorkList URIs
 export const WORKLIST = (pagination) => COMMON_SERVICE_URI + `worklist/cases${pagination}`
 export const CREATE_WORKLIST = () => COMMON_SERVICE_URI + `worklist/case`
+
+// local-cases Worklist URIs
+export const Get_LOCAl_CASES_WORKLIST_GET = (pagination) => COMMON_SERVICE_URI + `worklist/local-cases${pagination}`;
+export const LOCAL_CASES_WORKLIST = COMMON_SERVICE_URI + `worklist/local-case`;

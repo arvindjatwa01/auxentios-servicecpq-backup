@@ -256,6 +256,7 @@ export default function MarginRecommendation(props) {
               label={"Search Part"}
               value={part}
               handleChange={(e) => setPart(e.target.value)}
+              size={250}
             />
             <SelectBox
               label={"Part Type"}
