@@ -2,7 +2,7 @@ import { Tooltip, Box } from "@mui/material";
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import "owl.carousel/dist/assets/owl.carousel.css";
 import "owl.carousel/dist/assets/owl.theme.default.css";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Modal } from "react-bootstrap";
 import OwlCarousel from "react-owl-carousel";
 import { Link } from "react-router-dom";
@@ -12,6 +12,7 @@ import Buttonarrow from "../../assets/icons/svg/Button-arrow.svg";
 import Portfoliosicon from "../../assets/icons/svg/Portfolios-icon.svg";
 import contract from "../../assets/icons/svg/contract.svg";
 import { NewWorkList } from "./NewWorkList";
+import { fetchLocalCasesWorkList } from "services/worklistServices";
 
 const data = [
   {
@@ -24,7 +25,7 @@ const data = [
     status: "Open",
     consistencyStatus: "Inconsistent",
     requester: "Ashok Mohanty",
-    reason: "Sales Quote"
+    reason: "Sales Quote",
   },
   {
     id: 1,
@@ -36,7 +37,7 @@ const data = [
     status: "Open",
     consistencyStatus: "Consistent",
     requester: "Ashok M",
-    reason: "Planning forecast"
+    reason: "Planning forecast",
   },
   {
     id: 2,
@@ -48,7 +49,7 @@ const data = [
     status: "Open",
     consistencyStatus: "Inconsistent",
     requester: "Ashok M",
-    reason: "Sales promotion"
+    reason: "Sales promotion",
   },
 ];
 
@@ -97,7 +98,12 @@ const GRID_STYLE = {
   borderRadius: 4,
   height: 400,
 };
-export function WorkListDash(props) {
+export function WorkListDash({
+  refreshFlag,
+  handleRefreshData,
+  setRecordId,
+  handleShowModal,
+}) {
   const [openSearchService, setOpenSearchService] = useState(false);
   const [openAddBundleItem, setOpenAddBundleItem] = useState(false);
   const [createNewBundle, setCreateNewBundle] = useState(false);
@@ -118,6 +124,11 @@ export function WorkListDash(props) {
     { label: "Model", value: "model" },
     { label: "Prefix", value: "prefix" },
   ]);
+
+  const [worklistCases, setWorklistCase] = useState([]);
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+
   const columns1 = [
     {
       field: "caseId",
@@ -126,27 +137,37 @@ export function WorkListDash(props) {
     },
     {
       field: "requester",
-      headerName: "Requester",
+      headerName: "Name",
       flex: 1,
     },
     {
-      field: "source",
-      headerName: "Source",
+      field: "team",
+      headerName: "Team",
+      flex: 1,
+    },
+    // {
+    //   field: "customer",
+    //   headerName: "Customer",
+    //   flex: 1,
+    // },
+    // {
+    //   field: "reason",
+    //   headerName: "Reason",
+    //   flex: 1,
+    // },
+    {
+      field: "title",
+      headerName: "Title",
       flex: 1,
     },
     {
-      field: "customer",
-      headerName: "Customer",
+      field: "startDate",
+      headerName: "Start Date",
       flex: 1,
     },
     {
-      field: "reason",
-      headerName: "Reason",
-      flex: 1,
-    },
-    {
-      field: "progress",
-      headerName: "Progress",
+      field: "promiseDate",
+      headerName: "Promise Date",
       flex: 1,
     },
     {
@@ -154,17 +175,6 @@ export function WorkListDash(props) {
       headerName: "Status",
       flex: 1,
     },
-    {
-      field: "consistencyStatus",
-      headerName: "Consistent",
-      flex: 1,
-    },
-    {
-      field: "description",
-      headerName: "Desc.",
-      flex: 1,
-    },
-
     {
       field: "actions",
       type: "actions",
@@ -183,13 +193,41 @@ export function WorkListDash(props) {
             }
             label="Assign"
             className="bg-primary textPrimary"
-            onClick={() => setShow(true)}
+            // onClick={() => setShow(true)}
+            onClick={() => {
+              setRecordId(params.row.caseId);
+              handleShowModal();
+            }}
             color="inherit"
           />,
         ];
       },
     },
   ];
+
+  useEffect(() => {
+    getWorklistDetails(page, pageSize);
+  }, [page, pageSize, refreshFlag]);
+
+  const getWorklistDetails = useCallback(
+    async (pageNo, rowsPerPage) => {
+      setPage(pageNo);
+      setPageSize(rowsPerPage);
+      await fetchLocalCasesWorkList(
+        `?pageNumber=${pageNo}&pageSize=${rowsPerPage}`
+      )
+        .then((worklists) => {
+          const _worklists =
+            worklists.length !== 0 &&
+            worklists.map((obj, i) => {
+              return { ...obj, id: i };
+            });
+          setWorklistCase(_worklists || []);
+        })
+        .catch((e) => console.log("Error occurred"));
+    },
+    [refreshFlag]
+  );
 
   const handleBundleServiceContinue = () => {
     setOpenSearchService(true);
@@ -268,11 +306,11 @@ export function WorkListDash(props) {
       <Box>
         <div className="row justify-content-end mr-2 mb-2">
           <div className="col-md-6 col-sm-6">
-              <h5 className="">Work List</h5>
+            <h5 className="">Work List</h5>
           </div>
           <div className="col-md-6 col-sm-6">
             <div className="row justify-content-end">
-            {/* <a
+              {/* <a
               href={undefined}
               className="text-primary cursor"
               onClick={() => setCreateWorlistShow(true)}
@@ -292,9 +330,9 @@ export function WorkListDash(props) {
               pagination
             /> */}
           <DataGrid
-            sx={{...GRID_STYLE}}
+            sx={{ ...GRID_STYLE }}
             paginationMode="client"
-            rows={data}
+            rows={worklistCases}
             columns={columns1}
             pageSize={5}
             rowsPerPageOptions={[5]}

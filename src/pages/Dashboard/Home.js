@@ -12,6 +12,7 @@ import { ChartReact } from "./ChartReact";
 import { WorkListDash } from "./WorkListDashboard";
 import { Modal } from "react-bootstrap";
 import { NewWorkList } from "./NewWorkList";
+import LocalCaseWorkListAdUpdate from "./worklist/LocalCaseWorkListAdUpdate";
 
 const activityOptions = ["None", "Atria", "Callisto"];
 const workFlowOptions = ["None", "Atria"];
@@ -221,6 +222,19 @@ export const HomePage = () => {
   const [data, setData] = useState([]);
   const [value, setValue] = useState("activities");
   const [createWorklistShow, setCreateWorlistShow] = useState(false);
+  const [showWorklistModal, setShowWorklistModal] = useState(false);
+  const [refreshFlag, setRefreshFlag] = useState(0);
+
+  const [recordId, setRecordId] = useState(null);
+
+  const handleShowModal = () => {
+    setShowWorklistModal(!showWorklistModal);
+  };
+
+  const handleRefreshFlag = () => {
+    setRefreshFlag(refreshFlag + 1);
+  };
+
   const fetchUserSpecifics = (event, type) => {
     console.log();
     setValue(type);
@@ -275,7 +289,12 @@ export const HomePage = () => {
             style={{ backgroundColor: "#f3eafe", borderRadius: 5 }}
           > */}
               <Grid item xs={12} md={9} sx={{ pl: 2, pr: 3, py: 2 }}>
-                <WorkListDash />
+                <WorkListDash
+                  refreshFlag={refreshFlag}
+                  handleRefreshData={handleRefreshFlag}
+                  setRecordId={setRecordId}
+                  handleShowModal={handleShowModal}
+                />
               </Grid>
               <Grid item xs={12} md={3}>
                 <h5 className="ml-1 mt-3">Today's Tasks</h5>
@@ -315,10 +334,10 @@ export const HomePage = () => {
                       borderRadius: 3,
                       border: 2,
                     }}
-                    onClick={() => setCreateWorlistShow(!createWorklistShow)}
+                    // onClick={() => setCreateWorlistShow(!createWorklistShow)}
+                    onClick={() => setShowWorklistModal(true)}
                   >
-                    {/* + New Task */}
-                    + Create Worklist
+                    {/* + New Task */}+ Create Worklist
                   </Card>
                 </Card>
               </Grid>
@@ -663,7 +682,15 @@ export const HomePage = () => {
           </div>
         </div>
       </div>
-      {createWorklistShow && newWorkListCreateModel()}
+      {/* {createWorklistShow && newWorkListCreateModel()} */}
+      {showWorklistModal && (
+        <LocalCaseWorkListAdUpdate
+          show={showWorklistModal}
+          hideModal={() => setShowWorklistModal(false)}
+          refreshData={handleRefreshFlag}
+          recordId={recordId}
+        />
+      )}
     </>
   );
 };
