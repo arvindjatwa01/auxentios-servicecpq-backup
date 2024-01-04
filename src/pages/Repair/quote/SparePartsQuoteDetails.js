@@ -350,8 +350,8 @@ export function SparePartsQuoteDetails(props) {
       estViewOnly: result.preparedBy ? true : false,
       priceViewOnly:
         result.billingType !== "EMPTY" &&
-        result.billingType !== null &&
-        result.billingType !== ""
+          result.billingType !== null &&
+          result.billingType !== ""
           ? true
           : false,
       shippingViewOnly: result.leadTime ? true : false,
@@ -440,8 +440,8 @@ export function SparePartsQuoteDetails(props) {
       revisedOn: result.revisedOn ? result.revisedOn : new Date(),
       salesOffice: result.salesOffice
         ? salesOfficeOptions.find(
-            (element) => element.value === result.salesOffice
-          )
+          (element) => element.value === result.salesOffice
+        )
         : { label: "", value: "" },
     });
   };
@@ -451,14 +451,14 @@ export function SparePartsQuoteDetails(props) {
       billingFrequency:
         result.billingFrequency && result.billingFrequency !== "EMPTY"
           ? billingFreqOptions.find(
-              (element) => element.value === result.billingFrequency
-            )
+            (element) => element.value === result.billingFrequency
+          )
           : { label: "", value: "" },
       billingType:
         result.billingType && result.billingType !== "EMPTY"
           ? billingTypeOptions.find(
-              (element) => element.value === result.billingType
-            )
+            (element) => element.value === result.billingType
+          )
           : { label: "", value: "" },
       currency: result.currency,
       discount: result.discount,
@@ -468,8 +468,8 @@ export function SparePartsQuoteDetails(props) {
       paymentTerms:
         result.paymentTerms && result.paymentTerms !== "EMPTY"
           ? paymentTermOptions.find(
-              (element) => element.value === result.paymentTerms
-            )
+            (element) => element.value === result.paymentTerms
+          )
           : { label: "", value: "" },
     });
   };
@@ -492,13 +492,13 @@ export function SparePartsQuoteDetails(props) {
     setShippingDetail({
       deliveryPriority: result.deliveryPriority
         ? deliveryPriorityOptions.find(
-            (element) => element.value === result.deliveryPriority
-          )
+          (element) => element.value === result.deliveryPriority
+        )
         : { label: "", value: "" },
       deliveryType: result.deliveryType
         ? deliveryTypeOptions.find(
-            (element) => element.value === result.deliveryType
-          )
+          (element) => element.value === result.deliveryType
+        )
         : { label: "", value: "" },
       leadTime:
         leadTimeandUnit && leadTimeandUnit.length === 2
@@ -507,8 +507,8 @@ export function SparePartsQuoteDetails(props) {
       unit:
         leadTimeandUnit && leadTimeandUnit.length === 2
           ? OPTIONS_LEADTIME_UNIT.find(
-              (element) => element.value === leadTimeandUnit[1]
-            )
+            (element) => element.value === leadTimeandUnit[1]
+          )
           : { label: "Day", value: "DAY" },
       serviceRecipientAddress: result.serviceRecipientAddress
         ? result.serviceRecipientAddress
@@ -1255,6 +1255,7 @@ export function SparePartsQuoteDetails(props) {
               </div>
             </div>
             <div className="d-flex justify-content-center align-items-center">
+              <button onClick={() => { history.push("/spare-part-quote") }} className="btn bg-primary text-white cursor">Back</button>
               <a
                 href={undefined}
                 className="cursor btn ml-3 font-size-14 bg-primary text-white"
@@ -1379,7 +1380,7 @@ export function SparePartsQuoteDetails(props) {
                         className="heading-tabs"
                       />
                       <Tab
-                        label="Shipping / Billing"
+                        label="Shipping / Pricing"
                         value="shipping"
                         className="heading-tabs"
                       />
@@ -2425,7 +2426,7 @@ export function SparePartsQuoteDetails(props) {
                             quoteId={quoteId}
                           />
                         </div>
-                        
+
                         <div className="mt-3">
                           <QuotePriceSummaryTable
                             handleSnack={handleSnack}
@@ -2635,8 +2636,8 @@ export function SparePartsQuoteDetails(props) {
                           value={
                             shippingDetail.leadTime &&
                             shippingDetail.leadTime +
-                              " " +
-                              shippingDetail.unit?.label
+                            " " +
+                            shippingDetail.unit?.label
                           }
                           className="col-md-4 col-sm-4"
                         />
@@ -2687,8 +2688,8 @@ export function SparePartsQuoteDetails(props) {
               data={quoteItems}
               customStyles={STYLE_QUOTEITEM_TABLE}
               pagination
-              // onRowClicked={(e) => handleRowClick(e)}
-              // selectableRows
+            // onRowClicked={(e) => handleRowClick(e)}
+            // selectableRows
             />
           </div>
         </div>

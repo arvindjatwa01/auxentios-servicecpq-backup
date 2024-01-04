@@ -2,7 +2,7 @@
 
 import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios';
-import { SOLUTION_QUOTE_CREATION, SOLUTION_QUOTE_URL, RECENT_QUOTES_COMMON_PATH, SEARCH_SOLUTION_QUOTE, UPLOAD_ITEMS_TO_SOL_QUOTE } from "./CONSTANTS";
+import { SOLUTION_QUOTE_CREATION, SOLUTION_QUOTE_URL, RECENT_QUOTES_COMMON_PATH, SEARCH_SOLUTION_QUOTE, UPLOAD_ITEMS_TO_SOL_QUOTE, FETCH_QUOTE_STATUS } from "./CONSTANTS";
 import Cookies from "js-cookie";
 
 
@@ -25,6 +25,27 @@ const headersData = {
     'Authorization': CookiesSetData != undefined ? getCookiesJsonData?.access_token : ''
     // 'Authorization': url.Auth_Token
 }
+
+export const getQuoteStatus = () => {
+    console.log("QuoteService > getQuoteStatus called...");
+    return new Promise((resolve, reject) => {
+        try {
+            axios
+                .get(FETCH_QUOTE_STATUS(), { headers: headersData })
+                .then((res) => {
+                    console.log("getQuoteStatus > axios res=", res);
+                    resolve(res);
+                })
+                .catch((err) => {
+                    console.log("getQuoteStatus > axios err=", err);
+                    reject("Error in getQuoteStatus axios!");
+                });
+        } catch (error) {
+            console.error("in QuoteService.js > getQuoteStatus, Err===", error);
+            reject(SYSTEM_ERROR);
+        }
+    });
+};
 
 /* ------------------------------------------------------------ */
 
