@@ -14,7 +14,7 @@ import { callGetApi, callPostApi, callPutApi } from "services/ApiCaller";
 import { LOCAL_CASES_WORKLIST } from "services/CONSTANTS";
 import { errorMessage } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/toastMessage";
 import { API_SUCCESS } from "services/ResponseCode";
-import { isEmpty } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/textUtilities";
+import { isEmptyInput } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/textUtilities";
 
 const LocalCaseWorkListAdUpdate = ({
   show,
@@ -68,24 +68,24 @@ const LocalCaseWorkListAdUpdate = ({
   };
 
   const checkInputValidation = (reqObj) => {
-    if (isEmpty(reqObj.caseUniqueId)) {
+    if (isEmptyInput(reqObj.caseUniqueId)) {
       errorMessage("Case unique id must not be empty", {
         id: reqObj.caseUniqueId,
       });
       return false;
-    } else if (isEmpty(reqObj.requester)) {
-      errorMessage("Name must not be empty", {
+    } else if (isEmptyInput(reqObj.requester)) {
+      errorMessage("Requester Name must not be empty", {
         id: reqObj.requester,
       });
       return false;
-    } else if (isEmpty(reqObj.title)) {
-      errorMessage("Title must not be empty", {
-        id: reqObj.title,
-      });
-      return false;
-    } else if (isEmpty(reqObj.team)) {
+    } else if (isEmptyInput(reqObj.team)) {
       errorMessage("Team must not be empty", {
         id: reqObj.team,
+      });
+      return false;
+    } else if (isEmptyInput(reqObj.title)) {
+      errorMessage("Title must not be empty", {
+        id: reqObj.title,
       });
       return false;
     }
@@ -132,7 +132,7 @@ const LocalCaseWorkListAdUpdate = ({
       aria-labelledby="contained-modal-title-vcenter"
       centered
     >
-      <Modal.Header closeButton>
+      <Modal.Header>
         <Modal.Title>{recordId ? "Update" : "Create"} Work List</Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -156,6 +156,7 @@ const LocalCaseWorkListAdUpdate = ({
                     onChange={handleTextChange}
                     value={record.caseUniqueId}
                   />
+                  <div className="css-w8dmq8">*Mandatory</div>
                 </div>
               </div>
               <div className="col-md-4 col-sm-6">
@@ -164,7 +165,7 @@ const LocalCaseWorkListAdUpdate = ({
                     class="text-light-dark font-size-14 font-weight-500"
                     for="requester"
                   >
-                    Name
+                   Requester Name
                   </label>
                   <input
                     type="text"
@@ -175,6 +176,7 @@ const LocalCaseWorkListAdUpdate = ({
                     onChange={handleTextChange}
                     value={record.requester}
                   />
+                  <div className="css-w8dmq8">*Mandatory</div>
                 </div>
               </div>
               <div className="col-md-4 col-sm-6">
@@ -191,6 +193,7 @@ const LocalCaseWorkListAdUpdate = ({
                     value={record.team}
                     onChange={(e) => setRecord({ ...record, team: e })}
                   />
+                  <div className="css-w8dmq8">*Mandatory</div>
                 </div>
               </div>
               <div className="col-md-4 col-sm-6">
@@ -210,6 +213,7 @@ const LocalCaseWorkListAdUpdate = ({
                     onChange={handleTextChange}
                     value={record.title}
                   />
+                  <div className="css-w8dmq8">*Mandatory</div>
                 </div>
               </div>
               <div className="col-md-4 col-sm-6">
@@ -364,6 +368,13 @@ const LocalCaseWorkListAdUpdate = ({
             </div>
           </div>
           <div className="row me-5" style={{ justifyContent: "right" }}>
+            <button
+              type="button"
+              className="btn text-white bg-primary mx-3"
+              onClick={hideModal}
+            >
+              Close
+            </button>
             <button
               type="button"
               className="btn text-white bg-primary"

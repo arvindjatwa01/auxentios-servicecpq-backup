@@ -642,101 +642,50 @@ export default function JobhourRecommend(props) {
     };
   };
 
-  const getFamilyStyle = (familyData) => {
-    return {
-      mr: 1,
-      my: 1,
-      backgroundColor:
-        selectedFamily && familyData.family === selectedFamily?.family
-          ? "#872FF7"
-          : "#FFF",
-      color:
-        selectedFamily && familyData.family === selectedFamily?.family
-          ? "#FFFFFF"
-          : "",
-      "&:hover": {
-        color: "#000",
-      },
-    };
-  };
-
-  // model style
-  const getModelStyle = (modelData) => {
-    return {
-      mr: 1,
-      my: 1,
-      backgroundColor:
-        selectedModel && modelData.modelNo === selectedModel?.modelNo
-          ? "#872FF7"
-          : "#FFF",
-      color:
-        selectedModel && modelData.modelNo === selectedModel?.modelNo
-          ? "#FFFFFF"
-          : "",
-      "&:hover": {
-        color: "#000",
-      },
-    };
-  };
-
-  const getPrefixStyle = (prefixData) => {
-    return {
-      mr: 1,
-      my: 1,
-      backgroundColor:
-        selectedPrefix && prefixData.prefixNo === selectedPrefix?.prefixNo
-          ? "#872FF7"
-          : "#FFF",
-      color:
-        selectedPrefix && prefixData.prefixNo === selectedPrefix?.prefixNo
-          ? "#FFFFFF"
-          : "",
-      "&:hover": {
-        color: "#000",
-      },
-    };
-  };
-
-  const getJobCodeStyle = (jobCodeData) => {
-    return {
-      mr: 1,
-      my: 1,
-      backgroundColor:
-        selectedJobCode && jobCodeData.jobCode === selectedJobCode?.jobCode
-          ? "#872FF7"
-          : "#FFF",
-      color:
-        selectedJobCode && jobCodeData.jobCode === selectedJobCode?.jobCode
-          ? "#FFFFFF"
-          : "",
-      "&:hover": {
-        color: "#000",
-      },
-    };
-  };
-
-  const getComponentCodeStyle = (componentCodeData) => {
-    return {
-      mr: 1,
-      my: 1,
-      backgroundColor:
-        selectedComponentCode &&
-        componentCodeData.componentCode === selectedComponentCode?.componentCode
-          ? "#872FF7"
-          : "#FFF",
-      color:
-        selectedComponentCode &&
-        componentCodeData.componentCode === selectedComponentCode?.componentCode
-          ? "#FFFFFF"
-          : "",
-      "&:hover": {
-        color: "#000",
-      },
-    };
+  const handleSelectServiceAttributes = (serviceName, row) => {
+    if (serviceName === "family") {
+      setSelectedFamily(row);
+      setSelectedModel(null);
+      setSelectedPrefix(null);
+      setSelectedJobCode(null);
+      setSelectedComponentCode(null);
+      setJobCode("");
+      setComponentCode("");
+    } else if (serviceName === "model") {
+      setSelectedModel(row);
+      setSelectedPrefix(null);
+      setSelectedJobCode(null);
+      setSelectedComponentCode(null);
+      setJobCode("");
+      setComponentCode("");
+    } else if (serviceName === "prefix") {
+      setSelectedPrefix(row);
+      setSelectedJobCode(null);
+      setSelectedComponentCode(null);
+      setJobCode("");
+      setComponentCode("");
+    } else if (serviceName === "jocCode") {
+      setSelectedJobCode(row);
+      setJobCode({
+        jobCode: row.jobCode,
+        description: row.jobCode,
+      });
+      setComponentCode("");
+      // setSearchJobCodeResults([row.jobCode])
+      setSelectedComponentCode(null);
+    } else if (serviceName === "componentCode") {
+      setSelectedComponentCode(row);
+      setJobHours(row.jobHours);
+      setComponentCode({
+        componentCode: row.componentCode,
+        description: row.componentCode,
+      });
+    }
   };
 
   const handleFamilySelect = (row) => {
     setSelectedFamily(row);
+    setSelectedSubService("model");
     setSelectedModel(null);
     setSelectedPrefix(null);
     setSelectedJobCode(null);
@@ -747,6 +696,7 @@ export default function JobhourRecommend(props) {
 
   const handleModelSelect = (row) => {
     setSelectedModel(row);
+    setSelectedSubService("prefix");
     setSelectedPrefix(null);
     setSelectedJobCode(null);
     setSelectedComponentCode(null);
@@ -756,6 +706,7 @@ export default function JobhourRecommend(props) {
 
   const handlePrefixSelect = (row) => {
     setSelectedPrefix(row);
+    setSelectedSubService("jobCode");
     setSelectedJobCode(null);
     setSelectedComponentCode(null);
     setJobCode("");
@@ -764,6 +715,7 @@ export default function JobhourRecommend(props) {
 
   const handleSelectJobCode = (row) => {
     setSelectedJobCode(row);
+    setSelectedSubService("componentCode");
     setJobCode({
       jobCode: row.jobCode,
       description: row.jobCode,
@@ -951,8 +903,49 @@ export default function JobhourRecommend(props) {
               </Fragment>
             </Grid>
           </Grid>
+          <Grid item xs={12}>
+            <Divider />
+          </Grid>
           <Grid container marginX={1}>
             <Grid item xs={12} md={6}>
+              <Typography
+                sx={{
+                  fontSize: 15,
+                  fontWeight: 500,
+                  margin: 1,
+                  marginTop: 1,
+                  marginBottom: 0,
+                }}
+              >
+                Selected Service Attributes
+              </Typography>
+              <Fragment>
+                <Card
+                  className="btn text-primary font-weight-500"
+                  variant="outlined"
+                  sx={{
+                    padding: 1,
+                    margin: 2,
+                    // width: "20%",
+                    borderRadius: 3,
+                    border: 2,
+                  }}
+                >
+                  <div className="row">
+                    <div className="col-6 pe-3">Model</div>
+                    <div
+                      className="col-6 pr-1"
+                      style={{
+                        border: "none",
+                        borderLeft: "1px solid #6f6f6f",
+                        paddingLeft: "5px",
+                      }}
+                    >
+                      AB2
+                    </div>
+                  </div>
+                </Card>
+              </Fragment>
               <Fragment>
                 {selectedFamily && (
                   <>
@@ -1095,7 +1088,9 @@ export default function JobhourRecommend(props) {
                   );
                 })}
             </Grid>
-
+            <Grid item xs={1} md={2}>
+              <Divider orientation="vertical" sx={{ mx: 1 }} />
+            </Grid>
             <Grid item xs={12} md={7}>
               <Grid item container xs={12}>
                 <Grid item xs={12} sx={{ my: 2 }}>

@@ -13,6 +13,9 @@ import { WorkListDash } from "./WorkListDashboard";
 import { Modal } from "react-bootstrap";
 import { NewWorkList } from "./NewWorkList";
 import LocalCaseWorkListAdUpdate from "./worklist/LocalCaseWorkListAdUpdate";
+import { callGetApi } from "services/ApiCaller";
+import { TODAY_TASKS_WORKLIST } from "services/CONSTANTS";
+import { API_SUCCESS } from "services/ResponseCode";
 
 const activityOptions = ["None", "Atria", "Callisto"];
 const workFlowOptions = ["None", "Atria"];
@@ -224,8 +227,17 @@ export const HomePage = () => {
   const [createWorklistShow, setCreateWorlistShow] = useState(false);
   const [showWorklistModal, setShowWorklistModal] = useState(false);
   const [refreshFlag, setRefreshFlag] = useState(0);
+  const [todayTasks, setTodayTasks] = useState([]);
 
   const [recordId, setRecordId] = useState(null);
+
+  useEffect(() => {
+    callGetApi(null, TODAY_TASKS_WORKLIST, (response) => {
+      if (response.status === API_SUCCESS) {
+        setTodayTasks(response.data);
+      }
+    });
+  }, []);
 
   const handleShowModal = () => {
     setShowWorklistModal(!showWorklistModal);
@@ -303,6 +315,30 @@ export const HomePage = () => {
                   sx={{ borderRadius: 4, marginTop: 2, height: 400 }}
                   variant="outlined"
                 >
+                  {todayTasks.length !== 0 ? (
+                    todayTasks.map((taskName, i) => (
+                      <Card
+                        variant="outlined"
+                        sx={{
+                          padding: 1,
+                          margin: 2,
+                          borderRadius: 3,
+                          width: "90%",
+                        }}
+                      >
+                        <div className="row">
+                          <div className="col-sm-12 text-dark">{taskName}</div>
+                        </div>
+                      </Card>
+                    ))
+                  ) : (
+                    <div className="row p-1 m-2">
+                      <div className="col-sm-12 text-primary font-weight-500 font-size-14">
+                        There are no tasks available for Today
+                      </div>
+                    </div>
+                  )}
+{/* 
                   {[
                     { taskName: "Submission A", submittedAt: "09:00 AM" },
                     { taskName: "Planning", submittedAt: "05:00 AM" },
@@ -323,7 +359,7 @@ export const HomePage = () => {
                         <div className="col-sm-5">{task.submittedAt}</div>
                       </div>
                     </Card>
-                  ))}
+                  ))} */}
                   <Card
                     className="btn bg-primary text-white"
                     variant="outlined"

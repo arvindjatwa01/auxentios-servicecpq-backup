@@ -1,5 +1,7 @@
 import FormControl from "@mui/material/FormControl";
 import TextField from "@mui/material/TextField";
+import SearchIcon from "@mui/icons-material/Search";
+import { InputAdornment } from "@mui/material";
 
 export default function SearchBox(props) {
   return (
@@ -11,6 +13,9 @@ export default function SearchBox(props) {
         size="small"
         variant="outlined"
         onChange={props.handleChange}
+        InputProps={{
+          startAdornment: <InputAdornment position="start"><SearchIcon /></InputAdornment>,
+        }}
       />
     </FormControl>
   );
