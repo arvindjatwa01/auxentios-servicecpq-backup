@@ -1,5 +1,5 @@
 // text utility for empty input 
-export const inputIsEmpty = (str) => {
+export const isEmptyInput = (str) => {
     if (!str || str === "" || str === null || str === undefined || str === 0) {
         return true;
     }

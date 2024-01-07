@@ -358,3 +358,6 @@ export const CREATE_WORKLIST = () => COMMON_SERVICE_URI + `worklist/case`
 // local-cases Worklist URIs
 export const Get_LOCAl_CASES_WORKLIST_GET = (pagination) => COMMON_SERVICE_URI + `worklist/local-cases${pagination}`;
 export const LOCAL_CASES_WORKLIST = COMMON_SERVICE_URI + `worklist/local-case`;
+
+export const WORKLIST_URL = COMMON_SERVICE_URI + `worklist`;
+export const TODAY_TASKS_WORKLIST = WORKLIST_URL + `/today-tasks`;

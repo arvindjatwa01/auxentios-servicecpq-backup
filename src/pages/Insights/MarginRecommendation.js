@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Typography from "@mui/material/Typography";
-import { Box, Card, Grid } from "@mui/material";
+import { Box, Button, Card, FormControl, Grid } from "@mui/material";
 import { GRID_STYLE } from "pages/Repair/CONSTANTS";
 import { DataGrid } from "@mui/x-data-grid";
 import {
@@ -101,8 +101,14 @@ const dummyMarginRecommendationData = [
     requiredFor: "Overhaul",
     predictedMargin: "21.8",
   },
-  
 ];
+
+const filterOptions = {
+  equipmentUsage: false,
+  avgAnnualRevnue: false,
+  contractOrWarranty: false,
+  requiredFor: false,
+};
 
 export default function MarginRecommendation(props) {
   const [isLoading, setIsLoading] = useState(false);
@@ -124,6 +130,10 @@ export default function MarginRecommendation(props) {
   const [requiredFor, setRequiredFor] = useState("");
   const [totalCount, setTotalCount] = useState(4);
   const [sortDetail, setSortDetail] = useState({ sortColumn: "", orderBy: "" });
+
+  const [tableType, setTableType] = useState("");
+  const [showMoreFilter, setShowMoreFilter] = useState(false);
+  const [showFilters, setShowFilters] = useState(filterOptions);
   const [columns, setColumns] = useState([]);
   useEffect(() => {
     // fetchDiscountGuidance(page, pageSize);
@@ -208,7 +218,12 @@ export default function MarginRecommendation(props) {
       flex: 1,
     },
     { field: "requiredFor", headerName: "Required For", flex: 1 },
-    { field: "predictedMargin", headerName: "Predicted Margin", flex: 1,  cellClassName: 'fw-bolder', },
+    {
+      field: "predictedMargin",
+      headerName: "Predicted Margin",
+      flex: 1,
+      cellClassName: "fw-bolder",
+    },
     // { field: "quantity", headerName: "Quantity", flex: 1 },
     // { field: "total", headerName: "Total", flex: 1 },
   ];
@@ -226,6 +241,36 @@ export default function MarginRecommendation(props) {
     "Scheduled Maintenance",
     "Repair",
   ];
+
+  const tablesNameOption = ["Premium", "Standard", "Ordinary"];
+
+  // table Type Change
+  const handleChangeTableType = (e) => {
+    setPart("");
+    setPartType("");
+    setStatus("");
+    setUsage("");
+    setMachineAge("");
+    setEquipmentUsage("");
+    setAvgAnnualRevnue("");
+    setContractOrWarranty("");
+    setRequiredFor("");
+    setTableType(e.target.value);
+    setShowMoreFilter(false);
+    setShowFilters(filterOptions);
+  };
+
+  const handleMoreFilters = () => {
+    setShowFilters({
+      equipmentUsage: equipmentUsage ? true : !showFilters.equipmentUsage,
+      avgAnnualRevnue: avgAnnualRevnue ? true : !showFilters.avgAnnualRevnue,
+      contractOrWarranty: contractOrWarranty
+        ? true
+        : !showFilters.contractOrWarranty,
+      requiredFor: requiredFor ? true : !showFilters.requiredFor,
+    });
+    setShowMoreFilter(!showMoreFilter);
+  };
 
   return (
     <div>
@@ -251,7 +296,13 @@ export default function MarginRecommendation(props) {
           <Typography sx={{ fontSize: 16, fontWeight: 600, margin: 2 }}>
             Margin Recommendation
           </Typography>
-          <Box sx={{ height: 500, marginBottom: 5, marginInline: 2 }}>
+          <Box
+            sx={{
+              marginBottom: 2,
+              marginInline: 2,
+              borderBottom: "1px solid #5c5c5cb3",
+            }}
+          >
             <SearchBox
               label={"Search Part"}
               value={part}
@@ -259,58 +310,107 @@ export default function MarginRecommendation(props) {
               size={250}
             />
             <SelectBox
-              label={"Part Type"}
-              value={partType}
-              options={partTypeOptions}
-              handleChange={(e) => setPartType(e.target.value)}
+              label={"Table Type"}
+              value={tableType}
+              options={tablesNameOption}
+              // handleChange={(e) => setTableType(e.target.value)}
+              handleChange={handleChangeTableType}
             />
-            <SelectBox
-              label={"Status"}
-              value={status}
-              options={statusOptions}
-              handleChange={(e) => setStatus(e.target.value)}
-            />
-            <SelectBox
-              label={"Usage"}
-              value={usage}
-              options={usageOptions}
-              handleChange={(e) => setUsage(e.target.value)}
-            />
-            <SelectBox
-              label={"Machine Age"}
-              value={machineAge}
-              options={machineAgeOptions}
-              handleChange={(e) => setMachineAge(e.target.value)}
-              size={150}
-            />
-            <SelectBox
-              label={"Equipment Usage"}
-              value={equipmentUsage}
-              options={equipmentUsageOptions}
-              handleChange={(e) => setEquipmentUsage(e.target.value)}
-              size={180}
-            />
-            <SelectBox
-              label={"Avg Annual Revenue"}
-              value={avgAnnualRevnue}
-              options={avgAnnualRevnueOptions}
-              handleChange={(e) => setAvgAnnualRevnue(e.target.value)}
-              size={190}
-            />
-            <SelectBox
-              label={"Contract or Warranty"}
-              value={contractOrWarranty}
-              options={contractOrWarrantyOptions}
-              handleChange={(e) => setContractOrWarranty(e.target.value)}
-              size={190}
-            />
-            <SelectBox
-              label={"Required For"}
-              value={requiredFor}
-              options={requiredForOptions}
-              handleChange={(e) => setRequiredFor(e.target.value)}
-              size={150}
-            />
+          </Box>
+          <Box sx={{ height: 500, marginBottom: 5, marginInline: 2 }}>
+            {tableType && tableType !== "Ordinary" && (
+              <>
+                <SelectBox
+                  label={"Part Type"}
+                  value={partType}
+                  options={partTypeOptions}
+                  handleChange={(e) => setPartType(e.target.value)}
+                  showClearIcon={true}
+                  handleUnselect={() => setPartType("")}
+                />
+                <SelectBox
+                  label={"Status"}
+                  value={status}
+                  options={statusOptions}
+                  handleChange={(e) => setStatus(e.target.value)}
+                  showClearIcon={true}
+                  handleUnselect={() => setStatus("")}
+                />
+                <SelectBox
+                  label={"Usage"}
+                  value={usage}
+                  options={usageOptions}
+                  handleChange={(e) => setUsage(e.target.value)}
+                  showClearIcon={true}
+                  handleUnselect={() => setUsage("")}
+                />
+                <SelectBox
+                  label={"Machine Age"}
+                  value={machineAge}
+                  options={machineAgeOptions}
+                  handleChange={(e) => setMachineAge(e.target.value)}
+                  size={150}
+                  showClearIcon={true}
+                  handleUnselect={() => setMachineAge("")}
+                />
+                {showFilters.equipmentUsage && (
+                  <SelectBox
+                    label={"Equipment Usage"}
+                    value={equipmentUsage}
+                    options={equipmentUsageOptions}
+                    handleChange={(e) => setEquipmentUsage(e.target.value)}
+                    size={180}
+                    showClearIcon={true}
+                    handleUnselect={() => setEquipmentUsage("")}
+                  />
+                )}
+                {showFilters.avgAnnualRevnue && (
+                  <SelectBox
+                    label={"Avg Annual Revenue"}
+                    value={avgAnnualRevnue}
+                    options={avgAnnualRevnueOptions}
+                    handleChange={(e) => setAvgAnnualRevnue(e.target.value)}
+                    size={190}
+                    showClearIcon={true}
+                    handleUnselect={() => setAvgAnnualRevnue("")}
+                  />
+                )}
+                {showFilters.contractOrWarranty && (
+                  <SelectBox
+                    label={"Contract or Warranty"}
+                    value={contractOrWarranty}
+                    options={contractOrWarrantyOptions}
+                    handleChange={(e) => setContractOrWarranty(e.target.value)}
+                    size={190}
+                    showClearIcon={true}
+                    handleUnselect={() => setContractOrWarranty("")}
+                  />
+                )}
+                {showFilters.requiredFor && (
+                  <SelectBox
+                    label={"Required For"}
+                    value={requiredFor}
+                    options={requiredForOptions}
+                    handleChange={(e) => setRequiredFor(e.target.value)}
+                    size={150}
+                    showClearIcon={true}
+                    handleUnselect={() => setRequiredFor("")}
+                  />
+                )}
+                <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+                  <Button
+                    // onClick={() => setShowMoreFilter(true)}
+                    onClick={handleMoreFilters}
+                    variant="contained"
+                    sx={{ backgroundColor: "#872FF7", color: "#FFFFFF" }}
+                  >
+                    {`${showMoreFilter ? "Less" : "More"} Filters ${
+                      showMoreFilter ? "-" : "+"
+                    }`}
+                  </Button>
+                </FormControl>
+              </>
+            )}
 
             <DataGrid
               loading={isLoading}
