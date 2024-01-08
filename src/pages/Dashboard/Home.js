@@ -14,7 +14,11 @@ import { Modal } from "react-bootstrap";
 import { NewWorkList } from "./NewWorkList";
 import LocalCaseWorkListAdUpdate from "./worklist/LocalCaseWorkListAdUpdate";
 import { callGetApi } from "services/ApiCaller";
-import { TODAY_TASKS_WORKLIST } from "services/CONSTANTS";
+import {
+  GET_QUOTE_FAVORITE_AS_REVIEW_ITEMS_GET,
+  GEt_QUOTE_SAVED_TASK_GET,
+  TODAY_TASKS_WORKLIST,
+} from "services/CONSTANTS";
 import { API_SUCCESS } from "services/ResponseCode";
 
 const activityOptions = ["None", "Atria", "Callisto"];
@@ -228,13 +232,32 @@ export const HomePage = () => {
   const [showWorklistModal, setShowWorklistModal] = useState(false);
   const [refreshFlag, setRefreshFlag] = useState(0);
   const [todayTasks, setTodayTasks] = useState([]);
+  const [savedTasks, setSavedTasks] = useState([]);
+  const [itemsToReview, setItemsToReview] = useState([]);
 
   const [recordId, setRecordId] = useState(null);
 
   useEffect(() => {
+    // get Today Task WorkList
     callGetApi(null, TODAY_TASKS_WORKLIST, (response) => {
       if (response.status === API_SUCCESS) {
         setTodayTasks(response.data);
+      }
+    });
+
+    // get saved tasks
+    callGetApi(null, GEt_QUOTE_SAVED_TASK_GET, (response) => {
+      if (response.status === API_SUCCESS) {
+        const responseData = response.data;
+        setSavedTasks(responseData);
+      }
+    });
+
+    // get item to Review As Favorite
+    callGetApi(null, GET_QUOTE_FAVORITE_AS_REVIEW_ITEMS_GET, (response) => {
+      if (response.status === API_SUCCESS) {
+        const responseData = response.data;
+        setItemsToReview(responseData);
       }
     });
   }, []);
@@ -338,7 +361,7 @@ export const HomePage = () => {
                       </div>
                     </div>
                   )}
-{/* 
+                  {/* 
                   {[
                     { taskName: "Submission A", submittedAt: "09:00 AM" },
                     { taskName: "Planning", submittedAt: "05:00 AM" },
