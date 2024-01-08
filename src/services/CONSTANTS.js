@@ -299,6 +299,8 @@ export const SEARCH_QUOTE_URL = () => QUOTE_REST_SERVICE + "search?search=";
 
 export const SEARCH_QUOTE_BY_FIELDS = () => QUOTE_REST_SERVICE + "/search-by-fields?quote_type=";
 export const RECENT_QUOTES_COMMON_PATH = () => QUOTE_REST_SERVICE + "/recent?quote_type=";
+export const GEt_QUOTE_SAVED_TASK_GET = QUOTE_REST_SERVICE + "/saved-task";
+export const GET_QUOTE_FAVORITE_AS_REVIEW_ITEMS_GET = QUOTE_REST_SERVICE + "/favorite"; 
 
 // Solution Quote
 

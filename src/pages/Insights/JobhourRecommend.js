@@ -907,7 +907,7 @@ export default function JobhourRecommend(props) {
             <Divider />
           </Grid>
           <Grid container marginX={1}>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={12}>
               <Typography
                 sx={{
                   fontSize: 15,
@@ -931,22 +931,102 @@ export default function JobhourRecommend(props) {
                     border: 2,
                   }}
                 >
-                  <div className="row">
-                    <div className="col-6 pe-3">Model</div>
-                    <div
-                      className="col-6 pr-1"
-                      style={{
-                        border: "none",
-                        borderLeft: "1px solid #6f6f6f",
-                        paddingLeft: "5px",
-                      }}
-                    >
-                      AB2
-                    </div>
-                  </div>
+                  <span
+                    className="mr-2 pr-2"
+                    style={{ borderRight: "1px solid #000" }}
+                  >
+                    Family
+                  </span>
+                  <span className="ml-0">
+                    {selectedFamily?.family || "Select Family"}
+                  </span>
+                </Card>
+                <Card
+                  className="btn text-primary font-weight-500"
+                  variant="outlined"
+                  sx={{
+                    padding: 1,
+                    margin: 2,
+                    // width: "20%",
+                    borderRadius: 3,
+                    border: 2,
+                  }}
+                >
+                  <span
+                    className="mr-2 pr-2"
+                    style={{ borderRight: "1px solid #000" }}
+                  >
+                    Model
+                  </span>
+                  <span className="ml-0">
+                    {selectedModel?.modelNo || "Select Model"}
+                  </span>
+                </Card>
+                <Card
+                  className="btn text-primary font-weight-500"
+                  variant="outlined"
+                  sx={{
+                    padding: 1,
+                    margin: 2,
+                    // width: "20%",
+                    borderRadius: 3,
+                    border: 2,
+                  }}
+                >
+                  <span
+                    className="mr-2 pr-2"
+                    style={{ borderRight: "1px solid #000" }}
+                  >
+                    Prefix
+                  </span>
+                  <span className="ml-0">
+                    {selectedPrefix?.prefixNo || "Selected Prefix"}
+                  </span>
+                </Card>
+                <Card
+                  className="btn text-primary font-weight-500"
+                  variant="outlined"
+                  sx={{
+                    padding: 1,
+                    margin: 2,
+                    // width: "20%",
+                    borderRadius: 3,
+                    border: 2,
+                  }}
+                >
+                  <span
+                    className="mr-2 pr-2"
+                    style={{ borderRight: "1px solid #000" }}
+                  >
+                    Job Code
+                  </span>
+                  <span className="ml-0">
+                    {selectedJobCode?.jobCode || "Select Job Code"}
+                  </span>
+                </Card>
+                <Card
+                  className="btn text-primary font-weight-500"
+                  variant="outlined"
+                  sx={{
+                    padding: 1,
+                    margin: 2,
+                    // width: "20%",
+                    borderRadius: 3,
+                    border: 2,
+                  }}
+                >
+                  <span
+                    className="mr-2 pr-2"
+                    style={{ borderRight: "1px solid #000" }}
+                  >
+                    Component Code
+                  </span>
+                  <span className="ml-0">
+                    {componentCode?.componentCode || "Select Component Code"}
+                  </span>
                 </Card>
               </Fragment>
-              <Fragment>
+              {/* <Fragment>
                 {selectedFamily && (
                   <>
                     <Chip
@@ -1005,7 +1085,7 @@ export default function JobhourRecommend(props) {
                     />
                   </>
                 )}
-              </Fragment>
+              </Fragment> */}
             </Grid>
           </Grid>
           <Grid item xs={12}>

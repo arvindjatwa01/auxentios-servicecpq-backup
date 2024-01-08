@@ -227,6 +227,64 @@ export default function MarginRecommendation(props) {
     // { field: "quantity", headerName: "Quantity", flex: 1 },
     // { field: "total", headerName: "Total", flex: 1 },
   ];
+
+  const premiumTableColumns = [
+    { field: "partNumber", headerName: "Part #", flex: 1 },
+    { field: "class", headerName: "Class", flex: 1 },
+    { field: "description", headerName: "Description", flex: 1 },
+    { field: "costPrice", headerName: "Cost Price", flex: 1 },
+    { field: "partType", headerName: "Part Type", width: 80 },
+    { field: "status", headerName: "Status", width: 80 },
+    { field: "usage", headerName: "Usage", width: 80 },
+    { field: "machineAge", headerName: "Machine Age", width: 80 },
+    { field: "equipmentUsage", headerName: "Equipment Usage", flex: 1 },
+    { field: "avgAnnualRevenue", headerName: "Avg Annual Revenue", flex: 1 },
+    {
+      field: "contractOrWarranty",
+      headerName: "Contract or Warranty",
+      flex: 1,
+    },
+    { field: "requiredFor", headerName: "Required For", flex: 1 },
+    {
+      field: "predictedMargin",
+      headerName: "Predicted Margin",
+      flex: 1,
+      cellClassName: "fw-bolder",
+    },
+  ];
+
+  const standardTableColumns = [
+    { field: "partNumber", headerName: "Part #", flex: 1 },
+    { field: "class", headerName: "Class", flex: 1 },
+    { field: "description", headerName: "Description", flex: 1 },
+    { field: "costPrice", headerName: "Cost Price", flex: 1 },
+    { field: "machineAge", headerName: "Machine Age", width: 80 },
+    { field: "equipmentUsage", headerName: "Equipment Usage", flex: 1 },
+    { field: "buyerType", headerName: "Buyer Type", width: 80 },
+    { field: "avgAnnualRevenue", headerName: "Avg Annual Revenue", flex: 1 },
+    { field: "requiredFor", headerName: "Required For", flex: 1 },
+    {
+      field: "predictedMargin",
+      headerName: "Predicted Margin",
+      flex: 1,
+      cellClassName: "fw-bolder",
+    },
+  ];
+
+  const ordinaryTableColumns = [
+    { field: "partNumber", headerName: "Part #", flex: 1 },
+    { field: "class", headerName: "Class", flex: 1 },
+    { field: "description", headerName: "Description", flex: 1 },
+    { field: "costPrice", headerName: "Cost Price", flex: 1 },
+    { field: "requiredFor", headerName: "Required For", flex: 1 },
+    {
+      field: "predictedMargin",
+      headerName: "Predicted Margin",
+      flex: 1,
+      cellClassName: "fw-bolder",
+    },
+  ];
+
   const orderOptions = ["Planned", "Breakdown"];
   const partTypeOptions = ["New", "Reman", "Refurbish"];
   const statusOptions = ["Active", "Discontinued", "Inactivate"];
@@ -287,7 +345,7 @@ export default function MarginRecommendation(props) {
         <Card
           sx={{
             borderRadius: 4,
-            height: 700,
+            minHeight: 700,
             width: "100%",
             margin: 2,
           }}
@@ -315,146 +373,354 @@ export default function MarginRecommendation(props) {
               options={tablesNameOption}
               // handleChange={(e) => setTableType(e.target.value)}
               handleChange={handleChangeTableType}
+              showClearIcon={true}
+              handleUnselect={() => setTableType("")}
             />
           </Box>
-          <Box sx={{ height: 500, marginBottom: 5, marginInline: 2 }}>
-            {tableType && tableType !== "Ordinary" && (
-              <>
-                <SelectBox
-                  label={"Part Type"}
-                  value={partType}
-                  options={partTypeOptions}
-                  handleChange={(e) => setPartType(e.target.value)}
-                  showClearIcon={true}
-                  handleUnselect={() => setPartType("")}
-                />
-                <SelectBox
-                  label={"Status"}
-                  value={status}
-                  options={statusOptions}
-                  handleChange={(e) => setStatus(e.target.value)}
-                  showClearIcon={true}
-                  handleUnselect={() => setStatus("")}
-                />
-                <SelectBox
-                  label={"Usage"}
-                  value={usage}
-                  options={usageOptions}
-                  handleChange={(e) => setUsage(e.target.value)}
-                  showClearIcon={true}
-                  handleUnselect={() => setUsage("")}
-                />
-                <SelectBox
-                  label={"Machine Age"}
-                  value={machineAge}
-                  options={machineAgeOptions}
-                  handleChange={(e) => setMachineAge(e.target.value)}
-                  size={150}
-                  showClearIcon={true}
-                  handleUnselect={() => setMachineAge("")}
-                />
-                {showFilters.equipmentUsage && (
+          {(tableType === "" || tableType === "Premium") && (
+            <Box
+              sx={{
+                height: 500,
+                marginBottom: 5,
+                marginInline: 2,
+              }}
+            >
+              <Typography sx={{ fontSize: 16, fontWeight: 600, marginTop: 2 }}>
+                Premium Table
+              </Typography>
+              {tableType === "Premium" && (
+                <>
                   <SelectBox
-                    label={"Equipment Usage"}
-                    value={equipmentUsage}
-                    options={equipmentUsageOptions}
-                    handleChange={(e) => setEquipmentUsage(e.target.value)}
-                    size={180}
+                    label={"Part Type"}
+                    value={partType}
+                    options={partTypeOptions}
+                    handleChange={(e) => setPartType(e.target.value)}
                     showClearIcon={true}
-                    handleUnselect={() => setEquipmentUsage("")}
+                    handleUnselect={() => setPartType("")}
                   />
-                )}
-                {showFilters.avgAnnualRevnue && (
                   <SelectBox
-                    label={"Avg Annual Revenue"}
-                    value={avgAnnualRevnue}
-                    options={avgAnnualRevnueOptions}
-                    handleChange={(e) => setAvgAnnualRevnue(e.target.value)}
-                    size={190}
+                    label={"Status"}
+                    value={status}
+                    options={statusOptions}
+                    handleChange={(e) => setStatus(e.target.value)}
                     showClearIcon={true}
-                    handleUnselect={() => setAvgAnnualRevnue("")}
+                    handleUnselect={() => setStatus("")}
                   />
-                )}
-                {showFilters.contractOrWarranty && (
                   <SelectBox
-                    label={"Contract or Warranty"}
-                    value={contractOrWarranty}
-                    options={contractOrWarrantyOptions}
-                    handleChange={(e) => setContractOrWarranty(e.target.value)}
-                    size={190}
+                    label={"Usage"}
+                    value={usage}
+                    options={usageOptions}
+                    handleChange={(e) => setUsage(e.target.value)}
                     showClearIcon={true}
-                    handleUnselect={() => setContractOrWarranty("")}
+                    handleUnselect={() => setUsage("")}
                   />
-                )}
-                {showFilters.requiredFor && (
                   <SelectBox
-                    label={"Required For"}
-                    value={requiredFor}
-                    options={requiredForOptions}
-                    handleChange={(e) => setRequiredFor(e.target.value)}
+                    label={"Machine Age"}
+                    value={machineAge}
+                    options={machineAgeOptions}
+                    handleChange={(e) => setMachineAge(e.target.value)}
                     size={150}
                     showClearIcon={true}
-                    handleUnselect={() => setRequiredFor("")}
+                    handleUnselect={() => setMachineAge("")}
                   />
-                )}
-                <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-                  <Button
-                    // onClick={() => setShowMoreFilter(true)}
-                    onClick={handleMoreFilters}
-                    variant="contained"
-                    sx={{ backgroundColor: "#872FF7", color: "#FFFFFF" }}
-                  >
-                    {`${showMoreFilter ? "Less" : "More"} Filters ${
-                      showMoreFilter ? "-" : "+"
-                    }`}
-                  </Button>
-                </FormControl>
-              </>
-            )}
-
-            <DataGrid
-              loading={isLoading}
-              sx={GRID_STYLE}
-              getRowId={(row) => row.index}
-              page={page}
-              pageSize={pageSize}
-              onPageChange={(newPage) =>
-                fetchDiscountGuidance(newPage, pageSize)
-              }
-              onPageSizeChange={(newPageSize) =>
-                fetchDiscountGuidance(page, newPageSize)
-              }
-              rows={marginRecommendationData}
-              columns={customerDetailColumns}
-              // columns={columns}
-              // columnVisibilityModel={columnVisibilityModel}
-              // onColumnVisibilityModelChange={(newModel) =>
-              //     setColumnVisibilityModel(newModel)
-              // }
-              rowsPerPageOptions={[10, 20, 50]}
-              paginationMode="server"
-              rowCount={totalCount}
-              // components={{
-              //     Toolbar: CustomToolbar,
-              // }}
-              // componentsProps={{
-              //     panel: {
-              //         anchorEl: columnButtonEl,
-              //         placement: "bottom-end"
-              //     },
-              //     toolbar: {
-              //         setColumnButtonEl
-              //     }
-              // }}
-              // localeText={{ toolbarColumns: "Select Columns" }}
-              checkboxSelection={true}
-              keepNonExistentRowsSelected
-              onSelectionModelChange={(newRowSelectionModel) => {
-                setRowSelectionModel(newRowSelectionModel);
-              }}
-              selectionModel={rowSelectionModel}
-            />
-          </Box>
+                  {showFilters.equipmentUsage && (
+                    <SelectBox
+                      label={"Equipment Usage"}
+                      value={equipmentUsage}
+                      options={equipmentUsageOptions}
+                      handleChange={(e) => setEquipmentUsage(e.target.value)}
+                      size={180}
+                      showClearIcon={true}
+                      handleUnselect={() => setEquipmentUsage("")}
+                    />
+                  )}
+                  {showFilters.avgAnnualRevnue && (
+                    <SelectBox
+                      label={"Avg Annual Revenue"}
+                      value={avgAnnualRevnue}
+                      options={avgAnnualRevnueOptions}
+                      handleChange={(e) => setAvgAnnualRevnue(e.target.value)}
+                      size={190}
+                      showClearIcon={true}
+                      handleUnselect={() => setAvgAnnualRevnue("")}
+                    />
+                  )}
+                  {showFilters.contractOrWarranty && (
+                    <SelectBox
+                      label={"Contract or Warranty"}
+                      value={contractOrWarranty}
+                      options={contractOrWarrantyOptions}
+                      handleChange={(e) =>
+                        setContractOrWarranty(e.target.value)
+                      }
+                      size={190}
+                      showClearIcon={true}
+                      handleUnselect={() => setContractOrWarranty("")}
+                    />
+                  )}
+                  {showFilters.requiredFor && (
+                    <SelectBox
+                      label={"Required For"}
+                      value={requiredFor}
+                      options={requiredForOptions}
+                      handleChange={(e) => setRequiredFor(e.target.value)}
+                      size={150}
+                      showClearIcon={true}
+                      handleUnselect={() => setRequiredFor("")}
+                    />
+                  )}
+                  <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+                    <Button
+                      // onClick={() => setShowMoreFilter(true)}
+                      onClick={handleMoreFilters}
+                      variant="contained"
+                      size={"small"}
+                      sx={{ backgroundColor: "#872FF7", color: "#FFFFFF" }}
+                    >
+                      {`${showMoreFilter ? "Less" : "More"} Filters ${
+                        showMoreFilter ? "-" : "+"
+                      }`}
+                    </Button>
+                  </FormControl>
+                </>
+              )}
+              <DataGrid
+                loading={isLoading}
+                sx={GRID_STYLE}
+                getRowId={(row) => row.index}
+                page={page}
+                pageSize={pageSize}
+                onPageChange={(newPage) =>
+                  fetchDiscountGuidance(newPage, pageSize)
+                }
+                onPageSizeChange={(newPageSize) =>
+                  fetchDiscountGuidance(page, newPageSize)
+                }
+                rows={marginRecommendationData}
+                columns={customerDetailColumns}
+                // columns={columns}
+                // columnVisibilityModel={columnVisibilityModel}
+                // onColumnVisibilityModelChange={(newModel) =>
+                //     setColumnVisibilityModel(newModel)
+                // }
+                rowsPerPageOptions={[10, 20, 50]}
+                paginationMode="server"
+                rowCount={totalCount}
+                // components={{
+                //     Toolbar: CustomToolbar,
+                // }}
+                // componentsProps={{
+                //     panel: {
+                //         anchorEl: columnButtonEl,
+                //         placement: "bottom-end"
+                //     },
+                //     toolbar: {
+                //         setColumnButtonEl
+                //     }
+                // }}
+                // localeText={{ toolbarColumns: "Select Columns" }}
+                checkboxSelection={true}
+                keepNonExistentRowsSelected
+                onSelectionModelChange={(newRowSelectionModel) => {
+                  setRowSelectionModel(newRowSelectionModel);
+                }}
+                selectionModel={rowSelectionModel}
+              />
+            </Box>
+          )}
+          {(tableType === "" || tableType === "Standard") && (
+            <Box sx={{ height: 500, marginBottom: 5, marginInline: 2 }}>
+              <Typography sx={{ fontSize: 16, fontWeight: 600, marginTop: 2 }}>
+                Standard Table
+              </Typography>
+              {tableType === "Standard" && (
+                <>
+                  <SelectBox
+                    label={"Part Type"}
+                    value={partType}
+                    options={partTypeOptions}
+                    handleChange={(e) => setPartType(e.target.value)}
+                    showClearIcon={true}
+                    handleUnselect={() => setPartType("")}
+                  />
+                  <SelectBox
+                    label={"Status"}
+                    value={status}
+                    options={statusOptions}
+                    handleChange={(e) => setStatus(e.target.value)}
+                    showClearIcon={true}
+                    handleUnselect={() => setStatus("")}
+                  />
+                  <SelectBox
+                    label={"Usage"}
+                    value={usage}
+                    options={usageOptions}
+                    handleChange={(e) => setUsage(e.target.value)}
+                    showClearIcon={true}
+                    handleUnselect={() => setUsage("")}
+                  />
+                  <SelectBox
+                    label={"Machine Age"}
+                    value={machineAge}
+                    options={machineAgeOptions}
+                    handleChange={(e) => setMachineAge(e.target.value)}
+                    size={150}
+                    showClearIcon={true}
+                    handleUnselect={() => setMachineAge("")}
+                  />
+                  {showFilters.equipmentUsage && (
+                    <SelectBox
+                      label={"Equipment Usage"}
+                      value={equipmentUsage}
+                      options={equipmentUsageOptions}
+                      handleChange={(e) => setEquipmentUsage(e.target.value)}
+                      size={180}
+                      showClearIcon={true}
+                      handleUnselect={() => setEquipmentUsage("")}
+                    />
+                  )}
+                  {showFilters.avgAnnualRevnue && (
+                    <SelectBox
+                      label={"Avg Annual Revenue"}
+                      value={avgAnnualRevnue}
+                      options={avgAnnualRevnueOptions}
+                      handleChange={(e) => setAvgAnnualRevnue(e.target.value)}
+                      size={190}
+                      showClearIcon={true}
+                      handleUnselect={() => setAvgAnnualRevnue("")}
+                    />
+                  )}
+                  {showFilters.contractOrWarranty && (
+                    <SelectBox
+                      label={"Contract or Warranty"}
+                      value={contractOrWarranty}
+                      options={contractOrWarrantyOptions}
+                      handleChange={(e) =>
+                        setContractOrWarranty(e.target.value)
+                      }
+                      size={190}
+                      showClearIcon={true}
+                      handleUnselect={() => setContractOrWarranty("")}
+                    />
+                  )}
+                  {showFilters.requiredFor && (
+                    <SelectBox
+                      label={"Required For"}
+                      value={requiredFor}
+                      options={requiredForOptions}
+                      handleChange={(e) => setRequiredFor(e.target.value)}
+                      size={150}
+                      showClearIcon={true}
+                      handleUnselect={() => setRequiredFor("")}
+                    />
+                  )}
+                  <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+                    <Button
+                      // onClick={() => setShowMoreFilter(true)}
+                      onClick={handleMoreFilters}
+                      variant="contained"
+                      sx={{ backgroundColor: "#872FF7", color: "#FFFFFF" }}
+                    >
+                      {`${showMoreFilter ? "Less" : "More"} Filters ${
+                        showMoreFilter ? "-" : "+"
+                      }`}
+                    </Button>
+                  </FormControl>
+                </>
+              )}
+              <DataGrid
+                loading={isLoading}
+                sx={GRID_STYLE}
+                getRowId={(row) => row.index}
+                page={page}
+                pageSize={pageSize}
+                onPageChange={(newPage) =>
+                  fetchDiscountGuidance(newPage, pageSize)
+                }
+                onPageSizeChange={(newPageSize) =>
+                  fetchDiscountGuidance(page, newPageSize)
+                }
+                rows={marginRecommendationData}
+                columns={standardTableColumns}
+                // columns={columns}
+                // columnVisibilityModel={columnVisibilityModel}
+                // onColumnVisibilityModelChange={(newModel) =>
+                //     setColumnVisibilityModel(newModel)
+                // }
+                rowsPerPageOptions={[10, 20, 50]}
+                paginationMode="server"
+                rowCount={totalCount}
+                // components={{
+                //     Toolbar: CustomToolbar,
+                // }}
+                // componentsProps={{
+                //     panel: {
+                //         anchorEl: columnButtonEl,
+                //         placement: "bottom-end"
+                //     },
+                //     toolbar: {
+                //         setColumnButtonEl
+                //     }
+                // }}
+                // localeText={{ toolbarColumns: "Select Columns" }}
+                checkboxSelection={true}
+                keepNonExistentRowsSelected
+                onSelectionModelChange={(newRowSelectionModel) => {
+                  setRowSelectionModel(newRowSelectionModel);
+                }}
+                selectionModel={rowSelectionModel}
+              />
+            </Box>
+          )}
+          {(tableType === "" || tableType === "Ordinary") && (
+            <Box sx={{ height: 500, marginBottom: 5, marginInline: 2 }}>
+              <Typography sx={{ fontSize: 16, fontWeight: 600, marginTop: 2 }}>
+                Ordinary Table
+              </Typography>
+              <DataGrid
+                loading={isLoading}
+                sx={GRID_STYLE}
+                getRowId={(row) => row.index}
+                page={page}
+                pageSize={pageSize}
+                onPageChange={(newPage) =>
+                  fetchDiscountGuidance(newPage, pageSize)
+                }
+                onPageSizeChange={(newPageSize) =>
+                  fetchDiscountGuidance(page, newPageSize)
+                }
+                rows={marginRecommendationData}
+                columns={ordinaryTableColumns}
+                // columns={columns}
+                // columnVisibilityModel={columnVisibilityModel}
+                // onColumnVisibilityModelChange={(newModel) =>
+                //     setColumnVisibilityModel(newModel)
+                // }
+                rowsPerPageOptions={[10, 20, 50]}
+                paginationMode="server"
+                rowCount={totalCount}
+                // components={{
+                //     Toolbar: CustomToolbar,
+                // }}
+                // componentsProps={{
+                //     panel: {
+                //         anchorEl: columnButtonEl,
+                //         placement: "bottom-end"
+                //     },
+                //     toolbar: {
+                //         setColumnButtonEl
+                //     }
+                // }}
+                // localeText={{ toolbarColumns: "Select Columns" }}
+                checkboxSelection={true}
+                keepNonExistentRowsSelected
+                onSelectionModelChange={(newRowSelectionModel) => {
+                  setRowSelectionModel(newRowSelectionModel);
+                }}
+                selectionModel={rowSelectionModel}
+              />
+            </Box>
+          )}
         </Card>
       </Grid>
     </div>
