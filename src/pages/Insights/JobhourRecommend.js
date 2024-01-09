@@ -27,15 +27,16 @@ export default function JobhourRecommend(props) {
   const [selectedPrefix, setSelectedPrefix] = useState(null);
   const [selectedJobCode, setSelectedJobCode] = useState(null);
   const [selectedComponentCode, setSelectedComponentCode] = useState(null);
-  const [make, setMake] = useState(null);
-  const [family, setFamily] = useState([]);
-  const [model, setModel] = useState([]);
-  const [prefix, setPrefix] = useState([]);
-  const [jobCode, setJobCode] = useState("");
-  const [componentCode, setComponentCode] = useState("");
   const [searchJobCodeResults, setSearchJobCodeResults] = useState([]);
   const [searchCompCodeResults, setSearchCompCodeResults] = useState([]);
   const [jobHours, setJobHours] = useState(0);
+
+  const [make, setMake] = useState(null);
+  const [family, setFamily] = useState(null);
+  const [model, setModel] = useState([]);
+  const [prefix, setPrefix] = useState([]);
+  const [jobCode, setJobCode] = useState(null);
+  const [componentCode, setComponentCode] = useState(null);
 
   const defaultServiceAttributeValue = [
     {
@@ -775,6 +776,28 @@ export default function JobhourRecommend(props) {
               <Fragment>
                 <Chip
                   variant="outlined"
+                  label="Make"
+                  size="small"
+                  onClick={(e) => handleSelectSubService("make")}
+                  // sx={() => getStyle("family")}
+                  sx={{
+                    mr: 1,
+                    my: 1,
+                    backgroundColor:
+                      selectedSubService === "make" || make
+                        ? "#872FF7"
+                        : "#FFF",
+                    color:
+                      selectedSubService === "make" || make ? "#FFFFFF" : "",
+                    "&:hover": {
+                      backgroundColor: "#6315c7 !important",
+                      color: "#FFFFFF",
+                    },
+                  }}
+                />
+                <KeyboardArrowDownIcon />
+                <Chip
+                  variant="outlined"
                   label="Family"
                   size="small"
                   onClick={(e) => handleSelectSubService("family")}
@@ -924,8 +947,9 @@ export default function JobhourRecommend(props) {
                   className="btn text-primary font-weight-500"
                   variant="outlined"
                   sx={{
-                    padding: 1,
-                    margin: 2,
+                    padding: 0.5,
+                    paddingX: 0.8,
+                    margin: 1,
                     // width: "20%",
                     borderRadius: 3,
                     border: 2,
@@ -933,11 +957,32 @@ export default function JobhourRecommend(props) {
                 >
                   <span
                     className="mr-2 pr-2"
-                    style={{ borderRight: "1px solid #000" }}
+                    style={{ borderRight: "2px solid #00000" }}
+                  >
+                    Make
+                  </span>
+                  <span className="ml-0">
+                    {make?.make || "Select Make"}
+                  </span>
+                </Card>
+                <Card
+                  className="btn text-primary font-weight-500"
+                  variant="outlined"
+                  sx={{
+                    padding: 0.5,
+                    margin: 1,
+                    // width: "20%",
+                    borderRadius: 3,
+                    border: 2,
+                  }}
+                >
+                  <span
+                    className="mr-2 pr-2"
+                    style={{ borderRight: "2px solid #00000" }}
                   >
                     Family
                   </span>
-                  <span className="ml-0">
+                  <span className="ml-0 pr-2">
                     {selectedFamily?.family || "Select Family"}
                   </span>
                 </Card>
@@ -945,8 +990,8 @@ export default function JobhourRecommend(props) {
                   className="btn text-primary font-weight-500"
                   variant="outlined"
                   sx={{
-                    padding: 1,
-                    margin: 2,
+                    padding: 0.5,
+                    margin: 1,
                     // width: "20%",
                     borderRadius: 3,
                     border: 2,
@@ -954,11 +999,11 @@ export default function JobhourRecommend(props) {
                 >
                   <span
                     className="mr-2 pr-2"
-                    style={{ borderRight: "1px solid #000" }}
+                    style={{ borderRight: "2px solid #00000" }}
                   >
                     Model
                   </span>
-                  <span className="ml-0">
+                  <span className="ml-0 pr-2">
                     {selectedModel?.modelNo || "Select Model"}
                   </span>
                 </Card>
@@ -966,8 +1011,8 @@ export default function JobhourRecommend(props) {
                   className="btn text-primary font-weight-500"
                   variant="outlined"
                   sx={{
-                    padding: 1,
-                    margin: 2,
+                    padding: 0.5,
+                    margin: 1,
                     // width: "20%",
                     borderRadius: 3,
                     border: 2,
@@ -975,11 +1020,11 @@ export default function JobhourRecommend(props) {
                 >
                   <span
                     className="mr-2 pr-2"
-                    style={{ borderRight: "1px solid #000" }}
+                    style={{ borderRight: "2px solid #00000" }}
                   >
                     Prefix
                   </span>
-                  <span className="ml-0">
+                  <span className="ml-0 pr-2">
                     {selectedPrefix?.prefixNo || "Selected Prefix"}
                   </span>
                 </Card>
@@ -987,8 +1032,8 @@ export default function JobhourRecommend(props) {
                   className="btn text-primary font-weight-500"
                   variant="outlined"
                   sx={{
-                    padding: 1,
-                    margin: 2,
+                    padding: 0.5,
+                    margin: 1,
                     // width: "20%",
                     borderRadius: 3,
                     border: 2,
@@ -996,11 +1041,11 @@ export default function JobhourRecommend(props) {
                 >
                   <span
                     className="mr-2 pr-2"
-                    style={{ borderRight: "1px solid #000" }}
+                    style={{ borderRight: "2px solid #00000" }}
                   >
                     Job Code
                   </span>
-                  <span className="ml-0">
+                  <span className="ml-0 pr-2">
                     {selectedJobCode?.jobCode || "Select Job Code"}
                   </span>
                 </Card>
@@ -1008,8 +1053,8 @@ export default function JobhourRecommend(props) {
                   className="btn text-primary font-weight-500"
                   variant="outlined"
                   sx={{
-                    padding: 1,
-                    margin: 2,
+                    padding: 0.5,
+                    margin: 1,
                     // width: "20%",
                     borderRadius: 3,
                     border: 2,
@@ -1017,11 +1062,11 @@ export default function JobhourRecommend(props) {
                 >
                   <span
                     className="mr-2 pr-2"
-                    style={{ borderRight: "1px solid #000" }}
+                    style={{ borderRight: "2px solid #00000" }}
                   >
                     Component Code
                   </span>
-                  <span className="ml-0">
+                  <span className="ml-0 pr-2">
                     {componentCode?.componentCode || "Select Component Code"}
                   </span>
                 </Card>
