@@ -37,6 +37,8 @@ export default function JobhourRecommend(props) {
   const [prefix, setPrefix] = useState([]);
   const [jobCode, setJobCode] = useState(null);
   const [componentCode, setComponentCode] = useState(null);
+  const [searchJobCode, setSearchJobCode] = useState([]);
+  const [searchComponentCodes, setSearchComponentCodes] = useState([]);
 
   const defaultServiceAttributeValue = [
     {
@@ -693,6 +695,8 @@ export default function JobhourRecommend(props) {
     setSelectedComponentCode(null);
     setJobCode("");
     setComponentCode("");
+    setSearchJobCode([]);
+    setSearchComponentCodes([]);
   };
 
   const handleModelSelect = (row) => {
@@ -703,6 +707,8 @@ export default function JobhourRecommend(props) {
     setSelectedComponentCode(null);
     setJobCode("");
     setComponentCode("");
+    setSearchJobCode([]);
+    setSearchComponentCodes([]);
   };
 
   const handlePrefixSelect = (row) => {
@@ -712,6 +718,8 @@ export default function JobhourRecommend(props) {
     setSelectedComponentCode(null);
     setJobCode("");
     setComponentCode("");
+    setSearchJobCode([]);
+    setSearchComponentCodes([]);
   };
 
   const handleSelectJobCode = (row) => {
@@ -724,6 +732,8 @@ export default function JobhourRecommend(props) {
     setComponentCode("");
     // setSearchJobCodeResults([row.jobCode])
     setSelectedComponentCode(null);
+    setSearchJobCode([]);
+    setSearchComponentCodes([]);
   };
 
   const handleSelectComponentCode = (row) => {
@@ -733,6 +743,27 @@ export default function JobhourRecommend(props) {
       componentCode: row.componentCode,
       description: row.componentCode,
     });
+  };
+
+  const handleSearchJobCode = (e) => {
+    const { value } = e.target;
+    if (selectedPrefix && Object.keys(selectedPrefix).length !== 0) {
+      const result = selectedPrefix?.jobCodes.filter((obj) =>
+        obj.jobCode.toLowerCase().includes(value.toLowerCase())
+      );
+      console.log("result :: ", result);
+      setSearchJobCode(result);
+    }
+  };
+
+  const handleSearchComponentCode = (e) => {
+    const { value } = e.target;
+    if (selectedJobCode && Object.keys(selectedJobCode).length !== 0) {
+      const result = selectedJobCode?.componentData.filter((obj) =>
+        obj.componentCode.toLowerCase().includes(value.toLowerCase())
+      );
+      setSearchJobCode(result);
+    }
   };
 
   return (
@@ -771,7 +802,7 @@ export default function JobhourRecommend(props) {
           >
             Service Attributes
           </Typography>
-          <Grid container marginX={1}>
+          <Grid container marginX={2}>
             <Grid item xs={12} md={6}>
               <Fragment>
                 <Chip
@@ -779,7 +810,6 @@ export default function JobhourRecommend(props) {
                   label="Make"
                   size="small"
                   onClick={(e) => handleSelectSubService("make")}
-                  // sx={() => getStyle("family")}
                   sx={{
                     mr: 1,
                     my: 1,
@@ -801,7 +831,6 @@ export default function JobhourRecommend(props) {
                   label="Family"
                   size="small"
                   onClick={(e) => handleSelectSubService("family")}
-                  // sx={() => getStyle("family")}
                   sx={{
                     mr: 1,
                     my: 1,
@@ -824,9 +853,7 @@ export default function JobhourRecommend(props) {
                   variant="outlined"
                   label="Model"
                   size="small"
-                  // deleteIcon={<KeyboardArrowDownIcon />}
                   onClick={(e) => handleSelectSubService("model")}
-                  // sx={() => getStyle("model")}
                   sx={{
                     mr: 1,
                     my: 1,
@@ -850,9 +877,7 @@ export default function JobhourRecommend(props) {
                   variant="outlined"
                   label="Prefix"
                   size="small"
-                  // deleteIcon={<KeyboardArrowDownIcon />}
                   onClick={(e) => handleSelectSubService("prefix")}
-                  // sx={() => getStyle("prefix")}
                   disabled={selectedModel ? false : true}
                   sx={{
                     mr: 1,
@@ -871,14 +896,12 @@ export default function JobhourRecommend(props) {
                     },
                   }}
                 />
-                <KeyboardArrowDownIcon />
+                {/* <KeyboardArrowDownIcon />
                 <Chip
                   variant="outlined"
                   label="Job Code"
                   size="small"
-                  // deleteIcon={<KeyboardArrowDownIcon />}
                   onClick={(e) => handleSelectSubService("jobCode")}
-                  // sx={() => getStyle("jobCode")}
                   disabled={selectedPrefix ? false : true}
                   sx={{
                     mr: 1,
@@ -902,9 +925,7 @@ export default function JobhourRecommend(props) {
                   variant="outlined"
                   label="Component Code"
                   size="small"
-                  // deleteIcon={<KeyboardArrowDownIcon />}
                   onClick={(e) => handleSelectSubService("componentCode")}
-                  // sx={() => getStyle("componentCode")}
                   disabled={selectedJobCode ? false : true}
                   sx={{
                     mr: 1,
@@ -922,8 +943,59 @@ export default function JobhourRecommend(props) {
                       color: "#FFFFFF",
                     },
                   }}
-                />
+                /> */}
               </Fragment>
+            </Grid>
+          </Grid>
+          <Grid item xs={12}>
+            <Divider />
+          </Grid>
+          <Grid container marginX={1}>
+            <Grid item xs={12}>
+              {selectedSubService === "family" &&
+                defaultServiceAttributeValue.length !== 0 &&
+                defaultServiceAttributeValue.map((familyData, i) => {
+                  return (
+                    <Chip
+                      variant="outlined"
+                      label={familyData.family}
+                      size="small"
+                      // deleteIcon={<KeyboardArrowDownIcon />}
+                      onClick={(e) => handleFamilySelect(familyData)}
+                      sx={() => getListDataStyle("family", familyData)}
+                    />
+                  );
+                })}
+              {selectedSubService === "model" &&
+                selectedFamily &&
+                Object.keys(selectedFamily).length !== 0 &&
+                selectedFamily?.model.map((modelData, i) => {
+                  return (
+                    <Chip
+                      variant="outlined"
+                      label={modelData.modelNo}
+                      size="small"
+                      // deleteIcon={<KeyboardArrowDownIcon />}
+                      onClick={(e) => handleModelSelect(modelData)}
+                      sx={() => getListDataStyle("model", modelData)}
+                    />
+                  );
+                })}
+              {selectedSubService === "prefix" &&
+                selectedModel &&
+                Object.keys(selectedModel).length !== 0 &&
+                selectedModel?.prefix.map((prefixData, i) => {
+                  return (
+                    <Chip
+                      variant="outlined"
+                      label={prefixData.prefixNo}
+                      size="small"
+                      // deleteIcon={<KeyboardArrowDownIcon />}
+                      onClick={(e) => handlePrefixSelect(prefixData)}
+                      sx={() => getListDataStyle("prefix", prefixData)}
+                    />
+                  );
+                })}
             </Grid>
           </Grid>
           <Grid item xs={12}>
@@ -956,14 +1028,13 @@ export default function JobhourRecommend(props) {
                   }}
                 >
                   <span
-                    className="mr-2 pr-2"
+                    className="border-0 border-end border-secondary"
                     style={{ borderRight: "2px solid #00000" }}
                   >
                     Make
                   </span>
-                  <span className="ml-0">
-                    {make?.make || "Select Make"}
-                  </span>
+                  <span className="mx-2">|</span>
+                  <span className="ml-0">{make?.make || "Select Make"}</span>
                 </Card>
                 <Card
                   className="btn text-primary font-weight-500"
@@ -977,11 +1048,12 @@ export default function JobhourRecommend(props) {
                   }}
                 >
                   <span
-                    className="mr-2 pr-2"
+                    className="border-0 border-end border-secondary"
                     style={{ borderRight: "2px solid #00000" }}
                   >
                     Family
                   </span>
+                  <span className="mx-2">|</span>
                   <span className="ml-0 pr-2">
                     {selectedFamily?.family || "Select Family"}
                   </span>
@@ -998,11 +1070,12 @@ export default function JobhourRecommend(props) {
                   }}
                 >
                   <span
-                    className="mr-2 pr-2"
+                    className="border-0 border-end border-secondary"
                     style={{ borderRight: "2px solid #00000" }}
                   >
                     Model
                   </span>
+                  <span className="mx-2">|</span>
                   <span className="ml-0 pr-2">
                     {selectedModel?.modelNo || "Select Model"}
                   </span>
@@ -1019,11 +1092,12 @@ export default function JobhourRecommend(props) {
                   }}
                 >
                   <span
-                    className="mr-2 pr-2"
+                    className="border-0 border-end border-secondary"
                     style={{ borderRight: "2px solid #00000" }}
                   >
                     Prefix
                   </span>
+                  <span className="mx-2">|</span>
                   <span className="ml-0 pr-2">
                     {selectedPrefix?.prefixNo || "Selected Prefix"}
                   </span>
@@ -1040,11 +1114,12 @@ export default function JobhourRecommend(props) {
                   }}
                 >
                   <span
-                    className="mr-2 pr-2"
+                    className="border-0 border-end border-secondary"
                     style={{ borderRight: "2px solid #00000" }}
                   >
                     Job Code
                   </span>
+                  <span className="mx-2">|</span>
                   <span className="ml-0 pr-2">
                     {selectedJobCode?.jobCode || "Select Job Code"}
                   </span>
@@ -1061,11 +1136,12 @@ export default function JobhourRecommend(props) {
                   }}
                 >
                   <span
-                    className="mr-2 pr-2"
+                    className="border-0 border-end border-secondary"
                     style={{ borderRight: "2px solid #00000" }}
                   >
                     Component Code
                   </span>
+                  <span className="mx-2">|</span>
                   <span className="ml-0 pr-2">
                     {componentCode?.componentCode || "Select Component Code"}
                   </span>
@@ -1138,51 +1214,93 @@ export default function JobhourRecommend(props) {
           </Grid>
           <Grid container marginX={1}>
             <Grid item xs={12} md={3}>
-              {selectedSubService === "family" &&
-                defaultServiceAttributeValue.length !== 0 &&
-                defaultServiceAttributeValue.map((familyData, i) => {
-                  return (
-                    <Chip
-                      variant="outlined"
-                      label={familyData.family}
-                      size="small"
-                      // deleteIcon={<KeyboardArrowDownIcon />}
-                      onClick={(e) => handleFamilySelect(familyData)}
-                      sx={() => getListDataStyle("family", familyData)}
-                    />
-                  );
-                })}
-              {selectedSubService === "model" &&
-                selectedFamily &&
-                Object.keys(selectedFamily).length !== 0 &&
-                selectedFamily?.model.map((modelData, i) => {
-                  return (
-                    <Chip
-                      variant="outlined"
-                      label={modelData.modelNo}
-                      size="small"
-                      // deleteIcon={<KeyboardArrowDownIcon />}
-                      onClick={(e) => handleModelSelect(modelData)}
-                      sx={() => getListDataStyle("model", modelData)}
-                    />
-                  );
-                })}
-              {selectedSubService === "prefix" &&
-                selectedModel &&
-                Object.keys(selectedModel).length !== 0 &&
-                selectedModel?.prefix.map((prefixData, i) => {
-                  return (
-                    <Chip
-                      variant="outlined"
-                      label={prefixData.prefixNo}
-                      size="small"
-                      // deleteIcon={<KeyboardArrowDownIcon />}
-                      onClick={(e) => handlePrefixSelect(prefixData)}
-                      sx={() => getListDataStyle("prefix", prefixData)}
-                    />
-                  );
-                })}
-              {selectedSubService === "jobCode" &&
+              <Card
+                className="btn text-primary font-weight-500"
+                variant="outlined"
+                sx={{
+                  padding: 0.5,
+                  margin: 1,
+                  // width: "20%",
+                  borderRadius: 3,
+                  border: 2,
+                }}
+              >
+                <span
+                  className="border-0 border-end border-secondary"
+                  style={{ borderRight: "2px solid #00000" }}
+                >
+                  Job Code
+                </span>
+                <span className="mx-2">|</span>
+                <span className="ml-0 pr-2 text-primary">
+                  <input
+                    class="border-0 text-primary"
+                    type="text"
+                    placeholder="search"
+                    value={selectedJobCode?.jobCode}
+                    onChange={handleSearchJobCode}
+                    disabled={!selectedPrefix}
+                    readOnly={!selectedPrefix}
+                  />
+                </span>
+              </Card>
+              <Card
+                className="btn text-primary font-weight-500"
+                variant="outlined"
+                sx={{
+                  padding: 0.5,
+                  margin: 1,
+                  // width: "20%",
+                  borderRadius: 3,
+                  border: 2,
+                }}
+              >
+                <span
+                  className="border-0 border-end border-secondary"
+                  style={{ borderRight: "2px solid #00000" }}
+                >
+                  Component Code
+                </span>
+                <span className="mx-2">|</span>
+                <span className="ml-0 pr-2 text-primary">
+                  <input
+                    class="border-0 text-primary"
+                    type="text"
+                    placeholder="search"
+                    value={componentCode?.componentCode}
+                    onChange={handleSearchComponentCode}
+                    disabled={!selectedJobCode}
+                    readOnly={!selectedJobCode}
+                  />
+                </span>
+              </Card>
+
+              {!selectedJobCode &&
+                searchJobCode.length !== 0 &&
+                searchJobCode.map((jobCodes, i) => (
+                  <Chip
+                    variant="outlined"
+                    label={jobCodes.jobCode}
+                    size="small"
+                    onClick={(e) => handleSelectJobCode(jobCodes)}
+                    sx={() => getListDataStyle("jobCode", jobCodes)}
+                    key={`jobCode-${i}`}
+                  />
+                ))}
+
+              {searchComponentCodes.length !== 0 &&
+                searchComponentCodes.map((component, i) => (
+                  <Chip
+                    variant="outlined"
+                    label={component.componentCode}
+                    size="small"
+                    // deleteIcon={<KeyboardArrowDownIcon />}
+                    onClick={(e) => handleSelectComponentCode(component)}
+                    sx={() => getListDataStyle("componentCode", component)}
+                    key={i}
+                  />
+                ))}
+              {/* {selectedSubService === "jobCode" &&
                 selectedPrefix &&
                 Object.keys(selectedPrefix).length !== 0 &&
                 selectedPrefix?.jobCodes.map((jobCodeData, i) => {
@@ -1196,7 +1314,7 @@ export default function JobhourRecommend(props) {
                       sx={() => getListDataStyle("jobCode", jobCodeData)}
                     />
                   );
-                })}
+                })} */}
               {selectedSubService === "componentCode" &&
                 selectedJobCode &&
                 Object.keys(selectedJobCode).length !== 0 &&
