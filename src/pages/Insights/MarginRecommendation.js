@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Typography from "@mui/material/Typography";
 import { Box, Button, Card, FormControl, Grid } from "@mui/material";
 import { GRID_STYLE } from "pages/Repair/CONSTANTS";
@@ -202,10 +202,20 @@ export default function MarginRecommendation(props) {
   };
 
   const customerDetailColumns = [
-    { field: "partNumber", headerName: "Part #", flex: 1 },
-    { field: "class", headerName: "Class", flex: 1 },
-    { field: "description", headerName: "Description", flex: 1 },
-    { field: "costPrice", headerName: "Cost Price", flex: 1 },
+    { field: "partNumber", headerName: "Part #", flex: 1, defaultShow: true },
+    { field: "class", headerName: "Class", flex: 1, defaultShow: true },
+    {
+      field: "description",
+      headerName: "Description",
+      flex: 1,
+      defaultShow: true,
+    },
+    {
+      field: "costPrice",
+      headerName: "Cost Price",
+      flex: 1,
+      defaultShow: true,
+    },
     { field: "partType", headerName: "Part Type", width: 80 },
     { field: "status", headerName: "Status", width: 80 },
     { field: "usage", headerName: "Usage", width: 80 },
@@ -223,6 +233,7 @@ export default function MarginRecommendation(props) {
       headerName: "Predicted Margin",
       flex: 1,
       cellClassName: "fw-bolder",
+      defaultShow: true,
     },
     // { field: "quantity", headerName: "Quantity", flex: 1 },
     // { field: "total", headerName: "Total", flex: 1 },
@@ -329,6 +340,33 @@ export default function MarginRecommendation(props) {
     });
     setShowMoreFilter(!showMoreFilter);
   };
+
+  const showPremiumTableColumns = useCallback(() => {
+    const hideColumns = [
+      "partType",
+      "status",
+      "usage",
+      "machineAge",
+      // "equipmentUsage",
+      // "avgAnnualRevenue",
+      // "contractOrWarranty",
+      // "requiredFor",
+    ];
+    const newColumns = customerDetailColumns.map((columns) => ({
+      ...columns,
+      hide: columns.defaultShow
+        ? false
+        : tableType === ""
+        ? true
+        : hideColumns.includes(columns.field)
+        ? false
+        : showFilters[columns.field]
+        ? false
+        : true,
+    }));
+    console.log("newColumns ---- ", newColumns);
+    return newColumns;
+  }, [tableType, showFilters]);
 
   return (
     <div>
@@ -497,7 +535,8 @@ export default function MarginRecommendation(props) {
                   fetchDiscountGuidance(page, newPageSize)
                 }
                 rows={marginRecommendationData}
-                columns={customerDetailColumns}
+                // columns={customerDetailColumns}
+                columns={showPremiumTableColumns()}
                 // columns={columns}
                 // columnVisibilityModel={columnVisibilityModel}
                 // onColumnVisibilityModelChange={(newModel) =>
