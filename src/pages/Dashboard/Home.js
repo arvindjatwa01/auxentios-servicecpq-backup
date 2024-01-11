@@ -323,7 +323,7 @@ export const HomePage = () => {
             className="row ml-0"
             style={{ backgroundColor: "#f3eafe", borderRadius: 5 }}
           > */}
-              <Grid item xs={12} md={9} sx={{ pl: 2, pr: 3, py: 2 }}>
+              <Grid item xs={12} md={9} sx={{ pl: 2, pr: 4.5, py: 2 }}>
                 <WorkListDash
                   refreshFlag={refreshFlag}
                   handleRefreshData={handleRefreshFlag}

@@ -401,7 +401,7 @@ export const APPLICATION_OPTIONS = [
   { value: "MSCHEDULED_MAINTENANCE", label: "Scheduled Maintenance", icon: <ManageHistoryIcon sx={{ mx: 2, color: "blue" }} /> },
   { value: "COMPONENT_REPLACEMENT", label: "Component Replacement", icon: <SettingsIcon sx={{ mx: 2, color: "grey" }} /> },
   { value: "OVERHAUL", label: "Overhaul", icon: <ConstructionIcon sx={{ mx: 2, color: "blueviolet" }} /> },
-  { value: "WARRANTY", label: "Service Programs", icon: <EngineeringTwoToneIcon sx={{ mx: 2, color: "orange" }} /> },
+  // { value: "WARRANTY", label: "Service Programs", icon: <EngineeringTwoToneIcon sx={{ mx: 2, color: "orange" }} /> },
 ];
 export const LIFE_STAGE_OPTIONS = [
   { value: "NEW", label: "New" },

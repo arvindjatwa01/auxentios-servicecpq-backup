@@ -131,7 +131,7 @@ export function WorkListDash({
 
   const columns1 = [
     {
-      field: "caseId",
+      field: "caseUniqueId",
       headerName: "Case#",
       flex: 1,
     },
@@ -304,7 +304,7 @@ export function WorkListDash({
   return (
     <>
       <Box>
-        <div className="row justify-content-end mr-2 mb-2">
+        <div className="row justify-content-end mr-1 mb-2">
           <div className="col-md-6 col-sm-6">
             <h5 className="">Work List</h5>
           </div>
