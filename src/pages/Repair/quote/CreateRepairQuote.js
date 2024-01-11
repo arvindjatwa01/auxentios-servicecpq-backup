@@ -3,10 +3,22 @@ import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import penIcon from "../../../assets/images/pen.png";
 
-import { Card, Grid, Tooltip, Typography } from "@mui/material";
+import {
+  Card,
+  CardActions,
+  CardContent,
+  Grid,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import $ from "jquery";
-import { REPAIR_QUOTE_DETAILS, STANDARD_JOB_DETAIL, WITHOUT_SPARE_PARTS_DETAILS, WITH_SPARE_PARTS } from "navigation/CONSTANTS";
+import {
+  REPAIR_QUOTE_DETAILS,
+  STANDARD_JOB_DETAIL,
+  WITHOUT_SPARE_PARTS_DETAILS,
+  WITH_SPARE_PARTS,
+} from "navigation/CONSTANTS";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import { uploadItemsToRepairQuote } from "services/repairQuoteServices";
 import { templateSearch } from "services/templateService";
@@ -22,22 +34,42 @@ import {
 import SearchComponentTemplate from "../components/SearchComponentTemplate";
 import { UploadQuoteItems } from "./UploadQuoteItems";
 import { createBuilder } from "services/repairBuilderServices";
-import SettingsSuggestTwoToneIcon from '@mui/icons-material/SettingsSuggestTwoTone';
-import ManageAccountsTwoToneIcon from '@mui/icons-material/ManageAccountsTwoTone';
+import SettingsSuggestTwoToneIcon from "@mui/icons-material/SettingsSuggestTwoTone";
+import ManageAccountsTwoToneIcon from "@mui/icons-material/ManageAccountsTwoTone";
 
-const CardWrapper = (props) => <Card sx={{ textAlign: 'center', borderRadius: 5, height: 400, paddingBlock: 3, border: 1, borderColor: '#00000050' }} variant="outlined">{props.children}</Card>
-const CardWithEvalWrapper = (props) => <Card variant="outlined"
-  sx={{
-    margin: 'auto',
-    textAlign: 'left',
-    width: "50%",
-    borderRadius: 2,
-    marginBlock: 1,
-    paddingBlock: 1,
-    cursor: 'pointer',
-    ':hover': { fontWeight: 'bold', borderColor: '#872ff7' },
-  }}
-  onClick={props.onClick}>{props.children}</Card>
+const CardWrapper = (props) => (
+  <Card
+    sx={{
+      textAlign: "center",
+      borderRadius: 5,
+      height: 400,
+      paddingBlock: 3,
+      border: 1,
+      borderColor: "#00000050",
+    }}
+    variant="outlined"
+  >
+    {props.children}
+  </Card>
+);
+const CardWithEvalWrapper = (props) => (
+  <Card
+    variant="outlined"
+    sx={{
+      margin: "auto",
+      textAlign: "left",
+      width: "50%",
+      borderRadius: 2,
+      marginBlock: 1,
+      paddingBlock: 1,
+      cursor: "pointer",
+      ":hover": { fontWeight: "bold", borderColor: "#872ff7" },
+    }}
+    onClick={props.onClick}
+  >
+    {props.children}
+  </Card>
+);
 export const CreateRepairQuote = (props) => {
   const history = useHistory();
   const [selectedQuoteOption, setSelectedQuoteOption] = useState("");
@@ -184,7 +216,7 @@ export const CreateRepairQuote = (props) => {
     } catch (err) {
       handleSnack("error", "Error occurred while fetching templates!");
     }
-  }
+  };
   const handleQuerySearchClick = async (applicationType) => {
     $(".scrollbar").css("display", "none");
     var searchStr = "";
@@ -283,8 +315,8 @@ export const CreateRepairQuote = (props) => {
   const handleClickTemplate = (applicationType) => {
     setShowOptions(false);
     setSelectedQuoteOption("without_eval");
-    handleApplicationTemplates(applicationType)
-  }
+    handleApplicationTemplates(applicationType);
+  };
   const createNewBuilder = (e) => {
     let builderDetails = {
       builderId: "",
@@ -334,29 +366,41 @@ export const CreateRepairQuote = (props) => {
     }
   };
 
-  const innerCard = (indAppOption, handleClick) => <Grid item container xs={12} md={7}
-    sx={{
-      border: 1,
-      margin: 'auto',
-      width: "70%",
-      textAlign: 'left',
-      borderRadius: 2,
-      marginBlock: 1,
-      paddingBlock: 1,
-      borderColor: "#00000025",
-      cursor: 'pointer',
-      ':hover': { fontWeight: 'bold', borderColor: '#872ff7' },
-      color: indAppOption.value === 'gsheet' || indAppOption.value === 'paste' ? 'gray' : "black",
-    }}
-    onClick={() => handleClick(indAppOption.value)}>
-    {indAppOption.icon}{indAppOption.label}
-  </Grid>
+  const innerCard = (indAppOption, handleClick) => (
+    <Grid
+      item
+      container
+      xs={12}
+      md={10}
+      sx={{
+        border: 1,
+        margin: "auto",
+        width: "70%",
+        textAlign: "left",
+        fontSize: "14px",
+        borderRadius: 2,
+        marginBlock: 0.6,
+        paddingBlock: 0.8,
+        borderColor: "#00000025",
+        cursor: "pointer",
+        ":hover": { fontWeight: "bold", borderColor: "#872ff7" },
+        color:
+          indAppOption.value === "gsheet" || indAppOption.value === "paste"
+            ? "gray"
+            : "black",
+      }}
+      onClick={() => handleClick(indAppOption.value)}
+    >
+      {indAppOption.icon}
+      {indAppOption.label}
+    </Grid>
+  );
   const handleClickUpload = (val) => {
-    if (val !== 'gsheet' && val !== 'paste') {
+    if (val !== "gsheet" && val !== "paste") {
       setShowOptions(false);
-      setSelectedQuoteOption("upload_excel")
+      setSelectedQuoteOption("upload_excel");
     }
-  }
+  };
   return (
     <>
       <CustomizedSnackbar
@@ -368,73 +412,183 @@ export const CreateRepairQuote = (props) => {
       <div className="content-body" style={{ minHeight: "884px" }}>
         <div className="container-fluid mt-4">
           <div className="d-flex align-items-center justify-content-between mt-2">
-            <h5 className="font-weight-600 mb-0">Create Repair Quote</h5>
-            {showOptions ? <></> : <button
-              className="btn bg-primary text-white mr-2"
-              onClick={() => {
-                setShowOptions(true);
-              }}
-            >
-              Back
-            </button>}
+            <h3 className="font-weight-600 mb-0">Create Repair Quote</h3>
+            {showOptions ? (
+              <></>
+            ) : (
+              <button
+                className="btn bg-primary text-white mr-2"
+                onClick={() => {
+                  setShowOptions(true);
+                }}
+              >
+                Back
+              </button>
+            )}
           </div>
           <Box className="mt-3" sx={{ width: "100%", typography: "body1" }}>
-            {showOptions ?
-              (<Box className="mt-3 grid-box" sx={{ width: "72%", typography: "body1" }}><Grid container columnSpacing={3} rowSpacing={5} justifyContent={'center'}>
-                <Grid item xs={12} md={4} >
-                  <CardWrapper>
-                    <Typography variant='h6'>
-                      With Evaluation
-                    </Typography>
-                    <Typography variant="body2" paddingY={2}>
-                      Create a new quote with an evaluation.
-                    </Typography>
-                    <CardWithEvalWrapper
-                      onClick={() => createNewBuilder("with")}>
-                      <SettingsSuggestTwoToneIcon sx={{ mx: 2, color: 'green' }} />Repair Option
-                    </CardWithEvalWrapper>
+            {showOptions ? (
+              <Box
+                className="mt-3 grid-box"
+                sx={{ width: "72%", typography: "body1" }}
+              >
+                <Grid
+                  container
+                  columnSpacing={3}
+                  rowSpacing={5}
+                  justifyContent={"center"}
+                >
+                  <Grid item xs={12} md={4}>
+                    <CardWrapper>
+                      <CardContent>
+                        <Typography variant="h6">With Evaluation</Typography>
+                        <Typography variant="body2" paddingY={2}>
+                          Create a new quote with an evaluation.
+                        </Typography>
+                        <Grid container>
+                          <Grid
+                            item
+                            container
+                            xs={12}
+                            md={4}
+                            sx={{
+                              border: 1,
+                              margin: "auto",
+                              width: "40%",
+                              textAlign: "left",
+                              fontSize: "14px",
+                              borderRadius: 2,
+                              marginBlock: 0.6,
+                              // paddingBlock: 0.8,
+                              borderColor: "#00000025",
+                              alignItems: "center",
+                              display: "flex",
+                              justifyContent: "center",
+                              cursor: "pointer",
+                              ":hover": {
+                                fontWeight: "bold",
+                                borderColor: "#872ff7",
+                              },
+                              // color:
+                              //   indAppOption.value === "gsheet" ||
+                              //   indAppOption.value === "paste"
+                              //     ? "gray"
+                              //     : "black",
+                            }}
+                            // onClick={() => handleClick(indAppOption.value)}
+                          >
+                            <Typography
+                              variant="h3"
+                              paddingY={1}
+                              sx={{ color: "#8c8c8c" }}
+                            >
+                              +
+                            </Typography>
+                          </Grid>
+                        </Grid>
+                        <Typography
+                          variant="caption"
+                          display="block"
+                          sx={{ paddingY: 4.2 }}
+                        >
+                          {/* See all import options */}
+                        </Typography>
+                      </CardContent>
+                      <CardActions sx={{ justifyContent: "center" }}>
+                        <Typography
+                          variant="caption"
+                          display="block"
+                          sx={{ paddingY: 3 }}
+                        >
+                          See all import options
+                        </Typography>
+                      </CardActions>
+                      {/* <CardWithEvalWrapper
+                        onClick={() => createNewBuilder("with")}
+                      >
+                        <SettingsSuggestTwoToneIcon
+                          sx={{ mx: 2, color: "green" }}
+                        />
+                        Repair Option
+                      </CardWithEvalWrapper>
 
-                    <CardWithEvalWrapper
-                      onClick={() => createNewBuilder("without")}>
-                      <ManageAccountsTwoToneIcon sx={{ mx: 2, color: 'blue' }} />Service Estimate
-                    </CardWithEvalWrapper>
-                  </CardWrapper>
-
+                      <CardWithEvalWrapper
+                        onClick={() => createNewBuilder("without")}
+                      >
+                        <ManageAccountsTwoToneIcon
+                          sx={{ mx: 2, color: "blue" }}
+                        />
+                        Service Estimate
+                      </CardWithEvalWrapper> */}
+                    </CardWrapper>
+                  </Grid>
+                  <Grid item xs={12} md={4}>
+                    <CardWrapper>
+                      <Typography variant={"h6"}>Without Evaluation</Typography>
+                      <Typography
+                        variant="body2"
+                        paddingY={2}
+                        key={"Without Evaluation-body-2"}
+                      >
+                        Select a template to get started and customize as you
+                        go.
+                      </Typography>
+                      <Grid container>
+                        {APPLICATION_OPTIONS.map((indAppOption) =>
+                          innerCard(indAppOption, handleClickTemplate)
+                        )}
+                      </Grid>
+                      <CardActions sx={{ justifyContent: "center" }}>
+                        <Typography
+                          variant="caption"
+                          display="block"
+                          sx={{ paddingY: 3 }}
+                        >
+                          See all import options
+                        </Typography>
+                      </CardActions>
+                    </CardWrapper>
+                  </Grid>
+                  <Grid item xs={12} md={4}>
+                    <CardWrapper>
+                      <Typography variant={"h6"}>Import Excel</Typography>
+                      <Typography variant="body2" paddingY={2}>
+                        Import your existing quotes from an Excel or CSV into
+                        Servicecpq.
+                      </Typography>
+                      <Grid container>
+                        {UPLOAD_OPTIONS.map((indAppOption) => (
+                          <Tooltip
+                            arrow
+                            placement="left"
+                            title={
+                              indAppOption.value === "gsheet" ||
+                              indAppOption.value === "paste"
+                                ? "Will be available in next version"
+                                : ""
+                            }
+                          >
+                            {innerCard(indAppOption, handleClickUpload)}
+                          </Tooltip>
+                        ))}
+                      </Grid>
+                      <CardActions sx={{ justifyContent: "center" }}>
+                        <Typography
+                          variant="caption"
+                          display="block"
+                          sx={{ paddingY: 3 }}
+                        >
+                          See all import options
+                        </Typography>
+                      </CardActions>
+                    </CardWrapper>
+                  </Grid>
                 </Grid>
-                <Grid item xs={12} md={4}>
-                  <CardWrapper>
-                    <Typography variant={"h6"}>
-                      Without Evaluation
-                    </Typography>
-                    <Typography variant="body2" paddingY={2}>
-                      Select a template to get started and customize as you go.
-                    </Typography>
-                    <Grid container>
-                      {APPLICATION_OPTIONS.map(indAppOption => innerCard(indAppOption, handleClickTemplate))}
-                    </Grid>
-                  </CardWrapper>
-                </Grid>
-                <Grid item xs={12} md={4}>
-                  <CardWrapper>
-                    <Typography variant={"h6"}>
-                      Import Excel
-                    </Typography>
-                    <Typography variant="body2" paddingY={2}>
-                      Import your existing quotes from an Excel or CSV into Servicecpq.
-                    </Typography>
-                    <Grid container>
-                      {UPLOAD_OPTIONS.map(indAppOption =>
-                        <Tooltip arrow placement='left' title={indAppOption.value === 'gsheet' || indAppOption.value === 'paste' ? "Will be available in next version" : ""}>
-                          {innerCard(indAppOption, handleClickUpload)}
-                        </Tooltip>)}
-                    </Grid>
-                  </CardWrapper>
-                </Grid>
-              </Grid></Box>)
-              :
-              (<div>
+              </Box>
+            ) : (
+              <div>
                 {/* {selectedQuoteOption === "with_eval" && <QuoteWithEvaluation setShowOptions={setShowOptions} />} */}
-                {selectedQuoteOption === "without_eval" &&
+                {selectedQuoteOption === "without_eval" && (
                   <>
                     <div className="bg-primary px-3 my-3 border-radius-6">
                       <div className="d-md-flex d-block justify-content-between align-items-center height-66">
@@ -447,7 +601,6 @@ export const CreateRepairQuote = (props) => {
                               <h5 className="mr-2 mb-0 text-white">
                                 <span>Search</span>
                               </h5>
-
                             </div>
                             <SearchComponentTemplate
                               querySearchSelector={querySearchSelector}
@@ -484,19 +637,22 @@ export const CreateRepairQuote = (props) => {
                           autoHeight
                         />
                       </div>
-
                     </div>
                   </>
-                }
-                {selectedQuoteOption === "upload_excel" &&
-                  <UploadQuoteItems handleUploadFile={handleUploadFile} handleReadFile={handleReadFile} file={file} back={() => setShowOptions(true)} />
-                }
+                )}
+                {selectedQuoteOption === "upload_excel" && (
+                  <UploadQuoteItems
+                    handleUploadFile={handleUploadFile}
+                    handleReadFile={handleReadFile}
+                    file={file}
+                    back={() => setShowOptions(true)}
+                  />
+                )}
               </div>
-              )}
-
+            )}
           </Box>
         </div>
-      </div >
+      </div>
     </>
   );
 };

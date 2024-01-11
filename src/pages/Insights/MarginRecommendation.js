@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import Typography from "@mui/material/Typography";
-import { Box, Button, Card, FormControl, Grid } from "@mui/material";
+import { Box, Button, Card, Divider, FormControl, Grid } from "@mui/material";
 import { GRID_STYLE } from "pages/Repair/CONSTANTS";
 import { DataGrid } from "@mui/x-data-grid";
 import {
@@ -9,6 +9,7 @@ import {
 } from "services/dashboardServices";
 import SelectBox from "./SelectBox";
 import SearchBox from "./SearchBox";
+import { Visibility, VisibilityOff } from "@material-ui/icons";
 
 const dummyMarginRecommendationData = [
   {
@@ -131,9 +132,15 @@ export default function MarginRecommendation(props) {
   const [totalCount, setTotalCount] = useState(4);
   const [sortDetail, setSortDetail] = useState({ sortColumn: "", orderBy: "" });
 
-  const [tableType, setTableType] = useState("");
+  const [partClass, setPartClass] = useState("");
   const [showMoreFilter, setShowMoreFilter] = useState(false);
   const [showFilters, setShowFilters] = useState(filterOptions);
+  const [showAllAClassPartsColumns, setShowAllAClassPartsColumns] =
+    useState(false);
+  const [showAllBClassPartsColumns, setShowAllBClassPartsColumns] =
+    useState(false);
+  const [showAllCClassPartsColumns, setShowAllCClassPartsColumns] =
+    useState(false);
   const [columns, setColumns] = useState([]);
   useEffect(() => {
     // fetchDiscountGuidance(page, pageSize);
@@ -240,10 +247,34 @@ export default function MarginRecommendation(props) {
   ];
 
   const premiumTableColumns = [
-    { field: "partNumber", headerName: "Part #", flex: 1 },
-    { field: "class", headerName: "Class", flex: 1 },
-    { field: "description", headerName: "Description", flex: 1 },
-    { field: "costPrice", headerName: "Cost Price", flex: 1 },
+    {
+      field: "partNumber",
+      headerName: "Part #",
+      flex: 1,
+      defaultShow: true,
+      renderCell: (params) => (
+        <div style={{ fontWeight: "bold" }}>{params.value}</div>
+      ),
+    },
+    {
+      field: "class",
+      headerName: "Class",
+      flex: 1,
+      width: 80,
+      defaultShow: true,
+    },
+    {
+      field: "description",
+      headerName: "Description",
+      flex: 1,
+      defaultShow: true,
+    },
+    {
+      field: "costPrice",
+      headerName: "Cost Price",
+      flex: 1,
+      defaultShow: true,
+    },
     { field: "partType", headerName: "Part Type", width: 80 },
     { field: "status", headerName: "Status", width: 80 },
     { field: "usage", headerName: "Usage", width: 80 },
@@ -261,17 +292,49 @@ export default function MarginRecommendation(props) {
       headerName: "Predicted Margin",
       flex: 1,
       cellClassName: "fw-bolder",
+      defaultShow: true,
+      renderCell: (params) => formatDisplay(params),
+      align: "center",
     },
   ];
 
   const standardTableColumns = [
-    { field: "partNumber", headerName: "Part #", flex: 1 },
-    { field: "class", headerName: "Class", flex: 1 },
-    { field: "description", headerName: "Description", flex: 1 },
-    { field: "costPrice", headerName: "Cost Price", flex: 1 },
+    {
+      field: "partNumber",
+      headerName: "Part #",
+      flex: 1,
+      defaultShow: true,
+      renderCell: (params) => (
+        <div style={{ fontWeight: "bold" }}>{params.value}</div>
+      ),
+    },
+    {
+      field: "class",
+      headerName: "Class",
+      flex: 1,
+      width: 80,
+      defaultShow: true,
+    },
+    {
+      field: "description",
+      headerName: "Description",
+      flex: 1,
+      defaultShow: true,
+    },
+    {
+      field: "costPrice",
+      headerName: "Cost Price",
+      flex: 1,
+      defaultShow: true,
+    },
     { field: "machineAge", headerName: "Machine Age", width: 80 },
     { field: "equipmentUsage", headerName: "Equipment Usage", flex: 1 },
-    { field: "buyerType", headerName: "Buyer Type", width: 80 },
+    {
+      field: "buyerType",
+      headerName: "Buyer Type",
+      width: 80,
+      defaultShow: true,
+    },
     { field: "avgAnnualRevenue", headerName: "Avg Annual Revenue", flex: 1 },
     { field: "requiredFor", headerName: "Required For", flex: 1 },
     {
@@ -279,11 +342,21 @@ export default function MarginRecommendation(props) {
       headerName: "Predicted Margin",
       flex: 1,
       cellClassName: "fw-bolder",
+      defaultShow: true,
+      renderCell: (params) => formatDisplay(params),
+      align: "center",
     },
   ];
 
   const ordinaryTableColumns = [
-    { field: "partNumber", headerName: "Part #", flex: 1 },
+    {
+      field: "partNumber",
+      headerName: "Part #",
+      flex: 1,
+      renderCell: (params) => (
+        <div style={{ fontWeight: "bold" }}>{params.value}</div>
+      ),
+    },
     { field: "class", headerName: "Class", flex: 1 },
     { field: "description", headerName: "Description", flex: 1 },
     { field: "costPrice", headerName: "Cost Price", flex: 1 },
@@ -292,9 +365,30 @@ export default function MarginRecommendation(props) {
       field: "predictedMargin",
       headerName: "Predicted Margin",
       flex: 1,
-      cellClassName: "fw-bolder",
+      renderCell: (params) => formatDisplay(params),
+      align: "center",
     },
   ];
+
+  const formatDisplay = (params) => {
+    if (params.field === "predictedMargin") {
+      return (
+        <span
+          style={{
+            fontSize: 12,
+            backgroundColor: "#6FD4FF",
+            padding: 5,
+            borderRadius: 5,
+            fontWeight: "bold",
+            textAlign: "center",
+          }}
+        >
+          {parseFloat(params.value).toFixed(2)}
+        </span>
+      );
+    }
+    console.log("predictedMarginDisplay params :: ", params);
+  };
 
   const orderOptions = ["Planned", "Breakdown"];
   const partTypeOptions = ["New", "Reman", "Refurbish"];
@@ -311,7 +405,8 @@ export default function MarginRecommendation(props) {
     "Repair",
   ];
 
-  const tablesNameOption = ["Premium", "Standard", "Ordinary"];
+  // const partClassOptions = ["Premium", "Standard", "Ordinary"];
+  const partClassOptions = ["A Class", "B Class", "C Class"];
 
   // table Type Change
   const handleChangeTableType = (e) => {
@@ -324,9 +419,12 @@ export default function MarginRecommendation(props) {
     setAvgAnnualRevnue("");
     setContractOrWarranty("");
     setRequiredFor("");
-    setTableType(e.target.value);
+    setPartClass(e.target.value);
     setShowMoreFilter(false);
     setShowFilters(filterOptions);
+    // setShowAllAClassPartsColumns(false);
+    // setShowAllBClassPartsColumns(false);
+    // setShowAllCClassPartsColumns(false);
   };
 
   const handleMoreFilters = () => {
@@ -341,32 +439,55 @@ export default function MarginRecommendation(props) {
     setShowMoreFilter(!showMoreFilter);
   };
 
+  // Show Premimum Table Columns accoding to Filter
   const showPremiumTableColumns = useCallback(() => {
-    const hideColumns = [
-      "partType",
-      "status",
-      "usage",
-      "machineAge",
-      // "equipmentUsage",
-      // "avgAnnualRevenue",
-      // "contractOrWarranty",
-      // "requiredFor",
-    ];
-    const newColumns = customerDetailColumns.map((columns) => ({
-      ...columns,
-      hide: columns.defaultShow
-        ? false
-        : tableType === ""
-        ? true
-        : hideColumns.includes(columns.field)
-        ? false
-        : showFilters[columns.field]
-        ? false
-        : true,
-    }));
-    console.log("newColumns ---- ", newColumns);
-    return newColumns;
-  }, [tableType, showFilters]);
+    if (partClass === "" || partClass === "A Class") {
+      const hideColumns = ["partType", "status", "usage", "machineAge"];
+      const newColumns = premiumTableColumns.map((columns) => ({
+        ...columns,
+        hide: showAllAClassPartsColumns
+          ? false
+          : columns.defaultShow
+          ? false
+          : partClass === ""
+          ? true
+          : hideColumns.includes(columns.field)
+          ? false
+          : showFilters[columns.field]
+          ? false
+          : true,
+      }));
+      return newColumns;
+    }
+  }, [partClass, showFilters, showAllAClassPartsColumns]);
+
+  // Show Standard Table Columns accoding to Filter
+  const showStandardTableColums = useCallback(() => {
+    if (partClass === "" || partClass === "B Class") {
+      const hideColumns = ["partType", "status", "usage", "machineAge"];
+      const newColumns = standardTableColumns.map((columns) => ({
+        ...columns,
+        hide: showAllBClassPartsColumns
+          ? false
+          : columns.defaultShow
+          ? false
+          : partClass === ""
+          ? true
+          : hideColumns.includes(columns.field)
+          ? false
+          : showFilters[columns.field]
+          ? false
+          : true,
+      }));
+      return newColumns;
+    }
+  }, [partClass, showFilters, showAllBClassPartsColumns]);
+
+  // Show Ordinary Table Columns accoding to Filter
+  const showOrdinaryTableColums = useCallback(() => {}, [
+    partClass,
+    showFilters,
+  ]);
 
   return (
     <div>
@@ -389,14 +510,14 @@ export default function MarginRecommendation(props) {
           }}
           variant="outlined"
         >
-          <Typography sx={{ fontSize: 16, fontWeight: 600, margin: 2 }}>
+          <Typography sx={{ fontSize: 18, fontWeight: 600, margin: 2 }}>
             Margin Recommendation
           </Typography>
           <Box
             sx={{
-              marginBottom: 2,
+              marginBottom: 1,
               marginInline: 2,
-              borderBottom: "1px solid #5c5c5cb3",
+              // borderBottom: "1px solid #5c5c5cb3",
             }}
           >
             <SearchBox
@@ -406,27 +527,52 @@ export default function MarginRecommendation(props) {
               size={250}
             />
             <SelectBox
-              label={"Table Type"}
-              value={tableType}
-              options={tablesNameOption}
-              // handleChange={(e) => setTableType(e.target.value)}
+              label={"Part Class"}
+              value={partClass}
+              options={partClassOptions}
+              // handleChange={(e) => setPartClass(e.target.value)}
               handleChange={handleChangeTableType}
               showClearIcon={true}
-              handleUnselect={() => setTableType("")}
+              handleUnselect={() => setPartClass("")}
             />
           </Box>
-          {(tableType === "" || tableType === "Premium") && (
+          <Divider component="li" />
+          {(partClass === "" || partClass === "A Class") && (
             <Box
               sx={{
                 height: 500,
-                marginBottom: 5,
+                marginBottom: 8,
                 marginInline: 2,
               }}
             >
-              <Typography sx={{ fontSize: 16, fontWeight: 600, marginTop: 2 }}>
-                Premium Table
-              </Typography>
-              {tableType === "Premium" && (
+              <div className="d-flex justify-content-between">
+                <Typography
+                  sx={{ fontSize: 16, fontWeight: 500, marginTop: 2 }}
+                >
+                  A Class Parts
+                </Typography>
+                {partClass === "" && (
+                  <Button
+                    variant="contained"
+                    sx={{ marginTop: 2, backgroundColor: "#872ff7" }}
+                    onClick={() =>
+                      setShowAllAClassPartsColumns(!showAllAClassPartsColumns)
+                    }
+                    size="small"
+                    endIcon={
+                      showAllAClassPartsColumns ? (
+                        <VisibilityOff />
+                      ) : (
+                        <Visibility />
+                      )
+                    }
+                  >
+                    {showAllAClassPartsColumns ? "Minimize " : "Show All "}
+                    Columns
+                  </Button>
+                )}
+              </div>
+              {partClass === "A Class" && (
                 <>
                   <SelectBox
                     label={"Part Type"}
@@ -567,14 +713,38 @@ export default function MarginRecommendation(props) {
               />
             </Box>
           )}
-          {(tableType === "" || tableType === "Standard") && (
-            <Box sx={{ height: 500, marginBottom: 5, marginInline: 2 }}>
-              <Typography sx={{ fontSize: 16, fontWeight: 600, marginTop: 2 }}>
-                Standard Table
-              </Typography>
-              {tableType === "Standard" && (
+          {(partClass === "" || partClass === "B Class") && (
+            <Box sx={{ height: 500, marginBottom: 8, marginInline: 2 }}>
+              <div className="d-flex justify-content-between">
+                <Typography
+                  sx={{ fontSize: 16, fontWeight: 500, marginTop: 2 }}
+                >
+                  B Class Parts
+                </Typography>
+                {partClass === "" && (
+                  <Button
+                    variant="contained"
+                    sx={{ marginTop: 2, backgroundColor: "#872ff7" }}
+                    onClick={() =>
+                      setShowAllBClassPartsColumns(!showAllBClassPartsColumns)
+                    }
+                    size="small"
+                    endIcon={
+                      showAllBClassPartsColumns ? (
+                        <VisibilityOff />
+                      ) : (
+                        <Visibility />
+                      )
+                    }
+                  >
+                    {showAllBClassPartsColumns ? "Minimize " : "Show All "}
+                    Columns
+                  </Button>
+                )}
+              </div>
+              {partClass === "B Class" && (
                 <>
-                  <SelectBox
+                  {/* <SelectBox
                     label={"Part Type"}
                     value={partType}
                     options={partTypeOptions}
@@ -589,7 +759,7 @@ export default function MarginRecommendation(props) {
                     handleChange={(e) => setStatus(e.target.value)}
                     showClearIcon={true}
                     handleUnselect={() => setStatus("")}
-                  />
+                  /> 
                   <SelectBox
                     label={"Usage"}
                     value={usage}
@@ -597,7 +767,7 @@ export default function MarginRecommendation(props) {
                     handleChange={(e) => setUsage(e.target.value)}
                     showClearIcon={true}
                     handleUnselect={() => setUsage("")}
-                  />
+                  /> */}
                   <SelectBox
                     label={"Machine Age"}
                     value={machineAge}
@@ -629,7 +799,7 @@ export default function MarginRecommendation(props) {
                       handleUnselect={() => setAvgAnnualRevnue("")}
                     />
                   )}
-                  {showFilters.contractOrWarranty && (
+                  {/* {showFilters.contractOrWarranty && (
                     <SelectBox
                       label={"Contract or Warranty"}
                       value={contractOrWarranty}
@@ -641,7 +811,7 @@ export default function MarginRecommendation(props) {
                       showClearIcon={true}
                       handleUnselect={() => setContractOrWarranty("")}
                     />
-                  )}
+                  )} */}
                   {showFilters.requiredFor && (
                     <SelectBox
                       label={"Required For"}
@@ -680,7 +850,7 @@ export default function MarginRecommendation(props) {
                   fetchDiscountGuidance(page, newPageSize)
                 }
                 rows={marginRecommendationData}
-                columns={standardTableColumns}
+                columns={showStandardTableColums()}
                 // columns={columns}
                 // columnVisibilityModel={columnVisibilityModel}
                 // onColumnVisibilityModelChange={(newModel) =>
@@ -711,10 +881,10 @@ export default function MarginRecommendation(props) {
               />
             </Box>
           )}
-          {(tableType === "" || tableType === "Ordinary") && (
+          {(partClass === "" || partClass === "C Class") && (
             <Box sx={{ height: 500, marginBottom: 5, marginInline: 2 }}>
-              <Typography sx={{ fontSize: 16, fontWeight: 600, marginTop: 2 }}>
-                Ordinary Table
+              <Typography sx={{ fontSize: 16, fontWeight: 500, marginTop: 2 }}>
+                C Class Parts
               </Typography>
               <DataGrid
                 loading={isLoading}
