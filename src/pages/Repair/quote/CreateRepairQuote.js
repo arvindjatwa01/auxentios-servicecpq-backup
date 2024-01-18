@@ -440,11 +440,18 @@ export const CreateRepairQuote = (props) => {
                 >
                   <Grid item xs={12} md={4}>
                     <CardWrapper>
-                      <CardContent>
-                        <Typography variant="h6">With Evaluation</Typography>
-                        <Typography variant="body2" paddingY={2}>
-                          Create a new quote with an evaluation.
-                        </Typography>
+                      <Typography variant="h6">With Evaluation</Typography>
+                      <Typography variant="body2" paddingY={2}>
+                        Create a new quote with an evaluation.
+                      </Typography>
+                      <CardContent
+                        sx={{
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
                         <Grid container>
                           <Grid
                             item
@@ -469,13 +476,7 @@ export const CreateRepairQuote = (props) => {
                                 fontWeight: "bold",
                                 borderColor: "#872ff7",
                               },
-                              // color:
-                              //   indAppOption.value === "gsheet" ||
-                              //   indAppOption.value === "paste"
-                              //     ? "gray"
-                              //     : "black",
                             }}
-                            // onClick={() => handleClick(indAppOption.value)}
                           >
                             <Typography
                               variant="h3"
@@ -486,13 +487,12 @@ export const CreateRepairQuote = (props) => {
                             </Typography>
                           </Grid>
                         </Grid>
-                        <Typography
+                        {/* <Typography
                           variant="caption"
                           display="block"
                           sx={{ paddingY: 4.2 }}
                         >
-                          {/* See all import options */}
-                        </Typography>
+                        </Typography> */}
                       </CardContent>
                       <CardActions sx={{ justifyContent: "center" }}>
                         <Typography
