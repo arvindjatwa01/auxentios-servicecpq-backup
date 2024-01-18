@@ -84,7 +84,7 @@ export const PARTS_360 = "/parts-360";
 export const SERVICE_MASTER = "/service-master";
 export const CONSUMABLE_MASTER = "/consumable-master";
 export const CUSTOMER_MASTER = "/customer-master";
-export const WARRENTY_MASTER = "/warrenty-master";
+export const WARRENTY_MASTER = "/warranty-master";
 
 //Aux Admin
 export const AUX_ADMIN_PROVISION = "/aux-admin/provision";
