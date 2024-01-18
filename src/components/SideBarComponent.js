@@ -1287,7 +1287,7 @@ export function SideBarComponent(props) {
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/warrenty-master" className="border-radius-50">
+                <NavLink to="/warranty-master" className="border-radius-50">
                   <span className="span-icon">
                     <svg viewBox="0 0 106.47681 131.57696"
                       xmlns="http://www.w3.org/2000/svg"
@@ -1300,7 +1300,7 @@ export function SideBarComponent(props) {
                   <span className="nav-text">
                     <span className="ml-2 " style={{ display: "inline-grid" }}>
                       <span className="font-size-13 font-weight-400 text-dark">
-                        Warrenty Master
+                      warranty Master
                       </span>
                     </span>
                   </span>

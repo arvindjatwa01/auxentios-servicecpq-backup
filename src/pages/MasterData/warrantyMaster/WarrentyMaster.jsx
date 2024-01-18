@@ -8,12 +8,14 @@ import WarrantyDetails from "./WarrantyDetails";
 import { warrantyDummyRecord } from "./WarrantyConstants";
 import WarrantyOverView from "./WarrantyOverView";
 import WarrantyClaimAddUpdate from "./WarrantyClaimAddUpdate";
+import ClaimDetails from "./ClaimDetails";
 
 const WarrantyMaster = () => {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showOverviewModal, setShowOverviewModal] = useState(false);
   const [showClaimModal, setShowClaimModal] = useState(false);
   const [recordId, setRecordId] = useState(null);
+  const [showClaimDetailsModal, setShowClaimDetailsModal] = useState(false);
 
   useEffect(() => {
     if (!showDetailsModal) {
@@ -24,7 +26,7 @@ const WarrantyMaster = () => {
   const warrantyColumns = [
     {
       field: "warrantyId",
-      headerName: "Waranty Id",
+      headerName: "Warranty Id",
       //   width: 90,
       flex: 1,
     },
@@ -42,13 +44,13 @@ const WarrantyMaster = () => {
     },
     {
       field: "warrantyStartDate",
-      headerName: "Waranty Start Date",
+      headerName: "Warranty Start Date",
       //   width: 120,
       flex: 1,
     },
     {
       field: "warrantyEndDate",
-      headerName: "Waranty End Date",
+      headerName: "Warranty End Date",
       //   width: 120,
       flex: 1,
     },
@@ -66,7 +68,7 @@ const WarrantyMaster = () => {
     },
     {
       field: "warrantyStatus",
-      headerName: "Waranty Status",
+      headerName: "Warranty Status",
       width: 150,
       flex: 1,
     },
@@ -123,7 +125,7 @@ const WarrantyMaster = () => {
     <>
       <div className="content-body" style={{ minHeight: "884px" }}>
         <div className="container-fluid">
-          <h5 className="font-weight-600 mb-0">Waranty Master</h5>
+          <h5 className="font-weight-600 mb-0">Warranty Master</h5>
 
           <div className="card border mt-4 px-4">
             <Grid
@@ -139,7 +141,7 @@ const WarrantyMaster = () => {
               <Box
                 sx={{
                   width: "100%",
-                  height: 500,
+                  height: 700,
                   // marginBottom: 8,
                   marginInline: 2,
                 }}
@@ -180,6 +182,10 @@ const WarrantyMaster = () => {
             setShowOverviewModal(!showOverviewModal);
             setShowClaimModal(!showClaimModal);
           }}
+          handleClaimDetailsModal={() => {
+            setShowOverviewModal(!showOverviewModal);
+            setShowClaimDetailsModal(!showClaimDetailsModal);
+          }}
         />
       )}
 
@@ -189,6 +195,15 @@ const WarrantyMaster = () => {
           hideModal={() => {
             setShowOverviewModal(!showOverviewModal);
             setShowClaimModal(!showClaimModal);
+          }}
+        />
+      )}
+      {showClaimDetailsModal && (
+        <ClaimDetails
+          show={showClaimDetailsModal}
+          hideModal={() => {
+            setShowOverviewModal(!showOverviewModal);
+            setShowClaimDetailsModal(!showClaimDetailsModal);
           }}
         />
       )}
