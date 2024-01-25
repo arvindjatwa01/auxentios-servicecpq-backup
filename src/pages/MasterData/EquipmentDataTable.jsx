@@ -3,7 +3,11 @@ import React from "react";
 import AddIcon from "@mui/icons-material/Add";
 import DataTable from "react-data-table-component";
 
-import { dataTableStyle, searchOptions } from "./equipmentConstant";
+import {
+  dataTableStyle,
+  searchOptions,
+  warrantySearchOptions,
+} from "./equipmentConstant";
 import EquipmentSearchComponent from "./EquipmentSearchComponent";
 
 const EquipmentDataTable = ({ columns, data, title }) => {
@@ -14,7 +18,11 @@ const EquipmentDataTable = ({ columns, data, title }) => {
           <div className="d-flex align-items-center">
             <h6 className="font-weight-500 mb-0 mr-3">{title}</h6>
             <EquipmentSearchComponent
-              searchOptions={searchOptions}
+              searchOptions={
+                title.toLowerCase() === "warranty"
+                  ? warrantySearchOptions
+                  : searchOptions
+              }
               searchPlaceholder={title}
             />
           </div>

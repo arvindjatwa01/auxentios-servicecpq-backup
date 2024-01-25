@@ -6,6 +6,14 @@ export const searchOptions = [
   { value: "E", label: "Manufacturer" },
   { value: "F", label: "Description" },
 ];
+
+export const warrantySearchOptions = [
+  { label: "Serial Number", value: "serialNumber" },
+  { label: "Component Code", value: "componentCode" },
+  { label: "Equipment Number", value: "equipmentNumber" },
+  { label: "Model Number", value: "ModelNo" },
+];
+
 export const defaultContactData = [
   {
     itemName: "2276044",
