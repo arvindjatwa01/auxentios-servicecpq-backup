@@ -1,4 +1,7 @@
 import { Box, TextField, Typography } from "@mui/material";
+import FormGroup from "@mui/material/FormGroup";
+import { FormControlLabel } from "@material-ui/core";
+import { Switch } from "@mui/material";
 import SelectBox from "pages/Insights/SelectBox";
 import { FONT_STYLE, FONT_STYLE_SELECT } from "pages/Repair/CONSTANTS";
 import React, { useEffect, useState } from "react";
@@ -9,12 +12,21 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { MobileDatePicker } from "@mui/x-date-pickers";
 import { isEmpty } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/textUtilities";
 import { getFormatDateTime } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/dateUtilities";
-import { warrantyDummyRecord } from "./WarrantyConstants";
+import {
+  defaultCustomerDetails,
+  defaultInstallerDetails,
+  defaultWarrantyDetails,
+  installerTypeOptions,
+  warrantyBasisOptions,
+  warrantyCategoryOptions,
+  warrantyDummyRecord,
+  warrantyStatusOptions,
+  warrantyUnitOptions,
+} from "./WarrantyConstants";
+import { warranty_Details_By_Id_Get } from "services/CONSTANTS";
+import { callGetApi } from "services/ApiCaller";
+import { API_SUCCESS } from "services/ResponseCode";
 
-const warrantyStatusOptions = [
-  { label: "In Warranty", value: "In Warranty" },
-  { label: "Out of warranty", value: "Out of warranty" },
-];
 const replacementOptions = [
   { label: "Yes", value: "Yes" },
   { label: "No", value: "No" },
@@ -26,55 +38,74 @@ const WarrantyDetails = ({ show, hideModal, recordId }) => {
   const [dateOfInsatll, setDateOfInsatll] = useState(new Date());
 
   const [editRecord, setEditRecord] = useState(true);
-
+  const [warrantyDetails, setWarrantyDetails] = useState({
+    ...defaultWarrantyDetails,
+  });
+  const [customerDetails, setCustomerDetails] = useState({
+    ...defaultCustomerDetails,
+  });
   const [installerReqObj, setInstallerReqObj] = useState({
-    companyName: "",
-    address: "",
-    city: "",
-    state: "",
-    zipCode: "",
-    email: "",
-    phoneNumber: "",
-    installType: "",
-    indoorBrand: "",
-    outdoorBrand: "",
-    equipmentInfo: "",
-    distributor: "",
+    ...defaultInstallerDetails,
   });
 
+  console.log("installerReqObj ::: ", installerReqObj);
   useEffect(() => {
     if (recordId) {
-      const newData = warrantyDummyRecord.find(
-        (record) => record.id === recordId
+      const rUrl = `${warranty_Details_By_Id_Get}${recordId}`;
+      callGetApi(
+        null,
+        rUrl,
+        (response) => {
+          if (response.status === API_SUCCESS) {
+            const { installerDetails, customerDetails, ...responseData } =
+              response.data;
+
+            console.log("installerDetails :: ==== :: ", installerDetails);
+
+            // get category key value pairs
+            const _category = warrantyCategoryOptions.find(
+              (obj) => obj.value === responseData.category
+            );
+
+            // get basis key value pairs
+            const _basis = warrantyBasisOptions.find(
+              (obj) => obj.value === responseData.basis
+            );
+
+            // get unit key value pairs
+            const _unit = warrantyUnitOptions.find(
+              (obj) => obj.value === responseData.basis
+            );
+
+            // get status key value pairs
+            const _warrantyStatus = warrantyStatusOptions.find(
+              (obj) => obj.value === responseData.warrantyStatus
+            );
+
+            // set warranty details
+            setWarrantyDetails({
+              ...responseData,
+              category: _category || "",
+              basis: _basis || "",
+              unit: _unit || "",
+              warrantyStatus: _warrantyStatus || "",
+            });
+
+            // set installer record data
+            const _installerType = installerTypeOptions.find(
+              (obj) => obj.value === installerDetails.installerType
+            );
+            setInstallerReqObj({
+              ...installerDetails,
+              installerType: _installerType || "",
+            });
+            setCustomerDetails({ ...customerDetails });
+          }
+        },
+        (error) => {
+          console.log("error");
+        }
       );
-      if (newData !== undefined) {
-        console.log(newData);
-        const _warrantyStatus = warrantyStatusOptions.find(
-          (obj) =>
-            obj.value.toLowerCase() === newData.warrantyStatus.toLowerCase()
-        );
-        setWarrantyStatus(_warrantyStatus || "");
-
-        const _replacement = replacementOptions.find(
-          (obj) => obj.value.toLowerCase() === newData.replacement.toLowerCase()
-        );
-        setReplacement(_replacement || "");
-
-        setInstallerReqObj({
-          companyName: "AIR-TECH SERVICES",
-          address: "2500 A STREET STE 4",
-          city: "PASCO",
-          state: "WA",
-          zipCode: "99320",
-          email: "HELLO@AIRTECH.COM",
-          phoneNumber: "509-727-3333",
-          installType: "INSTALLER TYPE",
-          indoorBrand: "",
-          outdoorBrand: "",
-          equipmentInfo: "EQUIPMENT INFO",
-          distributor: "JONES SUPPLY",
-        });
-      }
     }
   }, [recordId]);
 
@@ -107,7 +138,9 @@ const WarrantyDetails = ({ show, hideModal, recordId }) => {
                       Warranty Status
                     </p>
                     <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                      {isEmpty(warrantyStatus) ? "NA" : warrantyStatus?.label}
+                      {isEmpty(warrantyDetails.warrantyStatus?.label)
+                        ? "NA"
+                        : warrantyDetails.warrantyStatus?.label}
                     </h6>
                   </div>
                 </div>
@@ -117,7 +150,9 @@ const WarrantyDetails = ({ show, hideModal, recordId }) => {
                       Replacement
                     </p>
                     <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                      {isEmpty(replacement) ? "NA" : replacement?.label}
+                      {warrantyDetails.replacement
+                        ? "Yes"
+                        : warrantyDetails.replacement}
                     </h6>
                   </div>
                 </div>
@@ -146,24 +181,51 @@ const WarrantyDetails = ({ show, hideModal, recordId }) => {
                     <Select
                       className="text-primary"
                       options={warrantyStatusOptions}
-                      onChange={(e) => setWarrantyStatus(e)}
-                      value={warrantyStatus}
+                      onChange={(e) =>
+                        setWarrantyDetails({
+                          ...warrantyDetails,
+                          warrantyStatus: e,
+                        })
+                      }
+                      value={warrantyDetails.warrantyStatus}
                       styles={FONT_STYLE_SELECT}
                     />
                   </div>
                 </div>
                 <div className="col-md-4 col-sm-4">
                   <div className="form-group">
-                    <label className="text-light-dark font-size-14 font-weight-500">
+                    <FormGroup>
+                      <FormControlLabel
+                        style={{ alignItems: "start", marginLeft: 0 }}
+                        control={
+                          <Switch
+                            checked={warrantyDetails.replacement}
+                            onChange={(e) =>
+                              setWarrantyDetails({
+                                ...warrantyDetails,
+                                replacement: e.target.checked,
+                              })
+                            }
+                          />
+                        }
+                        labelPlacement="top"
+                        label={
+                          <span className="text-light-dark font-size-12 font-weight-500">
+                            Replacement
+                          </span>
+                        }
+                      />
+                    </FormGroup>
+                    {/*<label className="text-light-dark font-size-14 font-weight-500">
                       Replacement
                     </label>
-                    <Select
+                     <Select
                       className="text-primary"
                       options={replacementOptions}
                       onChange={(e) => setReplacement(e)}
                       value={replacement}
                       styles={FONT_STYLE_SELECT}
-                    />
+                    />*/}
                   </div>
                 </div>
                 <div className="col-md-4 col-sm-4">
@@ -183,8 +245,13 @@ const WarrantyDetails = ({ show, hideModal, recordId }) => {
                           // minDate={estimationData.preparedOn}
                           maxDate={new Date()}
                           closeOnSelect
-                          value={dateOfInsatll}
-                          onChange={(e) => setDateOfInsatll(e)}
+                          value={warrantyDetails.dateOfInstall}
+                          onChange={(e) =>
+                            setWarrantyDetails({
+                              ...warrantyDetails,
+                              dateOfInstall: e,
+                            })
+                          }
                           renderInput={(params) => (
                             <TextField
                               {...params}
@@ -471,13 +538,17 @@ const WarrantyDetails = ({ show, hideModal, recordId }) => {
                     <label className="text-light-dark font-size-14 font-weight-500">
                       Insatll Type
                     </label>
-                    <input
-                      type="text"
-                      className="form-control border-radius-10 text-primary"
-                      value={installerReqObj.installType}
-                      name="installType"
-                      placeholder="Install Type"
-                      onChange={handleInputChange}
+                    <Select
+                      className="text-primary"
+                      options={installerTypeOptions}
+                      onChange={(e) =>
+                        setInstallerReqObj({
+                          ...installerReqObj,
+                          installerType: e,
+                        })
+                      }
+                      value={installerReqObj.installerType}
+                      styles={FONT_STYLE_SELECT}
                     />
                   </div>
                 </div>
@@ -548,18 +619,31 @@ const WarrantyDetails = ({ show, hideModal, recordId }) => {
           )}
         </div>
         <div className="row mt-2 px-2 d-flex justify-content-arround">
-          <button
-            className="btn text-white bg-primary mx-1"
-            onClick={hideModal}
-          >
-            Submit
-          </button>
-          <button
-            className="btn text-white bg-primary mx-1"
-            onClick={hideModal}
-          >
-            Cancel
-          </button>
+          {editRecord ? (
+            <>
+              <button
+                className="btn text-white bg-primary mx-1"
+                onClick={hideModal}
+              >
+                Close
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                className="btn text-white bg-primary mx-1"
+                onClick={hideModal}
+              >
+                Submit
+              </button>
+              <button
+                className="btn text-white bg-primary mx-1"
+                onClick={hideModal}
+              >
+                Cancel
+              </button>
+            </>
+          )}
         </div>
       </Modal.Body>
     </Modal>
