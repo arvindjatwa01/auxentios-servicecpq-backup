@@ -30,6 +30,7 @@ import {
   INPUT_SEARCH_NO_RESULT_FOUND_ERROR_MESSAGE,
 } from "../equipmentMasterConstants";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
+import $ from "jquery";
 
 const WarrantyMaster = () => {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
@@ -383,9 +384,9 @@ const WarrantyMaster = () => {
                   );
                 }
                 obj.dropdownOptions = responseData;
-                _searchWarranty[i] = obj;
+                _searchWarranty[id] = obj;
                 setSearchWarranty([..._searchWarranty]);
-                $(`.scrollbar-${i}`).css("display", "block");
+                $(`.scrollbar-${id}`).css("display", "block");
               } else {
                 handleSnack("info", INPUT_SEARCH_API_ERROR_MESSAGE);
               }
@@ -395,7 +396,7 @@ const WarrantyMaster = () => {
         } else {
           obj.dropdownOptions = [];
           obj.inputSearch = "";
-          _searchWarranty[i] = obj;
+          _searchWarranty[id] = obj;
           setSearchWarranty([..._searchWarranty]);
         }
       } else {
@@ -495,9 +496,9 @@ const WarrantyMaster = () => {
                                     <li
                                       className="list-group-item"
                                       key={j}
-                                      onClick={() =>
-                                        handleSelectDropdownItem(currentItem, i)
-                                      }
+                                      // onClick={() =>
+                                      //   handleSelectDropdownItem(currentItem, i)
+                                      // }
                                     >
                                       {currentItem[obj.fieldName?.value]}
                                     </li>
