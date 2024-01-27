@@ -31,15 +31,16 @@ import {
 } from "../equipmentMasterConstants";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import $ from "jquery";
+import WarrantyOverviewModal from "./WarrantyOverviewModal";
 
 const WarrantyMaster = () => {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showOverviewModal, setShowOverviewModal] = useState(false);
-  const [showClaimModal, setShowClaimModal] = useState(false);
-  const [recordId, setRecordId] = useState(null);
+  const [showClaimAddEditModal, setShowClaimAddEditModal] = useState(false);
   const [showClaimDetailsModal, setShowClaimDetailsModal] = useState(false);
+  const [showUploadFilesModal, setShowUploadFilesModal] = useState(false);
+  const [recordId, setRecordId] = useState(null);
   const [warrantyRecord, setWarrantyRecord] = useState([]);
-  const [overviewActiveTab, setOverviewActiveTab] = useState("overview");
 
   const [searchWarranty, setSearchWarranty] = useState([
     {
@@ -72,16 +73,18 @@ const WarrantyMaster = () => {
     if (
       !showDetailsModal &&
       !showOverviewModal &&
-      !showClaimModal &&
-      !showClaimDetailsModal
+      !showClaimAddEditModal &&
+      !showClaimDetailsModal &&
+      !showUploadFilesModal
     ) {
       setRecordId(null);
     }
   }, [
     showDetailsModal,
     showOverviewModal,
-    showClaimModal,
+    showClaimAddEditModal,
     showClaimDetailsModal,
+    showUploadFilesModal,
   ]);
 
   useEffect(() => {
@@ -103,6 +106,21 @@ const WarrantyMaster = () => {
         console.log(error);
       }
     );
+  };
+
+  const handleShowClaimAddEditModal = () => {
+    setShowOverviewModal(!showOverviewModal);
+    setShowClaimAddEditModal(!showClaimAddEditModal);
+  };
+
+  const handleShowClaimDetails = () => {
+    setShowOverviewModal(!showOverviewModal);
+    setShowClaimDetailsModal(!showClaimDetailsModal);
+  };
+
+  const handleFilesUploadModal = () => {
+    setShowOverviewModal(!showOverviewModal);
+    setShowUploadFilesModal(!showUploadFilesModal);
   };
 
   const warrantyColumns = [
@@ -608,45 +626,17 @@ const WarrantyMaster = () => {
         />
       )}
 
-      {showOverviewModal && (
-        <WarrantyOverView
-          show={showOverviewModal}
-          hideModal={() => {
-            setShowOverviewModal(false);
-            setOverviewActiveTab("overview");
-          }}
-          recordId={recordId}
-          activeTab={overviewActiveTab}
-          setActiveTab={setOverviewActiveTab}
-          handleOverViewModal={() => {
-            setShowOverviewModal(!showOverviewModal);
-            setShowClaimModal(!showClaimModal);
-          }}
-          handleClaimDetailsModal={() => {
-            setShowOverviewModal(!showOverviewModal);
-            setShowClaimDetailsModal(!showClaimDetailsModal);
-          }}
-        />
-      )}
-
-      {showClaimModal && (
-        <WarrantyClaimAddUpdate
-          show={showClaimModal}
-          hideModal={() => {
-            setShowOverviewModal(!showOverviewModal);
-            setShowClaimModal(!showClaimModal);
-          }}
-        />
-      )}
-      {showClaimDetailsModal && (
-        <ClaimDetails
-          show={showClaimDetailsModal}
-          hideModal={() => {
-            setShowOverviewModal(!showOverviewModal);
-            setShowClaimDetailsModal(!showClaimDetailsModal);
-          }}
-        />
-      )}
+      <WarrantyOverviewModal
+        show={showOverviewModal}
+        hideModal={() => setShowOverviewModal(!showOverviewModal)}
+        recordId={recordId}
+        showClaimAddEditModal={showClaimAddEditModal}
+        handleShowClaimAddEditModal={handleShowClaimAddEditModal}
+        showClaimDetailsModal={showClaimDetailsModal}
+        handleShowClaimDetails={handleShowClaimDetails}
+        showUploadFilesModal={showUploadFilesModal}
+        handleFilesUploadModal={handleFilesUploadModal}
+      />
     </>
   );
 };
