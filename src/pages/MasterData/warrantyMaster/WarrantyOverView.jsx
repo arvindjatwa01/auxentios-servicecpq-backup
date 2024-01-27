@@ -2226,6 +2226,7 @@ const WarrantyOverView = ({
               //   }}
               pageSizeOptions={[5]}
               disableRowSelectionOnClick
+              getRowId={(row) => row.claimId}
             />
           </Box>
         </div>

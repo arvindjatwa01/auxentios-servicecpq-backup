@@ -143,6 +143,63 @@ const reportColumns = [
   },
 ];
 
+const claimColumn = [
+  {
+    field: "claimNumber",
+    headerName: "Claim Number",
+    flex: 1,
+  },
+  {
+    field: "claimStatus",
+    headerName: "Claim Status",
+    flex: 1,
+  },
+  {
+    field: "claimType",
+    headerName: "Claim Type",
+    flex: 1,
+  },
+  {
+    field: "createdOn",
+    headerName: "Claim Date",
+    flex: 1,
+  },
+  {
+    field: "replacement",
+    headerName: "Replacement",
+    flex: 1,
+    renderCell: (params) => (
+      <div style={{ fontWeight: "bold" }}>{params.value ? "Yes" : "No"}</div>
+    ),
+  },
+  {
+    field: "action",
+    type: "actions",
+    headerName: "Action",
+    flex: 1,
+    cellClassName: "actions",
+    getActions: (params) => {
+      return [
+        <GridActionsCellItem
+          icon={
+            <div
+              className=" cursor"
+              // onClick={handleShowClaimDetails}
+            >
+              <Tooltip title="Edit">
+                <img className="m-1" src={penIcon} alt="Edit" />
+              </Tooltip>
+            </div>
+          }
+          label="Edit"
+          className="textPrimary"
+          color="inherit"
+        />,
+      ];
+    },
+  },
+];
+
 const warrantyColumns = [
   {
     field: "warrantyId",
@@ -345,6 +402,8 @@ const ClaimMaster = () => {
   const [warrantyData, setWarrantyData] = useState([]);
   const [warrantyStatus, setwarrantyStatus] = useState("all");
 
+  const [claimRecordData, setClaimRecordData] = useState([])
+
   useEffect(() => {
     if (isEmpty(warrantyStatus) || warrantyStatus === "all") {
       getRecentWarrantyList();
@@ -352,6 +411,14 @@ const ClaimMaster = () => {
       getFilterWarrantyList();
     }
   }, [warrantyStatus]);
+
+  useEffect(() => {
+    if (isEmpty(claimStatus) || claimStatus === "all") {
+
+    }else{
+
+    }
+  }, [])
 
   // get the recent warranty List without any Filter applied
   const getRecentWarrantyList = () => {
@@ -535,7 +602,7 @@ const ClaimMaster = () => {
                           // loading={isLoading}
                           sx={DATA_GRID_STYLE}
                           rows={data}
-                          columns={reportColumns}
+                          columns={claimColumn}
                           columnVisibilityModel={columnVisibilityModel}
                           onColumnVisibilityModelChange={(newModel) =>
                             setColumnVisibilityModel(newModel)
