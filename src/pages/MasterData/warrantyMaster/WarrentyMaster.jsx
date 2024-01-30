@@ -25,6 +25,7 @@ import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
 import { isEmpty } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/textUtilities";
 import {
+  FILL_DATA_PROPERLY_ERROR_MESSAGE,
   INPUT_SEARCH_API_ERROR_MESSAGE,
   INPUT_SEARCH_ERROR_MESSAGE,
   INPUT_SEARCH_NO_RESULT_FOUND_ERROR_MESSAGE,
@@ -48,6 +49,7 @@ const WarrantyMaster = () => {
       fieldName: "",
       operator: "",
       inputSearch: "",
+      selectedOption: "",
       dropdownOptions: [],
     },
   ]);
@@ -123,7 +125,7 @@ const WarrantyMaster = () => {
     setShowUploadFilesModal(!showUploadFilesModal);
   };
 
-  const warrantyColumns = [
+  const warrantyColumns2 = [
     {
       field: "warrantyId",
       headerName: "Id",
@@ -248,98 +250,115 @@ const WarrantyMaster = () => {
     },
   ];
 
-  // const warrantyColumns = [
-  //   {
-  //     field: "warrantyId",
-  //     headerName: "Warranty Id",
-  //     //   width: 90,
-  //     flex: 1,
-  //   },
-  //   {
-  //     field: "modelNo",
-  //     headerName: "Model Number",
-  //     width: 150,
-  //     flex: 1,
-  //   },
-  //   {
-  //     field: "serialNumber",
-  //     headerName: "Serial Number",
-  //     width: 120,
-  //     flex: 1,
-  //   },
-  //   {
-  //     field: "warrantyStartDate",
-  //     headerName: "Warranty Start Date",
-  //     //   width: 120,
-  //     flex: 1,
-  //   },
-  //   {
-  //     field: "warrantyEndDate",
-  //     headerName: "Warranty End Date",
-  //     //   width: 120,
-  //     flex: 1,
-  //   },
-  //   {
-  //     field: "replacement",
-  //     headerName: "Replacement",
-  //     //   width: 90,
-  //     flex: 1,
-  //   },
-  //   {
-  //     field: "insataller",
-  //     headerName: "Distributor",
-  //     //   width: 90,
-  //     flex: 1,
-  //   },
-  //   {
-  //     field: "warrantyStatus",
-  //     headerName: "Warranty Status",
-  //     width: 150,
-  //     flex: 1,
-  //   },
-  //   {
-  //     field: "action",
-  //     type: "actions",
-  //     headerName: "Action",
-  //     //   width: 150,
-  //     flex: 1,
-  //     cellClassName: "actions",
-  //     getActions: (params) => {
-  //       return [
-  //         <GridActionsCellItem
-  //           icon={
-  //             <div
-  //               className=" cursor"
-  //               onClick={() => handleViewWarrantyDetails(params)}
-  //             >
-  //               <Tooltip title="Edit">
-  //                 <img className="m-1" src={penIcon} alt="Edit" />
-  //               </Tooltip>
-  //             </div>
-  //           }
-  //           label="Edit"
-  //           className="textPrimary"
-  //           color="inherit"
-  //         />,
-  //         <GridActionsCellItem
-  //           icon={
-  //             <div
-  //               className=" cursor"
-  //               onClick={() => setShowOverviewModal(true)}
-  //             >
-  //               <Tooltip title="Overview">
-  //                 <VisibilityIcon />
-  //               </Tooltip>
-  //             </div>
-  //           }
-  //           label="Edit"
-  //           className="textPrimary"
-  //           color="inherit"
-  //         />,
-  //       ];
-  //     },
-  //   },
-  // ];
+  const warrantyColumns = [
+    {
+      field: "warrantyId",
+      headerName: "Id",
+      flex: 1,
+    },
+    {
+      field: "title",
+      headerName: "Title",
+      //   width: 90,
+      flex: 1,
+    },
+    {
+      field: "modelNumber",
+      headerName: "Model Number",
+      width: 150,
+      flex: 1,
+    },
+    {
+      field: "serilaNumber",
+      headerName: "Serial No.",
+      flex: 1,
+      // renderCell: (params) => <div>ZMX00507</div>,
+    },
+    {
+      field: "componentNumber",
+      headerName: "Component Code",
+      flex: 1,
+      // renderCell: (params) => <div></div>,
+    },
+    {
+      field: "basis",
+      headerName: "Basis",
+      flex: 1,
+    },
+    {
+      field: "unit",
+      headerName: "Unit",
+      flex: 1,
+    },
+    {
+      field: "warrantyStartDate",
+      headerName: "Start Date",
+      flex: 1,
+    },
+    {
+      field: "warrantyEndDate",
+      headerName: "End Date",
+      flex: 1,
+    },
+    {
+      field: "warrantyStartUsage",
+      headerName: "Start Usage",
+      flex: 1,
+    },
+    {
+      field: "warrantyEndUsage",
+      headerName: "End Usage",
+      flex: 1,
+    },
+    // {
+    //   field: "warrantyStatus",
+    //   headerName: "Warranty Status",
+    //   width: 150,
+    //   flex: 1,
+    // },
+    {
+      field: "action",
+      type: "actions",
+      headerName: "Action",
+      //   width: 150,
+      flex: 1,
+      cellClassName: "actions",
+      getActions: (params) => {
+        return [
+          <GridActionsCellItem
+            icon={
+              <div
+                className="cursor"
+                onClick={() => handleViewWarrantyDetails(params)}
+              >
+                <Tooltip title="Edit">
+                  <img className="m-1" src={penIcon} alt="Edit" />
+                </Tooltip>
+              </div>
+            }
+            label="Edit"
+            className="textPrimary"
+            color="inherit"
+          />,
+          <GridActionsCellItem
+            icon={
+              <div
+                className=" cursor"
+                onClick={() => handleViewWarrantyOverview(params)}
+              >
+                <Tooltip title="Overview">
+                  <VisibilityIcon />
+                </Tooltip>
+              </div>
+            }
+            label="Edit"
+            className="textPrimary"
+            color="inherit"
+          />,
+        ];
+      },
+    },
+  ];
 
   const handleViewWarrantyDetails = (params) => {
     const warrantyId = params.row["warrantyId"];
@@ -368,6 +387,7 @@ const WarrantyMaster = () => {
     const updateObj = {
       ..._searchWarranty[i],
       inputSearch: "",
+      selectedOption: "",
       dropdownOptions: [],
       fieldName: e,
     };
@@ -378,10 +398,11 @@ const WarrantyMaster = () => {
   //add more Search fields
   const addMoreSearchParameters = () => {
     const _searchWarranty = [...searchWarranty];
-    if (_searchWarranty.length !== 2) {
+    if (_searchWarranty.length !== 1) {
       _searchWarranty.push({
         id: _searchWarranty.length,
         inputSearch: "",
+        selectedOption: "",
         dropdownOptions: [],
         fieldName: "",
       });
@@ -442,9 +463,43 @@ const WarrantyMaster = () => {
 
   const handleSelectDropdownItem = (currentItem, id) => {
     console.log("currentItem :: ", currentItem);
-    // let _searchWarranty = [...searchWarranty];
-    // let obj = _searchWarranty[id];
-    // obj.inputSearch = 
+    let _searchWarranty = [...searchWarranty];
+    let obj = _searchWarranty[id];
+    obj.inputSearch = currentItem[obj.fieldName?.value];
+    obj.selectedOption = currentItem[obj.fieldName?.value];
+    _searchWarranty[id] = obj;
+    setSearchWarranty([..._searchWarranty]);
+    $(`.scrollbar-${id}`).css("display", "none");
+  };
+
+  const handleSearchWarranty = () => {
+    try {
+      if (
+        isEmpty(searchWarranty[0].fieldName?.value) ||
+        isEmpty(searchWarranty[0].inputSearch)
+      ) {
+        handleSnack("info", FILL_DATA_PROPERLY_ERROR_MESSAGE);
+      } else {
+        const rUrl = `${Search_By_Fields_Warranty_List_GET}field_name=${searchWarranty[0].fieldName.value}&field_value=${searchWarranty[0].inputSearch}`;
+        callGetApi(
+          null,
+          rUrl,
+          (response) => {
+            if (response.status === API_SUCCESS) {
+              const responseData = response.data;
+              if (responseData.length === 0) {
+                handleSnack("info", INPUT_SEARCH_NO_RESULT_FOUND_ERROR_MESSAGE);
+                return;
+              }
+              setWarrantyRecord(responseData);
+            } else {
+              handleSnack("info", INPUT_SEARCH_API_ERROR_MESSAGE);
+            }
+          },
+          (error) => {}
+        );
+      }
+    } catch (error) {}
   };
 
   return (
@@ -548,7 +603,7 @@ const WarrantyMaster = () => {
                             {searchWarranty.length - 1 === i && (
                               <a
                                 className="btn bg-primary text-white border-radius-10 cursor"
-                                // onClick={handleSearchData}
+                                onClick={handleSearchWarranty}
                               >
                                 <SearchIcon />
                                 <span className="ml-1">Search</span>
