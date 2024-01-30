@@ -19,9 +19,10 @@ import OverviewDetailsTabConatiner from "./OverviewDetailsTabConatiner";
 import OverviewClaimTabContainer from "./OverviewClaimTabContainer";
 import {
   Claim_Pagination_List_GET,
+  Update_Warranty_Details_PUT,
   warranty_Details_By_Id_Get,
 } from "services/CONSTANTS";
-import { callGetApi } from "services/ApiCaller";
+import { callGetApi, callPutApi } from "services/ApiCaller";
 import { API_SUCCESS } from "services/ResponseCode";
 import WarrantyClaimAddUpdate from "./WarrantyClaimAddUpdate";
 import ClaimDetails from "./ClaimDetails";
@@ -38,6 +39,7 @@ const WarrantyOverviewModal = ({
   handleShowClaimDetails,
   showUploadFilesModal,
   handleFilesUploadModal,
+  handleSnack,
 }) => {
   const [activeTab, setActiveTab] = useState("overview");
   const [editTabsContent, setEditTabsContent] = useState({
@@ -61,8 +63,15 @@ const WarrantyOverviewModal = ({
 
   useEffect(() => {
     if (recordId && recordId !== null) {
+      setEditTabsContent({
+        overview: false,
+        details: false,
+        claim: false,
+        files: false,
+      });
       getOverviewDetails();
       getClaimListRecords();
+      setActiveTab("overview");
     }
   }, [recordId]);
 
@@ -173,14 +182,50 @@ const WarrantyOverviewModal = ({
     setCustomerDetails({ ...customerDetails, [name]: value });
   };
 
+  //  warranty toggle button check uncheck
+  const handleWarrantyToggleButton = (e, keyName) => {
+    setWarrantyRecord({ ...warrantyRecord, [keyName]: e.target.checked });
+  };
+
   // handle tab Change
   const handleTabChange = (e) => {
     try {
       const { id } = e.target;
+      const rUrl = `${Update_Warranty_Details_PUT}${recordId}`;
+      const reqObj = {
+        ...warrantyRecord,
+        category: warrantyRecord.category?.value || "EMPTY",
+        basis: warrantyRecord.basis?.value || "EMPTY",
+        unit: warrantyRecord.unit?.value || "EMPTY",
+        warrantyStatus: warrantyRecord.warrantyStatus?.value || "EMPTY",
+        installerDetails: {
+          ...installerRecord,
+          installerType: installerRecord.installerType?.value || "EMPTY",
+        },
+        customerDetails: { ...customerDetails },
+      };
       if (id === "overview") {
-        setActiveTab("details");
+        if (editTabsContent.overview) {
+          callPutApi(rUrl, rUrl, reqObj, (response) => {
+            if (response.status === API_SUCCESS) {
+              handleSnack("info", "Warranty Overview updated successfully.");
+              setActiveTab("details");
+            }
+          });
+        } else {
+          setActiveTab("details");
+        }
       } else if (id === "details") {
-        setActiveTab("claim");
+        if (editTabsContent.details) {
+          callPutApi(rUrl, rUrl, reqObj, (response) => {
+            if (response.status === API_SUCCESS) {
+              handleSnack("info", "Warranty Details updated successfully.");
+              setActiveTab("claim");
+            }
+          });
+        } else {
+          setActiveTab("claim");
+        }
       } else if (id === "claim") {
         setActiveTab("files");
       } else if (id === "files") {
@@ -220,6 +265,7 @@ const WarrantyOverviewModal = ({
                     hadleWarrantyInputChange={hadleWarrantyInputChange}
                     handleWarrantySelectChange={handleWarrantySelectChange}
                     handleTabChange={handleTabChange}
+                    handleWarrantyToggleButton={handleWarrantyToggleButton}
                   />
                 )}
                 {activeTab === "details" && (
@@ -235,6 +281,7 @@ const WarrantyOverviewModal = ({
                     hadleInstallerInputChange={hadleInstallerInputChange}
                     hadleInstallerSelectChange={hadleInstallerSelectChange}
                     hadleCustomerInputChange={hadleCustomerInputChange}
+                    handleWarrantyToggleButton={handleWarrantyToggleButton}
                   />
                 )}
                 {activeTab === "claim" && (

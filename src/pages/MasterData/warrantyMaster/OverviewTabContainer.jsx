@@ -29,6 +29,7 @@ const OverviewTabContainer = ({
   hadleWarrantyInputChange,
   handleWarrantySelectChange,
   handleTabChange,
+  handleWarrantyToggleButton,
 }) => {
   return (
     <>
@@ -200,6 +201,37 @@ const OverviewTabContainer = ({
                     <div className="col-lg-3 col-md-3 col-sm-6 col-12">
                       <div className="form-group">
                         <label className="text-light-dark font-size-14 font-weight-500">
+                          Date of Install
+                        </label>
+                        <div className="align-items-center date-box">
+                          <LocalizationProvider dateAdapter={AdapterDateFns}>
+                            <MobileDatePicker
+                              inputFormat="dd/MM/yyyy"
+                              className="form-controldate border-radius-10"
+                              maxDate={new Date()}
+                              closeOnSelect
+                              value={warrantyRecord.dateOfInstall}
+                              onChange={(e) =>
+                                handleWarrantySelectChange(e, "dateOfInstall")
+                              }
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  variant="standard"
+                                  inputProps={{
+                                    ...params.inputProps,
+                                    style: FONT_STYLE,
+                                  }}
+                                />
+                              )}
+                            />
+                          </LocalizationProvider>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+                      <div className="form-group">
+                        <label className="text-light-dark font-size-14 font-weight-500">
                           Warranty Start Usage
                         </label>
                         <input
@@ -212,6 +244,8 @@ const OverviewTabContainer = ({
                         />
                       </div>
                     </div>
+                  </div>
+                  <div className="row input-fields">
                     <div className="col-lg-3 col-md-3 col-sm-6 col-12">
                       <div className="form-group">
                         <label className="text-light-dark font-size-14 font-weight-500">
@@ -227,8 +261,6 @@ const OverviewTabContainer = ({
                         />
                       </div>
                     </div>
-                  </div>
-                  <div className="row input-fields">
                     <div className="col-lg-3 col-md-3 col-sm-6 col-12">
                       <div className="form-group">
                         <label className="text-light-dark font-size-14 font-weight-500">
@@ -267,13 +299,9 @@ const OverviewTabContainer = ({
                             control={
                               <Switch
                                 checked={warrantyRecord.machine}
-
-                                // onChange={(e) =>
-                                //   setWarrantyRecord({
-                                //     ...warrantyRecord,
-                                //     machine: e.target.checked,
-                                //   })
-                                // }
+                                onChange={(e) =>
+                                  handleWarrantyToggleButton(e, "machine")
+                                }
                               />
                             }
                             labelPlacement="top"
@@ -286,6 +314,8 @@ const OverviewTabContainer = ({
                         </FormGroup>
                       </div>
                     </div>
+                  </div>
+                  <div className="row align-items-end">
                     <div className="col-lg-3 col-md-3 col-sm-6 col-12">
                       <div className="form-group">
                         <label className="text-light-dark font-size-14 font-weight-500">
@@ -301,8 +331,6 @@ const OverviewTabContainer = ({
                         />
                       </div>
                     </div>
-                  </div>
-                  <div className="row align-items-end">
                     <div className="col-lg-3 col-md-3 col-sm-6 col-12">
                       <div className="form-group">
                         <label className="text-light-dark font-size-14 font-weight-500">
@@ -336,32 +364,17 @@ const OverviewTabContainer = ({
                     <div className="col-lg-3 col-md-3 col-sm-6 col-12">
                       <div className="form-group">
                         <label className="text-light-dark font-size-14 font-weight-500">
-                          Date of Install
+                          Warranty Status
                         </label>
-                        <div className="align-items-center date-box">
-                          <LocalizationProvider dateAdapter={AdapterDateFns}>
-                            <MobileDatePicker
-                              inputFormat="dd/MM/yyyy"
-                              className="form-controldate border-radius-10"
-                              maxDate={new Date()}
-                              closeOnSelect
-                              value={warrantyRecord.dateOfInstall}
-                              onChange={(e) =>
-                                handleWarrantySelectChange(e, "dateOfInstall")
-                              }
-                              renderInput={(params) => (
-                                <TextField
-                                  {...params}
-                                  variant="standard"
-                                  inputProps={{
-                                    ...params.inputProps,
-                                    style: FONT_STYLE,
-                                  }}
-                                />
-                              )}
-                            />
-                          </LocalizationProvider>
-                        </div>
+                        <Select
+                          className="text-primary"
+                          options={warrantyStatusOptions}
+                          onChange={(e) =>
+                            handleWarrantySelectChange(e, "warrantyStatus")
+                          }
+                          value={warrantyRecord.warrantyStatus}
+                          styles={FONT_STYLE_SELECT}
+                        />
                       </div>
                     </div>
                     <div className="col-lg-3 col-md-3 col-sm-6 col-12">
@@ -389,8 +402,6 @@ const OverviewTabContainer = ({
                           /> */}
                       </div>
                     </div>
-                  </div>
-                  <div className="row align-items-end">
                     <div className="col-lg-3 col-md-3 col-sm-6 col-12">
                       <div className="form-group">
                         <p className="text-light-dark font-size-12 font-weight-500 mb-1">
@@ -402,22 +413,6 @@ const OverviewTabContainer = ({
                             : "Yes"}
                           <InsertPhotoIcon />
                         </h6>
-                      </div>
-                    </div>
-                    <div className="col-lg-3 col-md-3 col-sm-6 col-12">
-                      <div className="form-group">
-                        <label className="text-light-dark font-size-14 font-weight-500">
-                          Warranty Status
-                        </label>
-                        <Select
-                          className="text-primary"
-                          options={warrantyStatusOptions}
-                          onChange={(e) =>
-                            handleWarrantySelectChange(e, "warrantyStatus")
-                          }
-                          value={warrantyRecord.warrantyStatus}
-                          styles={FONT_STYLE_SELECT}
-                        />
                       </div>
                     </div>
                   </div>
@@ -510,6 +505,21 @@ const OverviewTabContainer = ({
                     <div className="col-lg-3 col-md-3 col-sm-6 col-12">
                       <div className="form-group">
                         <p className="text-light-dark font-size-12 font-weight-500 mb-1">
+                          Date of Install
+                        </p>
+                        <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                          {isEmpty(warrantyRecord.dateOfInstall)
+                            ? "NA"
+                            : getFormatDateTime(
+                                warrantyRecord.dateOfInstall,
+                                false
+                              )}
+                        </h6>
+                      </div>
+                    </div>
+                    <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+                      <div className="form-group">
+                        <p className="text-light-dark font-size-12 font-weight-500 mb-1">
                           Warranty Start Usage
                         </p>
                         <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
@@ -519,6 +529,8 @@ const OverviewTabContainer = ({
                         </h6>
                       </div>
                     </div>
+                  </div>
+                  <div className="row align-items-end">
                     <div className="col-lg-3 col-md-3 col-sm-6 col-12">
                       <div className="form-group">
                         <p className="text-light-dark font-size-12 font-weight-500 mb-1">
@@ -531,8 +543,6 @@ const OverviewTabContainer = ({
                         </h6>
                       </div>
                     </div>
-                  </div>
-                  <div className="row align-items-end">
                     <div className="col-lg-3 col-md-3 col-sm-6 col-12">
                       <div className="form-group">
                         <p className="text-light-dark font-size-12 font-weight-500 mb-1">
@@ -567,6 +577,8 @@ const OverviewTabContainer = ({
                         </h6>
                       </div>
                     </div>
+                  </div>
+                  <div className="row align-items-end">
                     <div className="col-lg-3 col-md-3 col-sm-6 col-12">
                       <div className="form-group">
                         <p className="text-light-dark font-size-12 font-weight-500 mb-1">
@@ -579,8 +591,6 @@ const OverviewTabContainer = ({
                         </h6>
                       </div>
                     </div>
-                  </div>
-                  <div className="row align-items-end">
                     <div className="col-lg-3 col-md-3 col-sm-6 col-12">
                       <div className="form-group">
                         <p className="text-light-dark font-size-12 font-weight-500 mb-1">
@@ -608,15 +618,12 @@ const OverviewTabContainer = ({
                     <div className="col-lg-3 col-md-3 col-sm-6 col-12">
                       <div className="form-group">
                         <p className="text-light-dark font-size-12 font-weight-500 mb-1">
-                          Date of Install
+                          Warranty Status
                         </p>
                         <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                          {isEmpty(warrantyRecord.dateOfInstall)
+                          {isEmpty(warrantyRecord.warrantyStatus?.label)
                             ? "NA"
-                            : getFormatDateTime(
-                                warrantyRecord.dateOfInstall,
-                                false
-                              )}
+                            : warrantyRecord.warrantyStatus?.label}
                         </h6>
                       </div>
                     </div>
@@ -632,8 +639,6 @@ const OverviewTabContainer = ({
                         </h6>
                       </div>
                     </div>
-                  </div>
-                  <div className="row align-items-end">
                     <div className="col-lg-3 col-md-3 col-sm-6 col-12">
                       <div className="form-group">
                         <p className="text-light-dark font-size-12 font-weight-500 mb-1">
@@ -644,18 +649,6 @@ const OverviewTabContainer = ({
                             ? "No"
                             : "Yes"}
                           <InsertPhotoIcon />
-                        </h6>
-                      </div>
-                    </div>
-                    <div className="col-lg-3 col-md-3 col-sm-6 col-12">
-                      <div className="form-group">
-                        <p className="text-light-dark font-size-12 font-weight-500 mb-1">
-                          Warranty Status
-                        </p>
-                        <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                          {isEmpty(warrantyRecord.warrantyStatus?.label)
-                            ? "NA"
-                            : warrantyRecord.warrantyStatus?.label}
                         </h6>
                       </div>
                     </div>

@@ -23,8 +23,11 @@ import {
   warrantyStatusOptions,
   warrantyUnitOptions,
 } from "./WarrantyConstants";
-import { warranty_Details_By_Id_Get } from "services/CONSTANTS";
-import { callGetApi } from "services/ApiCaller";
+import {
+  Update_Warranty_Details_PUT,
+  warranty_Details_By_Id_Get,
+} from "services/CONSTANTS";
+import { callGetApi, callPutApi } from "services/ApiCaller";
 import { API_SUCCESS } from "services/ResponseCode";
 
 const replacementOptions = [
@@ -32,7 +35,7 @@ const replacementOptions = [
   { label: "No", value: "No" },
 ];
 
-const WarrantyDetails = ({ show, hideModal, recordId }) => {
+const WarrantyDetails = ({ show, hideModal, recordId, handleSnack }) => {
   const [warrantyStatus, setWarrantyStatus] = useState("");
   const [replacement, setReplacement] = useState("");
   const [dateOfInsatll, setDateOfInsatll] = useState(new Date());
@@ -48,7 +51,6 @@ const WarrantyDetails = ({ show, hideModal, recordId }) => {
     ...defaultInstallerDetails,
   });
 
-  console.log("installerReqObj ::: ", installerReqObj);
   useEffect(() => {
     if (recordId) {
       const rUrl = `${warranty_Details_By_Id_Get}${recordId}`;
@@ -59,8 +61,6 @@ const WarrantyDetails = ({ show, hideModal, recordId }) => {
           if (response.status === API_SUCCESS) {
             const { installerDetails, customerDetails, ...responseData } =
               response.data;
-
-            console.log("installerDetails :: ==== :: ", installerDetails);
 
             // get category key value pairs
             const _category = warrantyCategoryOptions.find(
@@ -112,6 +112,36 @@ const WarrantyDetails = ({ show, hideModal, recordId }) => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setInstallerReqObj({ ...installerReqObj, [name]: value });
+  };
+
+  // customer input text change
+  const hadleCustomerInputChange = (e) => {
+    const { name, value } = e.target;
+    setCustomerDetails({ ...customerDetails, [name]: value });
+  };
+
+  const handleUpdateWarrantyDetails = () => {
+    try {
+      const rUrl = `${Update_Warranty_Details_PUT}${recordId}`;
+      const reqObj = {
+        ...warrantyDetails,
+        category: warrantyDetails.category?.value || "EMPTY",
+        basis: warrantyDetails.basis?.value || "EMPTY",
+        unit: warrantyDetails.unit?.value || "EMPTY",
+        warrantyStatus: warrantyDetails.warrantyStatus?.value || "EMPTY",
+        installerDetails: {
+          ...installerReqObj,
+          installerType: installerReqObj.installerType?.value || "EMPTY",
+        },
+        customerDetails: { ...customerDetails },
+      };
+      callPutApi(rUrl, rUrl, reqObj, (response) => {
+        if (response.status === API_SUCCESS) {
+          handleSnack("info", "Warranty Detais updated successfully.");
+          hideModal();
+        }
+      });
+    } catch (error) {}
   };
 
   return (
@@ -265,6 +295,239 @@ const WarrantyDetails = ({ show, hideModal, recordId }) => {
                         />
                       </LocalizationProvider>
                     </div>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+
+        <h5 className="font-weight-bold fw-bold mb-0">End Customer</h5>
+        <div className="card border mb-3 mt-2 px-3 py-3">
+          {editRecord ? (
+            <>
+              <div className="row align-items-end">
+                <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+                  <div className="form-group">
+                    <p className="text-light-dark font-size-12 font-weight-500 mb-1">
+                      Customer Id
+                    </p>
+                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                      {isEmpty(customerDetails.customerId)
+                        ? "NA"
+                        : customerDetails.customerId}
+                    </h6>
+                  </div>
+                </div>
+                <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+                  <div className="form-group">
+                    <p className="text-light-dark font-size-12 font-weight-500 mb-1">
+                      Customer Name
+                    </p>
+                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                      {isEmpty(customerDetails.customerName)
+                        ? "NA"
+                        : customerDetails.customerName}
+                    </h6>
+                  </div>
+                </div>
+                <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+                  <div className="form-group">
+                    <p className="text-light-dark font-size-12 font-weight-500 mb-1">
+                      Address
+                    </p>
+                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                      {isEmpty(customerDetails.address)
+                        ? "NA"
+                        : customerDetails.address}
+                    </h6>
+                  </div>
+                </div>
+                <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+                  <div className="form-group">
+                    <p className="text-light-dark font-size-12 font-weight-500 mb-1">
+                      City
+                    </p>
+                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                      {isEmpty(customerDetails.city)
+                        ? "NA"
+                        : customerDetails.city}
+                    </h6>
+                  </div>
+                </div>
+              </div>
+              <div className="row align-items-end">
+                <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+                  <div className="form-group">
+                    <p className="text-light-dark font-size-12 font-weight-500 mb-1">
+                      State
+                    </p>
+                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                      {isEmpty(customerDetails.state)
+                        ? "NA"
+                        : customerDetails.state}
+                    </h6>
+                  </div>
+                </div>
+                <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+                  <div className="form-group">
+                    <p className="text-light-dark font-size-12 font-weight-500 mb-1">
+                      Zip Code
+                    </p>
+                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                      {isEmpty(customerDetails.zipCode)
+                        ? "NA"
+                        : customerDetails.zipCode}
+                    </h6>
+                  </div>
+                </div>
+                <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+                  <div className="form-group">
+                    <p className="text-light-dark font-size-12 font-weight-500 mb-1">
+                      Contact Email
+                    </p>
+                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                      {isEmpty(customerDetails.email)
+                        ? "NA"
+                        : customerDetails.email}
+                    </h6>
+                  </div>
+                </div>
+                <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+                  <div className="form-group">
+                    <p className="text-light-dark font-size-12 font-weight-500 mb-1">
+                      Phone Number
+                    </p>
+                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                      {isEmpty(customerDetails.phoneNumber)
+                        ? "NA"
+                        : customerDetails.phoneNumber}
+                    </h6>
+                  </div>
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="row input-fields">
+                <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-14 font-weight-500">
+                      Customer Id
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control border-radius-10 text-primary"
+                      value={customerDetails.customerId}
+                      name="customerId"
+                      placeholder="Customer Id"
+                      onChange={hadleCustomerInputChange}
+                    />
+                  </div>
+                </div>
+                <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-14 font-weight-500">
+                      Customer Name
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control border-radius-10 text-primary"
+                      value={customerDetails.customerName}
+                      name="customerName"
+                      placeholder="Customer Name"
+                      onChange={hadleCustomerInputChange}
+                    />
+                  </div>
+                </div>
+                <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-14 font-weight-500">
+                      Address
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control border-radius-10 text-primary"
+                      value={customerDetails.address}
+                      name="address"
+                      placeholder="Installer Address"
+                      onChange={hadleCustomerInputChange}
+                    />
+                  </div>
+                </div>
+                <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-14 font-weight-500">
+                      City
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control border-radius-10 text-primary"
+                      value={customerDetails.city}
+                      name="city"
+                      placeholder="City Name"
+                      onChange={hadleCustomerInputChange}
+                    />
+                  </div>
+                </div>
+                <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-14 font-weight-500">
+                      State
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control border-radius-10 text-primary"
+                      value={customerDetails.state}
+                      name="state"
+                      placeholder="State Name"
+                      onChange={hadleCustomerInputChange}
+                    />
+                  </div>
+                </div>
+                <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-14 font-weight-500">
+                      Zip Code
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control border-radius-10 text-primary"
+                      value={customerDetails.zipCode}
+                      name="zipCode"
+                      placeholder="Zip Code"
+                      onChange={hadleCustomerInputChange}
+                    />
+                  </div>
+                </div>
+                <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-14 font-weight-500">
+                      Contact Email
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control border-radius-10 text-primary"
+                      value={customerDetails.email}
+                      name="email"
+                      placeholder="Contact Email"
+                      onChange={hadleCustomerInputChange}
+                    />
+                  </div>
+                </div>
+                <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-14 font-weight-500">
+                      Phone Number
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control border-radius-10 text-primary"
+                      value={customerDetails.phoneNumber}
+                      name="phoneNumber"
+                      placeholder="Phone Number"
+                      onChange={hadleCustomerInputChange}
+                    />
                   </div>
                 </div>
               </div>
@@ -618,6 +881,7 @@ const WarrantyDetails = ({ show, hideModal, recordId }) => {
             </>
           )}
         </div>
+
         <div className="row mt-2 px-2 d-flex justify-content-arround">
           {editRecord ? (
             <>
@@ -632,7 +896,7 @@ const WarrantyDetails = ({ show, hideModal, recordId }) => {
             <>
               <button
                 className="btn text-white bg-primary mx-1"
-                onClick={hideModal}
+                onClick={handleUpdateWarrantyDetails}
               >
                 Submit
               </button>

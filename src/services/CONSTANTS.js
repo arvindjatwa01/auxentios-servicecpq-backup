@@ -554,7 +554,17 @@ const Warrant_Master_Url = WARRANTY_CLAIAM_URI + "warranty"
 export const Recent_Warranty_List_GET = Warrant_Master_Url + "/recent";
 export const Search_By_Fields_Warranty_List_GET = Warrant_Master_Url + "/search-by-fields?";
 export const warranty_Details_By_Id_Get = Warrant_Master_Url + "/";
+export const Update_Warranty_Details_PUT= Warrant_Master_Url + "/";
 
 // Claim Master
 const Claim_Master_Url = WARRANTY_CLAIAM_URI + "claim";
 export const Claim_Pagination_List_GET = Claim_Master_Url;
+export const Search_By_Field_Claim_List_GET = Claim_Master_Url + "/search-by-fields?";
+export const Claim_Details_By_Id_Get = Claim_Master_Url + "/";
+export const Update_CLaim_Details_PUT= Claim_Master_Url + "/";
+export const Claim_Question_Mark_Claimable_GET = Claim_Master_Url + "/mark-claimable";
+
+// Claim Questuin
+const Claim_Questions_Master_Url = WARRANTY_CLAIAM_URI + "claim/question";
+export const Claim_Questions_List_GET = Claim_Questions_Master_Url;
+export const claim_Question_Answer_POST = Claim_Questions_Master_Url + "/question-answer"

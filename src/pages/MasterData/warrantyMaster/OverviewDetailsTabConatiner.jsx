@@ -36,13 +36,17 @@ const OverviewDetailsTabConatiner = ({
   hadleInstallerInputChange,
   hadleInstallerSelectChange,
   hadleCustomerInputChange,
+  handleWarrantyToggleButton,
 }) => {
   return (
     <>
       <div className="d-flex justify-content-between align-items-center">
         <h5 className="font-weight-bold fw-bold mb-0">Item Details</h5>
         <div>
-          <button className="border-primary text-primary rounded-pill px-3 py-1">
+          <button
+            className="border-primary text-primary rounded-pill cursor px-3 py-1"
+            onClick={handleEdit}
+          >
             <img className="m-1" src={penIcon} alt="Edit" /> Edit
           </button>
         </div>
@@ -240,12 +244,9 @@ const OverviewDetailsTabConatiner = ({
                       control={
                         <Switch
                           checked={warrantyRecord.machine}
-                          //   onChange={(e) =>
-                          //     setWarrantyRecord({
-                          //       ...warrantyRecord,
-                          //       machine: e.target.checked,
-                          //     })
-                          //   }
+                          onChange={(e) =>
+                            handleWarrantyToggleButton(e, "machine")
+                          }
                         />
                       }
                       labelPlacement="top"
@@ -419,12 +420,9 @@ const OverviewDetailsTabConatiner = ({
                       control={
                         <Switch
                           checked={warrantyRecord.replacement}
-                          //   onChange={(e) =>
-                          //     setWarrantyRecord({
-                          //       ...warrantyRecord,
-                          //       replacement: e.target.checked,
-                          //     })
-                          //   }
+                          onChange={(e) =>
+                            handleWarrantyToggleButton(e, "replacement")
+                          }
                         />
                       }
                       labelPlacement="top"
