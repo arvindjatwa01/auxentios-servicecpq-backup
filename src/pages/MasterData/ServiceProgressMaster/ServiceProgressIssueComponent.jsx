@@ -293,7 +293,7 @@ const ServiceProgressIssueComponent = (props) => {
         // fetchAllDetails(state.bId, state.partListNo);
         console.log("Created a new builder");
       }
-    } 
+    }
     // else if (state) {
     //   setHeaderLoading(true);
     //   setBuilderId(props.builderId);
@@ -1517,198 +1517,180 @@ const ServiceProgressIssueComponent = (props) => {
         // description={versionDescription}
         // setDescription={setVersionDescription}
       />
-      <div className="content-body" style={{ minHeight: "884px" }}>
-        <div className="container-fluid ">
-          <div className="d-flex align-items-center justify-content-between mt-2">
-            <div className="d-flex justify-content-center align-items-center">
-              <h5 className="font-weight-600 mb-0">Part List</h5>
-              <div className="d-flex justify-content-center align-items-center">
-                <div className="ml-3">
-                  <Select
-                    className="customselectbtn"
-                    onChange={(e) => handleVersion(e)}
-                    options={builderVersionOptions}
-                    value={selectedVersion}
-                  />
+      <div className="d-flex align-items-center justify-content-between mt-2">
+        <div className="d-flex justify-content-center align-items-center">
+          <h5 className="font-weight-600 mb-0">Issue</h5>
+          <div className="d-flex justify-content-center align-items-center">
+            <div className="ml-3">
+              <Select
+                className="customselectbtn"
+                onChange={(e) => handleVersion(e)}
+                options={builderVersionOptions}
+                value={selectedVersion}
+              />
 
-                  {/* <span>Version {value3}</span> */}
-                </div>
-                <div className="ml-3">
-                  <Select
-                    className="customselectbtn"
-                    onChange={(e) => handleBuilderStatus(e)}
-                    isOptionDisabled={(e) => disableStatusOptions(e)}
-                    options={STATUS_OPTIONS}
-                    value={selBuilderStatus}
-                  />
-                </div>
-                {/* <Rating value={rating} readOnly size="small" sx={{ ml: 2 }} /> */}
-              </div>
+              {/* <span>Version {value3}</span> */}
             </div>
-            <div className="d-flex">
-              <div>
-                <React.Fragment>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      textAlign: "center",
-                    }}
-                  >
-                    <IconButton
-                      className="btn bg-primary text-white font-size-14 pr-0 ml-2"
-                      style={{ borderRadius: "5px" }}
-                      onClick={handleClick}
-                      size="small"
-                      aria-controls={open ? "account-menu" : undefined}
-                      aria-haspopup="true"
-                      aria-expanded={open ? "true" : undefined}
-                    >
-                      <span className="convert mx-2">
-                        Convert to
-                        <span>
-                          <KeyboardArrowDownIcon />
-                        </span>
-                      </span>
-                    </IconButton>
-                  </Box>
-                  <Menu
-                    className=""
-                    anchorEl={anchorEl}
-                    id="account-menu"
-                    open={open}
-                    onClose={handleClose}
-                    onClick={handleClose}
-                    PaperProps={{
-                      elevation: 0,
-                      sx: {
-                        overflow: "visible",
-                        filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
-                        mt: 1.5,
-                        "& .MuiAvatar-root": {
-                          width: 32,
-                          height: 32,
-                          ml: -0.5,
-                          mr: 1,
-                        },
-                        "&:before": {
-                          content: '""',
-                          display: "block",
-                          position: "absolute",
-                          top: 0,
-                          right: 14,
-                          width: 10,
-                          height: 10,
-                          bgcolor: "background.paper",
-                          transform: "translateY(-50%) rotate(45deg)",
-                          zIndex: 0,
-                        },
-                      },
-                    }}
-                    transformOrigin={{ horizontal: "right", vertical: "top" }}
-                    anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-                  >
-                    <MenuItem
-                      className="custommenu ml-2 mr-5"
-                      onClick={() => setKitOpen(true)}
-                    >
-                      Kit
-                    </MenuItem>
-                    <Divider sx={{ my: 0.5 }} />
-                    <MenuItem
-                      className="custommenu ml-2 mr-5"
-                      onClick={() => setOpenQuotePopup(true)}
-                    >
-                      Quote
-                    </MenuItem>
-                  </Menu>
-                </React.Fragment>
-              </div>
-              <div className="d-flex justify-content-center align-items-center">
-                <button
-                  className="ml-3 btn-no-border font-size-14"
-                  title="Share"
-                  onClick={() => setShareOpen(true)}
-                >
-                  <img src={shareIcon}></img>
-                </button>
-                <a
-                  href="#"
-                  className="ml-3 font-size-14"
-                  title="Items to Review"
-                >
-                  <img src={folderaddIcon}></img>
-                </a>
-                <a href="#" className="ml-3 font-size-14" title="Upload">
-                  <img src={uploadIcon}></img>
-                </a>
-                {/* <a href="#" className="ml-3 font-size-14"><img src={cpqIcon}></img></a> */}
-                <a href="#" className="ml-3 font-size-14" title="Delete">
-                  <img src={deleteIcon}></img>
-                </a>
-                <a href="#" className="ml-3 font-size-14" title="Duplicate">
-                  <img src={copyIcon}></img>
-                </a>
-
-                <DropdownButton
-                  className="customDropdown ml-2"
-                  id="dropdown-item-button"
-                >
-                  <Dropdown.Item
-                    as="button"
-                    onClick={() => setVersionOpen(true)}
-                  >
-                    New Versions
-                  </Dropdown.Item>
-                  <Dropdown.Item as="button">Show Errors</Dropdown.Item>
-                  <Dropdown.Item as="button">Review</Dropdown.Item>
-                </DropdownButton>
-              </div>
+            <div className="ml-3">
+              <Select
+                className="customselectbtn"
+                onChange={(e) => handleBuilderStatus(e)}
+                isOptionDisabled={(e) => disableStatusOptions(e)}
+                options={STATUS_OPTIONS}
+                value={selBuilderStatus}
+              />
             </div>
+            {/* <Rating value={rating} readOnly size="small" sx={{ ml: 2 }} /> */}
           </div>
-
-          <div className="card p-4 mt-5">
-            <div className="row px-3 pb-1" style={{ justifyContent: "right" }}>
-              <button
-                type="button"
-                className="btn btn-light bg-primary text-white"
-                onClick={() => recentList()}
+        </div>
+        <div className="d-flex">
+          <div>
+            <React.Fragment>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  textAlign: "center",
+                }}
               >
-                Back
-              </button>
+                <IconButton
+                  className="btn bg-primary text-white font-size-14 pr-0 ml-2"
+                  style={{ borderRadius: "5px" }}
+                  onClick={handleClick}
+                  size="small"
+                  aria-controls={open ? "account-menu" : undefined}
+                  aria-haspopup="true"
+                  aria-expanded={open ? "true" : undefined}
+                >
+                  <span className="convert mx-2">
+                    Convert to
+                    <span>
+                      <KeyboardArrowDownIcon />
+                    </span>
+                  </span>
+                </IconButton>
+              </Box>
+              <Menu
+                className=""
+                anchorEl={anchorEl}
+                id="account-menu"
+                open={open}
+                onClose={handleClose}
+                onClick={handleClose}
+                PaperProps={{
+                  elevation: 0,
+                  sx: {
+                    overflow: "visible",
+                    filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
+                    mt: 1.5,
+                    "& .MuiAvatar-root": {
+                      width: 32,
+                      height: 32,
+                      ml: -0.5,
+                      mr: 1,
+                    },
+                    "&:before": {
+                      content: '""',
+                      display: "block",
+                      position: "absolute",
+                      top: 0,
+                      right: 14,
+                      width: 10,
+                      height: 10,
+                      bgcolor: "background.paper",
+                      transform: "translateY(-50%) rotate(45deg)",
+                      zIndex: 0,
+                    },
+                  },
+                }}
+                transformOrigin={{ horizontal: "right", vertical: "top" }}
+                anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+              >
+                <MenuItem
+                  className="custommenu ml-2 mr-5"
+                  onClick={() => setKitOpen(true)}
+                >
+                  Kit
+                </MenuItem>
+                <Divider sx={{ my: 0.5 }} />
+                <MenuItem
+                  className="custommenu ml-2 mr-5"
+                  onClick={() => setOpenQuotePopup(true)}
+                >
+                  Quote
+                </MenuItem>
+              </Menu>
+            </React.Fragment>
+          </div>
+          <div className="d-flex justify-content-center align-items-center">
+            <button
+              className="ml-3 btn-no-border font-size-14"
+              title="Share"
+              onClick={() => setShareOpen(true)}
+            >
+              <img src={shareIcon}></img>
+            </button>
+            <a href="#" className="ml-3 font-size-14" title="Items to Review">
+              <img src={folderaddIcon}></img>
+            </a>
+            <a href="#" className="ml-3 font-size-14" title="Upload">
+              <img src={uploadIcon}></img>
+            </a>
+            {/* <a href="#" className="ml-3 font-size-14"><img src={cpqIcon}></img></a> */}
+            <a href="#" className="ml-3 font-size-14" title="Delete">
+              <img src={deleteIcon}></img>
+            </a>
+            <a href="#" className="ml-3 font-size-14" title="Duplicate">
+              <img src={copyIcon}></img>
+            </a>
+
+            <DropdownButton
+              className="customDropdown ml-2"
+              id="dropdown-item-button"
+            >
+              <Dropdown.Item as="button" onClick={() => setVersionOpen(true)}>
+                New Versions
+              </Dropdown.Item>
+              <Dropdown.Item as="button">Show Errors</Dropdown.Item>
+              <Dropdown.Item as="button">Review</Dropdown.Item>
+            </DropdownButton>
+          </div>
+        </div>
+      </div>
+
+      <div className="card p-4 mt-5">
+        <h5 className="d-flex align-items-center mb-0 bg-primary p-2 border-radius-10">
+          <div className="" style={{ display: "contents" }}>
+            <span className="mr-3 ml-2 text-white" style={{ fontSize: 18 }}>
+              Issue Header
+            </span>
+            <div className="btn-sm cursor text-white">
+              <Tooltip title="Edit">
+                <EditIcon
+                  onClick={() =>
+                    selBuilderStatus?.value === "DRAFT" ||
+                    selBuilderStatus?.value === "REVISED"
+                      ? makeHeaderEditable()
+                      : handleSnack(
+                          "info",
+                          "Set revised status to modify active partlists"
+                        )
+                  }
+                />
+              </Tooltip>
             </div>
-            <h5 className="d-flex align-items-center mb-0 bg-primary p-2 border-radius-10">
-              <div className="" style={{ display: "contents" }}>
-                <span className="mr-3 ml-2 text-white" style={{ fontSize: 18 }}>
-                  Part List Header
-                </span>
-                <div className="btn-sm cursor text-white">
-                  <Tooltip title="Edit">
-                    <EditIcon
-                      onClick={() =>
-                        selBuilderStatus?.value === "DRAFT" ||
-                        selBuilderStatus?.value === "REVISED"
-                          ? makeHeaderEditable()
-                          : handleSnack(
-                              "info",
-                              "Set revised status to modify active partlists"
-                            )
-                      }
-                    />
-                  </Tooltip>
-                </div>
-                <div className="btn-sm cursor text-white">
-                  <Tooltip title="Reset">
-                    <ReplayIcon onClick={() => handleResetData("RESET")} />
-                  </Tooltip>
-                </div>
-                {/* <div className="btn-sm cursor text-white">
+            <div className="btn-sm cursor text-white">
+              <Tooltip title="Reset">
+                <ReplayIcon onClick={() => handleResetData("RESET")} />
+              </Tooltip>
+            </div>
+            {/* <div className="btn-sm cursor text-white">
                     <Tooltip title="Back">
                       <ArrowBackIcon onClick={() => recentList()} />
                     </Tooltip>
                   </div> */}
 
-                {/* <div className="btn-sm cursor text-white">
+            {/* <div className="btn-sm cursor text-white">
                     <Tooltip title="Share">
                       <ShareOutlinedIcon />
                     </Tooltip>
@@ -1719,1603 +1701,1558 @@ const ServiceProgressIssueComponent = (props) => {
                       <ReviewAddIcon />
                     </Tooltip>
                   </div> */}
-              </div>
-            </h5>
-            <Box className="mt-4" sx={{ width: "100%", typography: "body1" }}>
-              {headerLoading ? (
-                <LoadingProgress />
-              ) : (
-                <TabContext value={value}>
-                  <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                    <TabList
-                      className="custom-tabs-div"
-                      onChange={handleChange}
-                    >
-                      <Tab label="Customer" value="customer" />
-                      <Tab label="Machine " value="machine" />
-                      <Tab label="Estimation Details" value="estimation" />
-                      <Tab label="General Details" value="general" />
-                      <Tab label="Price" value="price" />
-                    </TabList>
-                  </Box>
-                  <TabPanel value="customer">
-                    {!viewOnlyTab.custViewOnly ? (
-                      <>
-                        <div className="row input-fields">
-                          <div className="col-md-6 col-sm-6">
-                            <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                SOURCE
-                              </label>
-                              <input
-                                type="text"
-                                disabled
-                                className="form-control border-radius-10 text-primary"
-                                id="customer-src"
-                                value={customerData.source}
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-6 col-sm-6">
-                            <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                CUSTOMER ID
-                              </label>
-                              <SearchBox
-                                value={customerData.customerID}
-                                onChange={(e) =>
-                                  handleCustSearch(e.target.value)
-                                }
-                                type="customerId"
-                                result={searchCustResults}
-                                onSelect={handleCustSelect}
-                                noOptions={noOptionsCust}
-                              />
-                              <div className="css-w8dmq8">*Mandatory</div>
-                            </div>
-                          </div>
-                          <div className="col-md-6 col-sm-6">
-                            <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                CUSTOMER NAME
-                              </label>
-                              <input
-                                type="text"
-                                value={customerData.customerName}
-                                name="customerName"
-                                onChange={handleCustomerDataChange}
-                                className="form-control border-radius-10 text-primary"
-                                id="customerNameid"
-                              />
-                              <div className="css-w8dmq8">*Mandatory</div>
-                            </div>
-                          </div>
-                          <div className="col-md-6 col-sm-6">
-                            <div className="form-group w-100">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                CONTACT NAME
-                              </label>
-                              <input
-                                type="text"
-                                value={customerData.contactName}
-                                name="contactName"
-                                onChange={handleCustomerDataChange}
-                                className="form-control border-radius-10 text-primary"
-                                id="contactNameid"
-                              />
-                              <div className="css-w8dmq8">*Mandatory</div>
-                            </div>
-                          </div>
-                          <div className="col-md-6 col-sm-6">
-                            <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                CONTACT EMAIL
-                              </label>
-                              <input
-                                type="email"
-                                value={customerData.contactEmail}
-                                name="contactEmail"
-                                onChange={handleCustomerDataChange}
-                                className="form-control border-radius-10 text-primary"
-                                id="contatEmail"
-                              />
-                              <div className="css-w8dmq8">*Mandatory</div>
-                            </div>
-                          </div>
-                          <div className="col-md-6 col-sm-6">
-                            <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                CONTACT PHONE
-                              </label>
-                              <input
-                                type="tel"
-                                className="form-control border-radius-10 text-primary"
-                                onChange={handleCustomerDataChange}
-                                value={customerData.contactPhone}
-                                name="contactPhone"
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-6 col-sm-6">
-                            <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                CUSTOMER GROUP
-                              </label>
-                              <input
-                                type="text"
-                                value={customerData.customerGroup}
-                                name="customerGroup"
-                                onChange={handleCustomerDataChange}
-                                className="form-control border-radius-10 text-primary"
-                                id="custGroup"
-                              />
-                              <div className="css-w8dmq8">*Mandatory</div>
-                            </div>
-                          </div>
+          </div>
+        </h5>
+        <Box className="mt-4" sx={{ width: "100%", typography: "body1" }}>
+          {headerLoading ? (
+            <LoadingProgress />
+          ) : (
+            <TabContext value={value}>
+              <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                <TabList className="custom-tabs-div" onChange={handleChange}>
+                  <Tab label="Customer" value="customer" />
+                  <Tab label="Machine " value="machine" />
+                  <Tab label="Estimation Details" value="estimation" />
+                  <Tab label="General Details" value="general" />
+                  <Tab label="Price" value="price" />
+                </TabList>
+              </Box>
+              <TabPanel value="customer">
+                {!viewOnlyTab.custViewOnly ? (
+                  <>
+                    <div className="row input-fields">
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            SOURCE
+                          </label>
+                          <input
+                            type="text"
+                            disabled
+                            className="form-control border-radius-10 text-primary"
+                            id="customer-src"
+                            value={customerData.source}
+                          />
                         </div>
-                        <div
-                          className="row"
-                          style={{ justifyContent: "right" }}
-                        >
-                          <button
-                            type="button"
-                            className="btn btn-light bg-primary text-white"
-                            onClick={() => handleResetData("CANCEL")}
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            type="button"
-                            className="btn btn-light bg-primary text-white"
-                            disabled={
-                              !(
-                                customerData.source &&
-                                customerData.contactEmail &&
-                                customerData.customerGroup &&
-                                customerData.contactName
-                              ) || noOptionsCust
-                            }
-                            onClick={updateCustomerData}
-                          >
-                            Save & Next
-                          </button>
-                        </div>
-                      </>
-                    ) : (
-                      <div className="row mt-3">
-                        <ReadOnlyField
-                          label="SOURCE"
-                          value={customerData.source}
-                          className="col-md-4 col-sm-4"
-                        />
-                        <ReadOnlyField
-                          label="CUSTOMER ID"
-                          value={customerData.customerID}
-                          className="col-md-4 col-sm-4"
-                        />
-                        <ReadOnlyField
-                          label="CUSTOMER NAME"
-                          value={customerData.customerName}
-                          className="col-md-4 col-sm-4"
-                        />
-                        <ReadOnlyField
-                          label="CUSTOMER EMAIL"
-                          value={customerData.contactEmail}
-                          className="col-md-4 col-sm-4"
-                        />
-                        <ReadOnlyField
-                          label="CONTACT NAME"
-                          value={customerData.contactName}
-                          className="col-md-4 col-sm-4"
-                        />
-                        <ReadOnlyField
-                          label="CONTACT PHONE"
-                          value={customerData.contactPhone}
-                          className="col-md-4 col-sm-4"
-                        />
-                        <ReadOnlyField
-                          label="CUSTOMER GROUP"
-                          value={customerData.customerGroup}
-                          className="col-md-4 col-sm-4"
-                        />
                       </div>
-                    )}
-                  </TabPanel>
-                  <TabPanel value="machine">
-                    {!viewOnlyTab.machineViewOnly ? (
-                      <>
-                        <div className="row input-fields">
-                          <div className="col-md-6 col-sm-6">
-                            <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                Make
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control border-radius-10 text-primary"
-                                id="make-id"
-                                name="make"
-                                value={machineData.make}
-                                onChange={handleMachineDataChange}
-                                placeholder="Auto Filled"
-                                disabled
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-6 col-sm-6">
-                            <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                Family
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control border-radius-10 text-primary"
-                                id="family-id"
-                                name="family"
-                                value={machineData.family}
-                                onChange={handleMachineDataChange}
-                                placeholder="Auto Filled"
-                                disabled
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-6 col-sm-6">
-                            <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                MODEL
-                              </label>
-                              <SearchBox
-                                value={machineData.model}
-                                onChange={(e) =>
-                                  handleMachineSearch("model", e.target.value)
-                                }
-                                type="model"
-                                result={searchModelResults}
-                                onSelect={handleModelSelect}
-                                noOptions={noOptionsModel}
-                              />
-                              <div className="css-w8dmq8">*Mandatory</div>
-                            </div>
-                          </div>
-                          <div className="col-md-6 col-sm-6">
-                            <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                SERIAL #
-                              </label>
-                              <SearchBox
-                                value={machineData.serialNo}
-                                onChange={(e) =>
-                                  handleMachineSearch(
-                                    "serialNo",
-                                    e.target.value
-                                  )
-                                }
-                                type="equipmentNumber"
-                                result={searchSerialResults}
-                                onSelect={handleModelSelect}
-                                noOptions={noOptionsSerial}
-                              />
-                              <div className="css-w8dmq8">*Mandatory</div>
-                            </div>
-                          </div>
-                          <div className="col-md-6 col-sm-6">
-                            <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                SMU (Service Meter Unit)
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control border-radius-10 text-primary"
-                                id="smu-id"
-                                name="smu"
-                                value={machineData.smu}
-                                onChange={handleMachineDataChange}
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-6 col-sm-6">
-                            <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                UNIT NO / FLEET NO
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control border-radius-10 text-primary"
-                                onChange={handleMachineDataChange}
-                                value={machineData.fleetNo}
-                                name="fleetNo"
-                                id="fleet-id"
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-6 col-sm-6">
-                            <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                REGISTRATION NO
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control border-radius-10 text-primary"
-                                onChange={handleMachineDataChange}
-                                value={machineData.registrationNo}
-                                name="registrationNo"
-                                id="registration-id"
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-6 col-sm-6">
-                            <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                CHASIS NO
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control border-radius-10 text-primary"
-                                id="chasis-id"
-                                onChange={handleMachineDataChange}
-                                value={machineData.chasisNo}
-                                name="chasisNo"
-                              />
-                            </div>
-                          </div>
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            CUSTOMER ID
+                          </label>
+                          <SearchBox
+                            value={customerData.customerID}
+                            onChange={(e) => handleCustSearch(e.target.value)}
+                            type="customerId"
+                            result={searchCustResults}
+                            onSelect={handleCustSelect}
+                            noOptions={noOptionsCust}
+                          />
+                          <div className="css-w8dmq8">*Mandatory</div>
                         </div>
-                        <div
-                          className="row"
-                          style={{ justifyContent: "right" }}
-                        >
-                          <button
-                            type="button"
-                            className="btn btn-light bg-primary text-white"
-                            onClick={() => handleResetData("CANCEL")}
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            type="button"
-                            className="btn btn-light bg-primary text-white"
-                            disabled={
-                              !(machineData.model && machineData.serialNo) ||
-                              noOptionsModel ||
-                              noOptionsSerial
-                            }
-                            onClick={updateMachineData}
-                          >
-                            Save & Next
-                          </button>
-                        </div>
-                      </>
-                    ) : (
-                      <div className="row mt-3">
-                        <ReadOnlyField
-                          label="MAKE"
-                          value={machineData.make}
-                          className="col-md-4 col-sm-4"
-                        />
-                        <ReadOnlyField
-                          label="FAMILY"
-                          value={machineData.family}
-                          className="col-md-4 col-sm-4"
-                        />
-                        <ReadOnlyField
-                          label="MODEL"
-                          value={machineData.model}
-                          className="col-md-4 col-sm-4"
-                        />
-                        <ReadOnlyField
-                          label="SERIAL NO"
-                          value={machineData.serialNo}
-                          className="col-md-4 col-sm-4"
-                        />
-                        <ReadOnlyField
-                          label="SMU (Service Meter Unit)"
-                          value={machineData.smu}
-                          className="col-md-4 col-sm-4"
-                        />
-                        <ReadOnlyField
-                          label="UNIT NO / FLEET NO"
-                          value={machineData.fleetNo}
-                          className="col-md-4 col-sm-4"
-                        />
-                        <ReadOnlyField
-                          label="REGISTRATION NO"
-                          value={machineData.registrationNo}
-                          className="col-md-4 col-sm-4"
-                        />
-                        <ReadOnlyField
-                          label="CHASSIS NO"
-                          value={machineData.chasisNo}
-                          className="col-md-4 col-sm-4"
-                        />
                       </div>
-                    )}
-                  </TabPanel>
-                  <TabPanel value="estimation">
-                    {!viewOnlyTab.estViewOnly ? (
-                      <>
-                        <div className="row input-fields">
-                          <div className="col-md-6 col-sm-6">
-                            <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                PREPARED BY
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control border-radius-10 text-primary"
-                                value={estimationData.preparedBy}
-                                name="preparedBy"
-                                onChange={handleEstimationDataChange}
-                              />
-                              <div className="css-w8dmq8">*Mandatory</div>
-                            </div>
-                          </div>
-                          <div className="col-md-6 col-sm-6">
-                            <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                APPROVED BY
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control border-radius-10 text-primary"
-                                value={estimationData.approvedBy}
-                                name="approvedBy"
-                                onChange={handleEstimationDataChange}
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-6 col-sm-6">
-                            <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                PREPARED ON
-                              </label>
-                              <div className="align-items-center date-box">
-                                <LocalizationProvider
-                                  dateAdapter={AdapterDateFns}
-                                >
-                                  <MobileDatePicker
-                                    inputFormat="dd/MM/yyyy"
-                                    className="form-controldate border-radius-10"
-                                    minDate={estimationData.preparedOn}
-                                    maxDate={new Date()}
-                                    closeOnSelect
-                                    value={estimationData.preparedOn}
-                                    onChange={(e) =>
-                                      setEstimationData({
-                                        ...estimationData,
-                                        preparedOn: e,
-                                      })
-                                    }
-                                    renderInput={(params) => (
-                                      <TextField
-                                        {...params}
-                                        variant="standard"
-                                        inputProps={{
-                                          ...params.inputProps,
-                                          style: FONT_STYLE,
-                                        }}
-                                      />
-                                    )}
-                                  />
-                                </LocalizationProvider>
-                              </div>
-                              <div className="css-w8dmq8">*Mandatory</div>
-                            </div>
-                          </div>
-                          <div className="col-md-6 col-sm-6">
-                            <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                REVISED BY
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control border-radius-10 text-primary"
-                                value={estimationData.revisedBy}
-                                name="revisedBy"
-                                onChange={handleEstimationDataChange}
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-6 col-sm-6">
-                            <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                REVISED ON
-                              </label>
-                              <div className="align-items-center date-box">
-                                <LocalizationProvider
-                                  dateAdapter={AdapterDateFns}
-                                >
-                                  <MobileDatePicker
-                                    inputFormat="dd/MM/yyyy"
-                                    className="form-controldate border-radius-10"
-                                    minDate={estimationData.revisedOn}
-                                    maxDate={new Date()}
-                                    closeOnSelect
-                                    value={estimationData.revisedOn}
-                                    onChange={(e) =>
-                                      setEstimationData({
-                                        ...estimationData,
-                                        revisedOn: e,
-                                      })
-                                    }
-                                    renderInput={(params) => (
-                                      <TextField
-                                        {...params}
-                                        variant="standard"
-                                        inputProps={{
-                                          ...params.inputProps,
-                                          style: FONT_STYLE,
-                                        }}
-                                      />
-                                    )}
-                                  />
-                                </LocalizationProvider>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="col-md-6 col-sm-6">
-                            <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                SALES OFFICE / BRANCH
-                              </label>
-                              <Select
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            CUSTOMER NAME
+                          </label>
+                          <input
+                            type="text"
+                            value={customerData.customerName}
+                            name="customerName"
+                            onChange={handleCustomerDataChange}
+                            className="form-control border-radius-10 text-primary"
+                            id="customerNameid"
+                          />
+                          <div className="css-w8dmq8">*Mandatory</div>
+                        </div>
+                      </div>
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group w-100">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            CONTACT NAME
+                          </label>
+                          <input
+                            type="text"
+                            value={customerData.contactName}
+                            name="contactName"
+                            onChange={handleCustomerDataChange}
+                            className="form-control border-radius-10 text-primary"
+                            id="contactNameid"
+                          />
+                          <div className="css-w8dmq8">*Mandatory</div>
+                        </div>
+                      </div>
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            CONTACT EMAIL
+                          </label>
+                          <input
+                            type="email"
+                            value={customerData.contactEmail}
+                            name="contactEmail"
+                            onChange={handleCustomerDataChange}
+                            className="form-control border-radius-10 text-primary"
+                            id="contatEmail"
+                          />
+                          <div className="css-w8dmq8">*Mandatory</div>
+                        </div>
+                      </div>
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            CONTACT PHONE
+                          </label>
+                          <input
+                            type="tel"
+                            className="form-control border-radius-10 text-primary"
+                            onChange={handleCustomerDataChange}
+                            value={customerData.contactPhone}
+                            name="contactPhone"
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            CUSTOMER GROUP
+                          </label>
+                          <input
+                            type="text"
+                            value={customerData.customerGroup}
+                            name="customerGroup"
+                            onChange={handleCustomerDataChange}
+                            className="form-control border-radius-10 text-primary"
+                            id="custGroup"
+                          />
+                          <div className="css-w8dmq8">*Mandatory</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="row" style={{ justifyContent: "right" }}>
+                      <button
+                        type="button"
+                        className="btn btn-light bg-primary text-white"
+                        onClick={() => handleResetData("CANCEL")}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-light bg-primary text-white"
+                        disabled={
+                          !(
+                            customerData.source &&
+                            customerData.contactEmail &&
+                            customerData.customerGroup &&
+                            customerData.contactName
+                          ) || noOptionsCust
+                        }
+                        onClick={updateCustomerData}
+                      >
+                        Save & Next
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <div className="row mt-3">
+                    <ReadOnlyField
+                      label="SOURCE"
+                      value={customerData.source}
+                      className="col-md-4 col-sm-4"
+                    />
+                    <ReadOnlyField
+                      label="CUSTOMER ID"
+                      value={customerData.customerID}
+                      className="col-md-4 col-sm-4"
+                    />
+                    <ReadOnlyField
+                      label="CUSTOMER NAME"
+                      value={customerData.customerName}
+                      className="col-md-4 col-sm-4"
+                    />
+                    <ReadOnlyField
+                      label="CUSTOMER EMAIL"
+                      value={customerData.contactEmail}
+                      className="col-md-4 col-sm-4"
+                    />
+                    <ReadOnlyField
+                      label="CONTACT NAME"
+                      value={customerData.contactName}
+                      className="col-md-4 col-sm-4"
+                    />
+                    <ReadOnlyField
+                      label="CONTACT PHONE"
+                      value={customerData.contactPhone}
+                      className="col-md-4 col-sm-4"
+                    />
+                    <ReadOnlyField
+                      label="CUSTOMER GROUP"
+                      value={customerData.customerGroup}
+                      className="col-md-4 col-sm-4"
+                    />
+                  </div>
+                )}
+              </TabPanel>
+              <TabPanel value="machine">
+                {!viewOnlyTab.machineViewOnly ? (
+                  <>
+                    <div className="row input-fields">
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            Make
+                          </label>
+                          <input
+                            type="text"
+                            className="form-control border-radius-10 text-primary"
+                            id="make-id"
+                            name="make"
+                            value={machineData.make}
+                            onChange={handleMachineDataChange}
+                            placeholder="Auto Filled"
+                            disabled
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            Family
+                          </label>
+                          <input
+                            type="text"
+                            className="form-control border-radius-10 text-primary"
+                            id="family-id"
+                            name="family"
+                            value={machineData.family}
+                            onChange={handleMachineDataChange}
+                            placeholder="Auto Filled"
+                            disabled
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            MODEL
+                          </label>
+                          <SearchBox
+                            value={machineData.model}
+                            onChange={(e) =>
+                              handleMachineSearch("model", e.target.value)
+                            }
+                            type="model"
+                            result={searchModelResults}
+                            onSelect={handleModelSelect}
+                            noOptions={noOptionsModel}
+                          />
+                          <div className="css-w8dmq8">*Mandatory</div>
+                        </div>
+                      </div>
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            SERIAL #
+                          </label>
+                          <SearchBox
+                            value={machineData.serialNo}
+                            onChange={(e) =>
+                              handleMachineSearch("serialNo", e.target.value)
+                            }
+                            type="equipmentNumber"
+                            result={searchSerialResults}
+                            onSelect={handleModelSelect}
+                            noOptions={noOptionsSerial}
+                          />
+                          <div className="css-w8dmq8">*Mandatory</div>
+                        </div>
+                      </div>
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            SMU (Service Meter Unit)
+                          </label>
+                          <input
+                            type="text"
+                            className="form-control border-radius-10 text-primary"
+                            id="smu-id"
+                            name="smu"
+                            value={machineData.smu}
+                            onChange={handleMachineDataChange}
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            UNIT NO / FLEET NO
+                          </label>
+                          <input
+                            type="text"
+                            className="form-control border-radius-10 text-primary"
+                            onChange={handleMachineDataChange}
+                            value={machineData.fleetNo}
+                            name="fleetNo"
+                            id="fleet-id"
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            REGISTRATION NO
+                          </label>
+                          <input
+                            type="text"
+                            className="form-control border-radius-10 text-primary"
+                            onChange={handleMachineDataChange}
+                            value={machineData.registrationNo}
+                            name="registrationNo"
+                            id="registration-id"
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            CHASIS NO
+                          </label>
+                          <input
+                            type="text"
+                            className="form-control border-radius-10 text-primary"
+                            id="chasis-id"
+                            onChange={handleMachineDataChange}
+                            value={machineData.chasisNo}
+                            name="chasisNo"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="row" style={{ justifyContent: "right" }}>
+                      <button
+                        type="button"
+                        className="btn btn-light bg-primary text-white"
+                        onClick={() => handleResetData("CANCEL")}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-light bg-primary text-white"
+                        disabled={
+                          !(machineData.model && machineData.serialNo) ||
+                          noOptionsModel ||
+                          noOptionsSerial
+                        }
+                        onClick={updateMachineData}
+                      >
+                        Save & Next
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <div className="row mt-3">
+                    <ReadOnlyField
+                      label="MAKE"
+                      value={machineData.make}
+                      className="col-md-4 col-sm-4"
+                    />
+                    <ReadOnlyField
+                      label="FAMILY"
+                      value={machineData.family}
+                      className="col-md-4 col-sm-4"
+                    />
+                    <ReadOnlyField
+                      label="MODEL"
+                      value={machineData.model}
+                      className="col-md-4 col-sm-4"
+                    />
+                    <ReadOnlyField
+                      label="SERIAL NO"
+                      value={machineData.serialNo}
+                      className="col-md-4 col-sm-4"
+                    />
+                    <ReadOnlyField
+                      label="SMU (Service Meter Unit)"
+                      value={machineData.smu}
+                      className="col-md-4 col-sm-4"
+                    />
+                    <ReadOnlyField
+                      label="UNIT NO / FLEET NO"
+                      value={machineData.fleetNo}
+                      className="col-md-4 col-sm-4"
+                    />
+                    <ReadOnlyField
+                      label="REGISTRATION NO"
+                      value={machineData.registrationNo}
+                      className="col-md-4 col-sm-4"
+                    />
+                    <ReadOnlyField
+                      label="CHASSIS NO"
+                      value={machineData.chasisNo}
+                      className="col-md-4 col-sm-4"
+                    />
+                  </div>
+                )}
+              </TabPanel>
+              <TabPanel value="estimation">
+                {!viewOnlyTab.estViewOnly ? (
+                  <>
+                    <div className="row input-fields">
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            PREPARED BY
+                          </label>
+                          <input
+                            type="text"
+                            className="form-control border-radius-10 text-primary"
+                            value={estimationData.preparedBy}
+                            name="preparedBy"
+                            onChange={handleEstimationDataChange}
+                          />
+                          <div className="css-w8dmq8">*Mandatory</div>
+                        </div>
+                      </div>
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            APPROVED BY
+                          </label>
+                          <input
+                            type="text"
+                            className="form-control border-radius-10 text-primary"
+                            value={estimationData.approvedBy}
+                            name="approvedBy"
+                            onChange={handleEstimationDataChange}
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            PREPARED ON
+                          </label>
+                          <div className="align-items-center date-box">
+                            <LocalizationProvider dateAdapter={AdapterDateFns}>
+                              <MobileDatePicker
+                                inputFormat="dd/MM/yyyy"
+                                className="form-controldate border-radius-10"
+                                minDate={estimationData.preparedOn}
+                                maxDate={new Date()}
+                                closeOnSelect
+                                value={estimationData.preparedOn}
                                 onChange={(e) =>
                                   setEstimationData({
                                     ...estimationData,
-                                    salesOffice: e,
+                                    preparedOn: e,
                                   })
                                 }
-                                options={salesOfficeOptions}
-                                value={estimationData.salesOffice}
-                                styles={FONT_STYLE_SELECT}
-                              />
-                              <div className="css-w8dmq8">*Mandatory</div>
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          className="row"
-                          style={{ justifyContent: "right" }}
-                        >
-                          <button
-                            type="button"
-                            className="btn btn-light bg-primary text-white"
-                            onClick={() => handleResetData("CANCEL")}
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            type="button"
-                            className="btn btn-light bg-primary text-white"
-                            onClick={updateEstData}
-                            disabled={
-                              !(
-                                estimationData.preparedBy &&
-                                estimationData.preparedOn &&
-                                estimationData.salesOffice?.value
-                              )
-                            }
-                          >
-                            Save & Next
-                          </button>
-                        </div>
-                      </>
-                    ) : (
-                      <div className="row mt-3">
-                        <ReadOnlyField
-                          label="PREPARED BY"
-                          value={estimationData.preparedBy}
-                          className="col-md-4 col-sm-4"
-                        />
-                        <ReadOnlyField
-                          label="APPROVED BY"
-                          value={estimationData.approvedBy}
-                          className="col-md-4 col-sm-4"
-                        />
-
-                        <ReadOnlyField
-                          label="PREPARED ON"
-                          value={
-                            <Moment format="DD/MM/YYYY">
-                              {estimationData.preparedOn}
-                            </Moment>
-                          }
-                          className="col-md-4 col-sm-4"
-                        />
-                        <ReadOnlyField
-                          label="REVISED BY"
-                          value={estimationData.revisedBy}
-                          className="col-md-4 col-sm-4"
-                        />
-                        <ReadOnlyField
-                          label="REVISED ON"
-                          value={
-                            <Moment format="DD/MM/YYYY">
-                              {estimationData.revisedOn}
-                            </Moment>
-                          }
-                          className="col-md-4 col-sm-4"
-                        />
-                        <ReadOnlyField
-                          label="SALES OFFICE / BRANCH"
-                          value={estimationData.salesOffice?.label}
-                          className="col-md-4 col-sm-4"
-                        />
-                      </div>
-                    )}
-                  </TabPanel>
-                  <TabPanel value="general">
-                    {!viewOnlyTab.generalViewOnly ? (
-                      <>
-                        <div className="row input-fields">
-                          <div className="col-md-6 col-sm-6">
-                            <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                ESTIMATION #
-                              </label>
-                              <input
-                                type="text"
-                                disabled
-                                className="form-control border-radius-10 text-primary"
-                                id="estNoId"
-                                value={generalData.estimationNo}
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-6 col-sm-6">
-                            <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                DESCRIPTION
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control border-radius-10 text-primary"
-                                id="desc-id"
-                                maxLength={140}
-                                value={generalData.description}
-                                onChange={(e) =>
-                                  setGeneralData({
-                                    ...generalData,
-                                    description: e.target.value,
-                                  })
-                                }
-                              />
-                              <div className="css-w8dmq8">*Mandatory</div>
-                            </div>
-                          </div>
-                          <div className="col-md-6 col-sm-6">
-                            <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                <span className=" mr-2">ESTIMATION DATE</span>
-                              </label>
-                              <div className="align-items-center date-box">
-                                <LocalizationProvider
-                                  dateAdapter={AdapterDateFns}
-                                >
-                                  <MobileDatePicker
-                                    inputFormat="dd/MM/yyyy"
-                                    className="form-controldate border-radius-10"
-                                    minDate={generalData.estimationDate}
-                                    maxDate={new Date()}
-                                    closeOnSelect
-                                    value={generalData.estimationDate}
-                                    onChange={(e) =>
-                                      setGeneralData({
-                                        ...generalData,
-                                        estimationDate: e,
-                                      })
-                                    }
-                                    renderInput={(params) => (
-                                      <TextField
-                                        {...params}
-                                        variant="standard"
-                                        inputProps={{
-                                          ...params.inputProps,
-                                          style: FONT_STYLE,
-                                        }}
-                                      />
-                                    )}
+                                renderInput={(params) => (
+                                  <TextField
+                                    {...params}
+                                    variant="standard"
+                                    inputProps={{
+                                      ...params.inputProps,
+                                      style: FONT_STYLE,
+                                    }}
                                   />
-                                </LocalizationProvider>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="col-md-6 col-sm-6">
-                            <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                REFERENCE
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control border-radius-10 text-primary"
-                                id="desc-id"
-                                maxLength={140}
-                                value={generalData.reference}
-                                onChange={(e) =>
-                                  setGeneralData({
-                                    ...generalData,
-                                    reference: e.target.value,
-                                  })
-                                }
+                                )}
                               />
-                              <div className="css-w8dmq8">*Mandatory</div>
-                            </div>
+                            </LocalizationProvider>
                           </div>
-                          <div className="col-md-6 col-sm-6">
-                            <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                VALIDITY
-                              </label>
-                              <Select
-                                // defaultValue={selectedOption}
-                                onChange={(e) =>
-                                  setGeneralData({
-                                    ...generalData,
-                                    validity: e,
-                                  })
-                                }
-                                options={validityOptions}
-                                value={generalData.validity}
-                                styles={FONT_STYLE_SELECT}
-                              />
-                              <div className="css-w8dmq8">*Mandatory</div>
-                            </div>
-                          </div>
-                          <div className="col-md-6 col-sm-6">
-                            <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                VERSION
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control border-radius-10 text-primary"
-                                disabled
-                                value={parseFloat(
-                                  selectedVersion.value
-                                ).toFixed(1)}
-                              />
-                            </div>
-                          </div>
+                          <div className="css-w8dmq8">*Mandatory</div>
                         </div>
-                        <div
-                          className="row"
-                          style={{ justifyContent: "right" }}
-                        >
-                          <button
-                            type="button"
-                            className="btn btn-light bg-primary text-white"
-                            onClick={() => handleResetData("CANCEL")}
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            type="button"
-                            className="btn btn-light bg-primary text-white"
-                            onClick={updateGeneralData}
-                            disabled={
-                              !(
-                                generalData.estimationDate &&
-                                generalData.description &&
-                                generalData.estimationNo &&
-                                generalData.reference &&
-                                generalData.validity?.value
-                              )
-                            }
-                          >
-                            Save & Next
-                          </button>
-                        </div>
-                      </>
-                    ) : (
-                      <div className="row mt-3">
-                        <ReadOnlyField
-                          label="ESTIMATION DATE"
-                          value={
-                            <Moment format="DD/MM/YYYY">
-                              {generalData.estimationDate}
-                            </Moment>
-                          }
-                          className="col-md-4 col-sm-4"
-                        />
-                        <ReadOnlyField
-                          label="ESTIMATION #"
-                          value={generalData.estimationNo}
-                          className="col-md-4 col-sm-4"
-                        />
-                        <ReadOnlyField
-                          label="DESCRIPTION"
-                          value={generalData.description}
-                          className="col-md-4 col-sm-4"
-                        />
-                        <ReadOnlyField
-                          label="REFERENCE"
-                          value={generalData.reference}
-                          className="col-md-4 col-sm-4"
-                        />
-                        <ReadOnlyField
-                          label="VALIDTITY (DAYs)"
-                          value={generalData.validity?.label}
-                          className="col-md-4 col-sm-4"
-                        />
-                        <ReadOnlyField
-                          label="VERSION"
-                          value={parseFloat(selectedVersion.value).toFixed(1)}
-                          className="col-md-4 col-sm-4"
-                        />
                       </div>
-                    )}
-                  </TabPanel>
-                  <TabPanel value="price">
-                    {!viewOnlyTab.priceViewOnly ? (
-                      <React.Fragment>
-                        <div className="row input-fields">
-                          <div className="col-md-4 col-sm-4">
-                            <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                NET PRICE
-                              </label>
-                              <input
-                                type="text"
-                                disabled
-                                className="form-control border-radius-10 text-primary"
-                                value={pricingData.netPrice}
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                PRICE DATE
-                              </label>
-                              <div className="align-items-center date-box">
-                                <LocalizationProvider
-                                  dateAdapter={AdapterDateFns}
-                                >
-                                  <MobileDatePicker
-                                    inputFormat="dd/MM/yyyy"
-                                    className="form-controldate border-radius-10"
-                                    // minDate={pricingData.priceDate}
-                                    // maxDate={new Date()}
-                                    closeOnSelect
-                                    value={pricingData.priceDate}
-                                    onChange={(e) =>
-                                      setPricingData({
-                                        ...pricingData,
-                                        priceDate: e,
-                                      })
-                                    }
-                                    renderInput={(params) => (
-                                      <TextField
-                                        {...params}
-                                        variant="standard"
-                                        inputProps={{
-                                          ...params.inputProps,
-                                          style: FONT_STYLE,
-                                        }}
-                                      />
-                                    )}
-                                  />
-                                </LocalizationProvider>
-                              </div>
-                              <div className="css-w8dmq8">*Mandatory</div>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                ADJUSTED PRICE
-                              </label>
-                              <input
-                                type="text"
-                                disabled
-                                className="form-control border-radius-10 text-primary"
-                                value={pricingData.adjustedPrice}
-                                // onChange={(e) =>
-                                //   setPricingData({
-                                //     ...pricingData,
-                                //     adjustedPrice: e.target.value,
-                                //   })
-                                // }
-                              />
-                            </div>
-                          </div>
-
-                          <div className="col-md-4 col-sm-4">
-                            <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                CURRENCY
-                              </label>
-                              <Select
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            REVISED BY
+                          </label>
+                          <input
+                            type="text"
+                            className="form-control border-radius-10 text-primary"
+                            value={estimationData.revisedBy}
+                            name="revisedBy"
+                            onChange={handleEstimationDataChange}
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            REVISED ON
+                          </label>
+                          <div className="align-items-center date-box">
+                            <LocalizationProvider dateAdapter={AdapterDateFns}>
+                              <MobileDatePicker
+                                inputFormat="dd/MM/yyyy"
+                                className="form-controldate border-radius-10"
+                                minDate={estimationData.revisedOn}
+                                maxDate={new Date()}
+                                closeOnSelect
+                                value={estimationData.revisedOn}
                                 onChange={(e) =>
-                                  setPricingData({
-                                    ...pricingData,
-                                    currency: e,
+                                  setEstimationData({
+                                    ...estimationData,
+                                    revisedOn: e,
                                   })
                                 }
-                                options={currencyOptions}
-                                value={pricingData.currency}
-                                styles={FONT_STYLE_SELECT}
+                                renderInput={(params) => (
+                                  <TextField
+                                    {...params}
+                                    variant="standard"
+                                    inputProps={{
+                                      ...params.inputProps,
+                                      style: FONT_STYLE,
+                                    }}
+                                  />
+                                )}
                               />
-                              <div className="css-w8dmq8">*Mandatory</div>
-                            </div>
+                            </LocalizationProvider>
                           </div>
                         </div>
-                        <div
-                          className="row"
-                          style={{ justifyContent: "right" }}
-                        >
-                          <button
-                            type="button"
-                            className="btn btn-light bg-primary text-white"
-                            onClick={() => handleResetData("CANCEL")}
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            type="button"
-                            className="btn btn-light bg-primary text-white"
-                            onClick={updatePriceData}
-                            disabled={
-                              !(
-                                pricingData.priceDate &&
-                                pricingData.currency?.value !== ""
-                              )
+                      </div>
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            SALES OFFICE / BRANCH
+                          </label>
+                          <Select
+                            onChange={(e) =>
+                              setEstimationData({
+                                ...estimationData,
+                                salesOffice: e,
+                              })
                             }
-                          >
-                            Save
-                          </button>
+                            options={salesOfficeOptions}
+                            value={estimationData.salesOffice}
+                            styles={FONT_STYLE_SELECT}
+                          />
+                          <div className="css-w8dmq8">*Mandatory</div>
                         </div>
-                      </React.Fragment>
-                    ) : (
-                      <>
-                        <div className="row mt-3">
-                          <ReadOnlyField
-                            label="NET PRICE"
-                            value={pricingData.netPrice}
-                            className="col-md-4 col-sm-4"
-                          />
-                          <ReadOnlyField
-                            label="PRICE DATE"
-                            value={
-                              <Moment format="DD/MM/YYYY">
-                                {pricingData.priceDate}
-                              </Moment>
-                            }
-                            className="col-md-4 col-sm-4"
-                          />
-                          <ReadOnlyField
-                            label="ADJUSTED PRICE"
-                            value={pricingData.adjustedPrice}
-                            className="col-md-4 col-sm-4"
-                          />
-                          <ReadOnlyField
-                            label="CURRENCY"
-                            value={pricingData.currency?.label}
-                            className="col-md-4 col-sm-4"
+                      </div>
+                    </div>
+                    <div className="row" style={{ justifyContent: "right" }}>
+                      <button
+                        type="button"
+                        className="btn btn-light bg-primary text-white"
+                        onClick={() => handleResetData("CANCEL")}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-light bg-primary text-white"
+                        onClick={updateEstData}
+                        disabled={
+                          !(
+                            estimationData.preparedBy &&
+                            estimationData.preparedOn &&
+                            estimationData.salesOffice?.value
+                          )
+                        }
+                      >
+                        Save & Next
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <div className="row mt-3">
+                    <ReadOnlyField
+                      label="PREPARED BY"
+                      value={estimationData.preparedBy}
+                      className="col-md-4 col-sm-4"
+                    />
+                    <ReadOnlyField
+                      label="APPROVED BY"
+                      value={estimationData.approvedBy}
+                      className="col-md-4 col-sm-4"
+                    />
+
+                    <ReadOnlyField
+                      label="PREPARED ON"
+                      value={
+                        <Moment format="DD/MM/YYYY">
+                          {estimationData.preparedOn}
+                        </Moment>
+                      }
+                      className="col-md-4 col-sm-4"
+                    />
+                    <ReadOnlyField
+                      label="REVISED BY"
+                      value={estimationData.revisedBy}
+                      className="col-md-4 col-sm-4"
+                    />
+                    <ReadOnlyField
+                      label="REVISED ON"
+                      value={
+                        <Moment format="DD/MM/YYYY">
+                          {estimationData.revisedOn}
+                        </Moment>
+                      }
+                      className="col-md-4 col-sm-4"
+                    />
+                    <ReadOnlyField
+                      label="SALES OFFICE / BRANCH"
+                      value={estimationData.salesOffice?.label}
+                      className="col-md-4 col-sm-4"
+                    />
+                  </div>
+                )}
+              </TabPanel>
+              <TabPanel value="general">
+                {!viewOnlyTab.generalViewOnly ? (
+                  <>
+                    <div className="row input-fields">
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            ESTIMATION #
+                          </label>
+                          <input
+                            type="text"
+                            disabled
+                            className="form-control border-radius-10 text-primary"
+                            id="estNoId"
+                            value={generalData.estimationNo}
                           />
                         </div>
-                        <hr />
-                        <div className="mb-5">
-                          <PriceMethodTable
-                            rows={pricingData.priceDetailDTO}
-                            setRows={(rows) => {
-                              console.log(rows);
-                              setPricingData({
-                                ...pricingData,
-                                priceDetailDTO: rows,
-                              });
-                            }}
-                          />
-                          <div
-                            className="row my-3 mr-2"
-                            style={{ justifyContent: "right" }}
-                          >
-                            <button
-                              type="button"
-                              className="btn btn-light bg-primary text-white"
-                              onClick={updatePriceData}
-                              disabled={
-                                !(pricingData.priceDate && pricingData.currency)
-                              }
-                            >
-                              Save Price Methods
-                            </button>
-                          </div>
-                          <PriceSummaryTable
-                            rows={pricingData.priceEstimateDTO}
-                            setRows={(rows) =>
-                              setPricingData({
-                                ...pricingData,
-                                priceEstimateDTO: rows,
+                      </div>
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            DESCRIPTION
+                          </label>
+                          <input
+                            type="text"
+                            className="form-control border-radius-10 text-primary"
+                            id="desc-id"
+                            maxLength={140}
+                            value={generalData.description}
+                            onChange={(e) =>
+                              setGeneralData({
+                                ...generalData,
+                                description: e.target.value,
                               })
                             }
                           />
-                          <div
-                            className="row my-3 mr-2"
-                            style={{ justifyContent: "right" }}
-                          >
-                            <button
-                              type="button"
-                              className="btn btn-light bg-primary text-white"
-                              onClick={updatePriceData}
-                              disabled={
-                                !(pricingData.priceDate && pricingData.currency)
-                              }
-                            >
-                              Save Price Summary
-                            </button>
+                          <div className="css-w8dmq8">*Mandatory</div>
+                        </div>
+                      </div>
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            <span className=" mr-2">ESTIMATION DATE</span>
+                          </label>
+                          <div className="align-items-center date-box">
+                            <LocalizationProvider dateAdapter={AdapterDateFns}>
+                              <MobileDatePicker
+                                inputFormat="dd/MM/yyyy"
+                                className="form-controldate border-radius-10"
+                                minDate={generalData.estimationDate}
+                                maxDate={new Date()}
+                                closeOnSelect
+                                value={generalData.estimationDate}
+                                onChange={(e) =>
+                                  setGeneralData({
+                                    ...generalData,
+                                    estimationDate: e,
+                                  })
+                                }
+                                renderInput={(params) => (
+                                  <TextField
+                                    {...params}
+                                    variant="standard"
+                                    inputProps={{
+                                      ...params.inputProps,
+                                      style: FONT_STYLE,
+                                    }}
+                                  />
+                                )}
+                              />
+                            </LocalizationProvider>
                           </div>
                         </div>
-                      </>
-                    )}
-                  </TabPanel>
-                </TabContext>
-              )}
-            </Box>
-          </div>
-          <div className="card border mt-4 px-4">
-            <div className="row align-items-center">
-              <div className="col-8">
-                <div className="d-flex align-items-center w-100">
-                  <div
-                    className="d-flex mr-3 col-auto pl-0"
-                    style={{ whiteSpace: "pre" }}
-                  >
-                    <h5 className="mr-2 mb-0 text-black">
-                      <span>Parts Table</span>
-                    </h5>
-                    <span>Version {selectedVersion.value}</span>
+                      </div>
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            REFERENCE
+                          </label>
+                          <input
+                            type="text"
+                            className="form-control border-radius-10 text-primary"
+                            id="desc-id"
+                            maxLength={140}
+                            value={generalData.reference}
+                            onChange={(e) =>
+                              setGeneralData({
+                                ...generalData,
+                                reference: e.target.value,
+                              })
+                            }
+                          />
+                          <div className="css-w8dmq8">*Mandatory</div>
+                        </div>
+                      </div>
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            VALIDITY
+                          </label>
+                          <Select
+                            // defaultValue={selectedOption}
+                            onChange={(e) =>
+                              setGeneralData({
+                                ...generalData,
+                                validity: e,
+                              })
+                            }
+                            options={validityOptions}
+                            value={generalData.validity}
+                            styles={FONT_STYLE_SELECT}
+                          />
+                          <div className="css-w8dmq8">*Mandatory</div>
+                        </div>
+                      </div>
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            VERSION
+                          </label>
+                          <input
+                            type="text"
+                            className="form-control border-radius-10 text-primary"
+                            disabled
+                            value={parseFloat(selectedVersion.value).toFixed(1)}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="row" style={{ justifyContent: "right" }}>
+                      <button
+                        type="button"
+                        className="btn btn-light bg-primary text-white"
+                        onClick={() => handleResetData("CANCEL")}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-light bg-primary text-white"
+                        onClick={updateGeneralData}
+                        disabled={
+                          !(
+                            generalData.estimationDate &&
+                            generalData.description &&
+                            generalData.estimationNo &&
+                            generalData.reference &&
+                            generalData.validity?.value
+                          )
+                        }
+                      >
+                        Save & Next
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <div className="row mt-3">
+                    <ReadOnlyField
+                      label="ESTIMATION DATE"
+                      value={
+                        <Moment format="DD/MM/YYYY">
+                          {generalData.estimationDate}
+                        </Moment>
+                      }
+                      className="col-md-4 col-sm-4"
+                    />
+                    <ReadOnlyField
+                      label="ESTIMATION #"
+                      value={generalData.estimationNo}
+                      className="col-md-4 col-sm-4"
+                    />
+                    <ReadOnlyField
+                      label="DESCRIPTION"
+                      value={generalData.description}
+                      className="col-md-4 col-sm-4"
+                    />
+                    <ReadOnlyField
+                      label="REFERENCE"
+                      value={generalData.reference}
+                      className="col-md-4 col-sm-4"
+                    />
+                    <ReadOnlyField
+                      label="VALIDTITY (DAYs)"
+                      value={generalData.validity?.label}
+                      className="col-md-4 col-sm-4"
+                    />
+                    <ReadOnlyField
+                      label="VERSION"
+                      value={parseFloat(selectedVersion.value).toFixed(1)}
+                      className="col-md-4 col-sm-4"
+                    />
                   </div>
-                  <SearchComponent
-                    querySearchSelector={querySearchSelector}
-                    setQuerySearchSelector={setQuerySearchSelector}
-                    clearFilteredData={clearFilteredData}
-                    handleSnack={handleSnack}
-                    searchAPI={sparePartSearch}
-                    searchClick={handleQuerySearchClick}
-                    options={SPAREPART_SEARCH_Q_OPTIONS}
-                    background={"white"}
-                    type=""
-                    buttonText="ADD PART"
-                  />
-                </div>
+                )}
+              </TabPanel>
+              <TabPanel value="price">
+                {!viewOnlyTab.priceViewOnly ? (
+                  <React.Fragment>
+                    <div className="row input-fields">
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            NET PRICE
+                          </label>
+                          <input
+                            type="text"
+                            disabled
+                            className="form-control border-radius-10 text-primary"
+                            value={pricingData.netPrice}
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            PRICE DATE
+                          </label>
+                          <div className="align-items-center date-box">
+                            <LocalizationProvider dateAdapter={AdapterDateFns}>
+                              <MobileDatePicker
+                                inputFormat="dd/MM/yyyy"
+                                className="form-controldate border-radius-10"
+                                // minDate={pricingData.priceDate}
+                                // maxDate={new Date()}
+                                closeOnSelect
+                                value={pricingData.priceDate}
+                                onChange={(e) =>
+                                  setPricingData({
+                                    ...pricingData,
+                                    priceDate: e,
+                                  })
+                                }
+                                renderInput={(params) => (
+                                  <TextField
+                                    {...params}
+                                    variant="standard"
+                                    inputProps={{
+                                      ...params.inputProps,
+                                      style: FONT_STYLE,
+                                    }}
+                                  />
+                                )}
+                              />
+                            </LocalizationProvider>
+                          </div>
+                          <div className="css-w8dmq8">*Mandatory</div>
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            ADJUSTED PRICE
+                          </label>
+                          <input
+                            type="text"
+                            disabled
+                            className="form-control border-radius-10 text-primary"
+                            value={pricingData.adjustedPrice}
+                            // onChange={(e) =>
+                            //   setPricingData({
+                            //     ...pricingData,
+                            //     adjustedPrice: e.target.value,
+                            //   })
+                            // }
+                          />
+                        </div>
+                      </div>
+
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            CURRENCY
+                          </label>
+                          <Select
+                            onChange={(e) =>
+                              setPricingData({
+                                ...pricingData,
+                                currency: e,
+                              })
+                            }
+                            options={currencyOptions}
+                            value={pricingData.currency}
+                            styles={FONT_STYLE_SELECT}
+                          />
+                          <div className="css-w8dmq8">*Mandatory</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="row" style={{ justifyContent: "right" }}>
+                      <button
+                        type="button"
+                        className="btn btn-light bg-primary text-white"
+                        onClick={() => handleResetData("CANCEL")}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-light bg-primary text-white"
+                        onClick={updatePriceData}
+                        disabled={
+                          !(
+                            pricingData.priceDate &&
+                            pricingData.currency?.value !== ""
+                          )
+                        }
+                      >
+                        Save
+                      </button>
+                    </div>
+                  </React.Fragment>
+                ) : (
+                  <>
+                    <div className="row mt-3">
+                      <ReadOnlyField
+                        label="NET PRICE"
+                        value={pricingData.netPrice}
+                        className="col-md-4 col-sm-4"
+                      />
+                      <ReadOnlyField
+                        label="PRICE DATE"
+                        value={
+                          <Moment format="DD/MM/YYYY">
+                            {pricingData.priceDate}
+                          </Moment>
+                        }
+                        className="col-md-4 col-sm-4"
+                      />
+                      <ReadOnlyField
+                        label="ADJUSTED PRICE"
+                        value={pricingData.adjustedPrice}
+                        className="col-md-4 col-sm-4"
+                      />
+                      <ReadOnlyField
+                        label="CURRENCY"
+                        value={pricingData.currency?.label}
+                        className="col-md-4 col-sm-4"
+                      />
+                    </div>
+                    <hr />
+                    <div className="mb-5">
+                      <PriceMethodTable
+                        rows={pricingData.priceDetailDTO}
+                        setRows={(rows) => {
+                          console.log(rows);
+                          setPricingData({
+                            ...pricingData,
+                            priceDetailDTO: rows,
+                          });
+                        }}
+                      />
+                      <div
+                        className="row my-3 mr-2"
+                        style={{ justifyContent: "right" }}
+                      >
+                        <button
+                          type="button"
+                          className="btn btn-light bg-primary text-white"
+                          onClick={updatePriceData}
+                          disabled={
+                            !(pricingData.priceDate && pricingData.currency)
+                          }
+                        >
+                          Save Price Methods
+                        </button>
+                      </div>
+                      <PriceSummaryTable
+                        rows={pricingData.priceEstimateDTO}
+                        setRows={(rows) =>
+                          setPricingData({
+                            ...pricingData,
+                            priceEstimateDTO: rows,
+                          })
+                        }
+                      />
+                      <div
+                        className="row my-3 mr-2"
+                        style={{ justifyContent: "right" }}
+                      >
+                        <button
+                          type="button"
+                          className="btn btn-light bg-primary text-white"
+                          onClick={updatePriceData}
+                          disabled={
+                            !(pricingData.priceDate && pricingData.currency)
+                          }
+                        >
+                          Save Price Summary
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </TabPanel>
+            </TabContext>
+          )}
+        </Box>
+      </div>
+      <div className="card border mt-4 px-4">
+        <div className="row align-items-center">
+          <div className="col-8">
+            <div className="d-flex align-items-center w-100">
+              <div
+                className="d-flex mr-3 col-auto pl-0"
+                style={{ whiteSpace: "pre" }}
+              >
+                <h5 className="mr-2 mb-0 text-black">
+                  <span>Issue Items</span>
+                </h5>
+                <span>Version {selectedVersion.value}</span>
               </div>
-              {(selBuilderStatus?.value === "DRAFT" ||
-                selBuilderStatus?.value === "REVISED") && (
-                <div className="col-4">
-                  <div className="text-right pl-3 py-3">
-                    <button
-                      onClick={handleUploadClick}
-                      style={{ cursor: "pointer" }}
-                      className="btn bg-primary text-white mx-2"
-                    >
-                      Upload
-                    </button>
-                    {/* <button
+              <SearchComponent
+                querySearchSelector={querySearchSelector}
+                setQuerySearchSelector={setQuerySearchSelector}
+                clearFilteredData={clearFilteredData}
+                handleSnack={handleSnack}
+                searchAPI={sparePartSearch}
+                searchClick={handleQuerySearchClick}
+                options={SPAREPART_SEARCH_Q_OPTIONS}
+                background={"white"}
+                type=""
+                buttonText="ADD PART"
+              />
+            </div>
+          </div>
+          {(selBuilderStatus?.value === "DRAFT" ||
+            selBuilderStatus?.value === "REVISED") && (
+            <div className="col-4">
+              <div className="text-right pl-3 py-3">
+                <button
+                  onClick={handleUploadClick}
+                  style={{ cursor: "pointer" }}
+                  className="btn bg-primary text-white mx-2"
+                >
+                  Upload
+                </button>
+                {/* <button
                       onClick={() => setAddPartOpen(true)}
                       className="btn bg-primary text-white "
                     >
                       + Add Part
                     </button> */}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <DataGrid
-              sx={GRID_STYLE}
-              rows={spareparts}
-              autoHeight
-              columns={columnsPartList.map((column) => ({
-                ...column,
-                filterOperators,
-              }))}
-              editMode="row"
-              page={page}
-              pageSize={pageSize}
-              onPageChange={(newPage) =>
-                fetchPartsOfPartlist(partListNo, newPage, pageSize)
-              }
-              onPageSizeChange={(newPageSize) =>
-                fetchPartsOfPartlist(partListNo, page, newPageSize)
-              }
-              onRowEditStart={(e) => setBulkUpdateProgress(true)}
-              sortingMode="server"
-              onSortModelChange={(e) => sortPartsTable(e)}
-              filterMode="server"
-              onFilterModelChange={onPartsFilterChange}
-              onRowEditStop={(e) => setBulkUpdateProgress(false)}
-              paginationMode="server"
-              loading={partsLoading}
-              rowsPerPageOptions={[5, 10, 20]}
-              pagination
-              rowCount={totalPartsCount}
-              experimentalFeatures={{ newEditingApi: true }}
-              processRowUpdate={(newRow, oldRow) =>
-                processRowUpdate(newRow, oldRow)
-              }
-              // getEstimatedRowHeight={() => 200}
-              // getRowHeight={() => "auto"}
-              onProcessRowUpdateError={(error) => console.log(error)}
-            />
-            <div className=" my-3 text-right">
-              {(selBuilderStatus?.value === "DRAFT" ||
-                selBuilderStatus?.value === "REVISED") && (
-                <button
-                  className="btn text-white bg-primary"
-                  onClick={() => setConfirmationOpen(true)}
-                  disabled={bulkUpdateProgress}
-                >
-                  Save
-                </button>
-              )}
-            </div>
-          </div>
-          {/* Open Modal to add individual spare part to the part list */}
-          <AddNewSparepartModal
-            sparePart={sparePart}
-            setSparePart={setSparePart}
-            handleIndPartAdd={handleIndPartAdd}
-            searchAPI={sparePartSearch}
-            addPartOpen={addPartOpen}
-            handleAddPartClose={handleAddPartClose}
-            title={addPartModalTitle}
-            partFieldViewonly={partFieldViewonly}
-            setPartFieldViewonly={setPartFieldViewonly}
-            handleSnack={handleSnack}
-          />
-
-          <Modal
-            show={fileUploadOpen}
-            onHide={() => setFileUploadOpen(false)}
-            size="md"
-            aria-labelledby="contained-modal-title-vcenter"
-            centered
-          >
-            <Modal.Header className="modal-header-border">
-              <Modal.Title>Import Files</Modal.Title>
-            </Modal.Header>
-            <Modal.Body className="p-0">
-              <div className="p-3">
-                <div className="add-new-recod">
-                  <div>
-                    <FontAwesomeIcon
-                      className="cloudupload"
-                      icon={faCloudUploadAlt}
-                    />
-                    <h6 className="font-weight-500 mt-3">
-                      Drag and drop files to upload <br /> or
-                    </h6>
-                    <FileUploader
-                      handleChange={handleReadFile}
-                      name="file"
-                      types={["xls", "xlsx"]}
-                      onClick={(event) => {
-                        event.currentTarget.value = null;
-                      }}
-                    />
-                  </div>
-                </div>
-                <p className="mt-3">
-                  Single upload file should not be more than 10MB. Only the
-                  .xls, .xlsx file types are allowed
-                </p>
-              </div>
-              <div className="recent-div p-3">
-                <h6 className="font-weight-600 text-grey mb-0">RECENT</h6>
-                <div className="recent-items mt-3">
-                  <div className="d-flex justify-content-between align-items-center ">
-                    <p className="mb-0 ">
-                      <FontAwesomeIcon
-                        className=" font-size-14"
-                        icon={faFileAlt}
-                      />
-                      <span className="font-weight-500 ml-2">
-                        Engine Partlist
-                      </span>
-                    </p>
-                    <div className="d-flex align-items-center">
-                      <div className="white-space custom-checkbox">
-                        <FormGroup>
-                          <FormControlLabel
-                            control={<Checkbox defaultChecked />}
-                            label=""
-                          />
-                        </FormGroup>
-                      </div>
-                      <a href="#" className="ml-3 font-size-14">
-                        <FontAwesomeIcon icon={faShareAlt} />
-                      </a>
-                      <a href="#" className="ml-3 font-size-14">
-                        <FontAwesomeIcon icon={faFolderPlus} />
-                      </a>
-                      <a href="#" className="ml-3 font-size-14">
-                        <FontAwesomeIcon icon={faUpload} />
-                      </a>
-                      <a href="#" className="ml-2">
-                        <MuiMenuComponent options={activityOptions} />
-                      </a>
-                    </div>
-                  </div>
-                </div>
-                <div className="d-flex justify-content-between align-items-center mt-2">
-                  <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
-                  <p className="font-size-12 mb-0">Part List </p>
-                </div>
-                <div className="recent-items mt-3">
-                  <div className="d-flex justify-content-between align-items-center ">
-                    <p className="mb-0 ">
-                      <FontAwesomeIcon
-                        className=" font-size-14"
-                        icon={faFileAlt}
-                      />
-                      <span className="font-weight-500 ml-2">
-                        Engine Partlist
-                      </span>
-                    </p>
-                    <div className="d-flex align-items-center">
-                      <div className="white-space custom-checkbox">
-                        <FormGroup>
-                          <FormControlLabel control={<Checkbox />} label="" />
-                        </FormGroup>
-                      </div>
-                      <a href="#" className="ml-3 font-size-14">
-                        <FontAwesomeIcon icon={faShareAlt} />
-                      </a>
-                      <a href="#" className="ml-3 font-size-14">
-                        <FontAwesomeIcon icon={faFolderPlus} />
-                      </a>
-                      <a href="#" className="ml-3 font-size-14">
-                        <FontAwesomeIcon icon={faUpload} />
-                      </a>
-                      <a href="#" className="ml-2">
-                        <MuiMenuComponent options={activityOptions} />
-                      </a>
-                    </div>
-                  </div>
-                </div>
-                <div className="d-flex justify-content-between align-items-center mt-2">
-                  <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
-                  <p className="font-size-12 mb-0">Part List </p>
-                </div>
-              </div>
-            </Modal.Body>
-            <div className="row m-0 p-3">
-              <div className="col-md-6 col-sm-6">
-                <button
-                  className="btn border w-100 bg-white"
-                  onClick={() => setFileUploadOpen(false)}
-                >
-                  Cancel
-                </button>
-              </div>
-              <div className="col-md-6 col-sm-6">
-                <button
-                  className="btn btn-primary w-100"
-                  onClick={handleUploadFile}
-                  style={{ cursor: "pointer" }}
-                >
-                  <FontAwesomeIcon className="mr-2" icon={faCloudUploadAlt} />
-                  Upload
-                </button>
               </div>
             </div>
-          </Modal>
+          )}
         </div>
-        <div
-          className="modal fade"
-          id="Substitute"
-          tabIndex="-1"
-          role="dialog"
-          aria-labelledby="exampleModalLabel"
-          aria-hidden="true"
-          style={{ zIndex: "1200" }}
-        >
-          <div className="modal-dialog modal-dialog-centered" role="document">
-            <div className="modal-content">
-              <div className="modal-header p-0 ">
-                <div
-                  className="card w-100 p-2 m-0"
-                  style={{ backgroundColor: "#F3F4FE" }}
-                >
-                  <div className="d-flex justify-content-between mt-3 px-3">
-                    <h6>RECOMMENDED DISCOUNT PRICE</h6>
-                    <a href="">$500</a>
-                  </div>
-                  <p className="mt-2 px-3">
-                    The best suited discount for this type of quotation.
-                  </p>
-                  <div className="mx-3 mb-3">
-                    <button
-                      className="btn border w-100 bg-white"
-                      style={{ borderRadius: "0.5rem" }}
-                    >
-                      Apply recommendation
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <div className="modal-body m-2">
-                <div className="card w-100 border mb-0">
-                  <div className="row mt-3 px-2">
-                    <div className="col-md-5 col-sm-5  pl-5">
-                      <div className="form-group">
-                        <p className="font-size-12 font-weight-500 mb-2 ">
-                          PART TYPE
-                        </p>
-                        <h6 className="font-weight-500">New</h6>
-                      </div>
-                    </div>
-                    <div className="col-md-5 col-sm-5">
-                      <div className="form-group">
-                        <p className="font-size-12 font-weight-500 mb-2">
-                          ALLOWED DISCOUNT
-                        </p>
-                        <h6 className="font-weight-500">20%</h6>
-                      </div>
-                    </div>
-                    <div className="col-md-2 col-sm-2">
-                      <div className="form-check">
-                        <input
-                          className="form-check-input"
-                          type="radio"
-                          name="flexRadioDefault"
-                          id="flexRadioDefault1"
-                        ></input>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="hr w-100"></div>
-                  <div className="row mt-3 px-2">
-                    <div className="col-md-5 col-sm-5 pl-5">
-                      <div className="form-group">
-                        <p className="font-size-12 font-weight-500 mb-2">
-                          PART TYPE
-                        </p>
-                        <h6 className="font-weight-500">Refurb</h6>
-                      </div>
-                    </div>
-                    <div className="col-md-5 col-sm-5">
-                      <div className="form-group">
-                        <p className="font-size-12 font-weight-500 mb-2">
-                          ALLOWED DISCOUNT
-                        </p>
-                        <h6 className="font-weight-500">30%</h6>
-                      </div>
-                    </div>
-                    <div className="col-md-2 col-sm-2">
-                      <div className="form-check">
-                        <input
-                          className="form-check-input"
-                          type="radio"
-                          name="flexRadioDefault"
-                          id="flexRadioDefault1"
-                        ></input>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="hr w-100"></div>
-                  <div className="row mt-3 px-2">
-                    <div className="col-md-5 col-sm-5 pl-5">
-                      <div className="form-group">
-                        <p className="font-size-12 font-weight-500 mb-2">
-                          PART TYPE
-                        </p>
-                        <h6 className="font-weight-500">Reman</h6>
-                      </div>
-                    </div>
-                    <div className="col-md-5 col-sm-5">
-                      <div className="form-group">
-                        <p className="font-size-12 font-weight-500 mb-2">
-                          ALLOWED DISCOUNT
-                        </p>
-                        <h6 className="font-weight-500">40%</h6>
-                      </div>
-                    </div>
-                    <div className="col-md-2 col-sm-2">
-                      <div className="form-check">
-                        <input
-                          className="form-check-input"
-                          type="radio"
-                          name="flexRadioDefault"
-                          id="flexRadioDefault1"
-                        ></input>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
 
-              <div className="mx-4 mb-5">
-                <button
-                  className="btn border w-100 text-white bg-primary"
-                  style={{ borderRadius: "0.5rem" }}
-                >
-                  <span className="mr-2">
-                    <CheckOutlinedIcon />
-                  </span>
-                  Apply selection
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div
-          className="modal fade"
-          id="Recommended"
-          tabIndex="-1"
-          role="dialog"
-          aria-labelledby="exampleModalLabel"
-          aria-hidden="true"
-          style={{ zIndex: "1200" }}
-        >
-          <div className="modal-dialog modal-dialog-centered" role="document">
-            <div className="modal-content">
-              <div className="modal-header p-4">
-                <div className="card w-100 border mb-0">
-                  <div className="row mt-3 px-2">
-                    <div className="col-md-5 col-sm-5 pl-5">
-                      <div className="form-group">
-                        <p className="font-size-12 font-weight-500 mb-2">
-                          PART TYPE
-                        </p>
-                        <h6 className="font-weight-500">New</h6>
-                      </div>
-                    </div>
-                    <div className="col-md-5 col-sm-5">
-                      <div className="form-group">
-                        <p className="font-size-12 font-weight-500 mb-2">
-                          ALLOWED DISCOUNT
-                        </p>
-                        <h6 className="font-weight-500">20%</h6>
-                      </div>
-                    </div>
-                    <div className="col-md-2 col-sm-2">
-                      <div className="form-check">
-                        <input
-                          className="form-check-input"
-                          type="radio"
-                          name="flexRadioDefault"
-                          id="flexRadioDefault1"
-                        ></input>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="hr w-100"></div>
-                  <div className="row mt-3 px-2">
-                    <div className="col-md-5 col-sm-5 pl-5">
-                      <div className="form-group">
-                        <p className="font-size-12 font-weight-500 mb-2">
-                          PART TYPE
-                        </p>
-                        <h6 className="font-weight-500">Refurb</h6>
-                      </div>
-                    </div>
-                    <div className="col-md-5 col-sm-5">
-                      <div className="form-group">
-                        <p className="font-size-12 font-weight-500 mb-2">
-                          ALLOWED DISCOUNT
-                        </p>
-                        <h6 className="font-weight-500">30%</h6>
-                      </div>
-                    </div>
-                    <div className="col-md-2 col-sm-2">
-                      <div className="form-check">
-                        <input
-                          className="form-check-input"
-                          type="radio"
-                          name="flexRadioDefault"
-                          id="flexRadioDefault1"
-                        ></input>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="hr w-100"></div>
-                  <div className="row mt-3 px-2">
-                    <div className="col-md-5 col-sm-5 pl-5">
-                      <div className="form-group">
-                        <p className="font-size-12 font-weight-500 mb-2">
-                          PART TYPE
-                        </p>
-                        <h6 className="font-weight-500">Reman</h6>
-                      </div>
-                    </div>
-                    <div className="col-md-5 col-sm-5">
-                      <div className="form-group">
-                        <p className="font-size-12 font-weight-500 mb-2">
-                          ALLOWED DISCOUNT
-                        </p>
-                        <h6 className="font-weight-500">40%</h6>
-                      </div>
-                    </div>
-                    <div className="col-md-2 col-sm-2">
-                      <div className="form-check">
-                        <input
-                          className="form-check-input"
-                          type="radio"
-                          name="flexRadioDefault"
-                          id="flexRadioDefault1"
-                        ></input>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mx-4 mb-5">
-                <button
-                  className="btn border w-100 text-white bg-primary"
-                  style={{ borderRadius: "0.5rem" }}
-                >
-                  <span className="mr-2">
-                    <CheckOutlinedIcon />
-                  </span>
-                  Apply selection
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <QuoteModal
-          setOpenQuotePopup={setOpenQuotePopup}
-          openQuotePopup={openQuotePopup}
-          setQuoteDescription={setQuoteDescription}
-          quoteDescription={quoteDescription}
-          quoteReference={quoteReference}
-          setQuoteReference={setQuoteReference}
-          handleCreateQuote={handleCreateQuote}
+        <DataGrid
+          sx={GRID_STYLE}
+          rows={spareparts}
+          autoHeight
+          columns={columnsPartList.map((column) => ({
+            ...column,
+            filterOperators,
+          }))}
+          editMode="row"
+          page={page}
+          pageSize={pageSize}
+          onPageChange={(newPage) =>
+            fetchPartsOfPartlist(partListNo, newPage, pageSize)
+          }
+          onPageSizeChange={(newPageSize) =>
+            fetchPartsOfPartlist(partListNo, page, newPageSize)
+          }
+          onRowEditStart={(e) => setBulkUpdateProgress(true)}
+          sortingMode="server"
+          onSortModelChange={(e) => sortPartsTable(e)}
+          filterMode="server"
+          onFilterModelChange={onPartsFilterChange}
+          onRowEditStop={(e) => setBulkUpdateProgress(false)}
+          paginationMode="server"
+          loading={partsLoading}
+          rowsPerPageOptions={[5, 10, 20]}
+          pagination
+          rowCount={totalPartsCount}
+          experimentalFeatures={{ newEditingApi: true }}
+          processRowUpdate={(newRow, oldRow) =>
+            processRowUpdate(newRow, oldRow)
+          }
+          // getEstimatedRowHeight={() => 200}
+          // getRowHeight={() => "auto"}
+          onProcessRowUpdateError={(error) => console.log(error)}
         />
-        <Modal
-          show={searchResultOpen}
-          onHide={handleSearchResClose}
-          size="xl"
-          aria-labelledby="contained-modal-title-vcenter"
-          centered
-        >
-          <Modal.Header className="modal-header-border">
-            <Modal.Title>Search Results</Modal.Title>
-          </Modal.Header>
-          <Modal.Body className="p-0 bg-white">
-            <div className="card w-100 p-2">
-              <div
-                className=""
-                style={{
-                  height: 400,
-                  width: "100%",
-                  backgroundColor: "#fff",
-                }}
-              >
-                <DataGrid
-                  sx={{
-                    "& .MuiDataGrid-columnHeaders": {
-                      backgroundColor: "#872ff7",
-                      color: "#fff",
-                    },
+        <div className=" my-3 text-right">
+          {(selBuilderStatus?.value === "DRAFT" ||
+            selBuilderStatus?.value === "REVISED") && (
+            <button
+              className="btn text-white bg-primary"
+              onClick={() => setConfirmationOpen(true)}
+              disabled={bulkUpdateProgress}
+            >
+              Save
+            </button>
+          )}
+        </div>
+      </div>
+      {/* Open Modal to add individual spare part to the part list */}
+      <AddNewSparepartModal
+        sparePart={sparePart}
+        setSparePart={setSparePart}
+        handleIndPartAdd={handleIndPartAdd}
+        searchAPI={sparePartSearch}
+        addPartOpen={addPartOpen}
+        handleAddPartClose={handleAddPartClose}
+        title={addPartModalTitle}
+        partFieldViewonly={partFieldViewonly}
+        setPartFieldViewonly={setPartFieldViewonly}
+        handleSnack={handleSnack}
+      />
+
+      <Modal
+        show={fileUploadOpen}
+        onHide={() => setFileUploadOpen(false)}
+        size="md"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header className="modal-header-border">
+          <Modal.Title>Import Files</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="p-0">
+          <div className="p-3">
+            <div className="add-new-recod">
+              <div>
+                <FontAwesomeIcon
+                  className="cloudupload"
+                  icon={faCloudUploadAlt}
+                />
+                <h6 className="font-weight-500 mt-3">
+                  Drag and drop files to upload <br /> or
+                </h6>
+                <FileUploader
+                  handleChange={handleReadFile}
+                  name="file"
+                  types={["xls", "xlsx"]}
+                  onClick={(event) => {
+                    event.currentTarget.value = null;
                   }}
-                  rows={masterData}
-                  columns={columnsPartListSearch}
-                  pageSize={5}
-                  rowsPerPageOptions={[5]}
-                  checkboxSelection
-                  onSelectionModelChange={(ids) => onRowsSelectionHandler(ids)}
                 />
               </div>
             </div>
-            <div className="m-2 text-right">
-              <button
-                className="btn text-white bg-primary mr-2"
-                onClick={handleSearchResClose}
+            <p className="mt-3">
+              Single upload file should not be more than 10MB. Only the .xls,
+              .xlsx file types are allowed
+            </p>
+          </div>
+          <div className="recent-div p-3">
+            <h6 className="font-weight-600 text-grey mb-0">RECENT</h6>
+            <div className="recent-items mt-3">
+              <div className="d-flex justify-content-between align-items-center ">
+                <p className="mb-0 ">
+                  <FontAwesomeIcon className=" font-size-14" icon={faFileAlt} />
+                  <span className="font-weight-500 ml-2">Engine Partlist</span>
+                </p>
+                <div className="d-flex align-items-center">
+                  <div className="white-space custom-checkbox">
+                    <FormGroup>
+                      <FormControlLabel
+                        control={<Checkbox defaultChecked />}
+                        label=""
+                      />
+                    </FormGroup>
+                  </div>
+                  <a href="#" className="ml-3 font-size-14">
+                    <FontAwesomeIcon icon={faShareAlt} />
+                  </a>
+                  <a href="#" className="ml-3 font-size-14">
+                    <FontAwesomeIcon icon={faFolderPlus} />
+                  </a>
+                  <a href="#" className="ml-3 font-size-14">
+                    <FontAwesomeIcon icon={faUpload} />
+                  </a>
+                  <a href="#" className="ml-2">
+                    <MuiMenuComponent options={activityOptions} />
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div className="d-flex justify-content-between align-items-center mt-2">
+              <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
+              <p className="font-size-12 mb-0">Issue </p>
+            </div>
+            <div className="recent-items mt-3">
+              <div className="d-flex justify-content-between align-items-center ">
+                <p className="mb-0 ">
+                  <FontAwesomeIcon className=" font-size-14" icon={faFileAlt} />
+                  <span className="font-weight-500 ml-2">Engine Partlist</span>
+                </p>
+                <div className="d-flex align-items-center">
+                  <div className="white-space custom-checkbox">
+                    <FormGroup>
+                      <FormControlLabel control={<Checkbox />} label="" />
+                    </FormGroup>
+                  </div>
+                  <a href="#" className="ml-3 font-size-14">
+                    <FontAwesomeIcon icon={faShareAlt} />
+                  </a>
+                  <a href="#" className="ml-3 font-size-14">
+                    <FontAwesomeIcon icon={faFolderPlus} />
+                  </a>
+                  <a href="#" className="ml-3 font-size-14">
+                    <FontAwesomeIcon icon={faUpload} />
+                  </a>
+                  <a href="#" className="ml-2">
+                    <MuiMenuComponent options={activityOptions} />
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div className="d-flex justify-content-between align-items-center mt-2">
+              <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
+              <p className="font-size-12 mb-0">Issue </p>
+            </div>
+          </div>
+        </Modal.Body>
+        <div className="row m-0 p-3">
+          <div className="col-md-6 col-sm-6">
+            <button
+              className="btn border w-100 bg-white"
+              onClick={() => setFileUploadOpen(false)}
+            >
+              Cancel
+            </button>
+          </div>
+          <div className="col-md-6 col-sm-6">
+            <button
+              className="btn btn-primary w-100"
+              onClick={handleUploadFile}
+              style={{ cursor: "pointer" }}
+            >
+              <FontAwesomeIcon className="mr-2" icon={faCloudUploadAlt} />
+              Upload
+            </button>
+          </div>
+        </div>
+      </Modal>
+      <div
+        className="modal fade"
+        id="Substitute"
+        tabIndex="-1"
+        role="dialog"
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+        style={{ zIndex: "1200" }}
+      >
+        <div className="modal-dialog modal-dialog-centered" role="document">
+          <div className="modal-content">
+            <div className="modal-header p-0 ">
+              <div
+                className="card w-100 p-2 m-0"
+                style={{ backgroundColor: "#F3F4FE" }}
               >
-                Cancel
-              </button>
+                <div className="d-flex justify-content-between mt-3 px-3">
+                  <h6>RECOMMENDED DISCOUNT PRICE</h6>
+                  <a href="">$500</a>
+                </div>
+                <p className="mt-2 px-3">
+                  The best suited discount for this type of quotation.
+                </p>
+                <div className="mx-3 mb-3">
+                  <button
+                    className="btn border w-100 bg-white"
+                    style={{ borderRadius: "0.5rem" }}
+                  >
+                    Apply recommendation
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div className="modal-body m-2">
+              <div className="card w-100 border mb-0">
+                <div className="row mt-3 px-2">
+                  <div className="col-md-5 col-sm-5  pl-5">
+                    <div className="form-group">
+                      <p className="font-size-12 font-weight-500 mb-2 ">
+                        PART TYPE
+                      </p>
+                      <h6 className="font-weight-500">New</h6>
+                    </div>
+                  </div>
+                  <div className="col-md-5 col-sm-5">
+                    <div className="form-group">
+                      <p className="font-size-12 font-weight-500 mb-2">
+                        ALLOWED DISCOUNT
+                      </p>
+                      <h6 className="font-weight-500">20%</h6>
+                    </div>
+                  </div>
+                  <div className="col-md-2 col-sm-2">
+                    <div className="form-check">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        name="flexRadioDefault"
+                        id="flexRadioDefault1"
+                      ></input>
+                    </div>
+                  </div>
+                </div>
+                <div className="hr w-100"></div>
+                <div className="row mt-3 px-2">
+                  <div className="col-md-5 col-sm-5 pl-5">
+                    <div className="form-group">
+                      <p className="font-size-12 font-weight-500 mb-2">
+                        PART TYPE
+                      </p>
+                      <h6 className="font-weight-500">Refurb</h6>
+                    </div>
+                  </div>
+                  <div className="col-md-5 col-sm-5">
+                    <div className="form-group">
+                      <p className="font-size-12 font-weight-500 mb-2">
+                        ALLOWED DISCOUNT
+                      </p>
+                      <h6 className="font-weight-500">30%</h6>
+                    </div>
+                  </div>
+                  <div className="col-md-2 col-sm-2">
+                    <div className="form-check">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        name="flexRadioDefault"
+                        id="flexRadioDefault1"
+                      ></input>
+                    </div>
+                  </div>
+                </div>
+                <div className="hr w-100"></div>
+                <div className="row mt-3 px-2">
+                  <div className="col-md-5 col-sm-5 pl-5">
+                    <div className="form-group">
+                      <p className="font-size-12 font-weight-500 mb-2">
+                        PART TYPE
+                      </p>
+                      <h6 className="font-weight-500">Reman</h6>
+                    </div>
+                  </div>
+                  <div className="col-md-5 col-sm-5">
+                    <div className="form-group">
+                      <p className="font-size-12 font-weight-500 mb-2">
+                        ALLOWED DISCOUNT
+                      </p>
+                      <h6 className="font-weight-500">40%</h6>
+                    </div>
+                  </div>
+                  <div className="col-md-2 col-sm-2">
+                    <div className="form-check">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        name="flexRadioDefault"
+                        id="flexRadioDefault1"
+                      ></input>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mx-4 mb-5">
               <button
-                className="btn text-white bg-primary"
-                onClick={addSelectedPartsToPartList}
+                className="btn border w-100 text-white bg-primary"
+                style={{ borderRadius: "0.5rem" }}
               >
-                + Add Selected
+                <span className="mr-2">
+                  <CheckOutlinedIcon />
+                </span>
+                Apply selection
               </button>
             </div>
-          </Modal.Body>
-        </Modal>
+          </div>
+        </div>
       </div>
+      <div
+        className="modal fade"
+        id="Recommended"
+        tabIndex="-1"
+        role="dialog"
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+        style={{ zIndex: "1200" }}
+      >
+        <div className="modal-dialog modal-dialog-centered" role="document">
+          <div className="modal-content">
+            <div className="modal-header p-4">
+              <div className="card w-100 border mb-0">
+                <div className="row mt-3 px-2">
+                  <div className="col-md-5 col-sm-5 pl-5">
+                    <div className="form-group">
+                      <p className="font-size-12 font-weight-500 mb-2">
+                        PART TYPE
+                      </p>
+                      <h6 className="font-weight-500">New</h6>
+                    </div>
+                  </div>
+                  <div className="col-md-5 col-sm-5">
+                    <div className="form-group">
+                      <p className="font-size-12 font-weight-500 mb-2">
+                        ALLOWED DISCOUNT
+                      </p>
+                      <h6 className="font-weight-500">20%</h6>
+                    </div>
+                  </div>
+                  <div className="col-md-2 col-sm-2">
+                    <div className="form-check">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        name="flexRadioDefault"
+                        id="flexRadioDefault1"
+                      ></input>
+                    </div>
+                  </div>
+                </div>
+                <div className="hr w-100"></div>
+                <div className="row mt-3 px-2">
+                  <div className="col-md-5 col-sm-5 pl-5">
+                    <div className="form-group">
+                      <p className="font-size-12 font-weight-500 mb-2">
+                        PART TYPE
+                      </p>
+                      <h6 className="font-weight-500">Refurb</h6>
+                    </div>
+                  </div>
+                  <div className="col-md-5 col-sm-5">
+                    <div className="form-group">
+                      <p className="font-size-12 font-weight-500 mb-2">
+                        ALLOWED DISCOUNT
+                      </p>
+                      <h6 className="font-weight-500">30%</h6>
+                    </div>
+                  </div>
+                  <div className="col-md-2 col-sm-2">
+                    <div className="form-check">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        name="flexRadioDefault"
+                        id="flexRadioDefault1"
+                      ></input>
+                    </div>
+                  </div>
+                </div>
+                <div className="hr w-100"></div>
+                <div className="row mt-3 px-2">
+                  <div className="col-md-5 col-sm-5 pl-5">
+                    <div className="form-group">
+                      <p className="font-size-12 font-weight-500 mb-2">
+                        PART TYPE
+                      </p>
+                      <h6 className="font-weight-500">Reman</h6>
+                    </div>
+                  </div>
+                  <div className="col-md-5 col-sm-5">
+                    <div className="form-group">
+                      <p className="font-size-12 font-weight-500 mb-2">
+                        ALLOWED DISCOUNT
+                      </p>
+                      <h6 className="font-weight-500">40%</h6>
+                    </div>
+                  </div>
+                  <div className="col-md-2 col-sm-2">
+                    <div className="form-check">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        name="flexRadioDefault"
+                        id="flexRadioDefault1"
+                      ></input>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mx-4 mb-5">
+              <button
+                className="btn border w-100 text-white bg-primary"
+                style={{ borderRadius: "0.5rem" }}
+              >
+                <span className="mr-2">
+                  <CheckOutlinedIcon />
+                </span>
+                Apply selection
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <QuoteModal
+        setOpenQuotePopup={setOpenQuotePopup}
+        openQuotePopup={openQuotePopup}
+        setQuoteDescription={setQuoteDescription}
+        quoteDescription={quoteDescription}
+        quoteReference={quoteReference}
+        setQuoteReference={setQuoteReference}
+        handleCreateQuote={handleCreateQuote}
+      />
+      <Modal
+        show={searchResultOpen}
+        onHide={handleSearchResClose}
+        size="xl"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header className="modal-header-border">
+          <Modal.Title>Search Results</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="p-0 bg-white">
+          <div className="card w-100 p-2">
+            <div
+              className=""
+              style={{
+                height: 400,
+                width: "100%",
+                backgroundColor: "#fff",
+              }}
+            >
+              <DataGrid
+                sx={{
+                  "& .MuiDataGrid-columnHeaders": {
+                    backgroundColor: "#872ff7",
+                    color: "#fff",
+                  },
+                }}
+                rows={masterData}
+                columns={columnsPartListSearch}
+                pageSize={5}
+                rowsPerPageOptions={[5]}
+                checkboxSelection
+                onSelectionModelChange={(ids) => onRowsSelectionHandler(ids)}
+              />
+            </div>
+          </div>
+          <div className="m-2 text-right">
+            <button
+              className="btn text-white bg-primary mr-2"
+              onClick={handleSearchResClose}
+            >
+              Cancel
+            </button>
+            <button
+              className="btn text-white bg-primary"
+              onClick={addSelectedPartsToPartList}
+            >
+              + Add Selected
+            </button>
+          </div>
+        </Modal.Body>
+      </Modal>
     </>
   );
 };

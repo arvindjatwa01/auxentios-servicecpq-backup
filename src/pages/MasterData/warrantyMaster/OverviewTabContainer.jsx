@@ -43,9 +43,8 @@ const OverviewTabContainer = ({
             />
           </div>
           <div className="card-body">
-            <h6 className="card-title">Notes</h6>
-            <h5>WARRANTY AND COVERAGE INFORMATION</h5>
-            <p class="card-text">
+            <h6 className="card-title">WARRANTY AND COVERAGE INFORMATION</h6>
+            <p class="card-text" style={{ fontWeight: 400 }}>
               Get to know about our warranty offerings for each product by
               contacting your OEM / authorized dealer. The applicable Gainwell
               Limited Warranty and coverage details may vary depending on the
@@ -53,15 +52,18 @@ const OverviewTabContainer = ({
               options may be available for attachments, Certified Rebuild, Used
               and Certified Used Equipment. Limitations may apply.
             </p>
-            <p className="card-text">
+            <p className="card-text" style={{ fontWeight: 400 }}>
               Registering your warranty ensures that you receive important
               information about potential recalls and helps us process claims
               quickly. Your OEM / dealer will usually register your warranty.
             </p>
-            <p className="fw-bold">
+            <span
+              className="fw-bold"
+              style={{ fontWeight: 400, color: "#000000" }}
+            >
               Need to register your engine or OEM Solutions product warranty?
               Register your product today.
-            </p>
+            </span>
           </div>
         </div>
         <div className="col-xl-9 col-lg-8 col-md-12 col-sm-12 equipment-master-chart mt-custom">
