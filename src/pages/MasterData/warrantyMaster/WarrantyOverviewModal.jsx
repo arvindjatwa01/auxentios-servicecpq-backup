@@ -333,6 +333,8 @@ const WarrantyOverviewModal = ({
         <WarrantyClaimAddUpdate
           show={showClaimAddEditModal}
           hideModal={handleShowClaimAddEditModal}
+          warrantyId={recordId}
+          handleSnack={handleSnack}
         />
       )}
       {showClaimDetailsModal && (
