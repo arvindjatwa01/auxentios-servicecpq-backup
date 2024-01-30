@@ -197,7 +197,7 @@ const ClaimDetailsModal = ({ show, hideModal, recordId, handleSnack }) => {
   const handleConvetClaimToRepair = () => {
     const rUrl = `${Claim_Convert_To_Repair_GET}?claim_id=${recordId}`;
     callGetApi(null, rUrl, (response) => {
-      if (response.statusCode === API_SUCCESS) {
+      if (response.status === API_SUCCESS) {
         const responseData = response.data;
         handleSnack("info", "New Order is created, redirecting in a minute.");
 
@@ -209,7 +209,7 @@ const ClaimDetailsModal = ({ show, hideModal, recordId, handleSnack }) => {
         };
         builderDetails.builderId = responseData.builderId;
         builderDetails.bId = responseData.id;
-        setInterval(() => {
+        setTimeout(() => {
           history.push({
             pathname: WITH_SPARE_PARTS,
             state: builderDetails,

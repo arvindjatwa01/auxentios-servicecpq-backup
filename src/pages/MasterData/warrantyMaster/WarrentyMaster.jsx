@@ -269,7 +269,7 @@ const WarrantyMaster = () => {
       flex: 1,
     },
     {
-      field: "serilaNumber",
+      field: "serialNumber",
       headerName: "Serial No.",
       flex: 1,
       // renderCell: (params) => <div>ZMX00507</div>,
