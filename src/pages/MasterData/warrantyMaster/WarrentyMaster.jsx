@@ -440,6 +440,13 @@ const WarrantyMaster = () => {
     }
   };
 
+  const handleSelectDropdownItem = (currentItem, id) => {
+    console.log("currentItem :: ", currentItem);
+    // let _searchWarranty = [...searchWarranty];
+    // let obj = _searchWarranty[id];
+    // obj.inputSearch = 
+  };
+
   return (
     <>
       <CustomizedSnackbar
@@ -528,9 +535,9 @@ const WarrantyMaster = () => {
                                     <li
                                       className="list-group-item"
                                       key={j}
-                                      // onClick={() =>
-                                      //   handleSelectDropdownItem(currentItem, i)
-                                      // }
+                                      onClick={() =>
+                                        handleSelectDropdownItem(currentItem, i)
+                                      }
                                     >
                                       {currentItem[obj.fieldName?.value]}
                                     </li>

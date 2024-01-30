@@ -6,6 +6,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import penIcon from "../../../assets/images/pen.png";
 import ItemDetailsModal from "./ItemDetailsModal";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
+import ServiceProgressIssueComponent from "./ServiceProgressIssueComponent";
 
 const colorStatus = {
   "in stock": "#dfffc9",
@@ -309,6 +310,9 @@ const ServiceProgessMaster = () => {
                       </Box>
                     </Grid>
                   </div>
+                </TabPanel>
+                <TabPanel value="issue" sx={{ marginTop: 0 }}>
+                  <ServiceProgressIssueComponent />
                 </TabPanel>
               </TabContext>
             </Grid>

@@ -56,7 +56,7 @@ const WarrantyClaimAddUpdate = ({ show, hideModal }) => {
                         Warranty ID
                       </p>
                       <p className="text-white font-size-14 mb-1 font-weight-500 text-uppercase">
-                        123546789
+                        STD-12
                       </p>
                     </div>
                   </div>
@@ -66,7 +66,7 @@ const WarrantyClaimAddUpdate = ({ show, hideModal }) => {
                         Serial Number
                       </p>
                       <p className="text-white font-size-14 mb-1 font-weight-500 text-uppercase">
-                        b-21-123456
+                        ZMX00507
                       </p>
                     </div>
                   </div>
@@ -76,7 +76,7 @@ const WarrantyClaimAddUpdate = ({ show, hideModal }) => {
                         Model Number
                       </p>
                       <p className="text-white font-size-14 mb-1 font-weight-500 text-uppercase">
-                        ce60f34-210l-004
+                        992K
                       </p>
                     </div>
                   </div>

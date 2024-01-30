@@ -19,6 +19,7 @@ import OverviewDetailsTabConatiner from "./OverviewDetailsTabConatiner";
 import OverviewClaimTabContainer from "./OverviewClaimTabContainer";
 import {
   Claim_Pagination_List_GET,
+  Search_By_Field_Claim_List_GET,
   Update_Warranty_Details_PUT,
   warranty_Details_By_Id_Get,
 } from "services/CONSTANTS";
@@ -28,6 +29,7 @@ import WarrantyClaimAddUpdate from "./WarrantyClaimAddUpdate";
 import ClaimDetails from "./ClaimDetails";
 import OverviewFilesTabContainer from "./OverviewFilesTabContainer";
 import UploadFilesModal from "./UploadFilesModal";
+import ClaimDetailsModal from "./ClaimDetailsModal";
 
 const WarrantyOverviewModal = ({
   show,
@@ -60,6 +62,8 @@ const WarrantyOverviewModal = ({
   });
 
   const [claimRecords, setClaimRecords] = useState([]);
+  const [activeClaimFilter, setActiveClaimFilter] = useState("");
+  const [claimRecordId, setClaimRecordId] = useState(null);
 
   useEffect(() => {
     if (recordId && recordId !== null) {
@@ -148,6 +152,18 @@ const WarrantyOverviewModal = ({
       });
     }
   }, [recordId]);
+
+  // get filter claim  records data
+  const handleGetFilterClaimRecords = (filterName) => {
+    let rUrl = `${Search_By_Field_Claim_List_GET}field_name=claimStatus&field_value=${filterName}`;
+    callGetApi(null, rUrl, (response) => {
+      if (response.status === API_SUCCESS) {
+        const responseData = response.data;
+        setClaimRecords(responseData);
+        setActiveClaimFilter(filterName);
+      }
+    });
+  };
 
   // tabs edit mode active
   const handleEditTabsContent = () => {
@@ -291,6 +307,9 @@ const WarrantyOverviewModal = ({
                     handleTabChange={handleTabChange}
                     handleShowClaimAddEditModal={handleShowClaimAddEditModal}
                     handleShowClaimDetails={handleShowClaimDetails}
+                    handleGetFilterClaimRecords={handleGetFilterClaimRecords}
+                    activeClaimFilter={activeClaimFilter}
+                    setClaimRecordId={setClaimRecordId}
                   />
                 )}
                 {activeTab === "files" && (
@@ -317,11 +336,20 @@ const WarrantyOverviewModal = ({
         />
       )}
       {showClaimDetailsModal && (
+        <ClaimDetailsModal
+          show={showClaimDetailsModal}
+          hideModal={handleShowClaimDetails}
+          recordId={claimRecordId}
+          handleSnack={handleSnack}
+        />
+      )}
+      {/* {showClaimDetailsModal && (
         <ClaimDetails
           show={showClaimDetailsModal}
           hideModal={handleShowClaimDetails}
+          recordId={claimRecordId}
         />
-      )}
+      )} */}
       {showUploadFilesModal && (
         <UploadFilesModal
           show={showUploadFilesModal}
