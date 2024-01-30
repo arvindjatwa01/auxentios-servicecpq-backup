@@ -12,7 +12,16 @@ const OverviewClaimTabContainer = ({
   handleTabChange,
   handleShowClaimAddEditModal,
   handleShowClaimDetails,
+  handleGetFilterClaimRecords,
+  activeClaimFilter,
+  setClaimRecordId,
 }) => {
+  const handleEditClaimDetails = (params) => {
+    const claimId = params.row["claimId"];
+    setClaimRecordId(claimId);
+    handleShowClaimDetails();
+  };
+
   const claimColumns = [
     {
       field: "claimNumber",
@@ -52,7 +61,10 @@ const OverviewClaimTabContainer = ({
         return [
           <GridActionsCellItem
             icon={
-              <div className=" cursor" onClick={handleShowClaimDetails}>
+              <div
+                className=" cursor"
+                onClick={() => handleEditClaimDetails(params)}
+              >
                 <Tooltip title="Edit">
                   <img className="m-1" src={penIcon} alt="Edit" />
                 </Tooltip>
@@ -71,34 +83,68 @@ const OverviewClaimTabContainer = ({
     <>
       <div className="card px-3">
         <div className="d-flex justify-content-around ">
-          <div className="card border px-2 py-2 cursor-pointer">
+          <div
+            className="card border px-2 py-2 cursor"
+            onClick={() => handleGetFilterClaimRecords("registered")}
+            style={{
+              backgroundColor:
+                activeClaimFilter === "registered" ? "#f3eafe" : "",
+            }}
+          >
             <div className="py-4 px-2">
               <span className="">Claim Requested</span>
-              <h3 className="mt-0">12</h3>
+              <h3 className="mt-0 text-center">13</h3>
             </div>
           </div>
-          <div className="card border px-2 py-2 cursor-pointer">
+          <div
+            className="card border px-2 py-2 cursor"
+            onClick={() => handleGetFilterClaimRecords("acknowledged")}
+            style={{
+              backgroundColor:
+                activeClaimFilter === "acknowledged" ? "#f3eafe" : "",
+            }}
+          >
             <div className="py-4 px-2">
               <span className="">Claim Accepted</span>
-              <h3 className="mt-0">6</h3>
+              <h3 className="mt-0 text-center">7</h3>
             </div>
           </div>
-          <div className="card border px-2 py-2 cursor-pointer">
+          <div
+            className="card border px-2 py-2 cursor"
+            onClick={() => handleGetFilterClaimRecords("accepted")}
+            style={{
+              backgroundColor:
+                activeClaimFilter === "accepted" ? "#f3eafe" : "",
+            }}
+          >
             <div className="py-4 px-2">
               <span className="">Claim Completed</span>
-              <h3 className="mt-0">4</h3>
+              <h3 className="mt-0 text-center">3</h3>
             </div>
           </div>
-          <div className="card border px-2 py-2 cursor-pointer">
+          <div
+            className="card border px-2 py-2 cursor"
+            onClick={() => handleGetFilterClaimRecords("rejected")}
+            style={{
+              backgroundColor:
+                activeClaimFilter === "rejected" ? "#f3eafe" : "",
+            }}
+          >
             <div className="py-4 px-2">
               <span className="">Claim Rejected</span>
-              <h3 className="mt-0">2</h3>
+              <h3 className="mt-0 text-center">3</h3>
             </div>
           </div>
-          <div className="card border px-2 py-2 cursor-pointer">
+          <div
+            className="card border px-2 py-2 cursor"
+            onClick={() => handleGetFilterClaimRecords("closed")}
+            style={{
+              backgroundColor: activeClaimFilter === "closed" ? "#f3eafe" : "",
+            }}
+          >
             <div className="py-4 px-2">
               <span className="">Claim Cancelled</span>
-              <h3 className="mt-0">1</h3>
+              <h3 className="mt-0 text-center">7</h3>
             </div>
           </div>
         </div>

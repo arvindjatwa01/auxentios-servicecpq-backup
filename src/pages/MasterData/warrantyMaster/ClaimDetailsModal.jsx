@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import {
   Box,
   FormControlLabel,
@@ -8,14 +9,13 @@ import {
   Switch,
   TextField,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
 import { Modal } from "react-bootstrap";
 import {
   claimRequestObj,
   defaultClaimDetails,
   defaultDistributorObj,
   payerOptions,
-} from "../warrantyMaster/WarrantyConstants";
+} from "./WarrantyConstants";
 import { isEmpty } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/textUtilities";
 import { getFormatDateTime } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/dateUtilities";
 import { callGetApi, callPostApi, callPutApi } from "services/ApiCaller";
@@ -36,10 +36,13 @@ import {
 } from "pages/Repair/CONSTANTS";
 import { LocalizationProvider, MobileDatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import ClaimOrdersDataList from "./ClaimOrdersDataList";
-import { claimTypeOptions, claimStatusOptions } from "./ClaimMasterConstants";
 import { WITH_SPARE_PARTS } from "navigation/CONSTANTS";
 import { useHistory } from "react-router-dom";
+import {
+  claimStatusOptions,
+  claimTypeOptions,
+} from "../claimMaster/ClaimMasterConstants";
+import ClaimOrdersDataList from "../claimMaster/ClaimOrdersDataList";
 
 const steps = ["Registered", "Update", "Assess", "Open Claim Order"];
 
@@ -58,7 +61,7 @@ const questionTwoOptions = [
   { label: "Acidic Water", value: "ACIDIC_WATER", questionId: 2 },
 ];
 
-const ClaimProcessModal = ({ show, hideModal, recordId, handleSnack }) => {
+const ClaimDetailsModal = ({ show, hideModal, recordId, handleSnack }) => {
   const history = useHistory();
   const [activeStep, setActiveStep] = useState(0);
 
@@ -365,17 +368,17 @@ const ClaimProcessModal = ({ show, hideModal, recordId, handleSnack }) => {
               </div>
             </div>
             {/* <div className="col-lg-3 col-md-3 col-sm-6 col-12">
-              <div className="form-group">
-                <p className="text-light-dark font-size-12 font-weight-500 mb-1">
-                  Upload Photo
-                </p>
-                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                  {isEmpty(claimRecord.uploadPhoto)
-                    ? "NA"
-                    : claimRecord.uploadPhoto}
-                </h6>
-              </div>
-            </div> */}
+                <div className="form-group">
+                  <p className="text-light-dark font-size-12 font-weight-500 mb-1">
+                    Upload Photo
+                  </p>
+                  <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                    {isEmpty(claimRecord.uploadPhoto)
+                      ? "NA"
+                      : claimRecord.uploadPhoto}
+                  </h6>
+                </div>
+              </div> */}
             <div className="col-lg-3 col-md-3 col-sm-6 col-12">
               <div className="form-group">
                 <p className="text-light-dark font-size-12 font-weight-500 mb-1">
@@ -400,17 +403,17 @@ const ClaimProcessModal = ({ show, hideModal, recordId, handleSnack }) => {
             </div>
 
             {/* <div className="col-lg-4 col-md-4 col-sm-6 col-12">
-              <div className="form-group">
-                <p className="text-light-dark font-size-12 font-weight-500 mb-1">
-                  Claim Questionnaire
-                </p>
-                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                  {isEmpty(claimRecord.claimQuestionnaire)
-                    ? "NA"
-                    : claimRecord.claimQuestionnaire}
-                </h6>
-              </div>
-            </div> */}
+                <div className="form-group">
+                  <p className="text-light-dark font-size-12 font-weight-500 mb-1">
+                    Claim Questionnaire
+                  </p>
+                  <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                    {isEmpty(claimRecord.claimQuestionnaire)
+                      ? "NA"
+                      : claimRecord.claimQuestionnaire}
+                  </h6>
+                </div>
+              </div> */}
             <div className="col-lg-3 col-md-3 col-sm-6 col-12">
               <div className="form-group">
                 <p className="text-light-dark font-size-12 font-weight-500 mb-1">
@@ -778,20 +781,20 @@ const ClaimProcessModal = ({ show, hideModal, recordId, handleSnack }) => {
               </div>
             </div>
             {/* <div className="col-lg-3 col-md-3 col-sm-6 col-12">
-              <div className="form-group">
-                <label className="text-light-dark font-size-14 font-weight-500">
-                  Upload Photo
-                </label>
-                <input
-                        type="number"
-                        className="form-control border-radius-10 text-primary"
-                        value={claimRecord.hoursOnFailedPart}
-                        name="hoursOnFailedPart"
-                        placeholder="Hours on Failed Part"
-                        onChange={handleInputChange}
-                      /> 
-              </div>
-            </div>*/}
+                <div className="form-group">
+                  <label className="text-light-dark font-size-14 font-weight-500">
+                    Upload Photo
+                  </label>
+                  <input
+                          type="number"
+                          className="form-control border-radius-10 text-primary"
+                          value={claimRecord.hoursOnFailedPart}
+                          name="hoursOnFailedPart"
+                          placeholder="Hours on Failed Part"
+                          onChange={handleInputChange}
+                        /> 
+                </div>
+              </div>*/}
             <div className="col-lg-3 col-md-3 col-sm-6 col-12">
               <div className="form-group">
                 <label className="text-light-dark font-size-14 font-weight-500">
@@ -823,21 +826,21 @@ const ClaimProcessModal = ({ show, hideModal, recordId, handleSnack }) => {
               </div>
             </div>
             {/* <div className="col-lg-4 col-md-4 col-sm-12 col-12">
-              <div className="form-group">
-                <label className="text-light-dark font-size-14 font-weight-500">
-                  Claim Questionnaire
-                </label>
-                <textarea
-                  name="claimQuestionnaire"
-                  cols="30"
-                  rows="3 "
-                  value={claimRecord.claimQuestionnaire}
-                  onChange={handleInputChange}
-                  placeholder="Claim Questionnaire"
-                  className="form-control border-radius-10 text-primary"
-                ></textarea>
-              </div>
-            </div> */}
+                <div className="form-group">
+                  <label className="text-light-dark font-size-14 font-weight-500">
+                    Claim Questionnaire
+                  </label>
+                  <textarea
+                    name="claimQuestionnaire"
+                    cols="30"
+                    rows="3 "
+                    value={claimRecord.claimQuestionnaire}
+                    onChange={handleInputChange}
+                    placeholder="Claim Questionnaire"
+                    className="form-control border-radius-10 text-primary"
+                  ></textarea>
+                </div>
+              </div> */}
             <div className="col-lg-3 col-md-3 col-sm-6 col-12">
               <div className="form-group">
                 <label className="text-light-dark font-size-14 font-weight-500">
@@ -1219,4 +1222,4 @@ const ClaimProcessModal = ({ show, hideModal, recordId, handleSnack }) => {
   );
 };
 
-export default ClaimProcessModal;
+export default ClaimDetailsModal;

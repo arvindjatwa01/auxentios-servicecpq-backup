@@ -219,18 +219,18 @@ export const warrantyUnitOptions = [
 ];
 
 export const claimStatusOptions = [
-  { label: "New", value: "NEW" },
-  { label: "In Review", value: "IN_REVIEW" },
-  { label: "Approved", value: "APPROVED" },
+  { label: "Registered", value: "REGISTERED" },
+  { label: "Acknowledged", value: "ACKNOWLEDGED" },
+  { label: "Accepted", value: "ACCEPTED" },
   { label: "Rejected", value: "REJECTED" },
   { label: "Closed", value: "CLOSED" },
 ];
 
 export const claimTypeOptions = [
-  { label: "Std", value: "STD" },
+  { label: "Standard", value: "STANDARD" },
   { label: "Extended", value: "EXTENDED" },
-  { label: "Goodwill", value: "GOODWILL" },
   { label: "Service Letter", value: "SERVICE_LETTER" },
+  { label: "Goodwill", value: "GOODWILL" },
 ];
 
 export const payerOptions = [
