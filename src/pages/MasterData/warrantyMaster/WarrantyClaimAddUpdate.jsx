@@ -36,23 +36,23 @@ const WarrantyClaimAddUpdate = ({
   };
 
   const handleCreateNewClaim = () => {
-    hideModal();
-    // const rUrl = Create_Claim_POST;
-    // const reqObj = {
-    //   ...claimRecord,
-    //   claimStatus: claimRecord.claimStatus?.value || "EMPTY",
-    //   claimType: claimRecord.claimType?.value || "EMPTY",
-    //   payer: claimRecord.payer?.value || "EMPTY",
-    //   warranty: {
-    //     warrantyId: warrantyId,
-    //   },
-    // };
-    // callPostApi(null, rUrl, reqObj, (response) => {
-    //   if (response.status === API_SUCCESS) {
-    //     handleSnack("info", "New Claim created successfully.");
-    //     hideModal();
-    //   }
-    // });
+    const rUrl = Create_Claim_POST;
+    const reqObj = {
+      ...claimRecord,
+      claimStatus: claimRecord.claimStatus?.value || "EMPTY",
+      claimType: claimRecord.claimType?.value || "EMPTY",
+      payer: claimRecord.payer?.value || "EMPTY",
+      warranty: {
+        warrantyId: warrantyId,
+      },
+    };
+    // delete reqObj.claimNumber
+    callPostApi(null, rUrl, reqObj, (response) => {
+      if (response.status === API_SUCCESS) {
+        handleSnack("info", "New Claim created successfully.");
+        hideModal();
+      }
+    });
   };
 
   return (
@@ -690,13 +690,13 @@ const WarrantyClaimAddUpdate = ({
                   className="btn text-white bg-primary mx-1"
                   onClick={hideModal}
                 >
-                  Back
+                  Cancel
                 </button>
                 <button
                   className="btn text-white bg-primary mx-1"
                   onClick={handleCreateNewClaim}
                 >
-                  Next
+                  Submit
                 </button>
               </div>
             </div>

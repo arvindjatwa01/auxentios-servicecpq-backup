@@ -52,21 +52,21 @@ const OverviewFilesTabContainer = ({
             className="textPrimary"
             color="inherit"
           />,
-          <GridActionsCellItem
-            icon={
-              <div
-                className=" cursor"
-                // onClick={() => handleViewWarrantyOverview(params)}
-              >
-                <Tooltip title="delete">
-                  <DeleteIcon />
-                </Tooltip>
-              </div>
-            }
-            label="Edit"
-            className="textPrimary"
-            color="inherit"
-          />,
+          // <GridActionsCellItem
+          //   icon={
+          //     <div
+          //       className=" cursor"
+          //       // onClick={() => handleViewWarrantyOverview(params)}
+          //     >
+          //       <Tooltip title="delete">
+          //         <DeleteIcon />
+          //       </Tooltip>
+          //     </div>
+          //   }
+          //   label="Edit"
+          //   className="textPrimary"
+          //   color="inherit"
+          // />,
         ];
       },
     },

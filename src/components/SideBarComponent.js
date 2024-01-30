@@ -1340,7 +1340,7 @@ export function SideBarComponent(props) {
                   <span className="nav-text">
                     <span className="ml-2 " style={{ display: "inline-grid" }}>
                       <span className="font-size-13 font-weight-400 text-dark">
-                      Service Progress
+                      Component 
                       </span>
                     </span>
                   </span>

@@ -7,6 +7,7 @@ import penIcon from "../../../assets/images/pen.png";
 import ItemDetailsModal from "./ItemDetailsModal";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import ServiceProgressIssueComponent from "./ServiceProgressIssueComponent";
+import ServiceProgressOverviewModal from "./ServiceProgressOverviewModal";
 
 const colorStatus = {
   "in stock": "#dfffc9",
@@ -223,11 +224,11 @@ const ServiceProgessMaster = () => {
                       className="heading-tabs"
                     />
                     <Tab
-                      label="Overview"
-                      value={"overview"}
+                      label="Track Order"
+                      value={"trackOrder"}
                       className="heading-tabs"
                     />
-                    <Tab
+                    {/* <Tab
                       label="Item Details"
                       value={"itemDetails"}
                       className="heading-tabs"
@@ -241,7 +242,7 @@ const ServiceProgessMaster = () => {
                       label="Return"
                       value={"return"}
                       className="heading-tabs"
-                    />
+                    /> */}
                   </TabList>
                 </Box>
                 <TabPanel value="deshboard" sx={{ marginTop: 0 }}>
@@ -320,11 +321,17 @@ const ServiceProgessMaster = () => {
         </div>
       </div>
       {showItemDetailsModal && (
-        <ItemDetailsModal
+        <ServiceProgressOverviewModal
           show={showItemDetailsModal}
           hideModal={() => setShowItemDetailsModal(false)}
         />
       )}
+      {/* {showItemDetailsModal && (
+        <ItemDetailsModal
+          show={showItemDetailsModal}
+          hideModal={() => setShowItemDetailsModal(false)}
+        />
+      )} */}
     </>
   );
 };
