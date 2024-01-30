@@ -23,7 +23,8 @@ export const SPARE_PARTS_ERP_DETAILS = "SPARE_PARTS_ERP_DETAILS";
 export const SPARE_PARTS_WARRENTY_DETAILS = "SPARE_PARTS_WARRANTY_DETAILS";
 
 // Labbour and Service Master
-export const LABOUR_AND_SERVICE_PRICE_DETAILS = "LABOUR_AND_SERVICE_PRICE_DETAILS";
+export const LABOUR_AND_SERVICE_PRICE_DETAILS =
+  "LABOUR_AND_SERVICE_PRICE_DETAILS";
 export const LABOUR_AND_SERVICE_ERP_DETAILS = "LABOUR_AND_SERVICE_ERP_DETAILS";
 
 // Error occurred while fetching spare parts!
@@ -33,6 +34,8 @@ export const INPUT_SEARCH_NO_RESULT_FOUND_ERROR_MESSAGE =
   "No information is found for your search, change the search criteria";
 export const EMPTY_SEARCH_FIELDS_ERROR_MESSAGE =
   "Please fill the search criteria!";
+
+export const FILL_DATA_PROPERLY_ERROR_MESSAGE = "Please fill the data Properly";
 
 export const Switch_label_Object = {
   inputProps: { "aria-label": "Switch demo" },

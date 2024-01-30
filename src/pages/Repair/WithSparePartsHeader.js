@@ -152,6 +152,7 @@ function WithSparePartsHeader(props) {
     reference: "",
     validity: null,
     version: "",
+    warrantyClaimStatus: "",
   });
   const [estimationData, setEstimationData] = useState({
     preparedBy: "user1",
@@ -176,6 +177,14 @@ function WithSparePartsHeader(props) {
     { value: 30, label: "1 month" },
     { value: 45, label: "45 days" },
     { value: 60, label: "2 months" },
+  ];
+
+  const warrantyClaimStatusOption = [
+    { label: "Registered", value: "REGISTERED" },
+    { label: "Acknowledged", value: "ACKNOWLEDGED" },
+    { label: "Accepted", value: "ACCEPTED" },
+    { label: "Rejected", value: "REJECTED" },
+    { label: "Closed", value: "CLOSED" },
   ];
 
   const salesOfficeOptions = [
@@ -957,6 +966,12 @@ function WithSparePartsHeader(props) {
                       onClick={() => setOpenQuotePopup(true)}
                     >
                       Quote
+                    </MenuItem>
+                    <Divider />
+                    <MenuItem
+                      className="custommenu ml-2 mr-4"
+                    >
+                      ERP Order
                     </MenuItem>
                   </Menu>
                 </React.Fragment>
@@ -1825,6 +1840,25 @@ function WithSparePartsHeader(props) {
                                   />
                                 </div>
                               </div>
+                              <div className="col-md-6 col-sm-6">
+                                <div className="form-group">
+                                  <label className="text-light-dark font-size-12 font-weight-500">
+                                    WARRANTY CLAIM STATUS
+                                  </label>
+                                  <Select
+                                    // defaultValue={selectedOption}
+                                    onChange={(e) =>
+                                      setGeneralData({
+                                        ...generalData,
+                                        warrantyClaimStatus: e,
+                                      })
+                                    }
+                                    options={warrantyClaimStatusOption}
+                                    value={generalData.warrantyClaimStatus}
+                                    styles={FONT_STYLE_SELECT}
+                                  />
+                                </div>
+                              </div>
                             </div>
                             <div
                               className="row"
@@ -1889,6 +1923,11 @@ function WithSparePartsHeader(props) {
                               value={parseFloat(selectedVersion.value).toFixed(
                                 1
                               )}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="WARRANTY CLAIM STATUS"
+                              value={generalData.warrantyClaimStatus?.label}
                               className="col-md-4 col-sm-4"
                             />
                           </div>

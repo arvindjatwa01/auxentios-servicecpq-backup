@@ -348,7 +348,7 @@ const ClaimMaster = () => {
         }
       },
       (error) => {
-        console.log(error);
+        console.log("error", error);
       }
     );
   };
