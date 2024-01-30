@@ -14,8 +14,16 @@ import { FormControlLabel } from "@material-ui/core";
 import { Switch, TextField } from "@mui/material";
 import { LocalizationProvider, MobileDatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { callPostApi } from "services/ApiCaller";
+import { API_SUCCESS } from "services/ResponseCode";
+import { Create_Claim_POST } from "services/CONSTANTS";
 
-const WarrantyClaimAddUpdate = ({ show, hideModal }) => {
+const WarrantyClaimAddUpdate = ({
+  show,
+  hideModal,
+  warrantyId,
+  handleSnack,
+}) => {
   const [claimRecord, setClaimRecord] = useState({ ...claimRequestObj });
 
   const handleInputChange = (e) => {
@@ -25,6 +33,26 @@ const WarrantyClaimAddUpdate = ({ show, hideModal }) => {
 
   const handleSelectChange = (e, keyName) => {
     setClaimRecord({ ...claimRecord, [keyName]: e });
+  };
+
+  const handleCreateNewClaim = () => {
+    hideModal();
+    // const rUrl = Create_Claim_POST;
+    // const reqObj = {
+    //   ...claimRecord,
+    //   claimStatus: claimRecord.claimStatus?.value || "EMPTY",
+    //   claimType: claimRecord.claimType?.value || "EMPTY",
+    //   payer: claimRecord.payer?.value || "EMPTY",
+    //   warranty: {
+    //     warrantyId: warrantyId,
+    //   },
+    // };
+    // callPostApi(null, rUrl, reqObj, (response) => {
+    //   if (response.status === API_SUCCESS) {
+    //     handleSnack("info", "New Claim created successfully.");
+    //     hideModal();
+    //   }
+    // });
   };
 
   return (
@@ -319,21 +347,21 @@ const WarrantyClaimAddUpdate = ({ show, hideModal }) => {
                       />
                     </div>
                   </div>
-                  <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+                  {/* <div className="col-lg-3 col-md-3 col-sm-6 col-12">
                     <div className="form-group">
                       <label className="text-light-dark font-size-14 font-weight-500">
                         Upload Photo
                       </label>
-                      {/* <input
+                      <input
                         type="number"
                         className="form-control border-radius-10 text-primary"
                         value={claimRecord.hoursOnFailedPart}
                         name="hoursOnFailedPart"
                         placeholder="Hours on Failed Part"
                         onChange={handleInputChange}
-                      /> */}
+                      />
                     </div>
-                  </div>
+                  </div> */}
                   <div className="col-lg-3 col-md-3 col-sm-6 col-12">
                     <div className="form-group">
                       <label className="text-light-dark font-size-14 font-weight-500">
@@ -364,39 +392,7 @@ const WarrantyClaimAddUpdate = ({ show, hideModal }) => {
                       />
                     </div>
                   </div>
-                  <div className="col-lg-4 col-md-4 col-sm-12 col-12">
-                    <div className="form-group">
-                      <label className="text-light-dark font-size-14 font-weight-500">
-                        Claim Story
-                      </label>
-                      <textarea
-                        name="claimStory"
-                        cols="30"
-                        rows="3"
-                        value={claimRecord.claimStory}
-                        onChange={handleInputChange}
-                        placeholder="Claim Story"
-                        className="form-control border-radius-10 text-primary"
-                      ></textarea>
-                    </div>
-                  </div>
-                  <div className="col-lg-4 col-md-4 col-sm-12 col-12">
-                    <div className="form-group">
-                      <label className="text-light-dark font-size-14 font-weight-500">
-                        Claim Approval / Rejection Notes
-                      </label>
-                      <textarea
-                        name="claimNotes"
-                        cols="30"
-                        rows="3 "
-                        value={claimRecord.claimNotes}
-                        onChange={handleInputChange}
-                        placeholder="Claim Approval / Rejection Notes"
-                        className="form-control border-radius-10 text-primary"
-                      ></textarea>
-                    </div>
-                  </div>
-                  <div className="col-lg-4 col-md-4 col-sm-12 col-12">
+                  {/* <div className="col-lg-4 col-md-4 col-sm-12 col-12">
                     <div className="form-group">
                       <label className="text-light-dark font-size-14 font-weight-500">
                         Claim Questionnaire
@@ -411,7 +407,7 @@ const WarrantyClaimAddUpdate = ({ show, hideModal }) => {
                         className="form-control border-radius-10 text-primary"
                       ></textarea>
                     </div>
-                  </div>
+                  </div> */}
                   <div className="col-lg-3 col-md-3 col-sm-6 col-12">
                     <div className="form-group">
                       <label className="text-light-dark font-size-14 font-weight-500">
@@ -654,207 +650,41 @@ const WarrantyClaimAddUpdate = ({ show, hideModal }) => {
                     </div>
                   </div>
                 </div>
-              </div>
-              {/* <h5 style={{ fontWeight: "bold" }}>End Customer</h5>
-              <div className="card border px-2">
-                <div className="row align-items-end">
-                  <div className="col-lg-4 col-md-4 col-sm-12 col-12">
-                    <div className="d-block">
-                      <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                        End Customer First Name
-                      </p>
-                      <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                        Zach
-                      </p>
+                <div className="row input-fields">
+                  <div className="col-lg-6 col-md-6 col-sm-12 col-12">
+                    <div className="form-group">
+                      <label className="text-light-dark font-size-14 font-weight-500">
+                        Claim Story
+                      </label>
+                      <textarea
+                        name="claimStory"
+                        cols="30"
+                        rows="3"
+                        value={claimRecord.claimStory}
+                        onChange={handleInputChange}
+                        placeholder="Claim Story"
+                        className="form-control border-radius-10 text-primary"
+                      ></textarea>
                     </div>
                   </div>
-                  <div className="col-lg-8 col-md-8 col-sm-12 col-12">
-                    <div className="d-block">
-                      <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                        End Customer Last Name
-                      </p>
-                      <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                        Hallum
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div className="row align-items-end">
-                  <div className="col-lg-4 col-md-4 col-sm-12 col-12">
-                    <div className="d-block">
-                      <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                        Installation Addresss
-                      </p>
-                      <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                        1511 S Union S Ct.
-                      </p>
-                    </div>
-                  </div>
-                  <div className="col-lg-8 col-md-8 col-sm-12 col-12">
-                    <div className="d-block">
-                      <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                        Installation Addresss 2
-                      </p>
-                      <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                        Unit 4
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div className="row align-items-end">
-                  <div className="col-lg-4 col-md-4 col-sm-12 col-12">
-                    <div className="d-block">
-                      <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                        City
-                      </p>
-                      <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                        Kenniwich
-                      </p>
-                    </div>
-                  </div>
-                  <div className="col-lg-4 col-md-4 col-sm-12 col-12">
-                    <div className="d-block">
-                      <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                        State/Province
-                      </p>
-                      <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                        WA
-                      </p>
-                    </div>
-                  </div>
-                  <div className="col-lg-4 col-md-4 col-sm-12 col-12">
-                    <div className="d-block">
-                      <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                        Zip Code
-                      </p>
-                      <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                        99320
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div className="row align-items-end">
-                  <div className="col-lg-4 col-md-4 col-sm-12 col-12">
-                    <div className="d-block">
-                      <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                        Contact Email
-                      </p>
-                      <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                        Zach@nuke.digital
-                      </p>
-                    </div>
-                  </div>
-                  <div className="col-lg-4 col-md-4 col-sm-12 col-12">
-                    <div className="d-block">
-                      <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                        Contact Phone
-                      </p>
-                      <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                        509-727-3333
-                      </p>
+                  <div className="col-lg-6 col-md-6 col-sm-12 col-12">
+                    <div className="form-group">
+                      <label className="text-light-dark font-size-14 font-weight-500">
+                        Claim Approval / Rejection Notes
+                      </label>
+                      <textarea
+                        name="claimNotes"
+                        cols="30"
+                        rows="3 "
+                        value={claimRecord.claimNotes}
+                        onChange={handleInputChange}
+                        placeholder="Claim Approval / Rejection Notes"
+                        className="form-control border-radius-10 text-primary"
+                      ></textarea>
                     </div>
                   </div>
                 </div>
               </div>
-              <h5 style={{ fontWeight: "bold" }}>Installer</h5>
-              <div className="card border px-2 mb-0">
-                <div className="row align-items-end">
-                  <div className="col-lg-4 col-md-4 col-sm-12 col-12">
-                    <div className="d-block">
-                      <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                        Install Company Name
-                      </p>
-                      <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                        Air-Tech Services
-                      </p>
-                    </div>
-                  </div>
-                  <div className="col-lg-4 col-md-4 col-sm-12 col-12">
-                    <div className="d-block">
-                      <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                        Installer Address
-                      </p>
-                      <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                        250 A Street
-                      </p>
-                    </div>
-                  </div>
-                  <div className="col-lg-4 col-md-4 col-sm-12 col-12">
-                    <div className="d-block">
-                      <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                        Installer Address 2
-                      </p>
-                      <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                        Ste 4
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div className="row align-items-end">
-                  <div className="col-lg-4 col-md-4 col-sm-12 col-12">
-                    <div className="d-block">
-                      <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                        City
-                      </p>
-                      <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                        Pasco
-                      </p>
-                    </div>
-                  </div>
-                  <div className="col-lg-4 col-md-4 col-sm-12 col-12">
-                    <div className="d-block">
-                      <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                        State
-                      </p>
-                      <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                        WA
-                      </p>
-                    </div>
-                  </div>
-                  <div className="col-lg-4 col-md-4 col-sm-12 col-12">
-                    <div className="d-block">
-                      <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                        Zip
-                      </p>
-                      <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                        99320
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div className="row align-items-end">
-                  <div className="col-lg-4 col-md-4 col-sm-12 col-12">
-                    <div className="d-block">
-                      <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                        Contact Email
-                      </p>
-                      <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                        Zach@nuke.digital
-                      </p>
-                    </div>
-                  </div>
-                  <div className="col-lg-4 col-md-4 col-sm-12 col-12">
-                    <div className="d-block">
-                      <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                        Contact Phone
-                      </p>
-                      <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                        509-727-3333
-                      </p>
-                    </div>
-                  </div>
-                  <div className="col-lg-4 col-md-4 col-sm-12 col-12">
-                    <div className="d-block">
-                      <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                        Fax
-                      </p>
-                      <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                        509-727-3333
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div> */}
               <div className="row mt-2 px-2 d-flex justify-content-arround">
                 <button
                   className="btn text-white bg-primary mx-1"
@@ -864,7 +694,7 @@ const WarrantyClaimAddUpdate = ({ show, hideModal }) => {
                 </button>
                 <button
                   className="btn text-white bg-primary mx-1"
-                  //   onClick={hideModal}
+                  onClick={handleCreateNewClaim}
                 >
                   Next
                 </button>

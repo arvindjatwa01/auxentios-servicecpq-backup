@@ -564,6 +564,7 @@ export const Claim_Details_By_Id_Get = Claim_Master_Url + "/";
 export const Update_CLaim_Details_PUT= Claim_Master_Url + "/";
 export const Claim_Question_Mark_Claimable_GET = Claim_Master_Url + "/mark-claimable";
 export const Claim_Convert_To_Repair_GET = Claim_Master_Url + "/convert-to-repair";
+export const Create_Claim_POST = Claim_Master_Url;
 
 // Claim Questuin
 const Claim_Questions_Master_Url = WARRANTY_CLAIAM_URI + "claim/question";
