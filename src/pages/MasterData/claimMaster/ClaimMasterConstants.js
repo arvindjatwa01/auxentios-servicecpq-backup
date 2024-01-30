@@ -7,11 +7,27 @@ export const claimsStatus = [
   { label: "Closed", value: "closed" },
 ];
 
+export const claimStatusOptions = [
+  //   { label: "All", value: "all" },
+  { label: "Registered", value: "REGISTERED" },
+  { label: "Acknowledged", value: "ACKNOWLEDGED" },
+  { label: "Accepted", value: "ACCEPTED" },
+  { label: "Rejected", value: "REJECTED" },
+  { label: "Closed", value: "CLOSED" },
+];
+
 export const claimTypes = [
   { label: "Standard", value: "standard" },
   { label: "Extended", value: "extended" },
   { label: "Service Letter", value: "serviceLetter" },
   { label: "Goodwill", value: "goodwill" },
+];
+
+export const claimTypeOptions = [
+  { label: "Standard", value: "STANDARD" },
+  { label: "Extended", value: "EXTENDED" },
+  { label: "Service Letter", value: "SERVICE_LETTER" },
+  { label: "Goodwill", value: "GOODWILL" },
 ];
 
 export const warrantyStatusOptions = [

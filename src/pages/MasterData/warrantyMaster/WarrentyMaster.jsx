@@ -143,6 +143,20 @@ const WarrantyMaster = () => {
       flex: 1,
     },
     {
+      field: "serilaNumber",
+      headerName: "Serial No.",
+      //   width: 90,
+      flex: 1,
+      renderCell: (params) => <div>ZMX00507</div>,
+    },
+    {
+      field: "componentCode",
+      headerName: "Component Code",
+      //   width: 90,
+      flex: 1,
+      renderCell: (params) => <div></div>,
+    },
+    {
       field: "warrantyBasics",
       headerName: "Basis",
       //   width: 90,
@@ -623,6 +637,7 @@ const WarrantyMaster = () => {
           show={showDetailsModal}
           hideModal={() => setShowDetailsModal(false)}
           recordId={recordId}
+          handleSnack={handleSnack}
         />
       )}
 
@@ -636,6 +651,7 @@ const WarrantyMaster = () => {
         handleShowClaimDetails={handleShowClaimDetails}
         showUploadFilesModal={showUploadFilesModal}
         handleFilesUploadModal={handleFilesUploadModal}
+        handleSnack={handleSnack}
       />
     </>
   );
