@@ -469,7 +469,7 @@ const ServiceProgessMaster = () => {
                 >
                   <TabList className="" onChange={changeTab}>
                     <Tab
-                      label="Deshboard"
+                      label="Dashboard"
                       value={"deshboard"}
                       className="heading-tabs"
                     />
