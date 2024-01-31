@@ -10,7 +10,7 @@ import {
 } from "./equipmentConstant";
 import EquipmentSearchComponent from "./EquipmentSearchComponent";
 
-const EquipmentDataTable = ({ columns, data, title }) => {
+const EquipmentDataTable = ({ columns, data, title, buttonText="Upload" }) => {
   return (
     <div className="bg-white p-3 border-radius-10 mt-3 overflow-hidden">
       <div className="row align-items-center">
@@ -32,7 +32,7 @@ const EquipmentDataTable = ({ columns, data, title }) => {
             <span className="mr-1">
               <AddIcon />
             </span>
-            Upload
+            {buttonText}
           </a>
         </div>
       </div>

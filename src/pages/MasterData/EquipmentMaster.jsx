@@ -6,6 +6,7 @@ import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import Switch from "@mui/material/Switch";
 
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import Select from "react-select";
 import $ from "jquery";
 
@@ -33,6 +34,8 @@ import EquipmentMasterSearchList from "./EquipmentMaster/EquipmentMasterSearchLi
 import LoadingProgress from "pages/Repair/components/Loader";
 import { isEmpty } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/textUtilities";
 import EquipmentReportDetail from "./EquipmentMaster/EquipmentReportDetail";
+import WarrantyOverviewModal from "./warrantyMaster/WarrantyOverviewModal";
+import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 
 const EquipmentMaster = () => {
   const [showModal, setShowModal] = useState(false);
@@ -108,7 +111,12 @@ const EquipmentMaster = () => {
     },
   ]);
   const [pageNo, setPageNo] = useState(1);
-
+  const [warrantyRecordId, setWarrantyRecordId] = useState(null);
+  const [showWarrantyOverviewModal, setShowWarrantyOverviewModal] =
+    useState(false);
+  const [showClaimAddEditModal, setShowClaimAddEditModal] = useState(false);
+  const [showClaimDetailsModal, setShowClaimDetailsModal] = useState(false);
+  const [showUploadFilesModal, setShowUploadFilesModal] = useState(false);
   const lifeCycleStatusData = [
     {
       month: "Jan",
@@ -148,6 +156,23 @@ const EquipmentMaster = () => {
     },
   ];
 
+  // Snack Bar State
+  const [severity, setSeverity] = useState("");
+  const [openSnack, setOpenSnack] = useState(false);
+  const [snackMessage, setSnackMessage] = useState("");
+  const handleSnackBarClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenSnack(false);
+  };
+
+  const handleSnack = (snackSeverity, snackMessage) => {
+    setSnackMessage(snackMessage);
+    setSeverity(snackSeverity);
+    setOpenSnack(true);
+  };
+
   useEffect(() => {
     if (!showModal) {
       setModelHeaderTitle("");
@@ -161,6 +186,27 @@ const EquipmentMaster = () => {
   };
 
   const [loading, setLoading] = useState(false);
+
+  const handleViewWarrantyOverview = (row) => {
+    const warrantyId = row["warrantyId"];
+    setWarrantyRecordId(warrantyId);
+    setShowWarrantyOverviewModal(true);
+  };
+
+  const handleShowClaimAddEditModal = () => {
+    setShowWarrantyOverviewModal(!showWarrantyOverviewModal);
+    setShowClaimAddEditModal(!showClaimAddEditModal);
+  };
+
+  const handleShowClaimDetails = () => {
+    setShowWarrantyOverviewModal(!showWarrantyOverviewModal);
+    setShowClaimDetailsModal(!showClaimDetailsModal);
+  };
+
+  const handleFilesUploadModal = () => {
+    setShowWarrantyOverviewModal(!showWarrantyOverviewModal);
+    setShowUploadFilesModal(!showUploadFilesModal);
+  };
 
   // Contrect detauls columns
   const contractDetailsColumns = [
@@ -361,7 +407,145 @@ const EquipmentMaster = () => {
               )
             }
           />
-          <DeleteOutlineOutlinedIcon />
+          <VisibilityIcon
+            className="cursor"
+            onClick={(row) => handleViewWarrantyOverview(row)}
+          />
+        </div>
+      ),
+    },
+  ];
+
+  // ERP componet details columns
+  const erpComponentColumns = [
+    {
+      id: "warrentyId",
+      name: <div>ID</div>,
+      selector: (row) => row.id,
+      wrap: true,
+      sortable: false,
+    },
+    {
+      id: "warrentyTitle",
+      name: <div>Title</div>,
+      selector: (row) => row.title || "NA",
+      wrap: true,
+      sortable: false,
+    },
+    {
+      id: "warrentyCategory",
+      name: <div>Category</div>,
+      selector: (row) => row?.category || "NA",
+      wrap: true,
+      sortable: false,
+      // minWidth: "150px",
+      // maxWidth: "150px",
+    },
+    // {
+    //   id: "warrentyComponentNumber",
+    //   name: <div>Component No.</div>,
+    //   selector: (row) => row?.componentNumber || "NA",
+    //   wrap: true,
+    //   sortable: false,
+    //   // minWidth: "150px",
+    //   // maxWidth: "150px",
+    // },
+    // {
+    //   id: "warrentySerialNumber",
+    //   name: <div>Serial No.</div>,
+    //   selector: (row) => row?.serialNumber || "NA",
+    //   wrap: true,
+    //   sortable: false,
+    //   // minWidth: "150px",
+    //   // maxWidth: "150px",
+    // },
+    // {
+    //   id: "warrentyinstallOn",
+    //   name: <div>Installed On</div>,
+    //   selector: (row) => row?.installedOn || "NA",
+    //   wrap: true,
+    //   sortable: false,
+    //   // minWidth: "150px",
+    //   // maxWidth: "150px",
+    // },
+    // {
+    //   id: "warrentyStatus",
+    //   name: <div>Warranty Status</div>,
+    //   selector: (row) => row?.warrantyStatus || "NA",
+    //   wrap: true,
+    //   sortable: false,
+    //   // minWidth: "150px",
+    //   // maxWidth: "150px",
+    // },
+    {
+      id: "warrentyBasis",
+      name: <div>Basis</div>,
+      selector: (row) => row?.basis || "NA",
+      wrap: true,
+      sortable: false,
+    },
+    {
+      id: "warrentyUnit",
+      name: <div>Unit</div>,
+      selector: (row) => row?.unitOfMeasure || "NA",
+      wrap: true,
+      sortable: false,
+    },
+    {
+      id: "warrentyStartDate",
+      name: <div>Start Date</div>,
+      selector: (row) => row?.startDate || "NA",
+      wrap: true,
+      sortable: false,
+    },
+    {
+      id: "warrentyEndData",
+      name: <div>End Date</div>,
+      selector: (row) => row?.endDate || "NA",
+      wrap: true,
+      sortable: false,
+    },
+    // {
+    //   i: "warrentyStartUsage",
+    //   name: <div>Start Usage</div>,
+    //   selector: (row) => row?.startUsage || "NA",
+    //   wrap: true,
+    //   sortable: false,
+    // },
+    // {
+    //   id: "warrentyEndUsage",
+    //   name: <div>End Usage</div>,
+    //   selector: (row) => row?.endUsage,
+    //   wrap: true,
+    //   sortable: false,
+    // },
+    {
+      id: "warrentyActions",
+      name: <div>Actions</div>,
+      wrap: true,
+      sortable: false,
+      // width: "70px",
+      // minWidth: "100px",
+      // maxWidth: "100px",
+      cell: (row) => (
+        <div
+          className="d-flex justify-content-center align-items-center row-svg-div"
+          style={{ minWidth: "100px !important" }}
+        >
+          <EditOutlinedIcon
+            className="mr-1"
+            onClick={() =>
+              handleShowReportDetails(
+                "Warranty Details",
+                EQUIPMENT_WARRENTY_DETAILS,
+                row
+              )
+            }
+          />
+          <VisibilityIcon
+            className="cursor"
+            onClick={(row) => handleViewWarrantyOverview(row)}
+          />
         </div>
       ),
     },
@@ -839,7 +1023,7 @@ const EquipmentMaster = () => {
                   {/* {isEmpty(selectEquipmentDetails.operator)
                     ? "NA"
                     : selectEquipmentDetails.operator} */}
-                    80648 lb
+                  80648 lb
                 </p>
               </div>
             </div>
@@ -1081,6 +1265,7 @@ const EquipmentMaster = () => {
           columns={warrentyDetailsColumns}
           data={warrantyDetailsList}
           title="Warranty"
+          buttonText={"Add"}
         />
       </>
     );
@@ -1152,9 +1337,9 @@ const EquipmentMaster = () => {
           </div>
         </div>
         <EquipmentDataTable
-          columns={warrentyDetailsColumns}
+          columns={erpComponentColumns}
           data={warrantyDetailsList}
-          title="Warranty"
+          title="Component"
         />
         {/* <EquipmentDataTable
           columns={erpWarrentyItemColumns}
@@ -1206,6 +1391,12 @@ const EquipmentMaster = () => {
 
   return (
     <>
+      <CustomizedSnackbar
+        handleClose={handleSnackBarClose}
+        open={openSnack}
+        severity={severity}
+        message={snackMessage}
+      />
       <div className="content-body" style={{ minHeight: "884px" }}>
         <div className="container-fluid">
           <h5 className="font-weight-600 mb-0">Equipment Master</h5>
@@ -1292,6 +1483,22 @@ const EquipmentMaster = () => {
           contetntReportObj={modelContentReportObj}
         />
       )}
+
+      <WarrantyOverviewModal
+        show={showWarrantyOverviewModal}
+        hideModal={() =>
+          setShowWarrantyOverviewModal(!showWarrantyOverviewModal)
+        }
+        recordId={12}
+        // recordId={warrantyRecordId}
+        showClaimAddEditModal={showClaimAddEditModal}
+        handleShowClaimAddEditModal={handleShowClaimAddEditModal}
+        showClaimDetailsModal={showClaimDetailsModal}
+        handleShowClaimDetails={handleShowClaimDetails}
+        showUploadFilesModal={showUploadFilesModal}
+        handleFilesUploadModal={handleFilesUploadModal}
+        handleSnack={handleSnack}
+      />
     </>
   );
 };
