@@ -77,7 +77,11 @@ const tableTwoData = [
   },
 ];
 
-const ServiceProgressOverviewModal = ({ show, hideModal }) => {
+const ServiceProgressOverviewModal = ({
+  show,
+  hideModal,
+  handleRetrunProcessModal,
+}) => {
   const [activeTab, setActiveTab] = useState("itemDetails");
   const [itemDetails, setItemDetails] = useState({ ...itemDetailsObj });
   const [erpDetails, setErpDetails] = useState({ ...erpDetailsObj });
@@ -546,7 +550,12 @@ const ServiceProgressOverviewModal = ({ show, hideModal }) => {
                   <td>{row.dateOfIssue}</td>
                   <td>{row.status}</td>
                   <td>
-                    <button className="btn btn-primary">Return Process</button>
+                    <button
+                      className="btn btn-primary"
+                      onClick={handleRetrunProcessModal}
+                    >
+                      Return Process
+                    </button>
                   </td>
                 </tr>
               ))}
