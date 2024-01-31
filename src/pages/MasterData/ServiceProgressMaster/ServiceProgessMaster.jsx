@@ -1,5 +1,15 @@
 import React, { useState } from "react";
-import { Box, Grid, Tab, Tooltip } from "@mui/material";
+import {
+  Box,
+  Grid,
+  Tab,
+  Tooltip,
+  Radio,
+  RadioGroup,
+  Divider,
+  FormControl,
+  FormControlLabel,
+} from "@mui/material";
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import { GRID_STYLE } from "pages/Repair/CONSTANTS";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -8,6 +18,33 @@ import ItemDetailsModal from "./ItemDetailsModal";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import ServiceProgressIssueComponent from "./ServiceProgressIssueComponent";
 import ServiceProgressOverviewModal from "./ServiceProgressOverviewModal";
+import ReturnProcessModal from "./ReturnProcessModal";
+
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import Typography from "@mui/material/Typography";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import CachedIcon from "@mui/icons-material/Cached";
+import { DATA_GRID_STYLE } from "../claimMaster/ClaimMasterConstants";
+
+const DataGridContainer = (props) => (
+  <Box
+    margin={"auto"}
+    sx={{
+      backgroundColor: "#ffffff",
+      height: 500,
+      marginBlock: 2,
+      borderRadius: 5,
+      width: "95%",
+      display: "flex",
+      justifyContent: "center",
+      padding: 2,
+    }}
+  >
+    {props.children}
+  </Box>
+);
 
 const colorStatus = {
   "in stock": "#dfffc9",
@@ -24,50 +61,217 @@ const statusPointColor = {
 };
 const data = [
   {
-    componentId: 1,
-    componentDescription: "abcd",
-    stock: 12,
-    warehouseNumber: 123,
-    serialNumber: 123,
-    status: "in stock",
-    customerName: "",
-    customerId: "",
-  },
-  {
-    componentId: 2,
-    componentDescription: "abcd",
-    stock: 12,
-    warehouseNumber: 123,
-    serialNumber: 129,
+    componentId: "2471437",
+    componentDescription: "MOTOR & MTG GP-TRAVEL",
+    stock: "Yes",
+    warehouseNumber: "AA:2471437",
+    serialNumber: "ZMX00507",
     status: "at customer",
-    customerName: "John Smith",
-    customerId: 12,
+    customerName: "Koolan Iron Ore Pty Ltd",
+    customerId: "101211",
   },
   {
-    componentId: 3,
-    componentDescription: "abcd",
-    stock: 12,
-    warehouseNumber: 123,
-    serialNumber: 123,
+    componentId: "N98001005",
+    componentDescription: "TEMPERATURE SENSOR",
+    stock: "Yes",
+    warehouseNumber: "MU:N98001005",
+    serialNumber: "ZCT00365",
+    status: "in stock",
+    customerName: "NA",
+    customerId: "NA",
+  },
+  {
+    componentId: "10R4469",
+    componentDescription: "FULL CORE DEPOSIT",
+    stock: "No",
+    warehouseNumber: "AA:10R4469",
+    serialNumber: "ZCT00125",
     status: "at workshop",
-    customerName: "",
-    customerId: "",
+    customerName: "NA",
+    customerId: "NA",
   },
   {
-    componentId: 4,
-    componentDescription: "abcd",
-    stock: 12,
-    warehouseNumber: 123,
-    serialNumber: 123,
+    componentId: "1978885",
+    componentDescription: "PUMP GP-GEAR",
+    stock: "No",
+    warehouseNumber: "AA:1978885",
+    serialNumber: "ZMX00289",
     status: "for scrap",
-    customerName: "",
-    customerId: "",
+    customerName: "NA",
+    customerId: "NA",
   },
+  {
+    componentId: "5503777",
+    componentDescription: "CONTROL",
+    stock: "Yes",
+    warehouseNumber: "AA:5503777",
+    serialNumber: "ZCT00865",
+    status: "at customer",
+    customerName: "Koolan Iron Ore Pty Ltd",
+    customerId: "101211",
+  },
+];
+
+const trackOrderList = [
+  {
+    orderId: "0000982556",
+    category: "Base",
+    componentCode: "2471437",
+    customerId: "101211",
+    orderedDate: "10/12/2023",
+    status: "Ordered",
+    filterType: "ordered",
+  },
+  {
+    orderId: "0000982558",
+    category: "Core",
+    componentCode: "2471445",
+    customerId: "101219",
+    orderedDate: "05/01/2024",
+    status: "Ordered",
+    filterType: "ordered",
+  },
+  {
+    orderId: "0000982560",
+    category: "Core",
+    componentCode: "N98001018",
+    customerId: "10120",
+    orderedDate: "21/12/2023",
+    status: "Issued",
+    filterType: "issued",
+  },
+  {
+    orderId: "0000982563",
+    category: "Base",
+    componentCode: "N98001022",
+    customerId: "10125",
+    orderedDate: "08/09/2023",
+    status: "Issued",
+    filterType: "issued",
+  },
+  {
+    orderId: "0000982566",
+    category: "Base",
+    componentCode: "N98001011",
+    customerId: "10125",
+    orderedDate: "11/11/2023",
+    status: "Issued",
+    filterType: "issued",
+  },
+  {
+    orderId: "0000982569",
+    category: "Core",
+    componentCode: "2471433",
+    customerId: "101216",
+    orderedDate: "12/12/2023",
+    status: "Ordered",
+    filterType: "ordered",
+  },
+  {
+    orderId: "0000982573",
+    category: "Core",
+    componentCode: "N98001025",
+    customerId: "10129",
+    orderedDate: "11/11/2023",
+    status: "Core Issued",
+    filterType: "coreIssued",
+  },
+  {
+    orderId: "0000982577",
+    category: "Core",
+    componentCode: "2471445",
+    customerId: "101219",
+    orderedDate: "05/01/2024",
+    status: "Ordered",
+    filterType: "ordered",
+  },
+  {
+    orderId: "0000982582",
+    category: "Core",
+    componentCode: "N98001018",
+    customerId: "10120",
+    orderedDate: "21/12/2023",
+    status: "Issued",
+    filterType: "issued",
+  },
+  {
+    orderId: "0000982587",
+    category: "Base",
+    componentCode: "N98001022",
+    customerId: "10125",
+    orderedDate: "08/09/2023",
+    status: "Core Returned",
+    filterType: "coreReturned",
+  },
+  {
+    orderId: "0000982593",
+    category: "Core",
+    componentCode: "N98001021",
+    customerId: "10120",
+    orderedDate: "21/12/2023",
+    status: "Core Issued",
+    filterType: "coreIssued",
+  },
+  {
+    orderId: "0000982599",
+    category: "Base",
+    componentCode: "N98001024",
+    customerId: "10132",
+    orderedDate: "08/09/2023",
+    status: "core Issued",
+    filterType: "coreIssued",
+  },
+  {
+    orderId: "0000982607",
+    category: "Core",
+    componentCode: "N98001031",
+    customerId: "10136",
+    orderedDate: "11/11/2023",
+    status: "Core Returned",
+    filterType: "coreReturned",
+  },
+  {
+    orderId: "0000982614",
+    category: "Core",
+    componentCode: "N98001035",
+    customerId: "10139",
+    orderedDate: "21/12/2023",
+    status: "Core Returned",
+    filterType: "coreReturned",
+  },
+  {
+    orderId: "0000982621",
+    category: "Base",
+    componentCode: "N98001037",
+    customerId: "10141",
+    orderedDate: "08/09/2023",
+    status: "Core Returned",
+    filterType: "coreReturned",
+  },
+];
+
+const filyerOrderTypes = [
+  { label: "All", value: "all" },
+  { label: "Ordered", value: "ordered" },
+  { label: "Issued", value: "issued" },
+  { label: "Core Issued", value: "coreIssued" },
+  { label: "Core Returned", value: "coreReturned" },
 ];
 
 const ServiceProgessMaster = () => {
   const [tabValue, setTabValue] = useState("deshboard");
+  const [filterExpended, setFilterExpended] = useState("filterShow");
+  const [filterType, setFilterType] = useState("all");
   const [showItemDetailsModal, setShowItemDetailsModal] = useState(false);
+  const [showReturnProcessModal, setShowReturnProcessModal] = useState(false);
+  const [pageSize, setPageSize] = useState(5);
+  const [columnVisibilityModel, setColumnVisibilityModel] = useState({
+    model: false,
+    make: false,
+    family: false,
+    prefix: false,
+  });
+  const [trackOrdersData, setTrackOrdersData] = useState([...trackOrderList]);
 
   const changeTab = (event, type) => {
     setTabValue(type);
@@ -78,6 +282,23 @@ const ServiceProgessMaster = () => {
     //   } else if(type === "review"){
     //     setData(reviewData);
     //     }
+  };
+
+  const handleRetrunProcessModal = () => {
+    setShowItemDetailsModal(!showItemDetailsModal);
+    setShowReturnProcessModal(!showReturnProcessModal);
+  };
+
+  const handleFilterTypeSelect = (e) => {
+    setFilterType(e.target.value);
+    if (e.target.value === "all") {
+      setTrackOrdersData(trackOrderList);
+    } else {
+      const filteredData = trackOrderList.filter(
+        (obj) => obj.filterType === e.target.value
+      );
+      setTrackOrdersData(filteredData);
+    }
   };
 
   const columns = [
@@ -194,6 +415,35 @@ const ServiceProgessMaster = () => {
       },
     },
   ];
+
+  const trackOrderColumns = [
+    {
+      field: "orderId",
+      headerName: "Order Id",
+      flex: 1,
+    },
+    {
+      field: "category",
+      headerName: "Category",
+      flex: 1,
+      minWidth: 150,
+    },
+    {
+      field: "componentCode",
+      headerName: "Component Code",
+      flex: 1,
+    },
+    {
+      field: "orderedDate",
+      headerName: "Ordered Date",
+      flex: 1,
+    },
+    {
+      field: "status",
+      headerName: "Status",
+      flex: 1,
+    },
+  ];
   return (
     <>
       <div className="content-body" style={{ minHeight: "884px" }}>
@@ -228,21 +478,6 @@ const ServiceProgessMaster = () => {
                       value={"trackOrder"}
                       className="heading-tabs"
                     />
-                    {/* <Tab
-                      label="Item Details"
-                      value={"itemDetails"}
-                      className="heading-tabs"
-                    />
-                    <Tab
-                      label="Issue"
-                      value={"issue"}
-                      className="heading-tabs"
-                    />
-                    <Tab
-                      label="Return"
-                      value={"return"}
-                      className="heading-tabs"
-                    /> */}
                   </TabList>
                 </Box>
                 <TabPanel value="deshboard" sx={{ marginTop: 0 }}>
@@ -312,8 +547,66 @@ const ServiceProgessMaster = () => {
                     </Grid>
                   </div>
                 </TabPanel>
-                <TabPanel value="issue" sx={{ marginTop: 0 }}>
-                  <ServiceProgressIssueComponent />
+                <TabPanel value="trackOrder" sx={{ marginTop: 0 }}>
+                  <Grid container>
+                    <Grid item xs={2}>
+                      <Box sx={{ marginBlock: 2 }}>
+                        <Accordion
+                          //   sx={{ backgroundColor: "#f3eafe" }}
+                          defaultExpanded
+                          expanded={filterExpended === "filterShow"}
+                          // onChange={handleQuoteExpand("filterShow")}
+                        >
+                          {/* <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                            <Typography sx={{ fontSize: 14, fontWeight: 600 }}>
+                              Claim Status
+                            </Typography>
+                          </AccordionSummary> */}
+                          <AccordionDetails>
+                            <RadioGroup
+                              value={filterType}
+                              onChange={handleFilterTypeSelect}
+                            >
+                              <FormControl>
+                                {filyerOrderTypes.map((filter, i) => (
+                                  <FormControlLabel
+                                    label={
+                                      <Typography sx={{ fontSize: 14 }}>
+                                        {filter.label}
+                                      </Typography>
+                                    }
+                                    value={filter.value}
+                                    control={<Radio />}
+                                  />
+                                ))}
+                              </FormControl>
+                            </RadioGroup>
+                          </AccordionDetails>
+                        </Accordion>
+                        <Divider />
+                      </Box>
+                    </Grid>
+                    <Grid item xs={10} container>
+                      <DataGridContainer>
+                        <DataGrid
+                          // loading={isLoading}
+                          sx={DATA_GRID_STYLE}
+                          getRowId={(row) => row.orderId}
+                          rows={trackOrdersData}
+                          columns={trackOrderColumns}
+                          columnVisibilityModel={columnVisibilityModel}
+                          onColumnVisibilityModelChange={(newModel) =>
+                            setColumnVisibilityModel(newModel)
+                          }
+                          pageSize={pageSize}
+                          onPageSizeChange={(newPageSize) =>
+                            setPageSize(newPageSize)
+                          }
+                          rowsPerPageOptions={[5, 10, 20, 50]}
+                        />
+                      </DataGridContainer>
+                    </Grid>
+                  </Grid>
                 </TabPanel>
               </TabContext>
             </Grid>
@@ -324,6 +617,13 @@ const ServiceProgessMaster = () => {
         <ServiceProgressOverviewModal
           show={showItemDetailsModal}
           hideModal={() => setShowItemDetailsModal(false)}
+          handleRetrunProcessModal={handleRetrunProcessModal}
+        />
+      )}
+      {showReturnProcessModal && (
+        <ReturnProcessModal
+          show={showReturnProcessModal}
+          hideModal={handleRetrunProcessModal}
         />
       )}
       {/* {showItemDetailsModal && (
