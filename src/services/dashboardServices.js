@@ -1,7 +1,7 @@
 import axios from "axios";
 import { SYSTEM_ERROR } from "config/CONSTANTS";
 import Cookies from "js-cookie";
-import { FETCH_BOTTOM_TEN, FETCH_DISCOUNT_COLUMNS, FETCH_DISCOUNT_GUIDANCE, FETCH_GAP_TO_ENTITLEMENT, FETCH_PARTS_SEGMENT, FETCH_PARTS_SEGMENT_DETAILS, FETCH_PROPENSITY_TO_BUY, FETCH_PROPENSITY_TO_BUY_DET, FETCH_QUOTE_LIFE_CYCLE, FETCH_QUOTE_PERFORMANCE, FETCH_QUOTE_WIN_LOSS, FETCH_TOP_TEN } from "./CONSTANTS";
+import { FETCH_BOTTOM_TEN, FETCH_DISCOUNT_COLUMNS, FETCH_DISCOUNT_GUIDANCE, FETCH_GAP_TO_ENTITLEMENT, FETCH_MARGIN_RECOMMENDATION_PART_CLASS_A_LIST, FETCH_PARTS_SEGMENT, FETCH_PARTS_SEGMENT_DETAILS, FETCH_PROPENSITY_TO_BUY, FETCH_PROPENSITY_TO_BUY_DET, FETCH_QUOTE_LIFE_CYCLE, FETCH_QUOTE_PERFORMANCE, FETCH_QUOTE_WIN_LOSS, FETCH_TOP_TEN } from "./CONSTANTS";
 var CookiesSetData = Cookies.get("loginTenantDtl");
 var getCookiesJsonData;
 if (CookiesSetData != undefined) {
@@ -283,6 +283,29 @@ export const getBottomTen = () => {
         });
     } catch (error) {
       console.error("in DashboardService > getQuoteLifeCycleStatus, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+// get the Margin Recommendation class A Data list
+export const getMarginRecommendationClassA = (filter) => {
+  console.log("Dashboard Service > margin-recommendation-class-A called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(FETCH_MARGIN_RECOMMENDATION_PART_CLASS_A_LIST(filter), config)
+        .then((res) => {
+          console.log("getMarginRecommendationClassA > axios res=", res);
+          if (res.status === 200) resolve(res.data);
+          else reject(res.data);
+        })
+        .catch((err) => {
+          console.log("getMarginRecommendationClassA > axios err=", err);
+          reject("Error in getGapToEntitlement axios!");
+        });
+    } catch (error) {
+      console.error("in DashboardService > getMarginRecommendationClassA, Err===", error);
       reject(SYSTEM_ERROR);
     }
   });

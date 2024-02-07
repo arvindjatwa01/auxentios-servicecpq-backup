@@ -1,9 +1,9 @@
-import { Chip, Divider, Grid, Stack, Typography } from "@mui/material";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import { Card, Chip, Divider, Grid, Stack, Typography } from "@mui/material";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowRightOutlined";
 import KeyboardRightArrowIcon from "@mui/icons-material/KeyboardArrowRightOutlined";
 import CheckIcon from "@mui/icons-material/Check";
 import OwlCarousel from "react-owl-carousel";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 const OWL_CAROUSEL_OPTIONS = {
   margin: 10,
   responsiveClass: true,
@@ -86,89 +86,94 @@ const segementAttriibutes = [
 
 const dummyServiceData = [
   {
-    family: "MOTOR GRADERS",
-    model: [
+    make: "caterpillar",
+    familyData: [
       {
-        modelNo: "160H",
-        prefix: [
+        family: "MOTOR GRADERS",
+        model: [
           {
-            prefixNo: "XZK",
-            segmentAttrubute: [...segementAttriibutes],
+            modelNo: "160H",
+            prefix: [
+              {
+                prefixNo: "XZK",
+                segmentAttrubute: [...segementAttriibutes],
+              },
+            ],
+          },
+          {
+            modelNo: "120K",
+            prefix: [
+              {
+                prefixNo: "SZZ",
+                segmentAttrubute: [...segementAttriibutes],
+              },
+              {
+                prefixNo: "SZS",
+                segmentAttrubute: [...segementAttriibutes],
+              },
+              {
+                prefixNo: "SZN",
+                segmentAttrubute: [...segementAttriibutes],
+              },
+            ],
           },
         ],
       },
       {
-        modelNo: "120K",
-        prefix: [
+        family: "TRACK EXCAVATORS",
+        model: [
           {
-            prefixNo: "SZZ",
-            segmentAttrubute: [...segementAttriibutes],
+            modelNo: "320D2",
+            prefix: [
+              {
+                prefix: "TMF",
+                segmentAttrubute: [...segementAttriibutes],
+              },
+              {
+                prefix: "TDZ",
+                segmentAttrubute: [...segementAttriibutes],
+              },
+            ],
           },
           {
-            prefixNo: "SZS",
-            segmentAttrubute: [...segementAttriibutes],
-          },
-          {
-            prefixNo: "SZN",
-            segmentAttrubute: [...segementAttriibutes],
-          },
-        ],
-      },
-    ],
-  },
-  {
-    family: "TRACK EXCAVATORS",
-    model: [
-      {
-        modelNo: "320D2",
-        prefix: [
-          {
-            prefix: "TMF",
-            segmentAttrubute: [...segementAttriibutes],
-          },
-          {
-            prefix: "TDZ",
-            segmentAttrubute: [...segementAttriibutes],
+            modelNo: "329D2 L",
+            prefix: [
+              {
+                prefix: "THW",
+                segmentAttrubute: [...segementAttriibutes],
+              },
+            ],
           },
         ],
       },
       {
-        modelNo: "329D2 L",
-        prefix: [
+        family: "GENERATORS SET ENGINES",
+        model: [
           {
-            prefix: "THW",
-            segmentAttrubute: [...segementAttriibutes],
-          },
-        ],
-      },
-    ],
-  },
-  {
-    family: "GENERATORS SET ENGINES",
-    model: [
-      {
-        modelNo: "3516B",
-        prefix: [
-          {
-            prefix: "ZAP",
-            segmentAttrubute: [...segementAttriibutes],
+            modelNo: "3516B",
+            prefix: [
+              {
+                prefix: "ZAP",
+                segmentAttrubute: [...segementAttriibutes],
+              },
+              {
+                prefix: "YBT",
+                segmentAttrubute: [...segementAttriibutes],
+              },
+            ],
           },
           {
-            prefix: "YBT",
-            segmentAttrubute: [...segementAttriibutes],
-          },
-        ],
-      },
-      {
-        modelNo: "C15",
-        prefix: [
-          {
-            prefix: "XP8",
-            segmentAttrubute: [...segementAttriibutes],
-          },
-          {
-            prefix: "X4R",
-            segmentAttrubute: [...segementAttriibutes],
+            modelNo: "C15",
+            prefix: [
+              {
+                prefix: "XP8",
+                segmentAttrubute: [...segementAttriibutes],
+              },
+              {
+                prefix: "X4R",
+                segmentAttrubute: [...segementAttriibutes],
+              },
+            ],
           },
         ],
       },
@@ -176,8 +181,9 @@ const dummyServiceData = [
   },
 ];
 export default function ServiceRecommend(props) {
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [selectedSubService, setSelectedSubService] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("service");
+  const [selectedSubService, setSelectedSubService] = useState("make");
+  const [selectedMake, setSelectedMake] = useState(null);
   const [selectedFamily, setSelectedFamily] = useState(null);
   const [selectedModel, setSelectedModel] = useState(null);
   const [selectedPrefix, setSelectedPrefix] = useState(null);
@@ -193,9 +199,10 @@ export default function ServiceRecommend(props) {
     console.log(e);
     setSelectedCategory(e);
   };
-  const handleSelectSubService = (e) => {
-    setSelectedSubService(e);
+  const handleSelectSubService = (serviceName) => {
+    setSelectedSubService(serviceName);
   };
+
   function getStyle(component) {
     return {
       mx: 1,
@@ -387,6 +394,21 @@ export default function ServiceRecommend(props) {
     );
   }
 
+  const getMakeStyle = (makeData) => {
+    return {
+      mr: 1,
+      my: 1,
+      backgroundColor:
+        selectedMake && makeData.make === selectedMake?.make
+          ? "#872FF7"
+          : "#FFF",
+      color:
+        selectedMake && makeData.make === selectedMake?.make ? "#FFFFFF" : "",
+      "&:hover": {
+        color: "#000",
+      },
+    };
+  };
   const getFamilyStyle = (familyData) => {
     return {
       mr: 1,
@@ -476,12 +498,23 @@ export default function ServiceRecommend(props) {
     };
   };
 
+  const handleSelectMake = (row) => {
+    setSelectedMake(row);
+    setSelectedFamily(null);
+    setSelectedModel(null);
+    setSelectedPrefix(null);
+    setSelectedSegment(null);
+    setSelectedGroup(null);
+    setSelectedSubService("family");
+  };
+
   const handleFamilySelect = (row) => {
     setSelectedFamily(row);
     setSelectedModel(null);
     setSelectedPrefix(null);
     setSelectedSegment(null);
     setSelectedGroup(null);
+    setSelectedSubService("model");
   };
 
   const handleModelSelect = (row) => {
@@ -489,20 +522,36 @@ export default function ServiceRecommend(props) {
     setSelectedPrefix(null);
     setSelectedSegment(null);
     setSelectedGroup(null);
+    setSelectedSubService("prefix");
   };
 
   const handlePrefixSelect = (row) => {
     setSelectedPrefix(row);
     setSelectedSegment(null);
     setSelectedGroup(null);
+    setSelectedCategory("customer");
+    setSelectedSubService("segment");
   };
 
   const handleSegmentSelect = (row) => {
+    console.log("row :: ", row)
     setSelectedSegment(row);
     setSelectedGroup(null);
+    setSelectedSubService("group");
   };
   const handleGroupSelect = (row) => {
     setSelectedGroup(row);
+  };
+
+  const serviceAttributeChips = () => {};
+
+  // Capatailize the Select Service Title (Make || Modal || Family || Prefix || Job Code || Component Code)
+  const capatalizeTitle = (text) => {
+    const title = text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+    if (text === "jobCode") {
+      return "Job Code";
+    }
+    return title;
   };
 
   return (
@@ -517,62 +566,418 @@ export default function ServiceRecommend(props) {
           padding: 2,
         }}
       >
-        <Grid item xs={12}>
-          <Chip
-            variant="outlined"
-            label="Service Attributes"
-            size="small"
-            onClick={(e) => handleSelectCategory("service")}
-            sx={() => getStyle("service")}
-            // icon={selectedCategory === "service" ? <CheckIcon color={"#fff"} /> : <></>}
-          />
-          <KeyboardRightArrowIcon />
-          <Chip
-            variant="outlined"
-            label="Customer Attributes"
-            size="small"
-            // onDelete={e => handleSelectCategory("customer")}
-            onClick={(e) => handleSelectCategory("customer")}
-            sx={() => getStyle("customer")}
-            // icon={selectedCategory === "customer" ? <CheckIcon color={"#fff"} /> : <></>}
-            disabled={selectedPrefix ? false : true}
-          />
-        </Grid>
-        {selectedCategory === "service" && (
+        <Card
+          sx={{
+            borderRadius: 4,
+            width: "100%",
+            margin: 2,
+          }}
+          variant="outlined"
+        >
+          <Typography
+            sx={{ fontSize: 18, fontWeight: 600, margin: 2, marginBottom: 0 }}
+          >
+            Service Recommendation
+          </Typography>
+          <Typography
+            sx={{
+              fontSize: 16,
+              fontWeight: 400,
+              margin: 2,
+              marginTop: 0,
+              marginBottom: 1,
+            }}
+          >
+            Service Attributes
+          </Typography>
+          <Grid container marginX={2}>
+            <Grid item xs={12} md={8}>
+              <Fragment>
+                <Chip
+                  variant="outlined"
+                  label="Make"
+                  size="small"
+                  // onClick={(e) => handleSelectSubService("make")}
+                  sx={{
+                    mr: 1,
+                    my: 1,
+                    p: 1.7,
+                    fontSize: 14,
+                    fontWeight: 600,
+                    backgroundColor:
+                      selectedSubService === "make" || selectedMake
+                        ? "#872FF7"
+                        : "#FFF",
+                    color:
+                      selectedSubService === "make" || selectedMake
+                        ? "#FFFFFF"
+                        : "",
+                    "&:hover": {
+                      backgroundColor: "#6315c7 !important",
+                      color: "#FFFFFF",
+                    },
+                  }}
+                />
+                <KeyboardRightArrowIcon />
+                <Chip
+                  variant="outlined"
+                  label="Family"
+                  size="small"
+                  onClick={(e) => handleSelectSubService("family")}
+                  sx={{
+                    mr: 1,
+                    my: 1,
+                    p: 1.7,
+                    fontSize: 14,
+                    fontWeight: 600,
+                    backgroundColor:
+                      selectedSubService === "family" || selectedFamily
+                        ? "#872FF7"
+                        : "#FFF",
+                    color:
+                      selectedSubService === "family" || selectedFamily
+                        ? "#FFFFFF"
+                        : "",
+                    "&:hover": {
+                      backgroundColor: "#6315c7 !important",
+                      color: "#FFFFFF",
+                    },
+                  }}
+                  disabled={selectedMake ? false : true}
+                />
+                <KeyboardRightArrowIcon />
+                <Chip
+                  variant="outlined"
+                  label="Model"
+                  size="small"
+                  onClick={(e) => handleSelectSubService("model")}
+                  sx={{
+                    mr: 1,
+                    my: 1,
+                    p: 1.7,
+                    fontSize: 14,
+                    fontWeight: 600,
+                    backgroundColor:
+                      selectedSubService === "model" || selectedModel
+                        ? "#872FF7"
+                        : "#FFF",
+                    color:
+                      selectedSubService === "model" || selectedModel
+                        ? "#FFFFFF"
+                        : "",
+                    "&:hover": {
+                      backgroundColor: "#6315c7 !important",
+                      color: "#FFFFFF",
+                    },
+                  }}
+                  disabled={selectedFamily ? false : true}
+                />
+                <KeyboardRightArrowIcon />
+                <Chip
+                  variant="outlined"
+                  label="Prefix"
+                  size="small"
+                  onClick={(e) => handleSelectSubService("prefix")}
+                  disabled={selectedModel ? false : true}
+                  sx={{
+                    mr: 1,
+                    my: 1,
+                    p: 1.7,
+                    fontSize: 14,
+                    fontWeight: 600,
+                    backgroundColor:
+                      selectedSubService === "prefix" || selectedPrefix
+                        ? "#872FF7"
+                        : "#FFF",
+                    color:
+                      selectedSubService === "prefix" || selectedPrefix
+                        ? "#FFFFFF"
+                        : "",
+                    "&:hover": {
+                      backgroundColor: "#6315c7 !important",
+                      color: "#FFFFFF",
+                    },
+                  }}
+                />
+                <KeyboardRightArrowIcon />
+                <Chip
+                  variant="outlined"
+                  label="Segment"
+                  size="small"
+                  onClick={(e) => handleSelectSubService("segment")}
+                  disabled={selectedPrefix ? false : true}
+                  sx={{
+                    mr: 1,
+                    my: 1,
+                    p: 1.7,
+                    fontSize: 14,
+                    fontWeight: 600,
+                    backgroundColor:
+                      selectedSubService === "segment" || selectedSegment
+                        ? "#872FF7"
+                        : "#FFF",
+                    color:
+                      selectedSubService === "segment" || selectedSegment
+                        ? "#FFFFFF"
+                        : "",
+                    "&:hover": {
+                      backgroundColor: "#6315c7 !important",
+                      color: "#FFFFFF",
+                    },
+                  }}
+                />
+                <KeyboardRightArrowIcon />
+                <Chip
+                  variant="outlined"
+                  label="Group"
+                  size="small"
+                  onClick={(e) => handleSelectSubService("group")}
+                  disabled={selectedSegment ? false : true}
+                  sx={{
+                    mr: 1,
+                    my: 1,
+                    p: 1.7,
+                    fontSize: 14,
+                    fontWeight: 600,
+                    backgroundColor:
+                      selectedSubService === "group" || selectedGroup
+                        ? "#872FF7"
+                        : "#FFF",
+                    color:
+                      selectedSubService === "group" || selectedGroup
+                        ? "#FFFFFF"
+                        : "",
+                    "&:hover": {
+                      backgroundColor: "#6315c7 !important",
+                      color: "#FFFFFF",
+                    },
+                  }}
+                />
+              </Fragment>
+            </Grid>
+          </Grid>
           <Grid item xs={12}>
-            <Chip
-              variant="outlined"
-              label="Family"
-              size="small"
-              // deleteIcon={<KeyboardArrowDownIcon />}
-              onClick={(e) => handleSelectSubService("family")}
-              // onDelete={e => handleSelectSubService("family")}
-              sx={() => getStyle("family")}
-            />
-            <KeyboardRightArrowIcon />
-            <Chip
-              variant="outlined"
-              label="Model"
-              size="small"
-              // deleteIcon={<KeyboardArrowDownIcon />}
-              onClick={(e) => handleSelectSubService("model")}
-              sx={() => getStyle("model")}
-              disabled={selectedFamily ? false : true}
-            />
-            <KeyboardRightArrowIcon />
-            <Chip
-              variant="outlined"
-              label="Prefix"
-              size="small"
-              // deleteIcon={<KeyboardArrowDownIcon />}
-              onClick={(e) => handleSelectSubService("prefix")}
-              sx={() => getStyle("prefix")}
-              disabled={selectedModel ? false : true}
-            />
-            <Divider className="mb-2" />
-            {selectedSubService === "family" &&
+            <Divider />
+          </Grid>
+          <Grid container marginX={1}>
+            <Grid item xs={12} md={12}>
+              <Typography
+                sx={{
+                  fontSize: 15,
+                  fontWeight: 500,
+                  margin: 1,
+                  marginTop: 1,
+                  marginBottom: 0,
+                }}
+              >
+                Selected Service Attributes
+              </Typography>
+              <Fragment>
+                <Card
+                  className={`btn font-weight-400  ${
+                    selectedMake?.make
+                      ? "text-primary font-size-14"
+                      : "font-size-13"
+                  }`}
+                  variant="outlined"
+                  sx={{
+                    padding: 0.5,
+                    paddingX: 0.8,
+                    margin: 1,
+                    // width: "20%",
+                    borderRadius: 3,
+                    // border: 2,
+                    border: "1px solid #872ff7",
+                    background: "transparent",
+                  }}
+                >
+                  <span
+                    className="border-0 border-end border-secondary"
+                    style={{ borderRight: "2px solid #00000" }}
+                  >
+                    Make
+                  </span>
+                  <span className="mx-2">|</span>
+                  <span className="ml-0">
+                    {selectedMake?.make || "Please Select"}
+                  </span>
+                </Card>
+                <Card
+                  className={`btn font-weight-400  ${
+                    selectedFamily?.family
+                      ? "text-primary font-size-14"
+                      : "font-size-13"
+                  }`}
+                  variant="outlined"
+                  sx={{
+                    padding: 0.5,
+                    margin: 1,
+                    // width: "20%",
+                    borderRadius: 3,
+                    // border: 2,
+                    border: "1px solid #872ff7",
+                    background: "transparent",
+                  }}
+                >
+                  <span
+                    className="border-0 border-end border-secondary"
+                    style={{ borderRight: "2px solid #00000" }}
+                  >
+                    Family
+                  </span>
+                  <span className="mx-2">|</span>
+                  <span className="ml-0 pr-2">
+                    {selectedFamily?.family || "Please Select"}
+                  </span>
+                </Card>
+                <Card
+                  className={`btn font-weight-400  ${
+                    selectedModel?.modelNo
+                      ? "text-primary font-size-14"
+                      : "font-size-13"
+                  }`}
+                  variant="outlined"
+                  sx={{
+                    padding: 0.5,
+                    margin: 1,
+                    // width: "20%",
+                    borderRadius: 3,
+                    // border: 2,
+                    border: "1px solid #872ff7",
+                    background: "transparent",
+                  }}
+                >
+                  <span
+                    className="border-0 border-end border-secondary"
+                    style={{ borderRight: "2px solid #00000" }}
+                  >
+                    Model
+                  </span>
+                  <span className="mx-2">|</span>
+                  <span className="ml-0 pr-2">
+                    {selectedModel?.modelNo || "Please Select"}
+                  </span>
+                </Card>
+                <Card
+                  className={`btn font-weight-400  ${
+                    selectedPrefix?.prefixNo
+                      ? "text-primary font-size-14"
+                      : "font-size-13"
+                  }`}
+                  variant="outlined"
+                  sx={{
+                    padding: 0.5,
+                    margin: 1,
+                    // width: "20%",
+                    borderRadius: 3,
+                    // border: 2,
+                    border: "1px solid #872ff7",
+                    background: "transparent",
+                  }}
+                >
+                  <span
+                    className="border-0 border-end border-secondary"
+                    style={{ borderRight: "2px solid #00000" }}
+                  >
+                    Prefix
+                  </span>
+                  <span className="mx-2">|</span>
+                  <span className="ml-0 pr-2">
+                    {selectedPrefix?.prefixNo || "Please Select"}
+                  </span>
+                </Card>
+                <Card
+                  className={`btn font-weight-400  ${
+                    selectedSegment?.segment
+                      ? "text-primary font-size-14"
+                      : "font-size-13"
+                  }`}
+                  variant="outlined"
+                  sx={{
+                    padding: 0.5,
+                    margin: 1,
+                    // width: "20%",
+                    borderRadius: 3,
+                    // border: 2,
+                    border: "1px solid #872ff7",
+                    background: "transparent",
+                  }}
+                >
+                  <span
+                    className="border-0 border-end border-secondary"
+                    style={{ borderRight: "2px solid #00000" }}
+                  >
+                    Segment
+                  </span>
+                  <span className="mx-2">|</span>
+                  <span className="ml-0 pr-2">
+                    {selectedSegment?.segment || "Please Select"}
+                  </span>
+                </Card>
+                <Card
+                  className={`btn font-weight-400  ${
+                    selectedGroup ? "text-primary font-size-14" : "font-size-13"
+                  }`}
+                  variant="outlined"
+                  sx={{
+                    padding: 0.5,
+                    margin: 1,
+                    // width: "20%",
+                    borderRadius: 3,
+                    // border: 2,
+                    border: "1px solid #872ff7",
+                    background: "transparent",
+                  }}
+                >
+                  <span
+                    className="border-0 border-end border-secondary"
+                    style={{ borderRight: "2px solid #00000" }}
+                  >
+                    Group
+                  </span>
+                  <span className="mx-2">|</span>
+                  <span className="ml-0 pr-2">
+                    {selectedGroup || "Please Select"}
+                  </span>
+                </Card>
+              </Fragment>
+            </Grid>
+          </Grid>
+          <Grid item xs={12}>
+            <Divider />
+          </Grid>
+          <Grid container marginX={1}>
+            <Grid item xs={12}>
+              <Typography
+                sx={{
+                  fontSize: 16,
+                  fontWeight: 500,
+                  margin: 1,
+                  marginTop: 1,
+                  marginBottom: 0,
+                }}
+              >
+                Select {capatalizeTitle(selectedSubService)} Service
+              </Typography>
+            </Grid>
+            {selectedSubService === "make" &&
               dummyServiceData.length !== 0 &&
-              dummyServiceData.map((familyData) => {
+              dummyServiceData.map((makeData) => {
+                return (
+                  <Chip
+                    variant="outlined"
+                    label={makeData.make}
+                    size="small"
+                    // deleteIcon={<KeyboardArrowDownIcon />}
+                    onClick={(e) => handleSelectMake(makeData)}
+                    sx={() => getMakeStyle(makeData)}
+                  />
+                );
+              })}
+            {selectedSubService === "family" &&
+              selectedMake &&
+              Object.keys(selectedMake).length !== 0 &&
+              selectedMake?.familyData.map((familyData) => {
                 return (
                   <Chip
                     variant="outlined"
@@ -614,29 +1019,6 @@ export default function ServiceRecommend(props) {
                   />
                 );
               })}
-          </Grid>
-        )}
-        {selectedCategory === "customer" && (
-          <Grid item xs={12}>
-            <Chip
-              variant="outlined"
-              label="Segment"
-              size="small"
-              // deleteIcon={<KeyboardArrowDownIcon />}
-              onClick={(e) => handleSelectSubService("segment")}
-              sx={() => getStyle("segment")}
-            />
-            <KeyboardRightArrowIcon />
-            <Chip
-              variant="outlined"
-              label="Group"
-              size="small"
-              // deleteIcon={<KeyboardArrowDownIcon />}
-              onClick={(e) => handleSelectSubService("group")}
-              sx={() => getStyle("group")}
-              disabled={selectedSegment ? false : true}
-            />
-            <Divider className="mb-2" />
             {selectedSubService === "segment" &&
               selectedPrefix &&
               Object.keys(selectedPrefix).length !== 0 &&
@@ -668,7 +1050,7 @@ export default function ServiceRecommend(props) {
                 );
               })}
           </Grid>
-        )}
+        </Card>
         <Grid item xs={12}>
           {selectedGroup && <Services />}
         </Grid>
