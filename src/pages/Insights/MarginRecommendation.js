@@ -6,10 +6,12 @@ import { DataGrid } from "@mui/x-data-grid";
 import {
   getDiscountColumns,
   getDiscountDetails,
+  getMarginRecommendationClassA,
 } from "services/dashboardServices";
 import SelectBox from "./SelectBox";
 import SearchBox from "./SearchBox";
 import { Visibility, VisibilityOff } from "@material-ui/icons";
+import { callGetApi } from "services/ApiCaller";
 
 const dummyMarginRecommendationData = [
   {
@@ -156,6 +158,26 @@ export default function MarginRecommendation(props) {
     contractOrWarranty,
     requiredFor,
   ]);
+
+  useEffect(() => {
+    const rUrlB = `https://trom60dly3.execute-api.us-east-2.amazonaws.com/marginB?part_number=AA: 0R9813&pagenumber=1&pagesize=10`;
+    const rUrlC = `https://v909wwn3uh.execute-api.us-east-2.amazonaws.com/marginC?part_number=AA:3449054&pagenumber=1&pagesize=10`;
+    const rUrl =
+      "https://rm9pit3b1a.execute-api.us-east-2.amazonaws.com/marginC?part_number=AA: 0R9813&pagenumber=1&pagesize=10";
+    callGetApi(
+      null,
+      rUrlC,
+      (response) => {
+        console.log("Margin A response :: ", response);
+      },
+      (error) => {
+        console.log("Margin A error :: ", error);
+      }
+    );
+    let reqUrl = `part_number=793FQ_01:AA&pagenumber=1&pagesize=10`;
+    getMarginRecommendationClassA(reqUrl);
+  }, []);
+
   // useEffect(() => {
   // }, [columns])
   const fetchDiscountGuidanceCol = () => {

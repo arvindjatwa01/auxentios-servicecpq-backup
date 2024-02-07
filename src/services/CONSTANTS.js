@@ -501,6 +501,12 @@ export const FETCH_DISCOUNT_GUIDANCE = (filter) =>
   `https://ymnnwbr1ch.execute-api.us-east-2.amazonaws.com/discount?${filter}`;
 export const FETCH_DISCOUNT_COLUMNS = () =>
   `https://3mvbvq7ywj.execute-api.us-east-2.amazonaws.com/discount_columnNames`;
+export const FETCH_MARGIN_RECOMMENDATION_PART_CLASS_A_LIST = (filter) =>
+  `https://rm9pit3b1a.execute-api.us-east-2.amazonaws.com/marginA?${filter}`;
+export const FETCH_MARGIN_RECOMMENDATION_PART_CLASS_B_LIST = (filter) =>
+  `https://rm9pit3b1a.execute-api.us-east-2.amazonaws.com/marginB?${filter}`;
+export const FETCH_MARGIN_RECOMMENDATION_PART_CLASS_C_LIST = (filter) =>
+  `https://rm9pit3b1a.execute-api.us-east-2.amazonaws.com/marginC?${filter}`;
 //Analytics
 export const FETCH_QUOTE_PERFORMANCE = () =>
   QUOTE_REST_SERVICE + "/quote-performance";
@@ -550,23 +556,28 @@ export const WORKLIST_URL = COMMON_SERVICE_URI + `worklist`;
 export const TODAY_TASKS_WORKLIST = WORKLIST_URL + `/today-tasks`;
 
 // Warranty Master
-const Warrant_Master_Url = WARRANTY_CLAIAM_URI + "warranty"
+const Warrant_Master_Url = WARRANTY_CLAIAM_URI + "warranty";
 export const Recent_Warranty_List_GET = Warrant_Master_Url + "/recent";
-export const Search_By_Fields_Warranty_List_GET = Warrant_Master_Url + "/search-by-fields?";
+export const Search_By_Fields_Warranty_List_GET =
+  Warrant_Master_Url + "/search-by-fields?";
 export const warranty_Details_By_Id_Get = Warrant_Master_Url + "/";
-export const Update_Warranty_Details_PUT= Warrant_Master_Url + "/";
+export const Update_Warranty_Details_PUT = Warrant_Master_Url + "/";
 
 // Claim Master
 const Claim_Master_Url = WARRANTY_CLAIAM_URI + "claim";
 export const Claim_Pagination_List_GET = Claim_Master_Url;
-export const Search_By_Field_Claim_List_GET = Claim_Master_Url + "/search-by-fields?";
+export const Search_By_Field_Claim_List_GET =
+  Claim_Master_Url + "/search-by-fields?";
 export const Claim_Details_By_Id_Get = Claim_Master_Url + "/";
-export const Update_CLaim_Details_PUT= Claim_Master_Url + "/";
-export const Claim_Question_Mark_Claimable_GET = Claim_Master_Url + "/mark-claimable";
-export const Claim_Convert_To_Repair_GET = Claim_Master_Url + "/convert-to-repair";
+export const Update_CLaim_Details_PUT = Claim_Master_Url + "/";
+export const Claim_Question_Mark_Claimable_GET =
+  Claim_Master_Url + "/mark-claimable";
+export const Claim_Convert_To_Repair_GET =
+  Claim_Master_Url + "/convert-to-repair";
 export const Create_Claim_POST = Claim_Master_Url;
 
 // Claim Questuin
 const Claim_Questions_Master_Url = WARRANTY_CLAIAM_URI + "claim/question";
 export const Claim_Questions_List_GET = Claim_Questions_Master_Url;
-export const claim_Question_Answer_POST = Claim_Questions_Master_Url + "/question-answer"
+export const claim_Question_Answer_POST =
+  Claim_Questions_Master_Url + "/question-answer";
