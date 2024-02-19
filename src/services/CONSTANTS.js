@@ -504,9 +504,9 @@ export const FETCH_DISCOUNT_COLUMNS = () =>
 export const FETCH_MARGIN_RECOMMENDATION_PART_CLASS_A_LIST = (filter) =>
   `https://rm9pit3b1a.execute-api.us-east-2.amazonaws.com/marginA?${filter}`;
 export const FETCH_MARGIN_RECOMMENDATION_PART_CLASS_B_LIST = (filter) =>
-  `https://rm9pit3b1a.execute-api.us-east-2.amazonaws.com/marginB?${filter}`;
+  `https://trom60dly3.execute-api.us-east-2.amazonaws.com/marginB?${filter}`;
 export const FETCH_MARGIN_RECOMMENDATION_PART_CLASS_C_LIST = (filter) =>
-  `https://rm9pit3b1a.execute-api.us-east-2.amazonaws.com/marginC?${filter}`;
+  `https://v909wwn3uh.execute-api.us-east-2.amazonaws.com/marginC?${filter}`;
 //Analytics
 export const FETCH_QUOTE_PERFORMANCE = () =>
   QUOTE_REST_SERVICE + "/quote-performance";

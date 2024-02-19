@@ -7,11 +7,14 @@ import {
   getDiscountColumns,
   getDiscountDetails,
   getMarginRecommendationClassA,
+  getMarginRecommendationClassB,
+  getMarginRecommendationClassC,
 } from "services/dashboardServices";
 import SelectBox from "./SelectBox";
 import SearchBox from "./SearchBox";
 import { Visibility, VisibilityOff } from "@material-ui/icons";
 import { callGetApi } from "services/ApiCaller";
+import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 
 const dummyMarginRecommendationData = [
   {
@@ -122,7 +125,7 @@ export default function MarginRecommendation(props) {
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(0);
   const [customerId, setCustomerId] = useState("1023942");
-  const [part, setPart] = useState("");
+  const [partNumber, setPartNumber] = useState("");
   const [partType, setPartType] = useState("");
   const [status, setStatus] = useState("");
   const [usage, setUsage] = useState("");
@@ -134,6 +137,24 @@ export default function MarginRecommendation(props) {
   const [totalCount, setTotalCount] = useState(4);
   const [sortDetail, setSortDetail] = useState({ sortColumn: "", orderBy: "" });
 
+  const [partClassALoading, setPartClassALoading] = useState(false);
+  const [partClassATotlaRecord, setPartClassATotlaRecord] = useState(0);
+  const [partClassAPageNo, setPartClassAPageNo] = useState(0);
+  const [partClassAPageSize, setPartClassAPageSize] = useState(10);
+  const [partClassARecords, setPartClassARecords] = useState([]);
+
+  const [partClassBLoading, setPartClassBLoading] = useState(false);
+  const [partClassBTotlaRecord, setPartClassBTotlaRecord] = useState(0);
+  const [partClassBPageNo, setPartClassBPageNo] = useState(0);
+  const [partClassBPageSize, setPartClassBPageSize] = useState(10);
+  const [partClassBRecords, setPartClassBRecords] = useState([]);
+
+  const [partClassCLoading, setPartClassCLoading] = useState(false);
+  const [partClassCTotlaRecord, setPartClassCTotlaRecord] = useState(0);
+  const [partClassCPageNo, setPartClassCPageNo] = useState(0);
+  const [partClassCPageSize, setPartClassCPageSize] = useState(10);
+  const [partClassCRecords, setPartClassCRecords] = useState([]);
+
   const [partClass, setPartClass] = useState("");
   const [showMoreFilter, setShowMoreFilter] = useState(false);
   const [showFilters, setShowFilters] = useState(filterOptions);
@@ -144,11 +165,31 @@ export default function MarginRecommendation(props) {
   const [showAllCClassPartsColumns, setShowAllCClassPartsColumns] =
     useState(false);
   const [columns, setColumns] = useState([]);
+
+  // Snack Bar State
+  const [severity, setSeverity] = useState("");
+  const [openSnack, setOpenSnack] = useState(false);
+  const [snackMessage, setSnackMessage] = useState("");
+  const handleSnackBarClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenSnack(false);
+  };
+
+  const handleSnack = (snackSeverity, snackMessage) => {
+    setSnackMessage(snackMessage);
+    setSeverity(snackSeverity);
+    setOpenSnack(true);
+  };
+
   useEffect(() => {
-    // fetchDiscountGuidance(page, pageSize);
+    if (partClass === "" || partClass === "A Class") {
+      fetchPartClassARecords(partClassAPageNo, partClassAPageSize);
+    }
   }, [
-    customerId,
-    part,
+    partClass,
+    partNumber,
     partType,
     status,
     usage,
@@ -159,27 +200,120 @@ export default function MarginRecommendation(props) {
     requiredFor,
   ]);
 
-  useEffect(() => {
-    const rUrlB = `https://trom60dly3.execute-api.us-east-2.amazonaws.com/marginB?part_number=AA: 0R9813&pagenumber=1&pagesize=10`;
-    const rUrlC = `https://v909wwn3uh.execute-api.us-east-2.amazonaws.com/marginC?part_number=AA:3449054&pagenumber=1&pagesize=10`;
-    const rUrl =
-      "https://rm9pit3b1a.execute-api.us-east-2.amazonaws.com/marginC?part_number=AA: 0R9813&pagenumber=1&pagesize=10";
-    callGetApi(
-      null,
-      rUrlC,
-      (response) => {
-        console.log("Margin A response :: ", response);
-      },
-      (error) => {
-        console.log("Margin A error :: ", error);
-      }
-    );
-    let reqUrl = `part_number=793FQ_01:AA&pagenumber=1&pagesize=10`;
-    getMarginRecommendationClassA(reqUrl);
-  }, []);
+  const fetchPartClassARecords = async (pageNo, rowsPerPage) => {
+    setPartClassAPageNo(pageNo);
+    setPartClassAPageSize(rowsPerPage);
+    setPartClassALoading(true);
+    const filter =
+      (partNumber ? `&part_number=${partNumber}` : "") +
+      (partType ? `&part_type=${partType}` : "") +
+      (status ? `&status=${status}` : "") +
+      (usage ? `&usage_area=${usage}` : "") +
+      (machineAge ? `&machine_age=${machineAge}` : "") +
+      (equipmentUsage ? `&equipment_usage=${equipmentUsage}` : "") +
+      (avgAnnualRevnue ? `&avg_annual_revenue=${avgAnnualRevnue}` : "") +
+      (contractOrWarranty
+        ? `&contract_or_warranty=${contractOrWarranty}`
+        : "") +
+      (requiredFor ? `&required_for=${requiredFor}` : "");
 
-  // useEffect(() => {
-  // }, [columns])
+    const reqUrl = `${filter}&pagenumber=${pageNo + 1}&pagesize=${rowsPerPage}`;
+    await getMarginRecommendationClassA(reqUrl)
+      .then((response) => {
+        setPartClassATotlaRecord(response.number_of_rows);
+        setPartClassARecords(response.data);
+        console.log("response :: ", response);
+      })
+      .catch((err) => {
+        handleSnack(
+          "error",
+          "Error occured while fetching Part Class A details"
+        );
+        setPartClassARecords([]);
+      });
+    setPartClassALoading(false);
+  };
+
+  useEffect(() => {
+    if (partClass === "" || partClass === "B Class") {
+      fetchPartClassBRecords(partClassBPageNo, partClassBPageSize);
+    }
+  }, [
+    partClass,
+    partNumber,
+    // partType,
+    // status,
+    // usage,
+    machineAge,
+    equipmentUsage,
+    avgAnnualRevnue,
+    // contractOrWarranty,
+    requiredFor,
+  ]);
+
+  const fetchPartClassBRecords = async (pageNo, rowsPerPage) => {
+    setPartClassBPageNo(pageNo);
+    setPartClassBPageSize(rowsPerPage);
+    setPartClassBLoading(true);
+    const filter =
+      (partNumber ? `&part_number=${partNumber}` : "") +
+      // (partType ? `&part_type=${partType}` : "") +
+      // (status ? `&status=${status}` : "") +
+      // (usage ? `&usage_area=${usage}` : "") +
+      (machineAge ? `&machine_age=${machineAge}` : "") +
+      (equipmentUsage ? `&equipment_usage=${equipmentUsage}` : "") +
+      (avgAnnualRevnue ? `&avg_annual_revenue=${avgAnnualRevnue}` : "") +
+      // (contractOrWarranty
+      //   ? `&contract_or_warranty=${contractOrWarranty}`
+      //   : "") +
+      (requiredFor ? `&required_for=${requiredFor}` : "");
+
+    const reqUrl = `${filter}&pagenumber=${pageNo + 1}&pagesize=${rowsPerPage}`;
+    await getMarginRecommendationClassB(reqUrl)
+      .then((response) => {
+        setPartClassBTotlaRecord(response.number_of_rows);
+        setPartClassBRecords(response.data);
+        console.log("response :: ", response);
+      })
+      .catch((err) => {
+        handleSnack(
+          "error",
+          "Error occured while fetching Part Class B details"
+        );
+        setPartClassBRecords([]);
+      });
+    setPartClassBLoading(false);
+  };
+
+  useEffect(() => {
+    if (partClass === "" || partClass === "C Class") {
+      fetchPartClassCRecords(partClassCPageNo, partClassCPageSize);
+    }
+  }, [partClass, partNumber]);
+
+  const fetchPartClassCRecords = async (pageNo, rowsPerPage) => {
+    setPartClassCPageNo(pageNo);
+    setPartClassCPageSize(rowsPerPage);
+    setPartClassCLoading(true);
+    const filter = partNumber ? `&part_number=${partNumber}` : "";
+
+    const reqUrl = `${filter}&pagenumber=${pageNo + 1}&pagesize=${rowsPerPage}`;
+    await getMarginRecommendationClassC(reqUrl)
+      .then((response) => {
+        setPartClassCTotlaRecord(response.number_of_rows);
+        setPartClassCRecords(response.data);
+        console.log("response :: ", response);
+      })
+      .catch((err) => {
+        handleSnack(
+          "error",
+          "Error occured while fetching Part Class C details"
+        );
+        setPartClassCRecords([]);
+      });
+    setPartClassCLoading(false);
+  };
+
   const fetchDiscountGuidanceCol = () => {
     // setIsLoading(true);
     // getDiscountColumns().then(discountCols => {
@@ -202,7 +336,7 @@ export default function MarginRecommendation(props) {
     // const query = `pageNumber=${pageNo}&pageSize=${rowsPerPage}${sort}${filter}`;
     const filter =
       `customer_id=${customerId}` +
-      (part ? `&part=${part}` : "") +
+      (partNumber ? `&partNumber=${partNumber}` : "") +
       (partType ? `&partType=${partType}` : "") +
       (status ? `&status=${status}` : "") +
       (usage ? `&usage=${usage}` : "") +
@@ -270,7 +404,7 @@ export default function MarginRecommendation(props) {
 
   const premiumTableColumns = [
     {
-      field: "partNumber",
+      field: "part_number",
       headerName: "Part #",
       flex: 1,
       defaultShow: true,
@@ -279,38 +413,50 @@ export default function MarginRecommendation(props) {
       ),
     },
     {
-      field: "class",
+      field: "part_class",
       headerName: "Class",
       flex: 1,
       width: 80,
       defaultShow: true,
     },
     {
-      field: "description",
+      field: "part_description",
       headerName: "Description",
       flex: 1,
       defaultShow: true,
     },
     {
-      field: "costPrice",
+      field: "cost_price",
       headerName: "Cost Price",
       flex: 1,
       defaultShow: true,
     },
-    { field: "partType", headerName: "Part Type", width: 80 },
-    { field: "status", headerName: "Status", width: 80 },
-    { field: "usage", headerName: "Usage", width: 80 },
-    { field: "machineAge", headerName: "Machine Age", width: 80 },
-    { field: "equipmentUsage", headerName: "Equipment Usage", flex: 1 },
-    { field: "avgAnnualRevenue", headerName: "Avg Annual Revenue", flex: 1 },
     {
-      field: "contractOrWarranty",
+      field: "quantity",
+      headerName: "Quantity",
+      flex: 1,
+      defaultShow: true,
+    },
+    {
+      field: "total_transaction",
+      headerName: "Total Transaction",
+      flex: 1,
+      defaultShow: true,
+    },
+    { field: "part_type", headerName: "Part Type", width: 80 },
+    { field: "status", headerName: "Status", width: 80 },
+    { field: "usage_area", headerName: "Usage", width: 80 },
+    { field: "machine_age", headerName: "Machine Age", width: 80 },
+    { field: "equipment_usage", headerName: "Equipment Usage", flex: 1 },
+    { field: "avg_annual_revenue", headerName: "Avg Annual Revenue", flex: 1 },
+    {
+      field: "contract_or_warranty",
       headerName: "Contract or Warranty",
       flex: 1,
     },
-    { field: "requiredFor", headerName: "Required For", flex: 1 },
+    { field: "required_for", headerName: "Required For", flex: 1 },
     {
-      field: "predictedMargin",
+      field: "predicted_margin",
       headerName: "Predicted Margin",
       flex: 1,
       cellClassName: "fw-bolder",
@@ -322,7 +468,7 @@ export default function MarginRecommendation(props) {
 
   const standardTableColumns = [
     {
-      field: "partNumber",
+      field: "part_number",
       headerName: "Part #",
       flex: 1,
       defaultShow: true,
@@ -331,36 +477,48 @@ export default function MarginRecommendation(props) {
       ),
     },
     {
-      field: "class",
+      field: "part_class",
       headerName: "Class",
       flex: 1,
       width: 80,
       defaultShow: true,
     },
     {
-      field: "description",
+      field: "part_description",
       headerName: "Description",
       flex: 1,
       defaultShow: true,
     },
     {
-      field: "costPrice",
+      field: "cost_price",
       headerName: "Cost Price",
       flex: 1,
       defaultShow: true,
     },
-    { field: "machineAge", headerName: "Machine Age", width: 80 },
-    { field: "equipmentUsage", headerName: "Equipment Usage", flex: 1 },
     {
-      field: "buyerType",
+      field: "quantity",
+      headerName: "Quantity",
+      flex: 1,
+      defaultShow: true,
+    },
+    {
+      field: "total_transaction",
+      headerName: "Total Transaction",
+      flex: 1,
+      defaultShow: true,
+    },
+    { field: "machine_age", headerName: "Machine Age", width: 80 },
+    { field: "equipment_usage", headerName: "Equipment Usage", flex: 1 },
+    {
+      field: "buyer_type",
       headerName: "Buyer Type",
       width: 80,
       defaultShow: true,
     },
-    { field: "avgAnnualRevenue", headerName: "Avg Annual Revenue", flex: 1 },
-    { field: "requiredFor", headerName: "Required For", flex: 1 },
+    { field: "avg_annual_revenue", headerName: "Avg Annual Revenue", flex: 1 },
+    { field: "required_for", headerName: "Required For", flex: 1 },
     {
-      field: "predictedMargin",
+      field: "predicted_margin",
       headerName: "Predicted Margin",
       flex: 1,
       cellClassName: "fw-bolder",
@@ -372,28 +530,61 @@ export default function MarginRecommendation(props) {
 
   const ordinaryTableColumns = [
     {
-      field: "partNumber",
+      field: "part_number",
       headerName: "Part #",
       flex: 1,
       renderCell: (params) => (
         <div style={{ fontWeight: "bold" }}>{params.value}</div>
       ),
     },
-    { field: "class", headerName: "Class", flex: 1 },
-    { field: "description", headerName: "Description", flex: 1 },
-    { field: "costPrice", headerName: "Cost Price", flex: 1 },
-    { field: "requiredFor", headerName: "Required For", flex: 1 },
+    { field: "part_class", headerName: "Class", flex: 1 },
+    { field: "part_description", headerName: "Description", flex: 1 },
+    { field: "cost_price", headerName: "Cost Price", flex: 1 },
     {
-      field: "predictedMargin",
-      headerName: "Predicted Margin",
+      field: "quantity",
+      headerName: "Quantity",
       flex: 1,
-      renderCell: (params) => formatDisplay(params),
+      defaultShow: true,
+    },
+    {
+      field: "total_transaction",
+      headerName: "Total Transaction",
+      flex: 1,
+      defaultShow: true,
+    },
+    // { field: "required_for", headerName: "Required For", flex: 1 },
+    // {
+    //   field: "predicted_margin",
+    //   headerName: "Predicted Margin",
+    //   flex: 1,
+    //   renderCell: (params) => formatDisplay(params),
+    //   align: "center",
+    // },
+    {
+      field: "fix_margin",
+      headerName: "Fix Margin",
+      flex: 1,
+      renderCell: (params) =>
+        params.field === "fix_margin" && (
+          <span
+            style={{
+              fontSize: 12,
+              backgroundColor: "#6FD4FF",
+              padding: 5,
+              borderRadius: 5,
+              fontWeight: "bold",
+              textAlign: "center",
+            }}
+          >
+            {parseFloat(params.value).toFixed(2)}
+          </span>
+        ),
       align: "center",
     },
   ];
 
   const formatDisplay = (params) => {
-    if (params.field === "predictedMargin") {
+    if (params.field === "predicted_margin") {
       return (
         <span
           style={{
@@ -416,14 +607,14 @@ export default function MarginRecommendation(props) {
   const partTypeOptions = ["New", "Reman", "Refurbish"];
   const statusOptions = ["Active", "Discontinued", "Inactivate"];
   const usageOptions = ["Mining", "Construction", "Energy", "Marine", "Any"];
-  const machineAgeOptions = ["End of life", "Midlife", "New"];
-  const equipmentUsageOptions = ["Critical Operation", "Non-critical"];
+  const machineAgeOptions = ["End_of_life", "Mid_life", "New"];
+  const equipmentUsageOptions = ["Critical_Operation", "Non-critical"];
   const avgAnnualRevnueOptions = ["<100000", ">100000"];
   const contractOrWarrantyOptions = ["Yes", "No"];
   const requiredForOptions = [
     "Breakdown",
     "Overhaul",
-    "Scheduled Maintenance",
+    "Scheduled_Maintenance",
     "Repair",
   ];
 
@@ -432,7 +623,7 @@ export default function MarginRecommendation(props) {
 
   // table Type Change
   const handleChangeTableType = (e) => {
-    setPart("");
+    setPartNumber("");
     setPartType("");
     setStatus("");
     setUsage("");
@@ -512,261 +703,267 @@ export default function MarginRecommendation(props) {
   ]);
 
   return (
-    <div>
-      <Grid
-        container
-        sx={{
-          width: "100%",
-          backgroundColor: "#f3eafe",
-          borderRadius: 5,
-          marginBlock: 3,
-          padding: 2,
-        }}
-      >
-        <Card
+    <>
+      <CustomizedSnackbar
+        handleClose={handleSnackBarClose}
+        open={openSnack}
+        severity={severity}
+        message={snackMessage}
+      />
+      <div>
+        <Grid
+          container
           sx={{
-            borderRadius: 4,
-            minHeight: 700,
             width: "100%",
-            margin: 2,
+            backgroundColor: "#f3eafe",
+            borderRadius: 5,
+            marginBlock: 3,
+            padding: 2,
           }}
-          variant="outlined"
         >
-          <Typography sx={{ fontSize: 18, fontWeight: 600, margin: 2 }}>
-            Margin Recommendation
-          </Typography>
-          <Box
+          <Card
             sx={{
-              marginBottom: 1,
-              marginInline: 2,
-              // borderBottom: "1px solid #5c5c5cb3",
+              borderRadius: 4,
+              minHeight: 700,
+              width: "100%",
+              margin: 2,
             }}
+            variant="outlined"
           >
-            <SearchBox
-              label={"Search Part"}
-              value={part}
-              handleChange={(e) => setPart(e.target.value)}
-              size={250}
-            />
-            <SelectBox
-              label={"Part Class"}
-              value={partClass}
-              options={partClassOptions}
-              // handleChange={(e) => setPartClass(e.target.value)}
-              handleChange={handleChangeTableType}
-              showClearIcon={true}
-              handleUnselect={() => setPartClass("")}
-            />
-          </Box>
-          <Divider component="li" />
-          {(partClass === "" || partClass === "A Class") && (
+            <Typography sx={{ fontSize: 18, fontWeight: 600, margin: 2 }}>
+              Margin Recommendation
+            </Typography>
             <Box
               sx={{
-                height: 500,
-                marginBottom: 8,
+                marginBottom: 1,
                 marginInline: 2,
+                // borderBottom: "1px solid #5c5c5cb3",
               }}
             >
-              <div className="d-flex justify-content-between">
-                <Typography
-                  sx={{ fontSize: 16, fontWeight: 500, marginTop: 2 }}
-                >
-                  A Class Parts
-                </Typography>
-                {partClass === "" && (
-                  <Button
-                    variant="contained"
-                    sx={{ marginTop: 2, backgroundColor: "#872ff7" }}
-                    onClick={() =>
-                      setShowAllAClassPartsColumns(!showAllAClassPartsColumns)
-                    }
-                    size="small"
-                    endIcon={
-                      showAllAClassPartsColumns ? (
-                        <VisibilityOff />
-                      ) : (
-                        <Visibility />
-                      )
-                    }
-                  >
-                    {showAllAClassPartsColumns ? "Minimize " : "Show All "}
-                    Columns
-                  </Button>
-                )}
-              </div>
-              {partClass === "A Class" && (
-                <>
-                  <SelectBox
-                    label={"Part Type"}
-                    value={partType}
-                    options={partTypeOptions}
-                    handleChange={(e) => setPartType(e.target.value)}
-                    showClearIcon={true}
-                    handleUnselect={() => setPartType("")}
-                  />
-                  <SelectBox
-                    label={"Status"}
-                    value={status}
-                    options={statusOptions}
-                    handleChange={(e) => setStatus(e.target.value)}
-                    showClearIcon={true}
-                    handleUnselect={() => setStatus("")}
-                  />
-                  <SelectBox
-                    label={"Usage"}
-                    value={usage}
-                    options={usageOptions}
-                    handleChange={(e) => setUsage(e.target.value)}
-                    showClearIcon={true}
-                    handleUnselect={() => setUsage("")}
-                  />
-                  <SelectBox
-                    label={"Machine Age"}
-                    value={machineAge}
-                    options={machineAgeOptions}
-                    handleChange={(e) => setMachineAge(e.target.value)}
-                    size={150}
-                    showClearIcon={true}
-                    handleUnselect={() => setMachineAge("")}
-                  />
-                  {showFilters.equipmentUsage && (
-                    <SelectBox
-                      label={"Equipment Usage"}
-                      value={equipmentUsage}
-                      options={equipmentUsageOptions}
-                      handleChange={(e) => setEquipmentUsage(e.target.value)}
-                      size={180}
-                      showClearIcon={true}
-                      handleUnselect={() => setEquipmentUsage("")}
-                    />
-                  )}
-                  {showFilters.avgAnnualRevnue && (
-                    <SelectBox
-                      label={"Avg Annual Revenue"}
-                      value={avgAnnualRevnue}
-                      options={avgAnnualRevnueOptions}
-                      handleChange={(e) => setAvgAnnualRevnue(e.target.value)}
-                      size={190}
-                      showClearIcon={true}
-                      handleUnselect={() => setAvgAnnualRevnue("")}
-                    />
-                  )}
-                  {showFilters.contractOrWarranty && (
-                    <SelectBox
-                      label={"Contract or Warranty"}
-                      value={contractOrWarranty}
-                      options={contractOrWarrantyOptions}
-                      handleChange={(e) =>
-                        setContractOrWarranty(e.target.value)
-                      }
-                      size={190}
-                      showClearIcon={true}
-                      handleUnselect={() => setContractOrWarranty("")}
-                    />
-                  )}
-                  {showFilters.requiredFor && (
-                    <SelectBox
-                      label={"Required For"}
-                      value={requiredFor}
-                      options={requiredForOptions}
-                      handleChange={(e) => setRequiredFor(e.target.value)}
-                      size={150}
-                      showClearIcon={true}
-                      handleUnselect={() => setRequiredFor("")}
-                    />
-                  )}
-                  <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-                    <Button
-                      // onClick={() => setShowMoreFilter(true)}
-                      onClick={handleMoreFilters}
-                      variant="contained"
-                      size={"small"}
-                      sx={{ backgroundColor: "#872FF7", color: "#FFFFFF" }}
-                    >
-                      {`${showMoreFilter ? "Less" : "More"} Filters ${
-                        showMoreFilter ? "-" : "+"
-                      }`}
-                    </Button>
-                  </FormControl>
-                </>
-              )}
-              <DataGrid
-                loading={isLoading}
-                sx={GRID_STYLE}
-                getRowId={(row) => row.index}
-                page={page}
-                pageSize={pageSize}
-                onPageChange={(newPage) =>
-                  fetchDiscountGuidance(newPage, pageSize)
-                }
-                onPageSizeChange={(newPageSize) =>
-                  fetchDiscountGuidance(page, newPageSize)
-                }
-                rows={marginRecommendationData}
-                // columns={customerDetailColumns}
-                columns={showPremiumTableColumns()}
-                // columns={columns}
-                // columnVisibilityModel={columnVisibilityModel}
-                // onColumnVisibilityModelChange={(newModel) =>
-                //     setColumnVisibilityModel(newModel)
-                // }
-                rowsPerPageOptions={[10, 20, 50]}
-                paginationMode="server"
-                rowCount={totalCount}
-                // components={{
-                //     Toolbar: CustomToolbar,
-                // }}
-                // componentsProps={{
-                //     panel: {
-                //         anchorEl: columnButtonEl,
-                //         placement: "bottom-end"
-                //     },
-                //     toolbar: {
-                //         setColumnButtonEl
-                //     }
-                // }}
-                // localeText={{ toolbarColumns: "Select Columns" }}
-                checkboxSelection={true}
-                keepNonExistentRowsSelected
-                onSelectionModelChange={(newRowSelectionModel) => {
-                  setRowSelectionModel(newRowSelectionModel);
-                }}
-                selectionModel={rowSelectionModel}
+              <SearchBox
+                label={"Search Part"}
+                value={partNumber}
+                handleChange={(e) => setPartNumber(e.target.value)}
+                size={250}
+              />
+              <SelectBox
+                label={"Part Class"}
+                value={partClass}
+                options={partClassOptions}
+                // handleChange={(e) => setPartClass(e.target.value)}
+                handleChange={handleChangeTableType}
+                showClearIcon={true}
+                handleUnselect={() => setPartClass("")}
               />
             </Box>
-          )}
-          {(partClass === "" || partClass === "B Class") && (
-            <Box sx={{ height: 500, marginBottom: 8, marginInline: 2 }}>
-              <div className="d-flex justify-content-between">
-                <Typography
-                  sx={{ fontSize: 16, fontWeight: 500, marginTop: 2 }}
-                >
-                  B Class Parts
-                </Typography>
-                {partClass === "" && (
-                  <Button
-                    variant="contained"
-                    sx={{ marginTop: 2, backgroundColor: "#872ff7" }}
-                    onClick={() =>
-                      setShowAllBClassPartsColumns(!showAllBClassPartsColumns)
-                    }
-                    size="small"
-                    endIcon={
-                      showAllBClassPartsColumns ? (
-                        <VisibilityOff />
-                      ) : (
-                        <Visibility />
-                      )
-                    }
+            <Divider component="li" />
+            {(partClass === "" || partClass === "A Class") && (
+              <Box
+                sx={{
+                  height: 500,
+                  marginBottom: 8,
+                  marginInline: 2,
+                  paddingBottom: 12,
+                }}
+              >
+                <div className="d-flex justify-content-between">
+                  <Typography
+                    sx={{ fontSize: 16, fontWeight: 500, marginTop: 2 }}
                   >
-                    {showAllBClassPartsColumns ? "Minimize " : "Show All "}
-                    Columns
-                  </Button>
+                    A Class Parts
+                  </Typography>
+                  {partClass === "" && (
+                    <Button
+                      variant="contained"
+                      sx={{ marginTop: 2, backgroundColor: "#872ff7" }}
+                      onClick={() =>
+                        setShowAllAClassPartsColumns(!showAllAClassPartsColumns)
+                      }
+                      size="small"
+                      endIcon={
+                        showAllAClassPartsColumns ? (
+                          <VisibilityOff />
+                        ) : (
+                          <Visibility />
+                        )
+                      }
+                    >
+                      {showAllAClassPartsColumns ? "Minimize " : "Show All "}
+                      Columns
+                    </Button>
+                  )}
+                </div>
+                {partClass === "A Class" && (
+                  <>
+                    <SelectBox
+                      label={"Part Type"}
+                      value={partType}
+                      options={partTypeOptions}
+                      handleChange={(e) => setPartType(e.target.value)}
+                      showClearIcon={true}
+                      handleUnselect={() => setPartType("")}
+                    />
+                    <SelectBox
+                      label={"Status"}
+                      value={status}
+                      options={statusOptions}
+                      handleChange={(e) => setStatus(e.target.value)}
+                      showClearIcon={true}
+                      handleUnselect={() => setStatus("")}
+                    />
+                    <SelectBox
+                      label={"Usage"}
+                      value={usage}
+                      options={usageOptions}
+                      handleChange={(e) => setUsage(e.target.value)}
+                      showClearIcon={true}
+                      handleUnselect={() => setUsage("")}
+                    />
+                    <SelectBox
+                      label={"Machine Age"}
+                      value={machineAge}
+                      options={machineAgeOptions}
+                      handleChange={(e) => setMachineAge(e.target.value)}
+                      size={150}
+                      showClearIcon={true}
+                      handleUnselect={() => setMachineAge("")}
+                    />
+                    {showFilters.equipmentUsage && (
+                      <SelectBox
+                        label={"Equipment Usage"}
+                        value={equipmentUsage}
+                        options={equipmentUsageOptions}
+                        handleChange={(e) => setEquipmentUsage(e.target.value)}
+                        size={180}
+                        showClearIcon={true}
+                        handleUnselect={() => setEquipmentUsage("")}
+                      />
+                    )}
+                    {showFilters.avgAnnualRevnue && (
+                      <SelectBox
+                        label={"Avg Annual Revenue"}
+                        value={avgAnnualRevnue}
+                        options={avgAnnualRevnueOptions}
+                        handleChange={(e) => setAvgAnnualRevnue(e.target.value)}
+                        size={190}
+                        showClearIcon={true}
+                        handleUnselect={() => setAvgAnnualRevnue("")}
+                      />
+                    )}
+                    {showFilters.contractOrWarranty && (
+                      <SelectBox
+                        label={"Contract or Warranty"}
+                        value={contractOrWarranty}
+                        options={contractOrWarrantyOptions}
+                        handleChange={(e) =>
+                          setContractOrWarranty(e.target.value)
+                        }
+                        size={190}
+                        showClearIcon={true}
+                        handleUnselect={() => setContractOrWarranty("")}
+                      />
+                    )}
+                    {showFilters.requiredFor && (
+                      <SelectBox
+                        label={"Required For"}
+                        value={requiredFor}
+                        options={requiredForOptions}
+                        handleChange={(e) => setRequiredFor(e.target.value)}
+                        size={150}
+                        showClearIcon={true}
+                        handleUnselect={() => setRequiredFor("")}
+                      />
+                    )}
+                    <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+                      <Button
+                        // onClick={() => setShowMoreFilter(true)}
+                        onClick={handleMoreFilters}
+                        variant="contained"
+                        size={"small"}
+                        sx={{ backgroundColor: "#872FF7", color: "#FFFFFF" }}
+                      >
+                        {`${showMoreFilter ? "Less" : "More"} Filters ${
+                          showMoreFilter ? "-" : "+"
+                        }`}
+                      </Button>
+                    </FormControl>
+                  </>
                 )}
-              </div>
-              {partClass === "B Class" && (
-                <>
-                  {/* <SelectBox
+                <DataGrid
+                  loading={partClassALoading}
+                  sx={GRID_STYLE}
+                  getRowId={(row) => row.index}
+                  page={partClassAPageNo}
+                  pageSize={partClassAPageSize}
+                  onPageChange={(newPage) =>
+                    fetchPartClassARecords(newPage, partClassAPageSize)
+                  }
+                  onPageSizeChange={(newPageSize) =>
+                    fetchPartClassARecords(partClassAPageNo, newPageSize)
+                  }
+                  rows={partClassARecords}
+                  columns={showPremiumTableColumns()}
+                  // columnVisibilityModel={columnVisibilityModel}
+                  // onColumnVisibilityModelChange={(newModel) =>
+                  //     setColumnVisibilityModel(newModel)
+                  // }
+                  rowsPerPageOptions={[10, 20, 50]}
+                  paginationMode="server"
+                  rowCount={partClassATotlaRecord}
+                  // components={{
+                  //     Toolbar: CustomToolbar,
+                  // }}
+                  // componentsProps={{
+                  //     panel: {
+                  //         anchorEl: columnButtonEl,
+                  //         placement: "bottom-end"
+                  //     },
+                  //     toolbar: {
+                  //         setColumnButtonEl
+                  //     }
+                  // }}
+                  // localeText={{ toolbarColumns: "Select Columns" }}
+                  checkboxSelection={true}
+                  keepNonExistentRowsSelected
+                  onSelectionModelChange={(newRowSelectionModel) => {
+                    setRowSelectionModel(newRowSelectionModel);
+                  }}
+                  selectionModel={rowSelectionModel}
+                />
+              </Box>
+            )}
+            {(partClass === "" || partClass === "B Class") && (
+              <Box sx={{ height: 500, marginBottom: 8, marginInline: 2 }}>
+                <div className="d-flex justify-content-between">
+                  <Typography
+                    sx={{ fontSize: 16, fontWeight: 500, marginTop: 2 }}
+                  >
+                    B Class Parts
+                  </Typography>
+                  {partClass === "" && (
+                    <Button
+                      variant="contained"
+                      sx={{ marginTop: 2, backgroundColor: "#872ff7" }}
+                      onClick={() =>
+                        setShowAllBClassPartsColumns(!showAllBClassPartsColumns)
+                      }
+                      size="small"
+                      endIcon={
+                        showAllBClassPartsColumns ? (
+                          <VisibilityOff />
+                        ) : (
+                          <Visibility />
+                        )
+                      }
+                    >
+                      {showAllBClassPartsColumns ? "Minimize " : "Show All "}
+                      Columns
+                    </Button>
+                  )}
+                </div>
+                {partClass === "B Class" && (
+                  <>
+                    {/* <SelectBox
                     label={"Part Type"}
                     value={partType}
                     options={partTypeOptions}
@@ -790,38 +987,38 @@ export default function MarginRecommendation(props) {
                     showClearIcon={true}
                     handleUnselect={() => setUsage("")}
                   /> */}
-                  <SelectBox
-                    label={"Machine Age"}
-                    value={machineAge}
-                    options={machineAgeOptions}
-                    handleChange={(e) => setMachineAge(e.target.value)}
-                    size={150}
-                    showClearIcon={true}
-                    handleUnselect={() => setMachineAge("")}
-                  />
-                  {showFilters.equipmentUsage && (
                     <SelectBox
-                      label={"Equipment Usage"}
-                      value={equipmentUsage}
-                      options={equipmentUsageOptions}
-                      handleChange={(e) => setEquipmentUsage(e.target.value)}
-                      size={180}
+                      label={"Machine Age"}
+                      value={machineAge}
+                      options={machineAgeOptions}
+                      handleChange={(e) => setMachineAge(e.target.value)}
+                      size={150}
                       showClearIcon={true}
-                      handleUnselect={() => setEquipmentUsage("")}
+                      handleUnselect={() => setMachineAge("")}
                     />
-                  )}
-                  {showFilters.avgAnnualRevnue && (
-                    <SelectBox
-                      label={"Avg Annual Revenue"}
-                      value={avgAnnualRevnue}
-                      options={avgAnnualRevnueOptions}
-                      handleChange={(e) => setAvgAnnualRevnue(e.target.value)}
-                      size={190}
-                      showClearIcon={true}
-                      handleUnselect={() => setAvgAnnualRevnue("")}
-                    />
-                  )}
-                  {/* {showFilters.contractOrWarranty && (
+                    {showFilters.equipmentUsage && (
+                      <SelectBox
+                        label={"Equipment Usage"}
+                        value={equipmentUsage}
+                        options={equipmentUsageOptions}
+                        handleChange={(e) => setEquipmentUsage(e.target.value)}
+                        size={180}
+                        showClearIcon={true}
+                        handleUnselect={() => setEquipmentUsage("")}
+                      />
+                    )}
+                    {showFilters.avgAnnualRevnue && (
+                      <SelectBox
+                        label={"Avg Annual Revenue"}
+                        value={avgAnnualRevnue}
+                        options={avgAnnualRevnueOptions}
+                        handleChange={(e) => setAvgAnnualRevnue(e.target.value)}
+                        size={190}
+                        showClearIcon={true}
+                        handleUnselect={() => setAvgAnnualRevnue("")}
+                      />
+                    )}
+                    {/* {showFilters.contractOrWarranty && (
                     <SelectBox
                       label={"Contract or Warranty"}
                       value={contractOrWarranty}
@@ -834,126 +1031,129 @@ export default function MarginRecommendation(props) {
                       handleUnselect={() => setContractOrWarranty("")}
                     />
                   )} */}
-                  {showFilters.requiredFor && (
-                    <SelectBox
-                      label={"Required For"}
-                      value={requiredFor}
-                      options={requiredForOptions}
-                      handleChange={(e) => setRequiredFor(e.target.value)}
-                      size={150}
-                      showClearIcon={true}
-                      handleUnselect={() => setRequiredFor("")}
-                    />
-                  )}
-                  <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-                    <Button
-                      // onClick={() => setShowMoreFilter(true)}
-                      onClick={handleMoreFilters}
-                      variant="contained"
-                      sx={{ backgroundColor: "#872FF7", color: "#FFFFFF" }}
-                    >
-                      {`${showMoreFilter ? "Less" : "More"} Filters ${
-                        showMoreFilter ? "-" : "+"
-                      }`}
-                    </Button>
-                  </FormControl>
-                </>
-              )}
-              <DataGrid
-                loading={isLoading}
-                sx={GRID_STYLE}
-                getRowId={(row) => row.index}
-                page={page}
-                pageSize={pageSize}
-                onPageChange={(newPage) =>
-                  fetchDiscountGuidance(newPage, pageSize)
-                }
-                onPageSizeChange={(newPageSize) =>
-                  fetchDiscountGuidance(page, newPageSize)
-                }
-                rows={marginRecommendationData}
-                columns={showStandardTableColums()}
-                // columns={columns}
-                // columnVisibilityModel={columnVisibilityModel}
-                // onColumnVisibilityModelChange={(newModel) =>
-                //     setColumnVisibilityModel(newModel)
-                // }
-                rowsPerPageOptions={[10, 20, 50]}
-                paginationMode="server"
-                rowCount={totalCount}
-                // components={{
-                //     Toolbar: CustomToolbar,
-                // }}
-                // componentsProps={{
-                //     panel: {
-                //         anchorEl: columnButtonEl,
-                //         placement: "bottom-end"
-                //     },
-                //     toolbar: {
-                //         setColumnButtonEl
-                //     }
-                // }}
-                // localeText={{ toolbarColumns: "Select Columns" }}
-                checkboxSelection={true}
-                keepNonExistentRowsSelected
-                onSelectionModelChange={(newRowSelectionModel) => {
-                  setRowSelectionModel(newRowSelectionModel);
-                }}
-                selectionModel={rowSelectionModel}
-              />
-            </Box>
-          )}
-          {(partClass === "" || partClass === "C Class") && (
-            <Box sx={{ height: 500, marginBottom: 5, marginInline: 2 }}>
-              <Typography sx={{ fontSize: 16, fontWeight: 500, marginTop: 2 }}>
-                C Class Parts
-              </Typography>
-              <DataGrid
-                loading={isLoading}
-                sx={GRID_STYLE}
-                getRowId={(row) => row.index}
-                page={page}
-                pageSize={pageSize}
-                onPageChange={(newPage) =>
-                  fetchDiscountGuidance(newPage, pageSize)
-                }
-                onPageSizeChange={(newPageSize) =>
-                  fetchDiscountGuidance(page, newPageSize)
-                }
-                rows={marginRecommendationData}
-                columns={ordinaryTableColumns}
-                // columns={columns}
-                // columnVisibilityModel={columnVisibilityModel}
-                // onColumnVisibilityModelChange={(newModel) =>
-                //     setColumnVisibilityModel(newModel)
-                // }
-                rowsPerPageOptions={[10, 20, 50]}
-                paginationMode="server"
-                rowCount={totalCount}
-                // components={{
-                //     Toolbar: CustomToolbar,
-                // }}
-                // componentsProps={{
-                //     panel: {
-                //         anchorEl: columnButtonEl,
-                //         placement: "bottom-end"
-                //     },
-                //     toolbar: {
-                //         setColumnButtonEl
-                //     }
-                // }}
-                // localeText={{ toolbarColumns: "Select Columns" }}
-                checkboxSelection={true}
-                keepNonExistentRowsSelected
-                onSelectionModelChange={(newRowSelectionModel) => {
-                  setRowSelectionModel(newRowSelectionModel);
-                }}
-                selectionModel={rowSelectionModel}
-              />
-            </Box>
-          )}
-        </Card>
-      </Grid>
-    </div>
+                    {showFilters.requiredFor && (
+                      <SelectBox
+                        label={"Required For"}
+                        value={requiredFor}
+                        options={requiredForOptions}
+                        handleChange={(e) => setRequiredFor(e.target.value)}
+                        size={150}
+                        showClearIcon={true}
+                        handleUnselect={() => setRequiredFor("")}
+                      />
+                    )}
+                    <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+                      <Button
+                        // onClick={() => setShowMoreFilter(true)}
+                        onClick={handleMoreFilters}
+                        variant="contained"
+                        sx={{ backgroundColor: "#872FF7", color: "#FFFFFF" }}
+                      >
+                        {`${showMoreFilter ? "Less" : "More"} Filters ${
+                          showMoreFilter ? "-" : "+"
+                        }`}
+                      </Button>
+                    </FormControl>
+                  </>
+                )}
+                <DataGrid
+                  loading={partClassBLoading}
+                  sx={GRID_STYLE}
+                  getRowId={(row) => row.index}
+                  page={partClassBPageNo}
+                  pageSize={partClassBPageSize}
+                  onPageChange={(newPage) =>
+                    fetchDiscountGuidance(newPage, partClassBPageSize)
+                  }
+                  onPageSizeChange={(newPageSize) =>
+                    fetchDiscountGuidance(partClassBPageNo, newPageSize)
+                  }
+                  rows={partClassBRecords}
+                  columns={showStandardTableColums()}
+                  // columns={columns}
+                  // columnVisibilityModel={columnVisibilityModel}
+                  // onColumnVisibilityModelChange={(newModel) =>
+                  //     setColumnVisibilityModel(newModel)
+                  // }
+                  rowsPerPageOptions={[10, 20, 50]}
+                  paginationMode="server"
+                  rowCount={partClassBTotlaRecord}
+                  // components={{
+                  //     Toolbar: CustomToolbar,
+                  // }}
+                  // componentsProps={{
+                  //     panel: {
+                  //         anchorEl: columnButtonEl,
+                  //         placement: "bottom-end"
+                  //     },
+                  //     toolbar: {
+                  //         setColumnButtonEl
+                  //     }
+                  // }}
+                  // localeText={{ toolbarColumns: "Select Columns" }}
+                  checkboxSelection={true}
+                  keepNonExistentRowsSelected
+                  onSelectionModelChange={(newRowSelectionModel) => {
+                    setRowSelectionModel(newRowSelectionModel);
+                  }}
+                  selectionModel={rowSelectionModel}
+                />
+              </Box>
+            )}
+            {(partClass === "" || partClass === "C Class") && (
+              <Box sx={{ height: 500, marginBottom: 5, marginInline: 2 }}>
+                <Typography
+                  sx={{ fontSize: 16, fontWeight: 500, marginTop: 2 }}
+                >
+                  C Class Parts
+                </Typography>
+                <DataGrid
+                  loading={partClassCLoading}
+                  sx={GRID_STYLE}
+                  getRowId={(row) => row.index}
+                  page={partClassCPageNo}
+                  pageSize={partClassCPageSize}
+                  onPageChange={(newPage) =>
+                    fetchDiscountGuidance(newPage, partClassCPageSize)
+                  }
+                  onPageSizeChange={(newPageSize) =>
+                    fetchDiscountGuidance(partClassCPageNo, newPageSize)
+                  }
+                  rows={partClassCRecords}
+                  columns={ordinaryTableColumns}
+                  // columns={columns}
+                  // columnVisibilityModel={columnVisibilityModel}
+                  // onColumnVisibilityModelChange={(newModel) =>
+                  //     setColumnVisibilityModel(newModel)
+                  // }
+                  rowsPerPageOptions={[10, 20, 50]}
+                  paginationMode="server"
+                  rowCount={partClassCTotlaRecord}
+                  // components={{
+                  //     Toolbar: CustomToolbar,
+                  // }}
+                  // componentsProps={{
+                  //     panel: {
+                  //         anchorEl: columnButtonEl,
+                  //         placement: "bottom-end"
+                  //     },
+                  //     toolbar: {
+                  //         setColumnButtonEl
+                  //     }
+                  // }}
+                  // localeText={{ toolbarColumns: "Select Columns" }}
+                  checkboxSelection={true}
+                  keepNonExistentRowsSelected
+                  onSelectionModelChange={(newRowSelectionModel) => {
+                    setRowSelectionModel(newRowSelectionModel);
+                  }}
+                  selectionModel={rowSelectionModel}
+                />
+              </Box>
+            )}
+          </Card>
+        </Grid>
+      </div>
+    </>
   );
 }
