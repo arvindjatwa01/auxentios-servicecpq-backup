@@ -1,141 +1,50 @@
 import { useCallback, useEffect, useState } from "react";
-import Typography from "@mui/material/Typography";
+
+import { Visibility, VisibilityOff } from "@material-ui/icons";
 import { Box, Button, Card, Divider, FormControl, Grid } from "@mui/material";
+import Typography from "@mui/material/Typography";
 import { GRID_STYLE } from "pages/Repair/CONSTANTS";
 import { DataGrid } from "@mui/x-data-grid";
+
 import {
-  getDiscountColumns,
-  getDiscountDetails,
   getMarginRecommendationClassA,
   getMarginRecommendationClassB,
   getMarginRecommendationClassC,
 } from "services/dashboardServices";
 import SelectBox from "./SelectBox";
 import SearchBox from "./SearchBox";
-import { Visibility, VisibilityOff } from "@material-ui/icons";
-import { callGetApi } from "services/ApiCaller";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 
-const dummyMarginRecommendationData = [
-  {
-    index: 0,
-    partNumber: "AA:20R4192",
-    class: "2X",
-    description: "CRANKSHAFT",
-    costPrice: "1223215.98",
-    // quantity: "4",
-    // total: "13020504.0",
-    partType: "NEW",
-    status: "ACTIVE",
-    usage: "Mining",
-    machineAge: "New",
-    equipmentUsage: "Critical Operation",
-    avgAnnualRevenue: ">100000",
-    contractOrWarranty: "Yes",
-    requiredFor: "Breakdown",
-    predictedMargin: "48.6",
-  },
-  {
-    index: 1,
-    partNumber: "AA:20R4192",
-    class: "2X",
-    description: "CRANKSHAFT",
-    costPrice: "1223215.98",
-    // quantity: "4",
-    // total: "13020504.0",
-    partType: "NEW",
-    status: "ACTIVE",
-    usage: "Mining",
-    machineAge: "New",
-    equipmentUsage: "Critical Operation",
-    avgAnnualRevenue: ">100000",
-    contractOrWarranty: "Yes",
-    requiredFor: "Repair",
-    predictedMargin: "44.3",
-  },
-  {
-    index: 2,
-    partNumber: "AA:5632124V",
-    class: "NN",
-    description: "MOTOR VESTIDO 793F",
-    costPrice: "1050271.49",
-    // quantity: "4",
-    // total: "13020504.0",
-    partType: "Reman",
-    status: "ACTIVE",
-    usage: "Construction",
-    machineAge: "End of life",
-    equipmentUsage: "Non-critical",
-    avgAnnualRevenue: "<100000",
-    contractOrWarranty: "No",
-    requiredFor: "Overhaul",
-    predictedMargin: "31.2",
-  },
-  {
-    index: 3,
-    partNumber: "AA:5632124V",
-    class: "NN",
-    description: "MOTOR VESTIDO 793F",
-    costPrice: "1050271.49",
-    // quantity: "4",
-    // total: "13020504.0",
-    partType: "Refurbish",
-    status: "ACTIVE",
-    usage: "Construction",
-    machineAge: "Midlife",
-    equipmentUsage: "Non-critical",
-    avgAnnualRevenue: "<100000",
-    contractOrWarranty: "No",
-    requiredFor: "Breakdown",
-    predictedMargin: "27.5",
-  },
-  {
-    index: 4,
-    partNumber: "AA:5632124V",
-    class: "NN",
-    description: "MOTOR VESTIDO 793F",
-    costPrice: "1050271.49",
-    // quantity: "4",
-    // total: "13020504.0",
-    partType: "Reman",
-    status: "ACTIVE",
-    usage: "Energy",
-    machineAge: "End of life",
-    equipmentUsage: "Non-critical",
-    avgAnnualRevenue: "<100000",
-    contractOrWarranty: "No",
-    requiredFor: "Overhaul",
-    predictedMargin: "21.8",
-  },
-];
-
 const filterOptions = {
-  equipmentUsage: false,
-  avgAnnualRevnue: false,
-  contractOrWarranty: false,
-  requiredFor: false,
+  part_type: false,
+  status: false,
+  usage_area: false,
+  machine_age: false,
+  equipment_usage: false,
+  avg_annual_revenue: false,
+  contract_or_warranty: false,
+  required_for: false,
 };
 
-export default function MarginRecommendation(props) {
-  const [isLoading, setIsLoading] = useState(false);
-  const [marginRecommendationData, setMarginRecommendationData] = useState([
-    ...dummyMarginRecommendationData,
-  ]);
+const orderOptions = ["Planned", "Breakdown"];
+const partTypeOptions = ["New", "Reman", "Refurbish"];
+const statusOptions = ["Active", "Discontinued", "Inactivate"];
+const usageOptions = ["Mining", "Construction", "Energy", "Marine", "Any"];
+const machineAgeOptions = ["End_of_life", "Mid_life", "New"];
+const equipmentUsageOptions = ["Critical_Operation", "Non-critical"];
+const avgAnnualRevnueOptions = ["<100000", ">100000"];
+const contractOrWarrantyOptions = ["Yes", "No"];
+const requiredForOptions = [
+  "Breakdown",
+  "Overhaul",
+  "Scheduled_Maintenance",
+  "Repair",
+];
+const partClassOptions = ["A Class", "B Class", "C Class"];
+
+export default function MarginRecommendation() {
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
-  const [pageSize, setPageSize] = useState(10);
-  const [page, setPage] = useState(0);
-  const [customerId, setCustomerId] = useState("1023942");
-  const [partNumber, setPartNumber] = useState("");
-  const [partType, setPartType] = useState("");
-  const [status, setStatus] = useState("");
-  const [usage, setUsage] = useState("");
-  const [machineAge, setMachineAge] = useState("");
-  const [equipmentUsage, setEquipmentUsage] = useState("");
-  const [avgAnnualRevnue, setAvgAnnualRevnue] = useState("");
-  const [contractOrWarranty, setContractOrWarranty] = useState("");
-  const [requiredFor, setRequiredFor] = useState("");
-  const [totalCount, setTotalCount] = useState(4);
-  const [sortDetail, setSortDetail] = useState({ sortColumn: "", orderBy: "" });
+  const [partClass, setPartClass] = useState("");
 
   const [partClassALoading, setPartClassALoading] = useState(false);
   const [partClassATotlaRecord, setPartClassATotlaRecord] = useState(0);
@@ -155,16 +64,23 @@ export default function MarginRecommendation(props) {
   const [partClassCPageSize, setPartClassCPageSize] = useState(10);
   const [partClassCRecords, setPartClassCRecords] = useState([]);
 
-  const [partClass, setPartClass] = useState("");
+  const [partNumber, setPartNumber] = useState("");
+  const [partType, setPartType] = useState("");
+  const [status, setStatus] = useState("");
+  const [usage, setUsage] = useState("");
+  const [machineAge, setMachineAge] = useState("");
+  const [equipmentUsage, setEquipmentUsage] = useState("");
+  const [avgAnnualRevnue, setAvgAnnualRevnue] = useState("");
+  const [contractOrWarranty, setContractOrWarranty] = useState("");
+  const [requiredFor, setRequiredFor] = useState("");
+
   const [showMoreFilter, setShowMoreFilter] = useState(false);
   const [showFilters, setShowFilters] = useState(filterOptions);
+  const [visiableColumns, setVisiableColumns] = useState(filterOptions);
   const [showAllAClassPartsColumns, setShowAllAClassPartsColumns] =
     useState(false);
   const [showAllBClassPartsColumns, setShowAllBClassPartsColumns] =
     useState(false);
-  const [showAllCClassPartsColumns, setShowAllCClassPartsColumns] =
-    useState(false);
-  const [columns, setColumns] = useState([]);
 
   // Snack Bar State
   const [severity, setSeverity] = useState("");
@@ -177,6 +93,7 @@ export default function MarginRecommendation(props) {
     setOpenSnack(false);
   };
 
+  // toast message error & info handler
   const handleSnack = (snackSeverity, snackMessage) => {
     setSnackMessage(snackMessage);
     setSeverity(snackSeverity);
@@ -184,8 +101,39 @@ export default function MarginRecommendation(props) {
   };
 
   useEffect(() => {
+    setVisiableColumns({
+      ...visiableColumns,
+      part_type: partType ? true : false,
+      status: status ? true : false,
+      usage_area: usage ? true : false,
+      machine_age: machineAge ? true : false,
+      equipment_usage: equipmentUsage ? true : false,
+      avg_annual_revenue: avgAnnualRevnue ? true : false,
+      contract_or_warranty: contractOrWarranty ? true : false,
+      required_for: requiredFor ? true : false,
+    });
+  }, [
+    partType,
+    status,
+    usage,
+    machineAge,
+    equipmentUsage,
+    avgAnnualRevnue,
+    contractOrWarranty,
+    requiredFor,
+  ]);
+
+  useEffect(() => {
     if (partClass === "" || partClass === "A Class") {
       fetchPartClassARecords(partClassAPageNo, partClassAPageSize);
+    }
+
+    if (partClass === "" || partClass === "B Class") {
+      fetchPartClassBRecords(partClassBPageNo, partClassBPageSize);
+    }
+
+    if (partClass === "" || partClass === "C Class") {
+      fetchPartClassCRecords(partClassCPageNo, partClassCPageSize);
     }
   }, [
     partClass,
@@ -200,57 +148,57 @@ export default function MarginRecommendation(props) {
     requiredFor,
   ]);
 
-  const fetchPartClassARecords = async (pageNo, rowsPerPage) => {
-    setPartClassAPageNo(pageNo);
-    setPartClassAPageSize(rowsPerPage);
-    setPartClassALoading(true);
-    const filter =
-      (partNumber ? `&part_number=${partNumber}` : "") +
-      (partType ? `&part_type=${partType}` : "") +
-      (status ? `&status=${status}` : "") +
-      (usage ? `&usage_area=${usage}` : "") +
-      (machineAge ? `&machine_age=${machineAge}` : "") +
-      (equipmentUsage ? `&equipment_usage=${equipmentUsage}` : "") +
-      (avgAnnualRevnue ? `&avg_annual_revenue=${avgAnnualRevnue}` : "") +
-      (contractOrWarranty
-        ? `&contract_or_warranty=${contractOrWarranty}`
-        : "") +
-      (requiredFor ? `&required_for=${requiredFor}` : "");
+  // fetch Part Class A Records
+  const fetchPartClassARecords = useCallback(
+    async (pageNo, rowsPerPage) => {
+      setPartClassAPageNo(pageNo);
+      setPartClassAPageSize(rowsPerPage);
+      setPartClassALoading(true);
+      const filter =
+        (partNumber ? `&part_number=${partNumber}` : "") +
+        (partType ? `&part_type=${partType}` : "") +
+        (status ? `&status=${status}` : "") +
+        (usage ? `&usage_area=${usage}` : "") +
+        (machineAge ? `&machine_age=${machineAge}` : "") +
+        (equipmentUsage ? `&equipment_usage=${equipmentUsage}` : "") +
+        (avgAnnualRevnue ? `&avg_annual_revenue=${avgAnnualRevnue}` : "") +
+        (contractOrWarranty
+          ? `&contract_or_warranty=${contractOrWarranty}`
+          : "") +
+        (requiredFor ? `&required_for=${requiredFor}` : "");
 
-    const reqUrl = `${filter}&pagenumber=${pageNo + 1}&pagesize=${rowsPerPage}`;
-    await getMarginRecommendationClassA(reqUrl)
-      .then((response) => {
-        setPartClassATotlaRecord(response.number_of_rows);
-        setPartClassARecords(response.data);
-        console.log("response :: ", response);
-      })
-      .catch((err) => {
-        handleSnack(
-          "error",
-          "Error occured while fetching Part Class A details"
-        );
-        setPartClassARecords([]);
-      });
-    setPartClassALoading(false);
-  };
+      const reqUrl = `${filter}&pagenumber=${
+        pageNo + 1
+      }&pagesize=${rowsPerPage}`;
+      await getMarginRecommendationClassA(reqUrl)
+        .then((response) => {
+          setPartClassATotlaRecord(response.number_of_rows);
+          setPartClassARecords(response.data);
+        })
+        .catch((err) => {
+          handleSnack(
+            "error",
+            "Error occured while fetching Part Class A details"
+          );
+          setPartClassARecords([]);
+        });
+      setPartClassALoading(false);
+    },
+    [
+      partClass,
+      partNumber,
+      partType,
+      status,
+      usage,
+      machineAge,
+      equipmentUsage,
+      avgAnnualRevnue,
+      contractOrWarranty,
+      requiredFor,
+    ]
+  );
 
-  useEffect(() => {
-    if (partClass === "" || partClass === "B Class") {
-      fetchPartClassBRecords(partClassBPageNo, partClassBPageSize);
-    }
-  }, [
-    partClass,
-    partNumber,
-    // partType,
-    // status,
-    // usage,
-    machineAge,
-    equipmentUsage,
-    avgAnnualRevnue,
-    // contractOrWarranty,
-    requiredFor,
-  ]);
-
+  // fetch B Class Records
   const fetchPartClassBRecords = async (pageNo, rowsPerPage) => {
     setPartClassBPageNo(pageNo);
     setPartClassBPageSize(rowsPerPage);
@@ -273,7 +221,6 @@ export default function MarginRecommendation(props) {
       .then((response) => {
         setPartClassBTotlaRecord(response.number_of_rows);
         setPartClassBRecords(response.data);
-        console.log("response :: ", response);
       })
       .catch((err) => {
         handleSnack(
@@ -285,12 +232,7 @@ export default function MarginRecommendation(props) {
     setPartClassBLoading(false);
   };
 
-  useEffect(() => {
-    if (partClass === "" || partClass === "C Class") {
-      fetchPartClassCRecords(partClassCPageNo, partClassCPageSize);
-    }
-  }, [partClass, partNumber]);
-
+  // fetch C Class Records
   const fetchPartClassCRecords = async (pageNo, rowsPerPage) => {
     setPartClassCPageNo(pageNo);
     setPartClassCPageSize(rowsPerPage);
@@ -302,7 +244,6 @@ export default function MarginRecommendation(props) {
       .then((response) => {
         setPartClassCTotlaRecord(response.number_of_rows);
         setPartClassCRecords(response.data);
-        console.log("response :: ", response);
       })
       .catch((err) => {
         handleSnack(
@@ -314,95 +255,8 @@ export default function MarginRecommendation(props) {
     setPartClassCLoading(false);
   };
 
-  const fetchDiscountGuidanceCol = () => {
-    // setIsLoading(true);
-    // getDiscountColumns().then(discountCols => {
-    //     discountCols.map(indColumn =>
-    //         columns.push({ field: indColumn.fieldName, headerName: indColumn.columnName, flex: 1 })
-    //     )
-    fetchDiscountGuidance(page + 1, pageSize);
-    // }).catch(e => {
-
-    // })
-  };
-
-  const fetchDiscountGuidance = async (pageNo, rowsPerPage) => {
-    setPage(pageNo);
-    setPageSize(rowsPerPage);
-    let sort = sortDetail.sortColumn
-      ? `&sortColumn=${sortDetail.sortColumn}&orderBY=${sortDetail.orderBy}`
-      : "";
-    // let filter = filterQuery ? `&search=${filterQuery}` : "";
-    // const query = `pageNumber=${pageNo}&pageSize=${rowsPerPage}${sort}${filter}`;
-    const filter =
-      `customer_id=${customerId}` +
-      (partNumber ? `&partNumber=${partNumber}` : "") +
-      (partType ? `&partType=${partType}` : "") +
-      (status ? `&status=${status}` : "") +
-      (usage ? `&usage=${usage}` : "") +
-      (machineAge ? `&machineAge=${machineAge}` : "") +
-      (equipmentUsage ? `&equipmentUsage=${equipmentUsage}` : "") +
-      (avgAnnualRevnue ? `&avgAnnualRevnue=${avgAnnualRevnue}` : "") +
-      (contractOrWarranty ? `&contractOrWarranty=${contractOrWarranty}` : "") +
-      (requiredFor ? `&requiredFor=${requiredFor}` : "");
-    const query = `${filter}&pagenumber=${
-      pageNo + 1
-    }&pagesize=${rowsPerPage}${sort}`;
-
-    await getDiscountDetails(query)
-      .then((discountResult) => {
-        setTotalCount(discountResult[0].number_of_rows);
-        setMarginRecommendationData(discountResult[0].data);
-      })
-      .catch((err) => {
-        props.handleSnack(
-          "error",
-          "Error occured while fetching discount details"
-        );
-        setMarginRecommendationData([]);
-      });
-    setIsLoading(false);
-  };
-
-  const customerDetailColumns = [
-    { field: "partNumber", headerName: "Part #", flex: 1, defaultShow: true },
-    { field: "class", headerName: "Class", flex: 1, defaultShow: true },
-    {
-      field: "description",
-      headerName: "Description",
-      flex: 1,
-      defaultShow: true,
-    },
-    {
-      field: "costPrice",
-      headerName: "Cost Price",
-      flex: 1,
-      defaultShow: true,
-    },
-    { field: "partType", headerName: "Part Type", width: 80 },
-    { field: "status", headerName: "Status", width: 80 },
-    { field: "usage", headerName: "Usage", width: 80 },
-    { field: "machineAge", headerName: "Machine Age", width: 80 },
-    { field: "equipmentUsage", headerName: "Equipment Usage", flex: 1 },
-    { field: "avgAnnualRevenue", headerName: "Avg Annual Revenue", flex: 1 },
-    {
-      field: "contractOrWarranty",
-      headerName: "Contract or Warranty",
-      flex: 1,
-    },
-    { field: "requiredFor", headerName: "Required For", flex: 1 },
-    {
-      field: "predictedMargin",
-      headerName: "Predicted Margin",
-      flex: 1,
-      cellClassName: "fw-bolder",
-      defaultShow: true,
-    },
-    // { field: "quantity", headerName: "Quantity", flex: 1 },
-    // { field: "total", headerName: "Total", flex: 1 },
-  ];
-
-  const premiumTableColumns = [
+  // Part Class A Table Columns
+  const partClassATableColumns = [
     {
       field: "part_number",
       headerName: "Part #",
@@ -466,7 +320,8 @@ export default function MarginRecommendation(props) {
     },
   ];
 
-  const standardTableColumns = [
+  // part Class B Table Columns
+  const partClassBTableColumns = [
     {
       field: "part_number",
       headerName: "Part #",
@@ -528,7 +383,8 @@ export default function MarginRecommendation(props) {
     },
   ];
 
-  const ordinaryTableColumns = [
+  // Part Class C Table Columns
+  const partClassCTableColumns = [
     {
       field: "part_number",
       headerName: "Part #",
@@ -583,6 +439,7 @@ export default function MarginRecommendation(props) {
     },
   ];
 
+  // format design for predected Margin Columns values
   const formatDisplay = (params) => {
     if (params.field === "predicted_margin") {
       return (
@@ -600,26 +457,7 @@ export default function MarginRecommendation(props) {
         </span>
       );
     }
-    console.log("predictedMarginDisplay params :: ", params);
   };
-
-  const orderOptions = ["Planned", "Breakdown"];
-  const partTypeOptions = ["New", "Reman", "Refurbish"];
-  const statusOptions = ["Active", "Discontinued", "Inactivate"];
-  const usageOptions = ["Mining", "Construction", "Energy", "Marine", "Any"];
-  const machineAgeOptions = ["End_of_life", "Mid_life", "New"];
-  const equipmentUsageOptions = ["Critical_Operation", "Non-critical"];
-  const avgAnnualRevnueOptions = ["<100000", ">100000"];
-  const contractOrWarrantyOptions = ["Yes", "No"];
-  const requiredForOptions = [
-    "Breakdown",
-    "Overhaul",
-    "Scheduled_Maintenance",
-    "Repair",
-  ];
-
-  // const partClassOptions = ["Premium", "Standard", "Ordinary"];
-  const partClassOptions = ["A Class", "B Class", "C Class"];
 
   // table Type Change
   const handleChangeTableType = (e) => {
@@ -635,72 +473,79 @@ export default function MarginRecommendation(props) {
     setPartClass(e.target.value);
     setShowMoreFilter(false);
     setShowFilters(filterOptions);
-    // setShowAllAClassPartsColumns(false);
-    // setShowAllBClassPartsColumns(false);
-    // setShowAllCClassPartsColumns(false);
+    setVisiableColumns(filterOptions);
   };
 
+  // show more filter options
   const handleMoreFilters = () => {
     setShowFilters({
-      equipmentUsage: equipmentUsage ? true : !showFilters.equipmentUsage,
-      avgAnnualRevnue: avgAnnualRevnue ? true : !showFilters.avgAnnualRevnue,
-      contractOrWarranty: contractOrWarranty
+      ...showFilters,
+      part_type: partType ? true : !showFilters.part_type,
+      status: status ? true : !showFilters.status,
+      usage_area: usage ? true : !showFilters.usage_area,
+      machine_age: machineAge ? true : !showFilters.machine_age,
+      equipment_usage: equipmentUsage ? true : !showFilters.equipment_usage,
+      avg_annual_revenue: avgAnnualRevnue
         ? true
-        : !showFilters.contractOrWarranty,
-      requiredFor: requiredFor ? true : !showFilters.requiredFor,
+        : !showFilters.avg_annual_revenue,
+      contract_or_warranty: contractOrWarranty
+        ? true
+        : !showFilters.contract_or_warranty,
+      required_for: requiredFor ? true : !showFilters.required_for,
     });
     setShowMoreFilter(!showMoreFilter);
   };
 
-  // Show Premimum Table Columns accoding to Filter
-  const showPremiumTableColumns = useCallback(() => {
+  // Show Margin Class A Table Columns accoding to Filter
+  const showMarginClassATableColumns = useCallback(() => {
     if (partClass === "" || partClass === "A Class") {
-      const hideColumns = ["partType", "status", "usage", "machineAge"];
-      const newColumns = premiumTableColumns.map((columns) => ({
-        ...columns,
+      const updatedColumns = partClassATableColumns.map((column) => ({
+        ...column,
         hide: showAllAClassPartsColumns
           ? false
-          : columns.defaultShow
+          : column.defaultShow
           ? false
-          : partClass === ""
-          ? true
-          : hideColumns.includes(columns.field)
-          ? false
-          : showFilters[columns.field]
-          ? false
+          : visiableColumns[`${column.field}`] !== undefined
+          ? !visiableColumns[`${column.field}`]
           : true,
       }));
-      return newColumns;
+      return updatedColumns;
     }
-  }, [partClass, showFilters, showAllAClassPartsColumns]);
+  }, [showAllAClassPartsColumns, partClass, visiableColumns]);
 
-  // Show Standard Table Columns accoding to Filter
-  const showStandardTableColums = useCallback(() => {
+  // Show  Margin Class B Table Columns accoding to Filter
+  const showMarginClassBTableColums = useCallback(() => {
     if (partClass === "" || partClass === "B Class") {
-      const hideColumns = ["partType", "status", "usage", "machineAge"];
-      const newColumns = standardTableColumns.map((columns) => ({
-        ...columns,
+      // const hideColumns = ["partType", "status", "usage", "machineAge"];
+      // const newColumns = partClassBTableColumns.map((columns) => ({
+      //   ...columns,
+      //   hide: showAllBClassPartsColumns
+      //     ? false
+      //     : columns.defaultShow
+      //     ? false
+      //     : partClass === ""
+      //     ? true
+      //     : hideColumns.includes(columns.field)
+      //     ? false
+      //     : showFilters[columns.field]
+      //     ? false
+      //     : true,
+      // }));
+      // return newColumns;
+
+      const updatedColumns = partClassBTableColumns.map((column) => ({
+        ...column,
         hide: showAllBClassPartsColumns
           ? false
-          : columns.defaultShow
+          : column.defaultShow
           ? false
-          : partClass === ""
-          ? true
-          : hideColumns.includes(columns.field)
-          ? false
-          : showFilters[columns.field]
-          ? false
+          : visiableColumns[`${column.field}`] !== undefined
+          ? !visiableColumns[`${column.field}`]
           : true,
       }));
-      return newColumns;
+      return updatedColumns;
     }
-  }, [partClass, showFilters, showAllBClassPartsColumns]);
-
-  // Show Ordinary Table Columns accoding to Filter
-  const showOrdinaryTableColums = useCallback(() => {}, [
-    partClass,
-    showFilters,
-  ]);
+  }, [showAllBClassPartsColumns, partClass, visiableColumns]);
 
   return (
     <>
@@ -772,7 +617,7 @@ export default function MarginRecommendation(props) {
                   >
                     A Class Parts
                   </Typography>
-                  {partClass === "" && (
+                  {(partClass === "" || partClass === "A Class") && (
                     <Button
                       variant="contained"
                       sx={{ marginTop: 2, backgroundColor: "#872ff7" }}
@@ -828,7 +673,7 @@ export default function MarginRecommendation(props) {
                       showClearIcon={true}
                       handleUnselect={() => setMachineAge("")}
                     />
-                    {showFilters.equipmentUsage && (
+                    {(showMoreFilter || showFilters.equipment_usage) && (
                       <SelectBox
                         label={"Equipment Usage"}
                         value={equipmentUsage}
@@ -839,7 +684,7 @@ export default function MarginRecommendation(props) {
                         handleUnselect={() => setEquipmentUsage("")}
                       />
                     )}
-                    {showFilters.avgAnnualRevnue && (
+                    {(showMoreFilter || showFilters.avg_annual_revenue) && (
                       <SelectBox
                         label={"Avg Annual Revenue"}
                         value={avgAnnualRevnue}
@@ -850,7 +695,7 @@ export default function MarginRecommendation(props) {
                         handleUnselect={() => setAvgAnnualRevnue("")}
                       />
                     )}
-                    {showFilters.contractOrWarranty && (
+                    {(showMoreFilter || showFilters.contract_or_warranty) && (
                       <SelectBox
                         label={"Contract or Warranty"}
                         value={contractOrWarranty}
@@ -863,7 +708,7 @@ export default function MarginRecommendation(props) {
                         handleUnselect={() => setContractOrWarranty("")}
                       />
                     )}
-                    {showFilters.requiredFor && (
+                    {(showMoreFilter || showFilters.required_for) && (
                       <SelectBox
                         label={"Required For"}
                         value={requiredFor}
@@ -902,27 +747,10 @@ export default function MarginRecommendation(props) {
                     fetchPartClassARecords(partClassAPageNo, newPageSize)
                   }
                   rows={partClassARecords}
-                  columns={showPremiumTableColumns()}
-                  // columnVisibilityModel={columnVisibilityModel}
-                  // onColumnVisibilityModelChange={(newModel) =>
-                  //     setColumnVisibilityModel(newModel)
-                  // }
+                  columns={showMarginClassATableColumns()}
                   rowsPerPageOptions={[10, 20, 50]}
                   paginationMode="server"
                   rowCount={partClassATotlaRecord}
-                  // components={{
-                  //     Toolbar: CustomToolbar,
-                  // }}
-                  // componentsProps={{
-                  //     panel: {
-                  //         anchorEl: columnButtonEl,
-                  //         placement: "bottom-end"
-                  //     },
-                  //     toolbar: {
-                  //         setColumnButtonEl
-                  //     }
-                  // }}
-                  // localeText={{ toolbarColumns: "Select Columns" }}
                   checkboxSelection={true}
                   keepNonExistentRowsSelected
                   onSelectionModelChange={(newRowSelectionModel) => {
@@ -940,7 +768,7 @@ export default function MarginRecommendation(props) {
                   >
                     B Class Parts
                   </Typography>
-                  {partClass === "" && (
+                  {(partClass === "" || partClass === "B Class") && (
                     <Button
                       variant="contained"
                       sx={{ marginTop: 2, backgroundColor: "#872ff7" }}
@@ -963,30 +791,6 @@ export default function MarginRecommendation(props) {
                 </div>
                 {partClass === "B Class" && (
                   <>
-                    {/* <SelectBox
-                    label={"Part Type"}
-                    value={partType}
-                    options={partTypeOptions}
-                    handleChange={(e) => setPartType(e.target.value)}
-                    showClearIcon={true}
-                    handleUnselect={() => setPartType("")}
-                  />
-                  <SelectBox
-                    label={"Status"}
-                    value={status}
-                    options={statusOptions}
-                    handleChange={(e) => setStatus(e.target.value)}
-                    showClearIcon={true}
-                    handleUnselect={() => setStatus("")}
-                  /> 
-                  <SelectBox
-                    label={"Usage"}
-                    value={usage}
-                    options={usageOptions}
-                    handleChange={(e) => setUsage(e.target.value)}
-                    showClearIcon={true}
-                    handleUnselect={() => setUsage("")}
-                  /> */}
                     <SelectBox
                       label={"Machine Age"}
                       value={machineAge}
@@ -996,7 +800,7 @@ export default function MarginRecommendation(props) {
                       showClearIcon={true}
                       handleUnselect={() => setMachineAge("")}
                     />
-                    {showFilters.equipmentUsage && (
+                    {(showMoreFilter || showFilters.equipment_usage) && (
                       <SelectBox
                         label={"Equipment Usage"}
                         value={equipmentUsage}
@@ -1007,7 +811,7 @@ export default function MarginRecommendation(props) {
                         handleUnselect={() => setEquipmentUsage("")}
                       />
                     )}
-                    {showFilters.avgAnnualRevnue && (
+                    {(showMoreFilter || showFilters.avg_annual_revenue) && (
                       <SelectBox
                         label={"Avg Annual Revenue"}
                         value={avgAnnualRevnue}
@@ -1018,20 +822,7 @@ export default function MarginRecommendation(props) {
                         handleUnselect={() => setAvgAnnualRevnue("")}
                       />
                     )}
-                    {/* {showFilters.contractOrWarranty && (
-                    <SelectBox
-                      label={"Contract or Warranty"}
-                      value={contractOrWarranty}
-                      options={contractOrWarrantyOptions}
-                      handleChange={(e) =>
-                        setContractOrWarranty(e.target.value)
-                      }
-                      size={190}
-                      showClearIcon={true}
-                      handleUnselect={() => setContractOrWarranty("")}
-                    />
-                  )} */}
-                    {showFilters.requiredFor && (
+                    {(showMoreFilter || showFilters.required_for) && (
                       <SelectBox
                         label={"Required For"}
                         value={requiredFor}
@@ -1044,7 +835,6 @@ export default function MarginRecommendation(props) {
                     )}
                     <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
                       <Button
-                        // onClick={() => setShowMoreFilter(true)}
                         onClick={handleMoreFilters}
                         variant="contained"
                         sx={{ backgroundColor: "#872FF7", color: "#FFFFFF" }}
@@ -1063,34 +853,16 @@ export default function MarginRecommendation(props) {
                   page={partClassBPageNo}
                   pageSize={partClassBPageSize}
                   onPageChange={(newPage) =>
-                    fetchDiscountGuidance(newPage, partClassBPageSize)
+                    fetchPartClassBRecords(newPage, partClassBPageSize)
                   }
                   onPageSizeChange={(newPageSize) =>
-                    fetchDiscountGuidance(partClassBPageNo, newPageSize)
+                    fetchPartClassBRecords(partClassBPageNo, newPageSize)
                   }
                   rows={partClassBRecords}
-                  columns={showStandardTableColums()}
-                  // columns={columns}
-                  // columnVisibilityModel={columnVisibilityModel}
-                  // onColumnVisibilityModelChange={(newModel) =>
-                  //     setColumnVisibilityModel(newModel)
-                  // }
+                  columns={showMarginClassBTableColums()}
                   rowsPerPageOptions={[10, 20, 50]}
                   paginationMode="server"
                   rowCount={partClassBTotlaRecord}
-                  // components={{
-                  //     Toolbar: CustomToolbar,
-                  // }}
-                  // componentsProps={{
-                  //     panel: {
-                  //         anchorEl: columnButtonEl,
-                  //         placement: "bottom-end"
-                  //     },
-                  //     toolbar: {
-                  //         setColumnButtonEl
-                  //     }
-                  // }}
-                  // localeText={{ toolbarColumns: "Select Columns" }}
                   checkboxSelection={true}
                   keepNonExistentRowsSelected
                   onSelectionModelChange={(newRowSelectionModel) => {
@@ -1114,34 +886,16 @@ export default function MarginRecommendation(props) {
                   page={partClassCPageNo}
                   pageSize={partClassCPageSize}
                   onPageChange={(newPage) =>
-                    fetchDiscountGuidance(newPage, partClassCPageSize)
+                    fetchPartClassCRecords(newPage, partClassCPageSize)
                   }
                   onPageSizeChange={(newPageSize) =>
-                    fetchDiscountGuidance(partClassCPageNo, newPageSize)
+                    fetchPartClassCRecords(partClassCPageNo, newPageSize)
                   }
                   rows={partClassCRecords}
-                  columns={ordinaryTableColumns}
-                  // columns={columns}
-                  // columnVisibilityModel={columnVisibilityModel}
-                  // onColumnVisibilityModelChange={(newModel) =>
-                  //     setColumnVisibilityModel(newModel)
-                  // }
+                  columns={partClassCTableColumns}
                   rowsPerPageOptions={[10, 20, 50]}
                   paginationMode="server"
                   rowCount={partClassCTotlaRecord}
-                  // components={{
-                  //     Toolbar: CustomToolbar,
-                  // }}
-                  // componentsProps={{
-                  //     panel: {
-                  //         anchorEl: columnButtonEl,
-                  //         placement: "bottom-end"
-                  //     },
-                  //     toolbar: {
-                  //         setColumnButtonEl
-                  //     }
-                  // }}
-                  // localeText={{ toolbarColumns: "Select Columns" }}
                   checkboxSelection={true}
                   keepNonExistentRowsSelected
                   onSelectionModelChange={(newRowSelectionModel) => {
