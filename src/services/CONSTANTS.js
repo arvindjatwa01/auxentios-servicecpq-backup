@@ -18,7 +18,7 @@ const SEARCH_COVERAGE = BASE_URL + "data-svc/api/v1/coverage/";
 const DATA_SERVICE_URI = BASE_URL + "data-svc/api/v1/";
 const REPAIR_BUILDER_URI = BASE_URL + "repair-builder-svc/v1/";
 const COMMON_SERVICE_URI = BASE_URL + "common-svc/v1/";
-const WARRANTY_CLAIAM_URI = BASE_URL + "warranty-claim-svc/v1/";
+const WARRANTY_CLAIM_URI = BASE_URL + "warranty-claim-svc/v1/";
 
 // search for coverage
 
@@ -556,7 +556,7 @@ export const WORKLIST_URL = COMMON_SERVICE_URI + `worklist`;
 export const TODAY_TASKS_WORKLIST = WORKLIST_URL + `/today-tasks`;
 
 // Warranty Master
-const Warrant_Master_Url = WARRANTY_CLAIAM_URI + "warranty";
+const Warrant_Master_Url = WARRANTY_CLAIM_URI + "warranty";
 export const Recent_Warranty_List_GET = Warrant_Master_Url + "/recent";
 export const Search_By_Fields_Warranty_List_GET =
   Warrant_Master_Url + "/search-by-fields?";
@@ -564,7 +564,7 @@ export const warranty_Details_By_Id_Get = Warrant_Master_Url + "/";
 export const Update_Warranty_Details_PUT = Warrant_Master_Url + "/";
 
 // Claim Master
-const Claim_Master_Url = WARRANTY_CLAIAM_URI + "claim";
+const Claim_Master_Url = WARRANTY_CLAIM_URI + "claim";
 export const Claim_Pagination_List_GET = Claim_Master_Url;
 export const Search_By_Field_Claim_List_GET =
   Claim_Master_Url + "/search-by-fields?";
@@ -577,7 +577,45 @@ export const Claim_Convert_To_Repair_GET =
 export const Create_Claim_POST = Claim_Master_Url;
 
 // Claim Questuin
-const Claim_Questions_Master_Url = WARRANTY_CLAIAM_URI + "claim/question";
+const Claim_Questions_Master_Url = WARRANTY_CLAIM_URI + "claim/question";
 export const Claim_Questions_List_GET = Claim_Questions_Master_Url;
 export const claim_Question_Answer_POST =
   Claim_Questions_Master_Url + "/question-answer";
+
+// claim
+const Claim_Order_Master_Url = WARRANTY_CLAIM_URI + "claimOrder";
+export const Claim_Order_Create_POST = Claim_Order_Master_Url;
+export const Claim_Order_Update_PUT = Claim_Order_Master_Url;
+
+// warranty-return
+const Warranty_Return_Master_Url = WARRANTY_CLAIM_URI + "warrantyReturn";
+export const Warranty_Return_Create_POST = Warranty_Return_Master_Url;
+
+// waranty-coutry
+const Warranty_Country_Master_Url = WARRANTY_CLAIM_URI + "country";
+export const Warranty_Country_List_GET = Warranty_Country_Master_Url;
+
+// warranty-parts-Header
+const Warranty_Parts_Header_Master_Url = WARRANTY_CLAIM_URI + "partsHeader";
+export const Warranty_Parts_Header_Create_POST = Warranty_Parts_Header_Master_Url;
+
+// warranty-shiping-info
+const Warranty_Shipping_Info_Master_Url = WARRANTY_CLAIM_URI + "shippingInfo";
+export const Warranty_Shipping_Info_Create_POST = Warranty_Shipping_Info_Master_Url;
+
+// warranty-shipment-header
+const Warranty_Shipment_Header_Master_Url = WARRANTY_CLAIM_URI + "shipmentHeader";
+export const Warranty_Shipment_Header_Create_POST = Warranty_Shipment_Header_Master_Url;
+
+// warranty-assessment
+const Warranty_Assessment_Master_Url = WARRANTY_CLAIM_URI + "assessment";
+export const Warranty_Assessment_Create_POST = Warranty_Assessment_Master_Url;
+
+// warranty-evaluation
+const Warranty_Evaluation_Master_Url = WARRANTY_CLAIM_URI + "evaluation";
+export const Warranty_Evaluation_Create_POST = Warranty_Evaluation_Master_Url;
+
+// warranty evaluation questions 
+const Warranty_Evaluation_Questions_Master_Url = WARRANTY_CLAIM_URI + "evaluation/question";
+export const Warranty_Evaluation_Questions_Get_GET = Warranty_Evaluation_Questions_Master_Url + "?";
+export const Warranty_Question_Answer_Create_POST = Warranty_Evaluation_Questions_Master_Url

@@ -37,6 +37,8 @@ import {
   Recent_Warranty_List_GET,
   Search_By_Field_Claim_List_GET,
   Search_By_Fields_Warranty_List_GET,
+  Warranty_Country_List_GET,
+  Warranty_Evaluation_Questions_Get_GET,
 } from "services/CONSTANTS";
 import { isEmpty } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/textUtilities";
 import ClaimProcessModal from "./ClaimProcessModal";
@@ -44,6 +46,14 @@ import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import ClaimEditModal from "./ClaimEditModal";
 import WarrantyOverviewModal from "../warrantyMaster/WarrantyOverviewModal";
 import WarrantyDetails from "../warrantyMaster/WarrantyDetails";
+import CheckWarrantyProccessModal from "pages/WarrantyMaster/CheckWarranty/CheckWarrantyProccessModal";
+import ClaimWarrantyAssessmentModal from "pages/WarrantyMaster/CheckWarranty/ClaimWarrantyAssessmentModal";
+import NewFeatureConfirmModal from "pages/WarrantyMaster/CheckWarranty/NewFeatureConfirmModal";
+import ClaimWarrantyEvaluationModal from "pages/WarrantyMaster/CheckWarranty/ClaimWarrantyEvaluationModal";
+import ClaimCreateModal from "pages/WarrantyMaster/CheckWarranty/ClaimCreateModal";
+import ClaimWarrantyDetails from "pages/WarrantyMaster/CheckWarranty/ClaimWarrantyDetails";
+import ClaimRequestProcess from "pages/WarrantyMaster/CheckWarranty/ClaimRequestProcess";
+import ReturnRequester from "pages/WarrantyMaster/WarrantyReturn/ReturnRequester";
 
 const colorStatus = {
   draft: "lightgreen",
@@ -242,18 +252,47 @@ const ClaimMaster = () => {
   const [warrantyData, setWarrantyData] = useState([]);
   const [warrantyStatus, setwarrantyStatus] = useState("all");
 
+  const [openClaimRequestProcess, setOpenClaimRequestProcess] = useState(false);
+  const [openReturnRequsterModal, setOpenReturnRequsterModal] = useState(false);
+  const [countryList, setCountryList] = useState([]);
+  const [partSelectionData, setPartSelectionData] = useState([]);
+
   const [claimRecordData, setClaimRecordData] = useState([]);
   const [showClaimProcessModal, setShowClaimProcessModal] = useState(false);
+  const [showWarrantyAssessmentModal, setShowWarrantyAssessmentModal] =
+    useState(false);
+  const [showNewFeatureCreateModal, setShowNewFeatureCreateModal] =
+    useState(false);
   const [showClaimEditDetailsModal, setShowClaimEditDetailsModal] =
     useState(false);
+  const [claimProcessActiveTabClaim, setClaimProcessActiveTabClaim] =
+    useState(false);
   const [claimRecordId, setClaimRecordId] = useState(null);
+  const [claimOrderId, setClaimOrderId] = useState(null);
+  const [evaluationId, setEvaluationId] = useState(null);
+  const [assesstmentId, setAssesstmentId] = useState(null);
+  const [warrantyRecordId, setWarrantyRecordId] = useState(null);
 
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showOverviewModal, setShowOverviewModal] = useState(false);
   const [showClaimAddEditModal, setShowClaimAddEditModal] = useState(false);
   const [showClaimDetailsModal, setShowClaimDetailsModal] = useState(false);
   const [showUploadFilesModal, setShowUploadFilesModal] = useState(false);
+  const [
+    showClaimWarrantyEvaluationModal,
+    setShowClaimWarrantyEvaluationModal,
+  ] = useState(false);
+  const [showClaimCreateModal, setShowClaimCreateModal] = useState(false);
+  const [showClaimWarrantyDetailsModal, setShowClaimWarrantyDetailsModal] =
+    useState(false);
   const [overviewRecordId, setOverviewRecordId] = useState(null);
+
+  const [evaluationQuestions, setEvaluationQuestions] = useState([]);
+
+  const [claimData, setClaimData] = useState({
+    claimType: "",
+    claimNumber: "",
+  });
 
   // Snack Bar State
   const [severity, setSeverity] = useState("");
@@ -317,6 +356,49 @@ const ClaimMaster = () => {
       getFilterClaimeList();
     }
   }, [claimType, claimStatus]);
+
+  useEffect(() => {
+    getEvaluationQuestions();
+    getCountryKeyValueList();
+  }, []);
+
+  // evaluation questions list
+  const getEvaluationQuestions = () => {
+    const rUrl = `${Warranty_Evaluation_Questions_Get_GET}pageNumber=${1}&pageSize=${10}`;
+    callGetApi(null, rUrl, (response) => {
+      if (response.status === API_SUCCESS) {
+        const responseData = response.data;
+        const options = [];
+        const shortQuestions = responseData.sort(
+          (a, b) => a.questionId - b.questionId
+        );
+        shortQuestions.map((row) => {
+          if (row.questionId === 5 || row.questionId === 6) {
+            options.push({ ...row, type: "input" });
+          } else {
+            options.push({ ...row, type: "select" });
+          }
+        });
+        setEvaluationQuestions(options);
+      }
+    });
+  };
+
+  // country key value list
+  const getCountryKeyValueList = () => {
+    const rUrl = `${Warranty_Country_List_GET}?pageNumber=${0}&pageSize=${10}`;
+    callGetApi(null, rUrl, (response) => {
+      if (response.status === API_SUCCESS) {
+        const responseData = response.data;
+        const options = [];
+        responseData.map((row) =>
+          // options.push({ label: row.countryName, value: row.countryId })
+          options.push({ label: row.countryName, value: row.countryName })
+        );
+        setCountryList(options);
+      }
+    });
+  };
 
   // get the recent warranty List without any Filter applied
   const getRecentWarrantyList = () => {
@@ -411,7 +493,51 @@ const ClaimMaster = () => {
 
   const handleShowClaimProcessModal = (params) => {
     const claimId = params.row["claimId"];
+    const claimType = params.row["claimType"];
+    const claimNumber = params.row["claimNumber"];
+    const warrantyId = params.row[" warrantyId"];
     setClaimRecordId(claimId);
+
+    setWarrantyRecordId(warrantyId);
+    setClaimData({
+      claimType: claimType,
+      claimNumber: claimNumber,
+    });
+
+    setShowClaimWarrantyDetailsModal(true);
+    setClaimProcessActiveTabClaim(false);
+    // setShowClaimProcessModal(true);
+    // setShowWarrantyAssessmentModal(true);
+  };
+
+  // create claim order (Show modal for claim order create)
+  const handleCreateClaimOrder = () => {
+    setShowClaimWarrantyDetailsModal(false);
+    // setShowClaimProcessModal(true);
+    setOpenClaimRequestProcess(true);
+  };
+
+  // show the warrany evaluation model box
+  const handleShowClaimEvaluation = () => {
+    setShowClaimProcessModal(false);
+    setShowWarrantyAssessmentModal(true);
+  };
+
+  const handleShowClaimWarrantyEvaluationModal = () => {
+    setShowClaimWarrantyEvaluationModal(true);
+    setShowNewFeatureCreateModal(false);
+  };
+
+  // claim create modal
+  const handleShowClaimCreateModal = () => {
+    setShowClaimWarrantyEvaluationModal(false);
+    setClaimProcessActiveTabClaim(true);
+    setShowClaimCreateModal(true);
+  };
+
+  const handleShowClaimProceeOnClaimCreate = () => {
+    setShowClaimCreateModal(false);
+    setClaimProcessActiveTabClaim(true);
     setShowClaimProcessModal(true);
   };
 
@@ -425,6 +551,14 @@ const ClaimMaster = () => {
     const claimId = params.row["claimId"];
     setClaimRecordId(claimId);
     setShowClaimEditDetailsModal(true);
+  };
+
+  const handeleShowReturnRequester = (data) => {
+    const options = [];
+    options.push(data);
+    setPartSelectionData([...options]);
+    setOpenReturnRequsterModal(true);
+    setOpenClaimRequestProcess(false);
   };
 
   const claimColumn = [
@@ -680,6 +814,7 @@ const ClaimMaster = () => {
                                 <FormControl>
                                   {claimsStatus.map((status, i) => (
                                     <FormControlLabel
+                                      key={`${status.value}-${i}`}
                                       label={
                                         <Typography sx={{ fontSize: 14 }}>
                                           {status.label}
@@ -715,6 +850,7 @@ const ClaimMaster = () => {
                                 <FormControl>
                                   {claimTypes.map((type, i) => (
                                     <FormControlLabel
+                                      key={`${type.value}-${i}`}
                                       label={
                                         <Typography sx={{ fontSize: 14 }}>
                                           {type.label}
@@ -778,6 +914,7 @@ const ClaimMaster = () => {
                                 <FormControl>
                                   {warrantyStatusOptions.map((status, i) => (
                                     <FormControlLabel
+                                      key={`${status.value}-${i}-1`}
                                       label={
                                         <Typography sx={{ fontSize: 14 }}>
                                           {status.label}
@@ -822,14 +959,84 @@ const ClaimMaster = () => {
           </div>
         </div>
       </div>
+      {showClaimWarrantyDetailsModal && (
+        <ClaimWarrantyDetails
+          show={showClaimWarrantyDetailsModal}
+          hideModal={() => setShowClaimWarrantyDetailsModal(false)}
+          recordId={claimRecordId}
+          handleSnack={handleSnack}
+          handleCreateClaimOrder={handleCreateClaimOrder}
+        />
+      )}
       {showClaimProcessModal && (
+        <CheckWarrantyProccessModal
+          show={showClaimProcessModal}
+          hideModal={() => setShowClaimProcessModal(false)}
+          recordId={claimRecordId}
+          handleSnack={handleSnack}
+          claimProcessActiveTabClaim={claimProcessActiveTabClaim}
+          claimDetails={claimData}
+          claimOrderId={claimOrderId}
+          setClaimOrderId={setClaimOrderId}
+          handleShowClaimEvaluation={handleShowClaimEvaluation}
+        />
+      )}
+      {showWarrantyAssessmentModal && (
+        <ClaimWarrantyAssessmentModal
+          show={showWarrantyAssessmentModal}
+          hideModal={() => setShowWarrantyAssessmentModal(false)}
+          recordId={claimRecordId}
+          handleSnack={handleSnack}
+          handleShowNewFeactureConfirmModal={() =>
+            setShowNewFeatureCreateModal(true)
+          }
+          setEvaluatedId={setAssesstmentId}
+          warrantyRecordId={warrantyRecordId}
+        />
+      )}
+      {showNewFeatureCreateModal && (
+        <NewFeatureConfirmModal
+          show={showNewFeatureCreateModal}
+          hideModal={() => setShowNewFeatureCreateModal(false)}
+          recordId={claimRecordId}
+          handleSnack={handleSnack}
+          handleClickYes={handleShowClaimWarrantyEvaluationModal}
+        />
+      )}
+      {showClaimWarrantyEvaluationModal && (
+        <ClaimWarrantyEvaluationModal
+          show={showClaimWarrantyEvaluationModal}
+          hideModal={() => setShowClaimWarrantyEvaluationModal(false)}
+          recordId={claimRecordId}
+          handleSnack={handleSnack}
+          handleShowClaimCreateModal={handleShowClaimCreateModal}
+          handleShowClaimProceeOnClaimCreate={
+            handleShowClaimProceeOnClaimCreate
+          }
+          evaluatedId={assesstmentId}
+          evaluationQuestions={evaluationQuestions}
+          warrantyRecordId={warrantyRecordId}
+        />
+      )}
+      {showClaimCreateModal && (
+        <ClaimCreateModal
+          show={showClaimCreateModal}
+          hideModal={() => setShowClaimCreateModal(false)}
+          recordId={claimRecordId}
+          handleSnack={handleSnack}
+          handleShowClaimProcessModal={handleShowClaimProceeOnClaimCreate}
+        />
+      )}
+
+      {/* {showClaimProcessModal && (
         <ClaimProcessModal
           show={showClaimProcessModal}
           hideModal={() => setShowClaimProcessModal(false)}
           recordId={claimRecordId}
           handleSnack={handleSnack}
         />
-      )}
+      )} */}
+
       {showClaimEditDetailsModal && (
         <ClaimEditModal
           show={showClaimEditDetailsModal}
@@ -858,6 +1065,34 @@ const ClaimMaster = () => {
         showUploadFilesModal={showUploadFilesModal}
         handleFilesUploadModal={handleFilesUploadModal}
       />
+
+      {openClaimRequestProcess && (
+        <ClaimRequestProcess
+          show={openClaimRequestProcess}
+          hideModal={() => setOpenClaimRequestProcess(false)}
+          claimRecordId={claimRecordId}
+          handleSnack={handleSnack}
+          evaluationQuestions={evaluationQuestions}
+          claimOrderId={claimOrderId}
+          setClaimOrderId={setClaimOrderId}
+          claimDetails={claimData}
+          evaluationId={evaluationId}
+          setEvaluationId={setEvaluationId}
+          assesstmentId={assesstmentId}
+          setAssesstmentId={setAssesstmentId}
+          handeleShowReturnRequester={handeleShowReturnRequester}
+        />
+      )}
+
+      {openReturnRequsterModal && (
+        <ReturnRequester
+          show={openReturnRequsterModal}
+          hideModal={() => setOpenReturnRequsterModal(false)}
+          handleSnack={handleSnack}
+          countryRegionOptionsList={countryList}
+          partSelectionData={partSelectionData}
+        />
+      )}
     </>
   );
 };
