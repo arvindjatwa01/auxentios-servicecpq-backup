@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 
 import Pagination from "@mui/material/Pagination";
-import { Divider, Grid, Stack } from "@mui/material";
+import { Box, Divider, Grid, Stack, Tab } from "@mui/material";
+import { TabContext, TabList, TabPanel } from "@mui/lab";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import Switch from "@mui/material/Switch";
@@ -36,6 +37,8 @@ import { isEmpty } from "pages/PortfolioAndBundle/newCreatePortfolioData/utiliti
 import EquipmentReportDetail from "./EquipmentMaster/EquipmentReportDetail";
 import WarrantyOverviewModal from "./warrantyMaster/WarrantyOverviewModal";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
+import { Card } from "react-bootstrap";
+import WarrantyCoverageView from "./warrantyMaster/WarrantyCoverageView";
 
 const EquipmentMaster = () => {
   const [showModal, setShowModal] = useState(false);
@@ -48,6 +51,8 @@ const EquipmentMaster = () => {
 
   const [selectedEquipmentId, setSelectedEquipmentId] = useState(null);
   const [selectEquipmentDetails, setSelectEquipmentDetails] = useState(null);
+
+  const [warrantyTabValue, setWarrantyTabValue] = useState("");
 
   const [contractRecordsList, setContractRecordsList] = useState([
     {
@@ -113,6 +118,8 @@ const EquipmentMaster = () => {
   const [pageNo, setPageNo] = useState(1);
   const [warrantyRecordId, setWarrantyRecordId] = useState(null);
   const [showWarrantyOverviewModal, setShowWarrantyOverviewModal] =
+    useState(false);
+  const [showWarrantyCoverageModal, setShowWarrantyCoverageModal] =
     useState(false);
   const [showClaimAddEditModal, setShowClaimAddEditModal] = useState(false);
   const [showClaimDetailsModal, setShowClaimDetailsModal] = useState(false);
@@ -183,6 +190,11 @@ const EquipmentMaster = () => {
 
   const handlePageChange = (event, value) => {
     setPageNo(value);
+  };
+
+  // page change by card block
+  const handleCardPageChange = (newPageNo) => {
+    setPageNo(newPageNo);
   };
 
   const [loading, setLoading] = useState(false);
@@ -966,79 +978,6 @@ const EquipmentMaster = () => {
   const viewDetailsPage_1 = () => {
     return (
       <>
-        <div className="bg-white p-3 border-radius-10 overflow-hidden">
-          <div className="row align-items-end">
-            <div className="col-lg-4 col-md-4 col-sm-6 col-12">
-              <div className="d-block">
-                <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                  Manufacturer
-                </p>
-                <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                  {isEmpty(selectEquipmentDetails.maker)
-                    ? "NA"
-                    : selectEquipmentDetails.maker}
-                  {/* Caterpillar */}
-                </p>
-              </div>
-            </div>
-            <div className="col-lg-4 col-md-4 col-sm-6 col-12">
-              <div className="d-block">
-                <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                  Model
-                </p>
-                <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                  {isEmpty(selectEquipmentDetails.model)
-                    ? "NA"
-                    : selectEquipmentDetails.model}
-                  {/* 336D2 L */}
-                </p>
-              </div>
-            </div>
-            <div className="col-lg-4 col-md-4 col-sm-6 col-12">
-              <img
-                src="../assets/images/chain-excavator.png"
-                alt="jcb"
-                className=" img-fluid w-100"
-              />
-            </div>
-            <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
-              <div className="d-block">
-                <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                  Engine Model
-                </p>
-                <p className="text-primary font-size-12 mt-1 font-weight-500">
-                  {/* {isEmpty(selectEquipmentDetails.engineModel)
-                    ? "NA"
-                    : selectEquipmentDetails.engineModel} */}
-                  C9 ACERT
-                </p>
-              </div>
-            </div>
-            <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
-              <div className="d-block">
-                <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                  Operating Weight
-                </p>
-                <p className="text-primary font-size-12 mt-1 font-weight-500">
-                  {/* {isEmpty(selectEquipmentDetails.operator)
-                    ? "NA"
-                    : selectEquipmentDetails.operator} */}
-                  80648 lb
-                </p>
-              </div>
-            </div>
-            <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
-              <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                Net Flywheel Power
-              </p>
-              <p className="text-primary font-size-12 mt-1 font-weight-500">
-                {isEmpty(selectEquipmentDetails.netFlywheelPower)
-                  ? "NA"
-                  : selectEquipmentDetails.netFlywheelPower}
-              </p>
-            </div>
-          </div>
-        </div>
         <Grid
           item
           md={12}
@@ -1077,8 +1016,215 @@ const EquipmentMaster = () => {
 
   // page 2 content
   const viewDetailsPage_2 = () => {
+    return <>{viewBasicData()}</>;
+  };
+
+  // page 3 content
+  const viewDetailsPage_3 = () => {
+    return <></>;
+  };
+
+  // page 4 content
+  const viewDetailsPage_4 = () => {
     return (
       <>
+        {/* <EquipmentDataTable
+          columns={erpWarrentyItemColumns}
+          data={warrentyData}
+          title="Warranty"
+        /> */}
+      </>
+    );
+  };
+
+  // page 5 content
+  const viewDetailsPage_5 = () => {
+    return <></>;
+  };
+
+  // page 6 content
+  const viewDetailsPage_6 = () => {
+    return <></>;
+  };
+
+  const equipmentOverview = () => {
+    return (
+      <>
+        <div className="">
+          <div className="bg-white p-3 border-radius-10 overflow-hidden">
+            <div className="row align-items-center">
+              <div className="col-lg-8 col-md-8 col-sm-6 col-12">
+                <Grid container spacing={2}>
+                  <Grid
+                    item
+                    xs={4}
+                    sx={{ cursor: "pointer" }}
+                    onClick={() => handleCardPageChange(2)}
+                  >
+                    <div className="card border px-2 py-1 mt-1 mb-0">
+                      <div className="card-body">
+                        {/* <span className=""></span> */}
+                        <h5 className="mt-0 text-center">Basic Data</h5>
+                      </div>
+                    </div>
+                  </Grid>
+                  <Grid
+                    item
+                    xs={4}
+                    sx={{ cursor: "pointer" }}
+                    onClick={() => handleCardPageChange(3)}
+                  >
+                    <div className="card border px-0 py-1 mt-1 mb-0">
+                      <div className="card-body">
+                        {/* <span className="">Configuration</span> */}
+                        <h5 className="mt-0 text-center">Configuration</h5>
+                      </div>
+                    </div>
+                  </Grid>
+                  <Grid
+                    item
+                    xs={4}
+                    sx={{ cursor: "pointer" }}
+                    onClick={() => handleCardPageChange(4)}
+                  >
+                    <div className="card border px-2 py-1 mt-1 mb-0">
+                      <div className="card-body">
+                        {/* <span className="">In Stock</span> */}
+                        <h5 className="mt-0 text-center">Warranty</h5>
+                      </div>
+                    </div>
+                  </Grid>
+                  <Grid
+                    item
+                    xs={4}
+                    sx={{ cursor: "pointer" }}
+                    onClick={() => handleCardPageChange(5)}
+                  >
+                    <div className="card border px-2 py-1 mt-1">
+                      <div className="card-body">
+                        {/* <span className="">In Stock</span> */}
+                        <h5 className="mt-0 text-center">Contracts</h5>
+                      </div>
+                    </div>
+                  </Grid>
+                  <Grid
+                    item
+                    xs={4}
+                    sx={{ cursor: "pointer" }}
+                    onClick={() => handleCardPageChange(6)}
+                  >
+                    <div className="card border px-2 py-1 mt-1">
+                      <div className="card-body">
+                        {/* <span className="">In Stock</span> */}
+                        <h5 className="mt-0 text-center">Usage</h5>
+                      </div>
+                    </div>
+                  </Grid>
+                  <Grid
+                    item
+                    xs={4}
+                    sx={{ cursor: "pointer" }}
+                    onClick={() => handleCardPageChange(7)}
+                  >
+                    <div className="card border px-2 py-1 mt-1">
+                      <div className="card-body">
+                        {/* <span className="">In Stock</span> */}
+                        <h5 className="mt-0 text-center">Reports</h5>
+                      </div>
+                    </div>
+                  </Grid>
+                </Grid>
+              </div>
+              <div className="col-lg-4 col-md-4 col-sm-6 col-12">
+                <img
+                  src="../assets/images/chain-excavator.png"
+                  alt="jcb"
+                  className=" img-fluid w-100"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  };
+
+  // view Basic data as Page no 2
+  const viewBasicData = () => {
+    return (
+      <>
+        <div className="bg-white p-3 border-radius-10 overflow-hidden">
+          <div className="row align-items-end">
+            <div className="col-lg-4 col-md-4 col-sm-6 col-12">
+              <div className="d-block">
+                <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                  Manufacturer
+                </p>
+                <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                  {isEmpty(selectEquipmentDetails.maker)
+                    ? "NA"
+                    : selectEquipmentDetails.maker}
+                </p>
+              </div>
+            </div>
+            <div className="col-lg-4 col-md-4 col-sm-6 col-12">
+              <div className="d-block">
+                <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                  Model
+                </p>
+                <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                  {isEmpty(selectEquipmentDetails.model)
+                    ? "NA"
+                    : selectEquipmentDetails.model}
+                  {/* 336D2 L */}
+                </p>
+              </div>
+            </div>
+            {/* <div className="col-lg-4 col-md-4 col-sm-6 col-12">
+              <img
+                src="../assets/images/chain-excavator.png"
+                alt="jcb"
+                className=" img-fluid w-100"
+              />
+            </div> */}
+            <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
+              <div className="d-block">
+                <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                  Engine Model
+                </p>
+                <p className="text-primary font-size-12 mt-1 font-weight-500">
+                  {/* {isEmpty(selectEquipmentDetails.engineModel)
+                    ? "NA"
+                    : selectEquipmentDetails.engineModel} */}
+                  C9 ACERT
+                </p>
+              </div>
+            </div>
+            <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
+              <div className="d-block">
+                <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                  Operating Weight
+                </p>
+                <p className="text-primary font-size-12 mt-1 font-weight-500">
+                  {/* {isEmpty(selectEquipmentDetails.operator)
+                    ? "NA"
+                    : selectEquipmentDetails.operator} */}
+                  80648 lb
+                </p>
+              </div>
+            </div>
+            <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
+              <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                Net Flywheel Power
+              </p>
+              <p className="text-primary font-size-12 mt-1 font-weight-500">
+                {isEmpty(selectEquipmentDetails.netFlywheelPower)
+                  ? "NA"
+                  : selectEquipmentDetails.netFlywheelPower}
+              </p>
+            </div>
+          </div>
+        </div>
         <h5 className="font-weight-500 mt-4 ">Customer Details</h5>
         <div className="bg-white p-3 border-radius-10 mt-3">
           <div className="row">
@@ -1246,35 +1392,6 @@ const EquipmentMaster = () => {
             </div>
           </div>
         </div>
-      </>
-    );
-  };
-
-  // page 3 content
-  const viewDetailsPage_3 = () => {
-    return (
-      <>
-        <h5 className="font-weight-500 mt-4 ">Contract Details</h5>
-        <EquipmentDataTable
-          columns={contractDetailsColumns}
-          data={contractRecordsList}
-          title="Contracts"
-        />
-        <h5 className="font-weight-500 mt-5 ">Warranty Details</h5>
-        <EquipmentDataTable
-          columns={warrentyDetailsColumns}
-          data={warrantyDetailsList}
-          title="Warranty"
-          buttonText={"Add"}
-        />
-      </>
-    );
-  };
-
-  // page 4 content
-  const viewDetailsPage_4 = () => {
-    return (
-      <>
         <h5 className="font-weight-500 mt-4 ">ERP Details</h5>
         <div className="bg-white p-3 border-radius-10 mt-3">
           <div className="row">
@@ -1336,22 +1453,358 @@ const EquipmentMaster = () => {
             </div>
           </div>
         </div>
+      </>
+    );
+  };
+
+  // view Configration Data as Page no 3
+  const viewConfigurationData = () => {
+    return (
+      <>
         <EquipmentDataTable
           columns={erpComponentColumns}
           data={warrantyDetailsList}
           title="Component"
         />
+      </>
+    );
+  };
+
+  // view Warranty Details as Page no 4
+  const viewWarratyData = () => {
+    return (
+      <>
+        <h5 className="font-weight-500 mt-5 ">Warranty Details</h5>
+        <div className="bg-white p-3 border-radius-10 overflow-hidden">
+          <div className="row align-items-end">
+            <div className="col-lg-4 col-md-4 col-sm-6 col-12">
+              <div className="d-block">
+                <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                  Warranty Type
+                </p>
+                <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                  {isEmpty(selectEquipmentDetails.maker)
+                    ? "NA"
+                    : selectEquipmentDetails.maker}
+                </p>
+              </div>
+            </div>
+            <div className="col-lg-4 col-md-4 col-sm-6 col-12">
+              <div className="d-block">
+                <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                  Basis
+                </p>
+                <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                  {isEmpty(selectEquipmentDetails.maker)
+                    ? "NA"
+                    : selectEquipmentDetails.maker}
+                </p>
+              </div>
+            </div>
+            <div className="col-lg-4 col-md-4 col-sm-6 col-12">
+              <div className="d-block">
+                <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                  Duration
+                </p>
+                <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                  {isEmpty(selectEquipmentDetails.maker)
+                    ? "NA"
+                    : selectEquipmentDetails.maker}
+                </p>
+              </div>
+            </div>
+            <div className="col-lg-4 col-md-4 col-sm-6 col-12">
+              <div className="d-block">
+                <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                  Title
+                </p>
+                <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                  {isEmpty(selectEquipmentDetails.maker)
+                    ? "NA"
+                    : selectEquipmentDetails.maker}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="bg-white py-3 border-radius-10 mt-2">
+          <Grid item xs={12}>
+            <TabContext value={warrantyTabValue}>
+              <Box
+                sx={{
+                  borderBottom: 1,
+                  borderColor: "divider",
+                  marginTop: 0.4,
+                  marginInline: 2,
+                }}
+              >
+                <TabList
+                  className=""
+                  onChange={(e, tabValue) => setWarrantyTabValue(tabValue)}
+                >
+                  <Tab
+                    label="Year 1"
+                    value={"year1"}
+                    className="heading-tabs"
+                  />
+                  <Tab
+                    label="Year 2"
+                    value={"year2"}
+                    className="heading-tabs"
+                  />
+                </TabList>
+              </Box>
+              <TabPanel value="year1" sx={{ marginTop: 0 }}>
+                <div className="row align-items-end">
+                  <div className="col-lg-4 col-md-4 col-sm-6 col-12">
+                    <div className="d-block">
+                      <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                        Warranty Type
+                      </p>
+                      <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                        {isEmpty(selectEquipmentDetails.maker)
+                          ? "NA"
+                          : selectEquipmentDetails.maker}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="col-lg-4 col-md-4 col-sm-6 col-12">
+                    <div className="d-block">
+                      <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                        Start Usage
+                      </p>
+                      <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                        {isEmpty(selectEquipmentDetails.maker)
+                          ? "NA"
+                          : selectEquipmentDetails.maker}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="col-lg-4 col-md-4 col-sm-6 col-12">
+                    <div className="d-block">
+                      <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                        End Usage
+                      </p>
+                      <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                        {isEmpty(selectEquipmentDetails.maker)
+                          ? "NA"
+                          : selectEquipmentDetails.maker}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="col-lg-4 col-md-4 col-sm-6 col-12">
+                    <div className="d-block">
+                      <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                        Start Date
+                      </p>
+                      <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                        {isEmpty(selectEquipmentDetails.maker)
+                          ? "NA"
+                          : selectEquipmentDetails.maker}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="col-lg-4 col-md-4 col-sm-6 col-12">
+                    <div className="d-block">
+                      <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                        End Date
+                      </p>
+                      <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                        {isEmpty(selectEquipmentDetails.maker)
+                          ? "NA"
+                          : selectEquipmentDetails.maker}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="col-lg-4 col-md-4 col-sm-6 col-12">
+                    <div className="d-block">
+                      <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                        Warranty Expense Account
+                      </p>
+                      <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                        {isEmpty(selectEquipmentDetails.maker)
+                          ? "NA"
+                          : selectEquipmentDetails.maker}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="col-lg-4 col-md-4 col-sm-6 col-12">
+                    <div className="d-block">
+                      <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                        Amount
+                      </p>
+                      <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                        {isEmpty(selectEquipmentDetails.maker)
+                          ? "NA"
+                          : selectEquipmentDetails.maker}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="Add-new-segment-div p-3 border-radius-10 my-2">
+                  <div class="repairbtn-dropdown">
+                    <button
+                      className="btn bg-primary text-white ml-2 dropbtn"
+                      onClick={handleShowWarrantyCoverage}
+                    >
+                      View Coverage
+                      {/* <span className="ml-2">
+                        <FontAwesomeIcon icon={faAngleDown} />
+                      </span> */}
+                    </button>
+                  </div>
+                </div>
+              </TabPanel>
+              <TabPanel value="year2" sx={{ marginTop: 0 }}>
+                <div className="row align-items-end">
+                  <div className="col-lg-4 col-md-4 col-sm-6 col-12">
+                    <div className="d-block">
+                      <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                        Warranty Type
+                      </p>
+                      <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                        {isEmpty(selectEquipmentDetails.maker)
+                          ? "NA"
+                          : selectEquipmentDetails.maker}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="col-lg-4 col-md-4 col-sm-6 col-12">
+                    <div className="d-block">
+                      <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                        Start Usage
+                      </p>
+                      <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                        {isEmpty(selectEquipmentDetails.maker)
+                          ? "NA"
+                          : selectEquipmentDetails.maker}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="col-lg-4 col-md-4 col-sm-6 col-12">
+                    <div className="d-block">
+                      <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                        End Usage
+                      </p>
+                      <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                        {isEmpty(selectEquipmentDetails.maker)
+                          ? "NA"
+                          : selectEquipmentDetails.maker}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="col-lg-4 col-md-4 col-sm-6 col-12">
+                    <div className="d-block">
+                      <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                        Start Date
+                      </p>
+                      <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                        {isEmpty(selectEquipmentDetails.maker)
+                          ? "NA"
+                          : selectEquipmentDetails.maker}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="col-lg-4 col-md-4 col-sm-6 col-12">
+                    <div className="d-block">
+                      <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                        End Date
+                      </p>
+                      <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                        {isEmpty(selectEquipmentDetails.maker)
+                          ? "NA"
+                          : selectEquipmentDetails.maker}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="col-lg-4 col-md-4 col-sm-6 col-12">
+                    <div className="d-block">
+                      <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                        Warranty Expense Account
+                      </p>
+                      <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                        {isEmpty(selectEquipmentDetails.maker)
+                          ? "NA"
+                          : selectEquipmentDetails.maker}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="col-lg-4 col-md-4 col-sm-6 col-12">
+                    <div className="d-block">
+                      <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                        Amount
+                      </p>
+                      <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                        {isEmpty(selectEquipmentDetails.maker)
+                          ? "NA"
+                          : selectEquipmentDetails.maker}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className="Add-new-segment-div p-3 border-radius-10 my-2">
+                  <div class="repairbtn-dropdown">
+                    <button
+                      className="btn bg-primary text-white ml-2 dropbtn"
+                      onClick={handleShowWarrantyCoverage}
+                    >
+                      View Coverage
+                      {/* <span className="ml-2">
+                        <FontAwesomeIcon icon={faAngleDown} />
+                      </span> */}
+                    </button>
+                  </div>
+                </div>
+              </TabPanel>
+            </TabContext>
+          </Grid>
+        </div>
         {/* <EquipmentDataTable
-          columns={erpWarrentyItemColumns}
-          data={warrentyData}
+          columns={warrentyDetailsColumns}
+          data={warrantyDetailsList}
           title="Warranty"
+          buttonText={"Add"}
         /> */}
       </>
     );
   };
 
-  // page 5 content
-  const viewDetailsPage_5 = () => {
+  // view Contracts Data as Page no 5
+  const viewContractsData = () => {
+    return (
+      <>
+        <h5 className="font-weight-500 mt-4 ">Contract Details</h5>
+        <EquipmentDataTable
+          columns={contractDetailsColumns}
+          data={contractRecordsList}
+          title="Contracts"
+        />
+      </>
+    );
+  };
+
+  // view Usage Data as Page no 6
+  const viewUsageData = () => {
+    return (
+      <>
+        <h5 className="font-weight-500 mt-4 ">Usage Details </h5>
+        <EquipmentDataTable
+          columns={usageDetailsColumns}
+          data={usageDetailsList}
+          title="Usage"
+        />
+        <EquipmentDataTable
+          columns={usageSmuItemColumns}
+          data={dailyUsageDetails}
+          title="Usage"
+        />
+      </>
+    );
+  };
+
+  // view Reports Data as Page no 7
+  const viewReportsData = () => {
     return (
       <>
         <h5 className="font-weight-500 mt-4 ">Service Report</h5>
@@ -1370,23 +1823,9 @@ const EquipmentMaster = () => {
     );
   };
 
-  // page 6 content
-  const viewDetailsPage_6 = () => {
-    return (
-      <>
-        <h5 className="font-weight-500 mt-4 ">Usage Details </h5>
-        <EquipmentDataTable
-          columns={usageDetailsColumns}
-          data={usageDetailsList}
-          title="Usage"
-        />
-        <EquipmentDataTable
-          columns={usageSmuItemColumns}
-          data={dailyUsageDetails}
-          title="Usage"
-        />
-      </>
-    );
+  // show equipment warranty coverage
+  const handleShowWarrantyCoverage = () => {
+    setShowWarrantyCoverageModal(true);
   };
 
   return (
@@ -1420,44 +1859,47 @@ const EquipmentMaster = () => {
               ) : (
                 <>
                   {selectedEquipmentId && (
-                    <div className="">
-                      <div className="bg-white p-3 border-radius-10 ">
-                        <div className="d-flex align-items-center justify-content-between equipment-pagination">
-                          <h5 className="font-weight-600 mb-0 text-uppercase">
-                            {/* {`${selectEquipmentDetails.description} - ${selectEquipmentDetails.model}`} */}
-                            {/* Chain excavator - 336D2 L */}
-                            {`${selectEquipmentDetails.description}`}
-                          </h5>
-                          <Stack spacing={2}>
-                            <Pagination
-                              boundaryCount={0}
-                              siblingCount={0}
-                              shape="rounded"
-                              hidePrevButton={pageNo === 1 && true}
-                              hideNextButton={pageNo === 6 && true}
-                              count={6}
-                              page={pageNo}
-                              onChange={handlePageChange}
-                            />
-                          </Stack>
+                    <>
+                      <div className="">
+                        <div className="bg-white p-3 border-radius-10 ">
+                          <div className="d-flex align-items-center justify-content-between equipment-pagination">
+                            <h5 className="font-weight-600 mb-0 text-uppercase">
+                              {/* {`${selectEquipmentDetails.description} - ${selectEquipmentDetails.model}`} */}
+                              {/* Chain excavator - 336D2 L */}
+                              {`${selectEquipmentDetails.description}`}
+                            </h5>
+                            <Stack spacing={2}>
+                              <Pagination
+                                boundaryCount={0}
+                                siblingCount={0}
+                                shape="rounded"
+                                hidePrevButton={pageNo === 1 && true}
+                                hideNextButton={pageNo === 7 && true}
+                                count={7}
+                                page={pageNo}
+                                onChange={handlePageChange}
+                              />
+                            </Stack>
+                          </div>
+                          <div className="d-block mt-3">
+                            <h6 className="text-primary font-weight-600 text-uppercase">
+                              {selectEquipmentDetails.equipmentNumber}
+                            </h6>
+                            <p className="text-light-60 font-size-12 mb-0 text-uppercase">
+                              {`${selectEquipmentDetails.model}- 2018`}
+                              {/* 336D2L -2018 */}
+                            </p>
+                          </div>
                         </div>
-                        <div className="d-block mt-3">
-                          <h6 className="text-primary font-weight-600 text-uppercase">
-                            {selectEquipmentDetails.equipmentNumber}
-                          </h6>
-                          <p className="text-light-60 font-size-12 mb-0 text-uppercase">
-                            {`${selectEquipmentDetails.model}- 2018`}
-                            {/* 336D2L -2018 */}
-                          </p>
-                        </div>
+                        {pageNo === 1 && equipmentOverview()}
+                        {pageNo === 2 && viewBasicData()}
+                        {pageNo === 3 && viewConfigurationData()}
+                        {pageNo === 4 && viewWarratyData()}
+                        {pageNo === 5 && viewContractsData()}
+                        {pageNo === 6 && viewUsageData()}
+                        {pageNo === 7 && viewReportsData()}
                       </div>
-                      {pageNo === 1 && viewDetailsPage_1()}
-                      {pageNo === 2 && viewDetailsPage_2()}
-                      {pageNo === 3 && viewDetailsPage_3()}
-                      {pageNo === 4 && viewDetailsPage_4()}
-                      {pageNo === 5 && viewDetailsPage_5()}
-                      {pageNo === 6 && viewDetailsPage_6()}
-                    </div>
+                    </>
                   )}
                 </>
               )}
@@ -1498,6 +1940,11 @@ const EquipmentMaster = () => {
         showUploadFilesModal={showUploadFilesModal}
         handleFilesUploadModal={handleFilesUploadModal}
         handleSnack={handleSnack}
+      />
+
+      <WarrantyCoverageView
+        show={showWarrantyCoverageModal}
+        hideModal={() => setShowWarrantyCoverageModal(false)}
       />
     </>
   );

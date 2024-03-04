@@ -87,6 +87,7 @@ export const CUSTOMER_MASTER = "/customer-master";
 export const WARRENTY_MASTER = "/warranty-master";
 export const CLAIM_MASTER = "/claim-master";
 export const SERVICE_PROGRESS = "/service-progress";
+export const WARRANTY_RETURN = "/warranty-return";
 
 //Aux Admin
 export const AUX_ADMIN_PROVISION = "/aux-admin/provision";
