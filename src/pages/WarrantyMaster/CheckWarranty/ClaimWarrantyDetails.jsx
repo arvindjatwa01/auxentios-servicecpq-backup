@@ -57,13 +57,13 @@ const ClaimWarrantyDetails = ({
     <Modal show={show} onHide={hideModal} size="xl">
       <Modal.Body>
         <>
-          <h4 style={{ fontWeight: 500 }}>Claim Details</h4>
+          <h4 style={{ fontWeight: 500 }}>Warranty Requests</h4>
           <div className="card border px-2 py-3 mt-2 mb-0">
             <div className="row align-items-end px-2 py-2">
               <div className="col-lg-3 col-md-3 col-sm-6 col-12">
                 <div className="form-group">
                   <p className="text-light-dark font-size-12 font-weight-500 mb-1">
-                    Claim Number
+                    Request Number
                   </p>
                   <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                     {isEmpty(claimRecord.claimNumber)

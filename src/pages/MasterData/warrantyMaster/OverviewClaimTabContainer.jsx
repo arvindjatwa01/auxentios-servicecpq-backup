@@ -15,12 +15,22 @@ const OverviewClaimTabContainer = ({
   handleGetFilterClaimRecords,
   activeClaimFilter,
   setClaimRecordId,
+  setClaimRecordDataId,
+  setClaimData,
 }) => {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const handleEditClaimDetails = (params) => {
     const claimId = params.row["claimId"];
+    const claimType = params.row["claimType"];
+    const claimNumber = params.row["claimNumber"];
+    const warrantyId = params.row[" warrantyId"];
+    setClaimData({
+      claimType: claimType,
+      claimNumber: claimNumber,
+    });
     setClaimRecordId(claimId);
+    setClaimRecordDataId(claimId);
     handleShowClaimDetails();
   };
 

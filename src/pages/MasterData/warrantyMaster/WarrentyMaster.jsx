@@ -33,6 +33,10 @@ import {
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import $ from "jquery";
 import WarrantyOverviewModal from "./WarrantyOverviewModal";
+import ClaimRequestProcess from "pages/WarrantyMaster/CheckWarranty/ClaimRequestProcess";
+import ClaimFailedPartModal from "pages/WarrantyMaster/CheckWarranty/ClaimFailedPartModal";
+
+let newPartRecord = {};
 
 const WarrantyMaster = () => {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
@@ -42,6 +46,22 @@ const WarrantyMaster = () => {
   const [showUploadFilesModal, setShowUploadFilesModal] = useState(false);
   const [recordId, setRecordId] = useState(null);
   const [warrantyRecord, setWarrantyRecord] = useState([]);
+
+  const [claimRecordId, setClaimRecordId] = useState(null);
+  const [claimOrderId, setClaimOrderId] = useState(null);
+  const [evaluationId, setEvaluationId] = useState(null);
+  const [assesstmentId, setAssesstmentId] = useState(null);
+  const [warrantyRecordId, setWarrantyRecordId] = useState(null);
+  const [openClaimRequestProcess, setOpenClaimRequestProcess] = useState(false);
+  const [evaluationQuestions, setEvaluationQuestions] = useState([]);
+  const [openReturnRequsterModal, setOpenReturnRequsterModal] = useState(false);
+  const [partSelectionData, setPartSelectionData] = useState([]);
+  const [claimData, setClaimData] = useState({
+    claimType: "",
+    claimNumber: "",
+  });
+
+  const [showAddPartModal, setShowAddPartModal] = useState(false);
 
   const [searchWarranty, setSearchWarranty] = useState([
     {
@@ -123,6 +143,26 @@ const WarrantyMaster = () => {
   const handleFilesUploadModal = () => {
     setShowOverviewModal(!showOverviewModal);
     setShowUploadFilesModal(!showUploadFilesModal);
+  };
+
+  const handleOpenClaimReturnProcess = () => {
+    setShowDetailsModal(false);
+    setOpenClaimRequestProcess(true);
+  };
+
+  const handeleShowReturnRequester = (data) => {
+    const options = [];
+    options.push(data);
+    setPartSelectionData([...options]);
+    setOpenReturnRequsterModal(true);
+    setOpenClaimRequestProcess(false);
+  };
+
+  const handleShowHideAddPartModal = () => {
+    setOpenReturnRequsterModal(!openReturnRequsterModal);
+    setOpenClaimRequestProcess(!openClaimRequestProcess);
+    setShowOverviewModal(!showOverviewModal)
+    setShowAddPartModal(!showAddPartModal);
   };
 
   const warrantyColumns2 = [
@@ -714,6 +754,36 @@ const WarrantyMaster = () => {
         showUploadFilesModal={showUploadFilesModal}
         handleFilesUploadModal={handleFilesUploadModal}
         handleSnack={handleSnack}
+        setClaimRecordDataId={setClaimRecordId}
+        setClaimData={setClaimData}
+        handleOpenClaimReturnProcess={handleOpenClaimReturnProcess}
+      />
+
+      {/* {openClaimRequestProcess && ( */}
+      <ClaimRequestProcess
+        show={openClaimRequestProcess}
+        hideModal={() => setOpenClaimRequestProcess(false)}
+        claimRecordId={claimRecordId}
+        handleSnack={handleSnack}
+        evaluationQuestions={evaluationQuestions}
+        claimOrderId={claimOrderId}
+        setClaimOrderId={setClaimOrderId}
+        claimDetails={claimData}
+        evaluationId={evaluationId}
+        setEvaluationId={setEvaluationId}
+        assesstmentId={assesstmentId}
+        setAssesstmentId={setAssesstmentId}
+        handeleShowReturnRequester={handeleShowReturnRequester}
+        handleShowHideAddPartModal={handleShowHideAddPartModal}
+        fromClaim={false}
+        newPartRecord={newPartRecord}
+      />
+      {/* )} */}
+
+      <ClaimFailedPartModal
+        show={showAddPartModal}
+        hideModal={handleShowHideAddPartModal}
+        newPartRecord={newPartRecord}
       />
     </>
   );

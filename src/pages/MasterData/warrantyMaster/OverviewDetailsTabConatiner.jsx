@@ -489,9 +489,10 @@ const OverviewDetailsTabConatiner = ({
                     Category
                   </p>
                   <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                    {isEmpty(warrantyRecord.category?.label)
+                    {/* {isEmpty(warrantyRecord.category?.label)
                       ? "NA"
-                      : warrantyRecord.category?.label}
+                      : warrantyRecord.category?.label} */}
+                    STANDARD
                   </h6>
                 </div>
               </div>
@@ -501,9 +502,10 @@ const OverviewDetailsTabConatiner = ({
                     Basis
                   </p>
                   <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                    {isEmpty(warrantyRecord.basis?.label)
+                    {/* {isEmpty(warrantyRecord.basis?.label)
                       ? "NA"
-                      : warrantyRecord.basis?.label}
+                      : warrantyRecord.basis?.label} */}
+                    TIME
                   </h6>
                 </div>
               </div>
@@ -513,26 +515,26 @@ const OverviewDetailsTabConatiner = ({
                     Unit
                   </p>
                   <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                    {isEmpty(warrantyRecord.unit?.label)
+                    {/* {isEmpty(warrantyRecord.unit?.label)
                       ? "NA"
-                      : warrantyRecord.unit?.label}
+                      : warrantyRecord.unit?.label} */}
+                    MONTHS
                   </h6>
                 </div>
               </div>
-            </div>
-            <div className="row align-items-end">
               <div className="col-lg-3 col-md-3 col-sm-6 col-12">
                 <div className="form-group">
                   <p className="text-light-dark font-size-12 font-weight-500 mb-1">
                     Warranty Start Date
                   </p>
                   <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                    {isEmpty(warrantyRecord.warrantyStartDate)
+                    {/* {isEmpty(warrantyRecord.warrantyStartDate)
                       ? "NA"
                       : getFormatDateTime(
                           warrantyRecord.warrantyStartDate,
                           false
-                        )}
+                        )} */}
+                    12/01/2024
                   </h6>
                 </div>
               </div>
@@ -542,12 +544,13 @@ const OverviewDetailsTabConatiner = ({
                     Warranty End Date
                   </p>
                   <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                    {isEmpty(warrantyRecord.warrantyEndDate)
+                    {/* {isEmpty(warrantyRecord.warrantyEndDate)
                       ? "NA"
                       : getFormatDateTime(
                           warrantyRecord.warrantyEndDate,
                           false
-                        )}
+                        )} */}
+                    11/01/2026
                   </h6>
                 </div>
               </div>
@@ -557,9 +560,10 @@ const OverviewDetailsTabConatiner = ({
                     Warranty Start Usage
                   </p>
                   <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                    {isEmpty(warrantyRecord.warrantyStartUsage)
+                    {/* {isEmpty(warrantyRecord.warrantyStartUsage)
                       ? "NA"
-                      : warrantyRecord.warrantyStartUsage}
+                      : warrantyRecord.warrantyStartUsage} */}
+                    NA
                   </h6>
                 </div>
               </div>
@@ -569,9 +573,10 @@ const OverviewDetailsTabConatiner = ({
                     Warranty End Usage
                   </p>
                   <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                    {isEmpty(warrantyRecord.warrantyEndUsage)
+                    {/* {isEmpty(warrantyRecord.warrantyEndUsage)
                       ? "NA"
-                      : warrantyRecord.warrantyEndUsage}
+                      : warrantyRecord.warrantyEndUsage} */}
+                    NA
                   </h6>
                 </div>
               </div>
@@ -583,9 +588,10 @@ const OverviewDetailsTabConatiner = ({
                     Component Code
                   </p>
                   <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                    {isEmpty(warrantyRecord.componentCode)
+                    {/* {isEmpty(warrantyRecord.componentCode)
                       ? "NA"
-                      : warrantyRecord.componentCode}
+                      : warrantyRecord.componentCode} */}
+                    NA
                   </h6>
                 </div>
               </div>
@@ -595,9 +601,10 @@ const OverviewDetailsTabConatiner = ({
                     Serial Number
                   </p>
                   <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                    {isEmpty(warrantyRecord.serialNumber)
+                    {/* {isEmpty(warrantyRecord.serialNumber)
                       ? "NA"
-                      : warrantyRecord.serialNumber}
+                      : warrantyRecord.serialNumber} */}
+                    ZMX00507
                   </h6>
                 </div>
               </div>
@@ -607,9 +614,10 @@ const OverviewDetailsTabConatiner = ({
                     Date of Install
                   </p>
                   <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                    {isEmpty(warrantyRecord.dateOfInstall)
+                    {/* {isEmpty(warrantyRecord.dateOfInstall)
                       ? "NA"
-                      : getFormatDateTime(warrantyRecord.dateOfInstall, false)}
+                      : getFormatDateTime(warrantyRecord.dateOfInstall, false)} */}
+                    12/01/2024
                   </h6>
                 </div>
               </div>
@@ -619,9 +627,10 @@ const OverviewDetailsTabConatiner = ({
                     Warranty Certificate
                   </p>
                   <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                    {isEmpty(warrantyRecord.warrantyCertificate)
+                    {/* {isEmpty(warrantyRecord.warrantyCertificate)
                       ? "NA"
-                      : warrantyRecord.warrantyCertificate}
+                      : warrantyRecord.warrantyCertificate} */}
+                    NA
                   </h6>
                 </div>
               </div>
@@ -633,8 +642,9 @@ const OverviewDetailsTabConatiner = ({
                     Proof of Install
                   </p>
                   <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                    {isEmpty(warrantyRecord.proofOfInstall) ? "No" : "Yes"}
-                    <InsertPhotoIcon />
+                    {/* {isEmpty(warrantyRecord.proofOfInstall) ? "No" : "Yes"}
+                    <InsertPhotoIcon /> */}
+                    NO
                   </h6>
                 </div>
               </div>
@@ -644,9 +654,10 @@ const OverviewDetailsTabConatiner = ({
                     Warranty Status
                   </p>
                   <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                    {isEmpty(warrantyRecord.warrantyStatus?.label)
+                    {/* {isEmpty(warrantyRecord.warrantyStatus?.label)
                       ? "NA"
-                      : warrantyRecord.warrantyStatus?.label}
+                      : warrantyRecord.warrantyStatus?.label} */}
+                    IN WARRANTY
                   </h6>
                 </div>
               </div>
@@ -656,9 +667,10 @@ const OverviewDetailsTabConatiner = ({
                     Date of Sale
                   </p>
                   <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                    {isEmpty(warrantyRecord.warrantyStatus?.label)
+                    {/* {isEmpty(warrantyRecord.warrantyStatus?.label)
                       ? "NA"
-                      : warrantyRecord.warrantyStatus?.label}
+                      : warrantyRecord.warrantyStatus?.label} */}
+                    12/01/2024
                   </h6>
                 </div>
               </div>
@@ -678,12 +690,13 @@ const OverviewDetailsTabConatiner = ({
                     Manufacture Date
                   </p>
                   <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                    {isEmpty(warrantyRecord.manufectureDate)
+                    {/* {isEmpty(warrantyRecord.manufectureDate)
                       ? "NA"
                       : getFormatDateTime(
                           warrantyRecord.manufectureDate,
                           false
-                        )}
+                        )} */}
+                    13/10/2023
                   </h6>
                 </div>
               </div>
@@ -1062,9 +1075,10 @@ const OverviewDetailsTabConatiner = ({
                     Customer Id
                   </p>
                   <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                    {isEmpty(customerDetails.customerId)
+                    {/* {isEmpty(customerDetails.customerId)
                       ? "NA"
-                      : customerDetails.customerId}
+                      : customerDetails.customerId} */}
+                    101211
                   </h6>
                 </div>
               </div>
@@ -1074,9 +1088,10 @@ const OverviewDetailsTabConatiner = ({
                     Customer Name
                   </p>
                   <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                    {isEmpty(customerDetails.customerName)
+                    {/* {isEmpty(customerDetails.customerName)
                       ? "NA"
-                      : customerDetails.customerName}
+                      : customerDetails.customerName} */}
+                    KOOLAN IRON ORE PTY LTD
                   </h6>
                 </div>
               </div>
@@ -1086,9 +1101,10 @@ const OverviewDetailsTabConatiner = ({
                     Address
                   </p>
                   <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                    {isEmpty(customerDetails.address)
+                    {/* {isEmpty(customerDetails.address)
                       ? "NA"
-                      : customerDetails.address}
+                      : customerDetails.address} */}
+                    L 12, Kings Park Rd
                   </h6>
                 </div>
               </div>
@@ -1098,9 +1114,10 @@ const OverviewDetailsTabConatiner = ({
                     City
                   </p>
                   <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                    {isEmpty(customerDetails.city)
+                    {/* {isEmpty(customerDetails.city)
                       ? "NA"
-                      : customerDetails.city}
+                      : customerDetails.city} */}
+                    Kings Park Rd
                   </h6>
                 </div>
               </div>
@@ -1112,9 +1129,10 @@ const OverviewDetailsTabConatiner = ({
                     State
                   </p>
                   <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                    {isEmpty(customerDetails.state)
+                    {/* {isEmpty(customerDetails.state)
                       ? "NA"
-                      : customerDetails.state}
+                      : customerDetails.state} */}
+                    West Perth
                   </h6>
                 </div>
               </div>
@@ -1124,9 +1142,10 @@ const OverviewDetailsTabConatiner = ({
                     Zip Code
                   </p>
                   <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                    {isEmpty(customerDetails.zipCode)
+                    {/* {isEmpty(customerDetails.zipCode)
                       ? "NA"
-                      : customerDetails.zipCode}
+                      : customerDetails.zipCode} */}
+                    6005
                   </h6>
                 </div>
               </div>
@@ -1136,9 +1155,10 @@ const OverviewDetailsTabConatiner = ({
                     Contact Email
                   </p>
                   <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                    {isEmpty(customerDetails.email)
+                    {/* {isEmpty(customerDetails.email)
                       ? "NA"
-                      : customerDetails.email}
+                      : customerDetails.email} */}
+                    www.mtgibsoniron.com.au
                   </h6>
                 </div>
               </div>
@@ -1148,9 +1168,10 @@ const OverviewDetailsTabConatiner = ({
                     Phone Number
                   </p>
                   <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                    {isEmpty(customerDetails.phoneNumber)
+                    {/* {isEmpty(customerDetails.phoneNumber)
                       ? "NA"
-                      : customerDetails.phoneNumber}
+                      : customerDetails.phoneNumber} */}
+                    +619658632420
                   </h6>
                 </div>
               </div>

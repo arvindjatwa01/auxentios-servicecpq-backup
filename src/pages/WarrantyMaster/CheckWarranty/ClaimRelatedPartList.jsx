@@ -576,17 +576,7 @@ const ClaimRelatedPartList = ({ selectedVersion, handleSnack }) => {
           // getRowHeight={() => "auto"}
           onProcessRowUpdateError={(error) => console.log(error)}
         />
-        <div className=" my-3 text-right">
-          {/* {["DRAFT", "REVISED"].indexOf(activeElement?.builderStatus) > -1 && (
-            <button
-              className="btn text-white bg-primary"
-              onClick={() => setConfirmationOpen(true)}
-              disabled={bulkUpdateProgress}
-            >
-              Save
-            </button>
-          )} */}
-        </div>
+        <div className=" my-3 text-right"></div>
       </div>
     </>
   );
