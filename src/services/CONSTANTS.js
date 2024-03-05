@@ -619,3 +619,15 @@ export const Warranty_Evaluation_Create_POST = Warranty_Evaluation_Master_Url;
 const Warranty_Evaluation_Questions_Master_Url = WARRANTY_CLAIM_URI + "evaluation/question";
 export const Warranty_Evaluation_Questions_Get_GET = Warranty_Evaluation_Questions_Master_Url + "?";
 export const Warranty_Question_Answer_Create_POST = Warranty_Evaluation_Questions_Master_Url
+
+// warranty-components 
+const Warranty_Component_Master_Url = WARRANTY_CLAIM_URI + "component";
+export const Warranty_Component_GetById_GET = Warranty_Component_Master_Url; 
+
+// warranty-years 
+const Warranty_Yearly_Master_Url = WARRANTY_CLAIM_URI + "yearly-warranty";
+export const Warranty_Yearly_GetById_GET = Warranty_Yearly_Master_Url; 
+
+// cost-coverage 
+const Warranty_Cost_Coverage_Master_Url = WARRANTY_CLAIM_URI + "cost-coverage";
+export const Warranty_Cost_Coverage_Create_POST = Warranty_Cost_Coverage_Master_Url; 

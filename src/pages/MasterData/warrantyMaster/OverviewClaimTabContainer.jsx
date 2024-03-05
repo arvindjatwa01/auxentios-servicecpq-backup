@@ -16,6 +16,8 @@ const OverviewClaimTabContainer = ({
   activeClaimFilter,
   setClaimRecordId,
 }) => {
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const handleEditClaimDetails = (params) => {
     const claimId = params.row["claimId"];
     setClaimRecordId(claimId);
@@ -79,12 +81,17 @@ const OverviewClaimTabContainer = ({
     },
   ];
 
+  const handlePaginationChange = (pageNo, rowsPerPage) => {
+    setPage(pageNo);
+    setPageSize(rowsPerPage);
+  };
+
   return (
     <>
-      <div className="card px-3">
+      <div className="card border px-3 pt-4">
         <div className="d-flex justify-content-around ">
           <div
-            className="card border px-2 py-2 cursor"
+            className="card border px-4 py-2 cursor"
             onClick={() => handleGetFilterClaimRecords("registered")}
             style={{
               backgroundColor:
@@ -97,7 +104,7 @@ const OverviewClaimTabContainer = ({
             </div>
           </div>
           <div
-            className="card border px-2 py-2 cursor"
+            className="card border px-4 py-2 cursor"
             onClick={() => handleGetFilterClaimRecords("acknowledged")}
             style={{
               backgroundColor:
@@ -110,7 +117,7 @@ const OverviewClaimTabContainer = ({
             </div>
           </div>
           <div
-            className="card border px-2 py-2 cursor"
+            className="card border px-4 py-2 cursor"
             onClick={() => handleGetFilterClaimRecords("accepted")}
             style={{
               backgroundColor:
@@ -123,7 +130,7 @@ const OverviewClaimTabContainer = ({
             </div>
           </div>
           <div
-            className="card border px-2 py-2 cursor"
+            className="card border px-4 py-2 cursor"
             onClick={() => handleGetFilterClaimRecords("rejected")}
             style={{
               backgroundColor:
@@ -136,7 +143,7 @@ const OverviewClaimTabContainer = ({
             </div>
           </div>
           <div
-            className="card border px-2 py-2 cursor"
+            className="card border px-4 py-2 cursor"
             onClick={() => handleGetFilterClaimRecords("closed")}
             style={{
               backgroundColor: activeClaimFilter === "closed" ? "#f3eafe" : "",
@@ -148,6 +155,8 @@ const OverviewClaimTabContainer = ({
             </div>
           </div>
         </div>
+      </div>
+      <div className="card border px-4 py-2">
         <Box
           sx={{
             width: "100%",
@@ -169,7 +178,15 @@ const OverviewClaimTabContainer = ({
           <DataGrid
             rows={recordData}
             columns={claimColumns}
+            page={page}
+            pageSize={pageSize}
             sx={GRID_STYLE}
+            onPageChange={(newPage) =>
+              handlePaginationChange(newPage, pageSize)
+            }
+            onPageSizeChange={(newPageSize) =>
+              handlePaginationChange(page, newPageSize)
+            }
             //   initialState={{
             //     pagination: {
             //       paginationModel: {
@@ -178,7 +195,7 @@ const OverviewClaimTabContainer = ({
             //     },
             //   }}
             rowsPerPageOptions={[10, 20, 50]}
-            //   paginationMode="server"
+            paginationMode="server"
             disableRowSelectionOnClick
             getRowId={(row) => row.claimId}
           />

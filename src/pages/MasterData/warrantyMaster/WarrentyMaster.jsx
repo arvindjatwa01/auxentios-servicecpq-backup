@@ -512,10 +512,10 @@ const WarrantyMaster = () => {
       />
       <div className="content-body" style={{ minHeight: "884px" }}>
         <div className="container-fluid">
-          <h5 className="font-weight-600 mb-0">Warranty Master</h5>
+          <h5 className="font-weight-600 mb-0">Warranty Administration</h5>
 
           <div className="card border mt-4 px-4">
-            <div className="bg-primary px-3 mt-2 mb-0 border-radius-10 ">
+            <div className="bg-primary px-3 mt-2 mb-2 border-radius-10 ">
               <div className="d-block height-66 d-md-flex justify-content-between align-items-center">
                 <div className="mx-2">
                   <div className="d-flex align-items-center bg-primary w-100">

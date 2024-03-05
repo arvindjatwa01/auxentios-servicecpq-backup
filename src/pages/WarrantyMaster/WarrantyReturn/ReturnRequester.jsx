@@ -806,7 +806,7 @@ const ReturnRequester = ({
             width: "100%",
             height: 400,
             // marginBottom: 8,
-            marginInline: 2,
+            // marginInline: 2,
           }}
         >
           <DataGrid

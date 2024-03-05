@@ -1334,7 +1334,7 @@ export function SideBarComponent(props) {
               <span className="nav-text">
                 <span className="ml-2 " style={{ display: "inline-grid" }}>
                   <span className="font-size-13 font-weight-400 text-dark">
-                    Warranty Master
+                    Warranty Management
                   </span>
                 </span>
               </span>
@@ -1355,7 +1355,7 @@ export function SideBarComponent(props) {
                   <span className="nav-text">
                     <span className="ml-2 " style={{ display: "inline-grid" }}>
                       <span className="font-size-13 font-weight-400 text-dark">
-                        Check Warranty
+                        Warranty Administration
                       </span>
                     </span>
                   </span>
@@ -1384,7 +1384,7 @@ export function SideBarComponent(props) {
                   <span className="nav-text">
                     <span className="ml-2 " style={{ display: "inline-grid" }}>
                       <span className="font-size-13 font-weight-400 text-dark">
-                        Manage Warranty Requests
+                        Claims Administration
                       </span>
                     </span>
                   </span>
