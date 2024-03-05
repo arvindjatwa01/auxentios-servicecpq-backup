@@ -44,7 +44,8 @@ import {
 } from "../claimMaster/ClaimMasterConstants";
 import ClaimOrdersDataList from "../claimMaster/ClaimOrdersDataList";
 
-const steps = ["Registered", "Update", "Assess", "Open Claim Order"];
+// const steps = ["Registered", "Update", "Assess", "Open Claim Order"];
+const steps = ["Registered", "Update"];
 
 const accessAnswers = [
   { label: "Yes", value: "YES" },
@@ -61,7 +62,7 @@ const questionTwoOptions = [
   { label: "Acidic Water", value: "ACIDIC_WATER", questionId: 2 },
 ];
 
-const ClaimDetailsModal = ({ show, hideModal, recordId, handleSnack }) => {
+const ClaimDetailsModal = ({ show, hideModal, recordId, handleSnack, handleOpenClaimReturnProcess }) => {
   const history = useHistory();
   const [activeStep, setActiveStep] = useState(0);
 
@@ -134,6 +135,11 @@ const ClaimDetailsModal = ({ show, hideModal, recordId, handleSnack }) => {
 
   const handleNextClick = () => {
     setActiveStep(activeStep + 1);
+  };
+
+  const handleShowWarrantyRequesteModal = () => {
+    hideModal();
+    handleOpenClaimReturnProcess();
   };
 
   const handleInputChange = (e) => {
@@ -322,16 +328,16 @@ const ClaimDetailsModal = ({ show, hideModal, recordId, handleSnack }) => {
             <div className="col-lg-3 col-md-3 col-sm-6 col-12">
               <div className="form-group">
                 <p className="text-light-dark font-size-12 font-weight-500 mb-1">
-                  Fill Date
+                  Fial Date
                 </p>
                 <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                  {isEmpty(claimRecord.fillDate)
+                  {isEmpty(claimRecord.failDate)
                     ? "NA"
-                    : getFormatDateTime(claimRecord.fillDate, false)}
+                    : getFormatDateTime(claimRecord.failDate, false)}
                 </h6>
               </div>
             </div>
-            <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+            {/* <div className="col-lg-3 col-md-3 col-sm-6 col-12">
               <div className="form-group">
                 <p className="text-light-dark font-size-12 font-weight-500 mb-1">
                   Failure Part Number
@@ -366,7 +372,7 @@ const ClaimDetailsModal = ({ show, hideModal, recordId, handleSnack }) => {
                     : claimRecord.hoursOnFailedPart}
                 </h6>
               </div>
-            </div>
+            </div> */}
             {/* <div className="col-lg-3 col-md-3 col-sm-6 col-12">
                 <div className="form-group">
                   <p className="text-light-dark font-size-12 font-weight-500 mb-1">
@@ -389,7 +395,7 @@ const ClaimDetailsModal = ({ show, hideModal, recordId, handleSnack }) => {
                 </h6>
               </div>
             </div>
-            <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+            {/* <div className="col-lg-3 col-md-3 col-sm-6 col-12">
               <div className="form-group">
                 <p className="text-light-dark font-size-12 font-weight-500 mb-1">
                   Time taken for the Repair
@@ -402,7 +408,7 @@ const ClaimDetailsModal = ({ show, hideModal, recordId, handleSnack }) => {
               </div>
             </div>
 
-            {/* <div className="col-lg-4 col-md-4 col-sm-6 col-12">
+           <div className="col-lg-4 col-md-4 col-sm-6 col-12">
                 <div className="form-group">
                   <p className="text-light-dark font-size-12 font-weight-500 mb-1">
                     Claim Questionnaire
@@ -423,6 +429,19 @@ const ClaimDetailsModal = ({ show, hideModal, recordId, handleSnack }) => {
                   {isEmpty(claimRecord.payer?.label)
                     ? "NA"
                     : claimRecord.payer?.label}
+                </h6>
+              </div>
+            </div>
+            <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+              <div className="form-group">
+                <p className="text-light-dark font-size-12 font-weight-500 mb-1">
+                  Customer Number
+                </p>
+                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                  {/* {isEmpty(claimRecord.claimApprover)
+                    ? "NA"
+                    : claimRecord.claimApprover} */}
+                    101211
                 </h6>
               </div>
             </div>
@@ -516,9 +535,10 @@ const ClaimDetailsModal = ({ show, hideModal, recordId, handleSnack }) => {
                   Closed Date
                 </p>
                 <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                  {isEmpty(claimRecord.closedDate)
+                  {/* {isEmpty(claimRecord.closedDate)
                     ? "NA"
-                    : getFormatDateTime(claimRecord.closedDate, false)}
+                    : getFormatDateTime(claimRecord.closedDate, false)} */}
+                  NA
                 </h6>
               </div>
             </div>
@@ -709,7 +729,7 @@ const ClaimDetailsModal = ({ show, hideModal, recordId, handleSnack }) => {
             <div className="col-lg-3 col-md-3 col-sm-6 col-12">
               <div className="form-group">
                 <label className="text-light-dark font-size-14 font-weight-500">
-                  Fill Date
+                  Fail Date
                 </label>
                 <div className="align-items-center date-box">
                   <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -718,8 +738,8 @@ const ClaimDetailsModal = ({ show, hideModal, recordId, handleSnack }) => {
                       className="form-controldate border-radius-10"
                       // maxDate={new Date()}
                       closeOnSelect
-                      value={claimRecord.fillDate}
-                      onChange={(e) => handleSelectChange(e, "fillDate")}
+                      value={claimRecord.failDate}
+                      onChange={(e) => handleSelectChange(e, "failDate")}
                       renderInput={(params) => (
                         <TextField
                           {...params}
@@ -735,7 +755,7 @@ const ClaimDetailsModal = ({ show, hideModal, recordId, handleSnack }) => {
                 </div>
               </div>
             </div>
-            <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+            {/* <div className="col-lg-3 col-md-3 col-sm-6 col-12">
               <div className="form-group">
                 <label className="text-light-dark font-size-14 font-weight-500">
                   Failure Part Number
@@ -780,7 +800,7 @@ const ClaimDetailsModal = ({ show, hideModal, recordId, handleSnack }) => {
                 />
               </div>
             </div>
-            {/* <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+            <div className="col-lg-3 col-md-3 col-sm-6 col-12">
                 <div className="form-group">
                   <label className="text-light-dark font-size-14 font-weight-500">
                     Upload Photo
@@ -810,7 +830,7 @@ const ClaimDetailsModal = ({ show, hideModal, recordId, handleSnack }) => {
                 />
               </div>
             </div>
-            <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+            {/* <div className="col-lg-3 col-md-3 col-sm-6 col-12">
               <div className="form-group">
                 <label className="text-light-dark font-size-14 font-weight-500">
                   Time taken for the Repair
@@ -825,7 +845,7 @@ const ClaimDetailsModal = ({ show, hideModal, recordId, handleSnack }) => {
                 />
               </div>
             </div>
-            {/* <div className="col-lg-4 col-md-4 col-sm-12 col-12">
+            <div className="col-lg-4 col-md-4 col-sm-12 col-12">
                 <div className="form-group">
                   <label className="text-light-dark font-size-14 font-weight-500">
                     Claim Questionnaire
@@ -1121,7 +1141,11 @@ const ClaimDetailsModal = ({ show, hideModal, recordId, handleSnack }) => {
           >
             Update
           </button>
-          <button className="btn btn-primary" onClick={handleNextClick}>
+          <button
+            className="btn btn-primary"
+            // onClick={handleNextClick}
+            onClick={handleShowWarrantyRequesteModal}
+          >
             Next
           </button>
         </div>

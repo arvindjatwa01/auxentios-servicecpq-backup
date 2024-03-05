@@ -452,9 +452,10 @@ const OverviewTabContainer = ({
                           Category
                         </p>
                         <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                          {isEmpty(warrantyRecord.category?.label)
+                          {/* {isEmpty(warrantyRecord.category?.label)
                             ? "NA"
-                            : warrantyRecord.category?.label}
+                            : warrantyRecord.category?.label} */}
+                          STANDARD
                         </h6>
                       </div>
                     </div>
@@ -464,9 +465,10 @@ const OverviewTabContainer = ({
                           Basis
                         </p>
                         <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                          {isEmpty(warrantyRecord.basis?.label)
+                          {/* {isEmpty(warrantyRecord.basis?.label)
                             ? "NA"
-                            : warrantyRecord.basis?.label}
+                            : warrantyRecord.basis?.label} */}
+                          TIME
                         </h6>
                       </div>
                     </div>
@@ -476,9 +478,10 @@ const OverviewTabContainer = ({
                           Unit
                         </p>
                         <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                          {isEmpty(warrantyRecord.unit?.label)
+                          {/* {isEmpty(warrantyRecord.unit?.label)
                             ? "NA"
-                            : warrantyRecord.unit?.label}
+                            : warrantyRecord.unit?.label} */}
+                          MONTHS
                         </h6>
                       </div>
                     </div>
@@ -490,12 +493,13 @@ const OverviewTabContainer = ({
                           Warranty Start Date
                         </p>
                         <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                          {isEmpty(warrantyRecord.warrantyStartDate)
+                          {/* {isEmpty(warrantyRecord.warrantyStartDate)
                             ? "NA"
                             : getFormatDateTime(
                                 warrantyRecord.warrantyStartDate,
                                 false
-                              )}
+                              )} */}
+                          12/01/2024
                         </h6>
                       </div>
                     </div>
@@ -505,27 +509,13 @@ const OverviewTabContainer = ({
                           Warranty End Date
                         </p>
                         <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                          {isEmpty(warrantyRecord.warrantyEndDate)
+                          {/* {isEmpty(warrantyRecord.warrantyEndDate)
                             ? "NA"
                             : getFormatDateTime(
                                 warrantyRecord.warrantyEndDate,
                                 false
-                              )}
-                        </h6>
-                      </div>
-                    </div>
-                    <div className="col-lg-3 col-md-3 col-sm-6 col-12">
-                      <div className="form-group">
-                        <p className="text-light-dark font-size-12 font-weight-500 mb-1">
-                          Date of Install
-                        </p>
-                        <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                          {isEmpty(warrantyRecord.dateOfInstall)
-                            ? "NA"
-                            : getFormatDateTime(
-                                warrantyRecord.dateOfInstall,
-                                false
-                              )}
+                              )} */}
+                          11/01/2026
                         </h6>
                       </div>
                     </div>
@@ -535,23 +525,23 @@ const OverviewTabContainer = ({
                           Warranty Start Usage
                         </p>
                         <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                          {isEmpty(warrantyRecord.warrantyStartUsage)
+                          {/* {isEmpty(warrantyRecord.warrantyStartUsage)
                             ? "NA"
-                            : warrantyRecord.warrantyStartUsage}
+                            : warrantyRecord.warrantyStartUsage} */}
+                          NA
                         </h6>
                       </div>
                     </div>
-                  </div>
-                  <div className="row align-items-end">
                     <div className="col-lg-3 col-md-3 col-sm-6 col-12">
                       <div className="form-group">
                         <p className="text-light-dark font-size-12 font-weight-500 mb-1">
                           Warranty End Usage
                         </p>
                         <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                          {isEmpty(warrantyRecord.warrantyEndUsage)
+                          {/* {isEmpty(warrantyRecord.warrantyEndUsage)
                             ? "NA"
-                            : warrantyRecord.warrantyEndUsage}
+                            : warrantyRecord.warrantyEndUsage} */}
+                          NA
                         </h6>
                       </div>
                     </div>
@@ -561,9 +551,10 @@ const OverviewTabContainer = ({
                           Model Number
                         </p>
                         <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                          {isEmpty(warrantyRecord.modelNumber)
+                          {/* {isEmpty(warrantyRecord.modelNumber)
                             ? "NA"
-                            : warrantyRecord.modelNumber}
+                            : warrantyRecord.modelNumber} */}
+                          992K
                         </h6>
                       </div>
                     </div>
@@ -573,9 +564,10 @@ const OverviewTabContainer = ({
                           Make
                         </p>
                         <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                          {isEmpty(warrantyRecord.make)
+                          {/* {isEmpty(warrantyRecord.make)
                             ? "NA"
-                            : warrantyRecord.make}
+                            : warrantyRecord.make} */}
+                          CATERPILLER
                         </h6>
                       </div>
                     </div>
@@ -585,13 +577,14 @@ const OverviewTabContainer = ({
                           Machine/Component
                         </p>
                         <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                          {warrantyRecord.machine ? "Yes" : "No"}
+                          {/* {warrantyRecord.machine ? "Yes" : "No"} */}
+                          MACHINE
                         </h6>
                       </div>
                     </div>
                   </div>
                   <div className="row align-items-end">
-                    <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+                    {/* <div className="col-lg-3 col-md-3 col-sm-6 col-12">
                       <div className="form-group">
                         <p className="text-light-dark font-size-12 font-weight-500 mb-1">
                           Machine Serial Number
@@ -602,16 +595,17 @@ const OverviewTabContainer = ({
                             : warrantyRecord.machineSerialNumber}
                         </h6>
                       </div>
-                    </div>
+                    </div> */}
                     <div className="col-lg-3 col-md-3 col-sm-6 col-12">
                       <div className="form-group">
                         <p className="text-light-dark font-size-12 font-weight-500 mb-1">
                           Component Code
                         </p>
                         <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                          {isEmpty(warrantyRecord.componentCode)
+                          {/* {isEmpty(warrantyRecord.componentCode)
                             ? "NA"
-                            : warrantyRecord.componentCode}
+                            : warrantyRecord.componentCode} */}
+                          NA
                         </h6>
                       </div>
                     </div>
@@ -621,9 +615,53 @@ const OverviewTabContainer = ({
                           Serial Number
                         </p>
                         <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                          {isEmpty(warrantyRecord.serialNumber)
+                          {/* {isEmpty(warrantyRecord.serialNumber)
                             ? "NA"
-                            : warrantyRecord.serialNumber}
+                            : warrantyRecord.serialNumber} */}
+                          ZMX00507
+                        </h6>
+                      </div>
+                    </div>
+                    <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+                      <div className="form-group">
+                        <p className="text-light-dark font-size-12 font-weight-500 mb-1">
+                          Date of Install
+                        </p>
+                        <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                          {/* {isEmpty(warrantyRecord.dateOfInstall)
+                            ? "NA"
+                            : getFormatDateTime(
+                                warrantyRecord.dateOfInstall,
+                                false
+                              )} */}
+                          12/01/2024
+                        </h6>
+                      </div>
+                    </div>
+                    <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+                      <div className="form-group">
+                        <p className="text-light-dark font-size-12 font-weight-500 mb-1">
+                          Warranty Certificate
+                        </p>
+                        <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                          {/* {isEmpty(warrantyRecord.warrantyCertificate)
+                            ? "NA"
+                            : warrantyRecord.warrantyCertificate} */}
+                          NA
+                        </h6>
+                      </div>
+                    </div>
+                    <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+                      <div className="form-group">
+                        <p className="text-light-dark font-size-12 font-weight-500 mb-1">
+                          Proof of Install
+                        </p>
+                        <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                          {/* {isEmpty(warrantyRecord.proofOfInstall)
+                            ? "No"
+                            : "Yes"}
+                          <InsertPhotoIcon /> */}
+                          NA
                         </h6>
                       </div>
                     </div>
@@ -636,31 +674,6 @@ const OverviewTabContainer = ({
                           {isEmpty(warrantyRecord.warrantyStatus?.label)
                             ? "NA"
                             : warrantyRecord.warrantyStatus?.label}
-                        </h6>
-                      </div>
-                    </div>
-                    <div className="col-lg-3 col-md-3 col-sm-6 col-12">
-                      <div className="form-group">
-                        <p className="text-light-dark font-size-12 font-weight-500 mb-1">
-                          Warranty Certificate
-                        </p>
-                        <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                          {isEmpty(warrantyRecord.warrantyCertificate)
-                            ? "NA"
-                            : warrantyRecord.warrantyCertificate}
-                        </h6>
-                      </div>
-                    </div>
-                    <div className="col-lg-3 col-md-3 col-sm-6 col-12">
-                      <div className="form-group">
-                        <p className="text-light-dark font-size-12 font-weight-500 mb-1">
-                          Proof of Install
-                        </p>
-                        <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                          {isEmpty(warrantyRecord.proofOfInstall)
-                            ? "No"
-                            : "Yes"}
-                          <InsertPhotoIcon />
                         </h6>
                       </div>
                     </div>

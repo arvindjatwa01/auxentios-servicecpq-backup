@@ -42,6 +42,9 @@ const WarrantyOverviewModal = ({
   showUploadFilesModal,
   handleFilesUploadModal,
   handleSnack,
+  setClaimData,
+  setClaimRecordDataId,
+  handleOpenClaimReturnProcess
 }) => {
   const [activeTab, setActiveTab] = useState("overview");
   const [editTabsContent, setEditTabsContent] = useState({
@@ -310,6 +313,8 @@ const WarrantyOverviewModal = ({
                     handleGetFilterClaimRecords={handleGetFilterClaimRecords}
                     activeClaimFilter={activeClaimFilter}
                     setClaimRecordId={setClaimRecordId}
+                    setClaimRecordDataId={setClaimRecordDataId}
+                    setClaimData={setClaimData}
                   />
                 )}
                 {activeTab === "files" && (
@@ -343,6 +348,7 @@ const WarrantyOverviewModal = ({
           hideModal={handleShowClaimDetails}
           recordId={claimRecordId}
           handleSnack={handleSnack}
+          handleOpenClaimReturnProcess={handleOpenClaimReturnProcess}
         />
       )}
       {/* {showClaimDetailsModal && (
