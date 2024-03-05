@@ -77,3 +77,40 @@ export const consumableSearchOptions = [
   { label: "Description", value: "description" },
   { label: "Supplier", value: "supplier" },
 ];
+
+export const yearWarratyRequestObj = {
+  yearlyWarrantyId: 0,
+  title: "",
+  warrantyType: "",
+  basis: "",
+  warrantyStartDate: new Date(),
+  warrantyEndDate: new Date(),
+  warrantyStartUsage: 0,
+  warrantyEndUsage: 0,
+  warrantyExpAccount: "",
+  amount: 0,
+  componentIds: [],
+  costCoverageId: 0,
+  warrantyIds: [],
+};
+
+export const warrantyRequestObj = {
+  warrantyId: 0,
+  warrantyTitle: "",
+  warrantyNumber: "",
+  title: "",
+  unit: "",
+  dateOfInstall: new Date(),
+  warrantyCertificate: "",
+  proofOfInstall: "",
+  warrantyStatus: "",
+  notes: "",
+  dateOfSale: new Date(),
+  manufactureDate: new Date(),
+  installerId: 0,
+  claimId: 0,
+  yearlyWarrantyIds: [],
+  equipmentId: 0,
+  warrantyAgreement: "",
+  replacement: true,
+};

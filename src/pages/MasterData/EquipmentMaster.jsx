@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import Pagination from "@mui/material/Pagination";
-import { Box, Divider, Grid, Stack, Tab } from "@mui/material";
+import { Box, Divider, Grid, Stack, Tab, TextField } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
@@ -9,10 +9,18 @@ import Switch from "@mui/material/Switch";
 
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import Select from "react-select";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { MobileDatePicker } from "@mui/x-date-pickers";
 import $ from "jquery";
 
-import { callGetApi } from "services/ApiCaller";
-import { Get_Equipment_Datails_By_Id_GET } from "services/CONSTANTS";
+import { callGetApi, callPutApi } from "services/ApiCaller";
+import {
+  Get_Equipment_Datails_By_Id_GET,
+  Search_By_Fields_Warranty_List_GET,
+  Warranty_Yearly_GetById_GET,
+  warranty_Details_By_Id_Get,
+} from "services/CONSTANTS";
 import { API_SUCCESS } from "services/ResponseCode";
 
 import PaginationStackedChart from "./PaginationStackedChart";
@@ -30,6 +38,8 @@ import {
   EQUIPMNT_USAGE_REPORT_DETAILS,
   SEARCH_FALG_EQUIPMENT,
   Switch_label_Object,
+  warrantyRequestObj,
+  yearWarratyRequestObj,
 } from "./equipmentMasterConstants";
 import EquipmentMasterSearchList from "./EquipmentMaster/EquipmentMasterSearchList";
 import LoadingProgress from "pages/Repair/components/Loader";
@@ -39,6 +49,10 @@ import WarrantyOverviewModal from "./warrantyMaster/WarrantyOverviewModal";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import { Card } from "react-bootstrap";
 import WarrantyCoverageView from "./warrantyMaster/WarrantyCoverageView";
+import { warrantyTypeOptions } from "pages/WarrantyMaster/CheckWarranty/claimWarrantyConstants";
+import { getFormatDateTime } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/dateUtilities";
+import { FONT_STYLE, FONT_STYLE_SELECT } from "pages/Repair/CONSTANTS";
+import { getWarratyComponentData } from "services/warrantyServices";
 
 const EquipmentMaster = () => {
   const [showModal, setShowModal] = useState(false);
@@ -52,7 +66,10 @@ const EquipmentMaster = () => {
   const [selectedEquipmentId, setSelectedEquipmentId] = useState(null);
   const [selectEquipmentDetails, setSelectEquipmentDetails] = useState(null);
 
-  const [warrantyTabValue, setWarrantyTabValue] = useState("");
+  const [warrantyData, setWarrantyData] = useState({ ...warrantyRequestObj });
+  const [warrantyYearIds, setWarrantyYearIds] = useState([]);
+  const [warrantyYearTabValue, setWarrantyYearTabValue] = useState("");
+  const [warrantyCoverageIds, setWarrantyCoverageIds] = useState(null);
 
   const [contractRecordsList, setContractRecordsList] = useState([
     {
@@ -163,6 +180,25 @@ const EquipmentMaster = () => {
     },
   ];
 
+  const [yearWarrantyData, setYearWarrantyData] = useState({
+    ...yearWarratyRequestObj,
+  });
+  const [yearWarrantyComponentData, setYearWarrantyComponentData] = useState(
+    []
+  );
+  const [yearWarrantyDataEdit, setYearWarrantyDataEdit] = useState(false);
+
+  const handleWarrantyYearTabChange = (e, value) => {
+    getWarrantyYearDetails(value);
+    setWarrantyYearTabValue(value);
+    setYearWarrantyDataEdit(false);
+  };
+
+  const handleWarrantyDataFieldChange = (e) => {
+    const { name, value } = e.target;
+    setYearWarrantyData({ ...yearWarrantyData, [name]: value });
+  };
+
   // Snack Bar State
   const [severity, setSeverity] = useState("");
   const [openSnack, setOpenSnack] = useState(false);
@@ -194,7 +230,90 @@ const EquipmentMaster = () => {
 
   // page change by card block
   const handleCardPageChange = (newPageNo) => {
+    if (newPageNo === 4) {
+      getWarratyDetails();
+    }
     setPageNo(newPageNo);
+  };
+
+  const getWarratyDetails = () => {
+    const rUrl = `${warranty_Details_By_Id_Get}18`;
+    callGetApi(null, rUrl, (response) => {
+      if (response.status === API_SUCCESS) {
+        const responseData = response.data;
+        const _warrantyType = warrantyTypeOptions.find(
+          (obj) => obj.value === responseData?.warrantyType
+        );
+        setWarrantyData({
+          ...responseData,
+          warrantyType: _warrantyType || "",
+        });
+        setWarrantyYearIds(responseData.yearlyWarrantyIds);
+        const years = responseData.yearlyWarrantyIds;
+        if (years.length !== 0) {
+          // Initialize an empty object
+          const resultObject = {};
+
+          // Use the map function to iterate over the array and add key-value pairs to the object
+          years.map((year) => {
+            resultObject[year] = 0;
+          });
+          setWarrantyCoverageIds(resultObject);
+
+          setWarrantyYearTabValue(years[0]);
+          getWarrantyYearDetails(years[0]);
+        }
+      }
+    });
+  };
+
+  const getWarrantyYearDetails = (yearId) => {
+    const rUrl = `${Warranty_Yearly_GetById_GET}/${yearId}`;
+    callGetApi(null, rUrl, (response) => {
+      if (response.status === API_SUCCESS) {
+        const responseData = response.data;
+        const _warrantyType = warrantyTypeOptions.find(
+          (obj) => obj.value === responseData?.warrantyType
+        );
+        getWarratyComponents(responseData["componentIds"]);
+        setYearWarrantyData({
+          ...responseData,
+          warrantyType: _warrantyType || "",
+        });
+      }
+    });
+  };
+
+  const getWarratyComponents = async (componentIds = []) => {
+    if (componentIds.length !== 0) {
+      const records = [];
+      for (let i = 0; i < componentIds.length; i++) {
+        const componentResult = await getWarratyComponentData(componentIds[i]);
+        if (componentResult.status === 200) {
+          records.push(componentResult.data);
+        }
+      }
+      setYearWarrantyComponentData(records);
+    } else {
+      setYearWarrantyComponentData([]);
+    }
+  };
+
+  const handleUpdateYearDetails = () => {
+    const rUrl = `${Warranty_Yearly_GetById_GET}/${warrantyYearTabValue}`;
+    const rObj = {
+      ...yearWarrantyData,
+      warrantyType: yearWarrantyData?.warrantyType?.value || "EMPTY",
+    };
+
+    callPutApi(null, rUrl, rObj, (response) => {
+      if (response.status === API_SUCCESS) {
+        handleSnack("success", "Year Warranty Details Updated Successfully.");
+        setYearWarrantyDataEdit(false);
+      } else {
+        handleSnack("error", "Something Went wrong.");
+      }
+    });
   };
 
   const [loading, setLoading] = useState(false);
@@ -427,7 +546,6 @@ const EquipmentMaster = () => {
       ),
     },
   ];
-
   // ERP componet details columns
   const erpComponentColumns = [
     {
@@ -560,6 +678,153 @@ const EquipmentMaster = () => {
           />
         </div>
       ),
+    },
+  ];
+
+  // component columns new
+  const newComponentsColumns = [
+    {
+      id: "partNumber",
+      name: <div>Part Number</div>,
+      selector: (row) => row.partNumber,
+      wrap: true,
+      sortable: false,
+    },
+    {
+      id: "family",
+      name: <div>Family</div>,
+      selector: (row) => row.family,
+      wrap: true,
+      sortable: false,
+    },
+    {
+      id: "model",
+      name: <div>Model</div>,
+      selector: (row) => row.model,
+      wrap: true,
+      sortable: false,
+    },
+    {
+      id: "serialNumber",
+      name: <div>Serial Number</div>,
+      selector: (row) => row.serialNumber,
+      wrap: true,
+      sortable: false,
+    },
+    {
+      id: "warrentyCategory",
+      name: <div>Warranty Category</div>,
+      selector: (row) => row.warrantyType,
+      wrap: true,
+      sortable: false,
+    },
+    {
+      id: "machineSerialNumber",
+      name: <div>Machine Serial Number</div>,
+      selector: (row) => row.machineSerialNumber,
+      wrap: true,
+      sortable: false,
+    },
+    {
+      id: "warrentyStartDate",
+      name: <div>Warranty Start Date</div>,
+      selector: (row) => row.warrantyStartDate,
+      wrap: true,
+      sortable: false,
+    },
+    {
+      id: "warrentyEndDate",
+      name: <div>Warranty End Date</div>,
+      selector: (row) => row.warrantyEndDate,
+      wrap: true,
+      sortable: false,
+    },
+    {
+      id: "supplierId",
+      name: <div>Supplier ID</div>,
+      selector: (row) => row?.supplierNumber,
+      wrap: true,
+      sortable: false,
+    },
+    {
+      id: "supplierName",
+      name: <div>Supplier Name</div>,
+      selector: (row) => row?.supplierName,
+      wrap: true,
+      sortable: false,
+    },
+  ];
+
+  const sunComponentsColumns = [
+    {
+      id: "subComponentId",
+      name: <div>Sub-Component #</div>,
+      selector: (row) => row.id,
+      wrap: true,
+      sortable: false,
+    },
+    {
+      id: "subComponentFamily",
+      name: <div>Family</div>,
+      selector: (row) => row.id,
+      wrap: true,
+      sortable: false,
+    },
+    {
+      id: "subComponentModel",
+      name: <div>Model</div>,
+      selector: (row) => row.id,
+      wrap: true,
+      sortable: false,
+    },
+    {
+      id: "subComponentSerialNumber",
+      name: <div>Serial Number</div>,
+      selector: (row) => row.id,
+      wrap: true,
+      sortable: false,
+    },
+    {
+      id: "subComponentWarrentyCategory",
+      name: <div>Warranty Category</div>,
+      selector: (row) => row.id,
+      wrap: true,
+      sortable: false,
+    },
+    {
+      id: "subComponentWarrentySerialNumber",
+      name: <div>Machine Serial Number</div>,
+      selector: (row) => row.id,
+      wrap: true,
+      sortable: false,
+    },
+    {
+      id: "subComponentWarrentyStartDate",
+      name: <div>Warranty Start Date</div>,
+      selector: (row) => row.id,
+      wrap: true,
+      sortable: false,
+    },
+    {
+      id: "subComponentWarrentyEndDate",
+      name: <div>Warranty End Date</div>,
+      selector: (row) => row.id,
+      wrap: true,
+      sortable: false,
+    },
+    {
+      id: "subComponentSupplierId",
+      name: <div>Supplier ID</div>,
+      selector: (row) => row.id,
+      wrap: true,
+      sortable: false,
+    },
+    {
+      id: "subComponentSupplierId",
+      name: <div>Supplier Name</div>,
+      selector: (row) => row.id,
+      wrap: true,
+      sortable: false,
     },
   ];
 
@@ -936,9 +1201,23 @@ const EquipmentMaster = () => {
   };
 
   // view Selected Search equipment details
-  const handleViewDetails = (id) => {
+  const handleViewDetails = (id, equipmentRow) => {
     setLoading(true);
     setPageNo(1);
+
+    const warrantyReqUrl = `${Search_By_Fields_Warranty_List_GET}field_name=equipmentNumber&field_value=${equipmentRow.equipmentNumber}`;
+    callGetApi(
+      null,
+      warrantyReqUrl,
+      (response) => {
+        if (response.status === API_SUCCESS) {
+          const responseData = response.data;
+          setWarrantyData(responseData);
+        }
+      },
+      (error) => {}
+    );
+
     const rUrl = Get_Equipment_Datails_By_Id_GET + id;
     callGetApi(
       null,
@@ -1236,7 +1515,10 @@ const EquipmentMaster = () => {
                 {/* {isEmpty(selectEquipmentDetails.customerId)
                   ? "NA"
                   : selectEquipmentDetails.customerId} */}
-                1149596
+                {/* 1149596 */}
+                {isEmpty(selectEquipmentDetails.currentClient)
+                  ? "NA"
+                  : selectEquipmentDetails.currentClient}
               </p>
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-3">
@@ -1462,9 +1744,12 @@ const EquipmentMaster = () => {
     return (
       <>
         <EquipmentDataTable
-          columns={erpComponentColumns}
+          // columns={erpComponentColumns}
+          columns={newComponentsColumns}
           data={warrantyDetailsList}
           title="Component"
+          expandable={true}
+          expandablColumns={sunComponentsColumns}
         />
       </>
     );
@@ -1483,9 +1768,9 @@ const EquipmentMaster = () => {
                   Warranty Type
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                  {isEmpty(selectEquipmentDetails.maker)
+                  {isEmpty(yearWarrantyData.warrantyType?.value)
                     ? "NA"
-                    : selectEquipmentDetails.maker}
+                    : yearWarrantyData.warrantyType?.label}
                 </p>
               </div>
             </div>
@@ -1495,9 +1780,9 @@ const EquipmentMaster = () => {
                   Basis
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                  {isEmpty(selectEquipmentDetails.maker)
+                  {isEmpty(yearWarrantyData.basis)
                     ? "NA"
-                    : selectEquipmentDetails.maker}
+                    : yearWarrantyData.basis}
                 </p>
               </div>
             </div>
@@ -1507,9 +1792,9 @@ const EquipmentMaster = () => {
                   Duration
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                  {isEmpty(selectEquipmentDetails.maker)
+                  {isEmpty(yearWarrantyData.basis)
                     ? "NA"
-                    : selectEquipmentDetails.maker}
+                    : yearWarrantyData.basis}
                 </p>
               </div>
             </div>
@@ -1519,9 +1804,9 @@ const EquipmentMaster = () => {
                   Title
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                  {isEmpty(selectEquipmentDetails.maker)
+                  {isEmpty(yearWarrantyData.title)
                     ? "NA"
-                    : selectEquipmentDetails.maker}
+                    : yearWarrantyData.title}
                 </p>
               </div>
             </div>
@@ -1529,7 +1814,7 @@ const EquipmentMaster = () => {
         </div>
         <div className="bg-white py-3 border-radius-10 mt-2">
           <Grid item xs={12}>
-            <TabContext value={warrantyTabValue}>
+            <TabContext value={warrantyYearTabValue}>
               <Box
                 sx={{
                   borderBottom: 1,
@@ -1538,11 +1823,17 @@ const EquipmentMaster = () => {
                   marginInline: 2,
                 }}
               >
-                <TabList
-                  className=""
-                  onChange={(e, tabValue) => setWarrantyTabValue(tabValue)}
-                >
-                  <Tab
+                <TabList className="" onChange={handleWarrantyYearTabChange}>
+                  {warrantyYearIds.length !== 0 &&
+                    warrantyYearIds.map((year, i) => (
+                      <Tab
+                        label={`Year ${i + 1}`}
+                        value={year}
+                        className="heading-tabs"
+                        key={year}
+                      />
+                    ))}
+                  {/* <Tab
                     label="Year 1"
                     value={"year1"}
                     className="heading-tabs"
@@ -1551,96 +1842,287 @@ const EquipmentMaster = () => {
                     label="Year 2"
                     value={"year2"}
                     className="heading-tabs"
-                  />
+                  /> */}
                 </TabList>
               </Box>
-              <TabPanel value="year1" sx={{ marginTop: 0 }}>
-                <div className="row align-items-end">
-                  <div className="col-lg-4 col-md-4 col-sm-6 col-12">
-                    <div className="d-block">
-                      <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                        Warranty Type
-                      </p>
-                      <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                        {isEmpty(selectEquipmentDetails.maker)
-                          ? "NA"
-                          : selectEquipmentDetails.maker}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="col-lg-4 col-md-4 col-sm-6 col-12">
-                    <div className="d-block">
-                      <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                        Start Usage
-                      </p>
-                      <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                        {isEmpty(selectEquipmentDetails.maker)
-                          ? "NA"
-                          : selectEquipmentDetails.maker}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="col-lg-4 col-md-4 col-sm-6 col-12">
-                    <div className="d-block">
-                      <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                        End Usage
-                      </p>
-                      <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                        {isEmpty(selectEquipmentDetails.maker)
-                          ? "NA"
-                          : selectEquipmentDetails.maker}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="col-lg-4 col-md-4 col-sm-6 col-12">
-                    <div className="d-block">
-                      <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                        Start Date
-                      </p>
-                      <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                        {isEmpty(selectEquipmentDetails.maker)
-                          ? "NA"
-                          : selectEquipmentDetails.maker}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="col-lg-4 col-md-4 col-sm-6 col-12">
-                    <div className="d-block">
-                      <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                        End Date
-                      </p>
-                      <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                        {isEmpty(selectEquipmentDetails.maker)
-                          ? "NA"
-                          : selectEquipmentDetails.maker}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="col-lg-4 col-md-4 col-sm-6 col-12">
-                    <div className="d-block">
-                      <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                        Warranty Expense Account
-                      </p>
-                      <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                        {isEmpty(selectEquipmentDetails.maker)
-                          ? "NA"
-                          : selectEquipmentDetails.maker}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="col-lg-4 col-md-4 col-sm-6 col-12">
-                    <div className="d-block">
-                      <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                        Amount
-                      </p>
-                      <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
-                        {isEmpty(selectEquipmentDetails.maker)
-                          ? "NA"
-                          : selectEquipmentDetails.maker}
-                      </p>
-                    </div>
-                  </div>
+              <TabPanel value={warrantyYearTabValue} sx={{ marginTop: 0 }}>
+                <div className="row" style={{ justifyContent: "right" }}>
+                  <button
+                    type="button"
+                    className="btn btn-light bg-primary text-white"
+                    onClick={() => setYearWarrantyDataEdit(true)}
+                  >
+                    Edit
+                  </button>
                 </div>
+                {!yearWarrantyDataEdit ? (
+                  <>
+                    <div className="card border mt-2 px-3 py-3">
+                      <div className="row align-items-end">
+                        <div className="col-lg-4 col-md-4 col-sm-6 col-12">
+                          <div className="d-block">
+                            <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                              Warranty Type
+                            </p>
+                            <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                              {isEmpty(yearWarrantyData.warrantyType?.value)
+                                ? "NA"
+                                : yearWarrantyData.warrantyType?.label}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="col-lg-4 col-md-4 col-sm-6 col-12">
+                          <div className="d-block">
+                            <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                              Start Usage
+                            </p>
+                            <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                              {isEmpty(yearWarrantyData.warrantyStartUsage)
+                                ? "NA"
+                                : yearWarrantyData.warrantyStartUsage}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="col-lg-4 col-md-4 col-sm-6 col-12">
+                          <div className="d-block">
+                            <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                              End Usage
+                            </p>
+                            <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                              {isEmpty(yearWarrantyData.warrantyEndUsage)
+                                ? "NA"
+                                : yearWarrantyData.warrantyEndUsage}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="col-lg-4 col-md-4 col-sm-6 col-12">
+                          <div className="d-block">
+                            <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                              Start Date
+                            </p>
+                            <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                              {isEmpty(yearWarrantyData.warrantyStartDate)
+                                ? "NA"
+                                : getFormatDateTime(
+                                    yearWarrantyData.warrantyStartDate,
+                                    false
+                                  )}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="col-lg-4 col-md-4 col-sm-6 col-12">
+                          <div className="d-block">
+                            <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                              End Date
+                            </p>
+                            <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                              {isEmpty(yearWarrantyData.warrantyEndDate)
+                                ? "NA"
+                                : getFormatDateTime(
+                                    yearWarrantyData.warrantyEndDate,
+                                    false
+                                  )}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="col-lg-4 col-md-4 col-sm-6 col-12">
+                          <div className="d-block">
+                            <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                              Warranty Expense Account
+                            </p>
+                            <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                              {isEmpty(yearWarrantyData.warrantyExpAccount)
+                                ? "NA"
+                                : yearWarrantyData.warrantyExpAccount}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="col-lg-4 col-md-4 col-sm-6 col-12">
+                          <div className="d-block">
+                            <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                              Amount
+                            </p>
+                            <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
+                              {isEmpty(yearWarrantyData.amount)
+                                ? "NA"
+                                : yearWarrantyData.amount}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="card mt-2 border px-3 py-3">
+                      <div className="row input-fields">
+                        <div className="col-lg-4 col-md-4 col-sm-6 col-12">
+                          <div className="form-group">
+                            <label className="text-light-dark font-size-14 font-weight-500">
+                              Warranty Type
+                            </label>
+                            <Select
+                              className="text-primary"
+                              options={warrantyTypeOptions}
+                              onChange={(e) =>
+                                setYearWarrantyData({
+                                  ...yearWarrantyData,
+                                  warrantyType: e,
+                                })
+                              }
+                              value={yearWarrantyData.warrantyType}
+                              styles={FONT_STYLE_SELECT}
+                            />
+                          </div>
+                        </div>
+                        <div className="col-lg-4 col-md-4 col-sm-6 col-12">
+                          <div className="form-group">
+                            <label className="text-light-dark font-size-14 font-weight-500">
+                              Start Usage
+                            </label>
+                            <input
+                              type="text"
+                              className="form-control border-radius-10 text-primary"
+                              value={yearWarrantyData.warrantyStartUsage}
+                              name="warrantyStartUsage"
+                              placeholder="Start Usage"
+                              onChange={handleWarrantyDataFieldChange}
+                            />
+                          </div>
+                        </div>
+                        <div className="col-lg-4 col-md-4 col-sm-6 col-12">
+                          <div className="form-group">
+                            <label className="text-light-dark font-size-14 font-weight-500">
+                              End Usage
+                            </label>
+                            <input
+                              type="text"
+                              className="form-control border-radius-10 text-primary"
+                              value={yearWarrantyData.warrantyEndUsage}
+                              name="warrantyEndUsage"
+                              placeholder="End Usage"
+                              onChange={handleWarrantyDataFieldChange}
+                            />
+                          </div>
+                        </div>
+                        <div className="col-lg-4 col-md-4 col-sm-6 col-12">
+                          <div className="form-group">
+                            <label className="text-light-dark font-size-14 font-weight-500">
+                              Start Date
+                            </label>
+                            <div className="align-items-center date-box">
+                              <LocalizationProvider
+                                dateAdapter={AdapterDateFns}
+                              >
+                                <MobileDatePicker
+                                  inputFormat="dd/MM/yyyy"
+                                  className="form-controldate border-radius-10"
+                                  // maxDate={new Date()}
+                                  closeOnSelect
+                                  value={yearWarrantyData.warrantyStartDate}
+                                  onChange={(e) =>
+                                    setYearWarrantyData({
+                                      ...yearWarrantyData,
+                                      warrantyStartDate: e,
+                                    })
+                                  }
+                                  renderInput={(params) => (
+                                    <TextField
+                                      {...params}
+                                      variant="standard"
+                                      inputProps={{
+                                        ...params.inputProps,
+                                        style: FONT_STYLE,
+                                      }}
+                                    />
+                                  )}
+                                />
+                              </LocalizationProvider>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="col-lg-4 col-md-4 col-sm-6 col-12">
+                          <div className="form-group">
+                            <label className="text-light-dark font-size-14 font-weight-500">
+                              End Date
+                            </label>
+                            <div className="align-items-center date-box">
+                              <LocalizationProvider
+                                dateAdapter={AdapterDateFns}
+                              >
+                                <MobileDatePicker
+                                  inputFormat="dd/MM/yyyy"
+                                  className="form-controldate border-radius-10"
+                                  // maxDate={new Date()}
+                                  closeOnSelect
+                                  value={yearWarrantyData.warrantyEndDate}
+                                  onChange={(e) =>
+                                    setYearWarrantyData({
+                                      ...yearWarrantyData,
+                                      warrantyEndDate: e,
+                                    })
+                                  }
+                                  renderInput={(params) => (
+                                    <TextField
+                                      {...params}
+                                      variant="standard"
+                                      inputProps={{
+                                        ...params.inputProps,
+                                        style: FONT_STYLE,
+                                      }}
+                                    />
+                                  )}
+                                />
+                              </LocalizationProvider>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="col-lg-4 col-md-4 col-sm-6 col-12">
+                          <div className="form-group">
+                            <label className="text-light-dark font-size-14 font-weight-500">
+                              Warranty Expense Account
+                            </label>
+                            <input
+                              type="text"
+                              className="form-control border-radius-10 text-primary"
+                              value={yearWarrantyData.warrantyExpAccount}
+                              name="warrantyExpAccount"
+                              placeholder="Expense Account"
+                              onChange={handleWarrantyDataFieldChange}
+                            />
+                          </div>
+                        </div>
+                        <div className="col-lg-4 col-md-4 col-sm-6 col-12">
+                          <div className="form-group">
+                            <label className="text-light-dark font-size-14 font-weight-500">
+                              Amount
+                            </label>
+                            <input
+                              type="text"
+                              className="form-control border-radius-10 text-primary"
+                              value={yearWarrantyData.amount}
+                              name="amount"
+                              placeholder="AMount"
+                              onChange={handleWarrantyDataFieldChange}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        className="row mb-3"
+                        style={{ justifyContent: "right" }}
+                      >
+                        <button
+                          type="button"
+                          className="btn btn-light bg-primary text-white mx-3"
+                          onClick={handleUpdateYearDetails}
+                        >
+                          Update Year Details
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
 
                 <div className="Add-new-segment-div p-3 border-radius-10 my-2">
                   <div class="repairbtn-dropdown">
@@ -1942,10 +2424,17 @@ const EquipmentMaster = () => {
         handleSnack={handleSnack}
       />
 
-      <WarrantyCoverageView
-        show={showWarrantyCoverageModal}
-        hideModal={() => setShowWarrantyCoverageModal(false)}
-      />
+      {showWarrantyCoverageModal && (
+        <WarrantyCoverageView
+          show={showWarrantyCoverageModal}
+          hideModal={() => setShowWarrantyCoverageModal(false)}
+          yearlyWarrantyId={warrantyYearTabValue}
+          warrantyCoverageIds={warrantyCoverageIds}
+          setWarrantyCoverageIds={setWarrantyCoverageIds}
+          handleSnack={handleSnack}
+          yearWarrantyComponentData={yearWarrantyComponentData}
+        />
+      )}
     </>
   );
 };

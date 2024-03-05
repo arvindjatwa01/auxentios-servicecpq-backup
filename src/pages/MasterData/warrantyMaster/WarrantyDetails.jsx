@@ -157,7 +157,7 @@ const WarrantyDetails = ({ show, hideModal, recordId, handleSnack }) => {
             </button>
           </div>
         </div>
-        <h5>Warranty Details</h5>
+        <h4>Warranty Details</h4>
         <div className="card border mb-2 mt-2 px-3">
           {editRecord ? (
             <>
@@ -302,7 +302,7 @@ const WarrantyDetails = ({ show, hideModal, recordId, handleSnack }) => {
           )}
         </div>
 
-        <h5 className="font-weight-bold fw-bold mb-0">End Customer</h5>
+        <h4 className="font-weight-bold fw-bold mb-0">End Customer</h4>
         <div className="card border mb-3 mt-2 px-3 py-3">
           {editRecord ? (
             <>
@@ -535,8 +535,8 @@ const WarrantyDetails = ({ show, hideModal, recordId, handleSnack }) => {
           )}
         </div>
 
-        <h5>Installer</h5>
-        <div className="card border mb-2 mt-1 px-2">
+        <h4>Installer</h4>
+        <div className="card border mb-2 mt-1 px-3 py-3">
           {editRecord ? (
             <>
               <div className="row mt-2">
@@ -636,7 +636,7 @@ const WarrantyDetails = ({ show, hideModal, recordId, handleSnack }) => {
                     </h6>
                   </div>
                 </div>
-                <div className="col-md-4 col-sm-4">
+                {/* <div className="col-md-4 col-sm-4">
                   <div className="form-group">
                     <p className="text-light-dark font-size-12 font-weight-500 mb-2">
                       Indoor Brand
@@ -659,7 +659,7 @@ const WarrantyDetails = ({ show, hideModal, recordId, handleSnack }) => {
                         : installerReqObj?.outdoorBrand}
                     </h6>
                   </div>
-                </div>
+                </div> */}
                 <div className="col-md-4 col-sm-4">
                   <div className="form-group">
                     <p className="text-light-dark font-size-12 font-weight-500 mb-2">
@@ -799,7 +799,7 @@ const WarrantyDetails = ({ show, hideModal, recordId, handleSnack }) => {
                 <div className="col-md-3 col-sm-3">
                   <div className="form-group">
                     <label className="text-light-dark font-size-14 font-weight-500">
-                      Insatll Type
+                      Install Type
                     </label>
                     <Select
                       className="text-primary"
@@ -817,7 +817,7 @@ const WarrantyDetails = ({ show, hideModal, recordId, handleSnack }) => {
                 </div>
               </div>
               <div className="row mt-1 input-fields">
-                <div className="col-md-3 col-sm-3">
+                {/* <div className="col-md-3 col-sm-3">
                   <div className="form-group">
                     <label className="text-light-dark font-size-14 font-weight-500">
                       Indoor Brand
@@ -846,7 +846,7 @@ const WarrantyDetails = ({ show, hideModal, recordId, handleSnack }) => {
                       onChange={handleInputChange}
                     />
                   </div>
-                </div>
+                </div> */}
                 <div className="col-md-3 col-sm-3">
                   <div className="form-group">
                     <label className="text-light-dark font-size-14 font-weight-500">

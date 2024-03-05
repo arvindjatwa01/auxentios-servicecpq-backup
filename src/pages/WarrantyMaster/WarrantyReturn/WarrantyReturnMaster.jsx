@@ -69,7 +69,7 @@ const WarrantyReturnMaster = () => {
           <div className="container-fluid mt-3">
             <h4 className="mb-3">Warranty Dashboard</h4>
             <div class="row gx-3">
-              <div class="col mt-2">
+              <div class="col mt-3">
                 <div class="card" style={{ width: "30rem" }}>
                   <ul class="list-group list-group-flush ">
                     <li
@@ -168,9 +168,9 @@ const WarrantyReturnMaster = () => {
                         </div>
                         <div class="list-group-item d-flex justify-content-start  border border-white">
                           <p className="me-2">
-                            <strong>Approve</strong>
+                            <strong>Approve </strong>
                           </p>
-                          <p className="me-2">Reject</p>
+                          <p className="mx-2">Reject </p>
                           <p>Review</p>
                         </div>
                       </li>
@@ -189,10 +189,10 @@ const WarrantyReturnMaster = () => {
                         </div>
                         <div class="list-group-item d-flex justify-content-start  border border-white">
                           <p className="me-2">
-                            <strong>Approve</strong>
+                            <strong>Approve </strong>
                           </p>
 
-                          <p className="me-2">Reject</p>
+                          <p className="mx-2">Reject </p>
                           <p>Review</p>
                         </div>
                       </li>
@@ -210,10 +210,10 @@ const WarrantyReturnMaster = () => {
                         </div>
                         <div class="list-group-item d-flex justify-content-start  border border-white">
                           <p className="me-2">
-                            <strong>Approve</strong>
+                            <strong>Approve </strong>
                           </p>
 
-                          <p className="me-2">Reject</p>
+                          <p className="mx-2">Reject </p>
                           <p>Review</p>
                         </div>
                       </li>
@@ -228,7 +228,7 @@ const WarrantyReturnMaster = () => {
                       class="border  border-success rounded"
                       style={{ color: "green", backgroundColor: "#D1FFBD" }}
                     >
-                      <div class="list-group-item d-flex justify-content-between align-items-center p-3 ">
+                      <div class="list-group-item d-flex justify-content-between align-items-center p-3 cursor-pointer">
                         <div>
                           <span class="material-icons ">
                             {" "}
@@ -249,7 +249,7 @@ const WarrantyReturnMaster = () => {
                         backgroundColor: "rgb(245, 224, 245)",
                       }}
                     >
-                      <div class="list-group-item d-flex justify-content-between align-items-center p-3 ">
+                      <div class="list-group-item d-flex justify-content-between align-items-center p-3 cursor-pointer">
                         <div>
                           <span class="material-icons ">
                             {" "}
@@ -266,7 +266,10 @@ const WarrantyReturnMaster = () => {
                       class="border border-info rounded mt-4  text-black "
                       style={{ backgroundColor: "#add8e6 " }}
                     >
-                      <div class="list-group-item d-flex justify-content-between align-items-center p-3 ">
+                      <div
+                        class="list-group-item d-flex justify-content-between align-items-center p-3 cursor-pointer"
+                        onClick={toggleReturnRequesterModal}
+                      >
                         <div>
                           <span class="material-icons ">
                             {" "}

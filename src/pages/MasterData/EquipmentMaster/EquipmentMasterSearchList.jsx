@@ -19,7 +19,7 @@ const EquipmentMasterSearchList = ({
                   className={`cursor ${
                     equipment.id === selectedEquipmentId ? "active" : ""
                   }`}
-                  onClick={() => handleViewDetails(equipment.id)}
+                  onClick={() => handleViewDetails(equipment.id, equipment)}
                 >
                   <div className="row position-relative">
                     <div className="global-serach-arrow">
