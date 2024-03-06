@@ -1100,7 +1100,7 @@ const ClaimMaster = () => {
           isFailurePar={isFailurePart}
           setIsFailurePart={setIsFailurePart}
         />
-      // )}
+      {/* )} */}
 
       {openReturnRequsterModal && (
         <ReturnRequester
