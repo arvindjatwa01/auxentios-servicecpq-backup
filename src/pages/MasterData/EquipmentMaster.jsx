@@ -25,7 +25,7 @@ import { API_SUCCESS } from "services/ResponseCode";
 
 import PaginationStackedChart from "./PaginationStackedChart";
 import EquipmentReportDetails from "./EquipmentReportDetails";
-import { defaultContactData, defaultWarrentyData } from "./equipmentConstant";
+import { defaultContactData, defaultWarrentyData, equipmentComponentRecords } from "./equipmentConstant";
 import EquipmentDataTable from "./EquipmentDataTable";
 import EquipmentSearchMaster from "./EquipmentSearchMaster";
 import {
@@ -690,20 +690,20 @@ const EquipmentMaster = () => {
       wrap: true,
       sortable: false,
     },
-    {
-      id: "family",
-      name: <div>Family</div>,
-      selector: (row) => row.family,
-      wrap: true,
-      sortable: false,
-    },
-    {
-      id: "model",
-      name: <div>Model</div>,
-      selector: (row) => row.model,
-      wrap: true,
-      sortable: false,
-    },
+    // {
+    //   id: "family",
+    //   name: <div>Family</div>,
+    //   selector: (row) => row.family,
+    //   wrap: true,
+    //   sortable: false,
+    // },
+    // {
+    //   id: "model",
+    //   name: <div>Model</div>,
+    //   selector: (row) => row.model,
+    //   wrap: true,
+    //   sortable: false,
+    // },
     {
       id: "serialNumber",
       name: <div>Serial Number</div>,
@@ -714,17 +714,17 @@ const EquipmentMaster = () => {
     {
       id: "warrentyCategory",
       name: <div>Warranty Category</div>,
-      selector: (row) => row.warrantyType,
+      selector: (row) => row.warrantyCategory,
       wrap: true,
       sortable: false,
     },
-    {
-      id: "machineSerialNumber",
-      name: <div>Machine Serial Number</div>,
-      selector: (row) => row.machineSerialNumber,
-      wrap: true,
-      sortable: false,
-    },
+    // {
+    //   id: "machineSerialNumber",
+    //   name: <div>Machine Serial Number</div>,
+    //   selector: (row) => row.machineSerialNumber,
+    //   wrap: true,
+    //   sortable: false,
+    // },
     {
       id: "warrentyStartDate",
       name: <div>Warranty Start Date</div>,
@@ -742,7 +742,7 @@ const EquipmentMaster = () => {
     {
       id: "supplierId",
       name: <div>Supplier ID</div>,
-      selector: (row) => row?.supplierNumber,
+      selector: (row) => row?.supplierId,
       wrap: true,
       sortable: false,
     },
@@ -759,70 +759,70 @@ const EquipmentMaster = () => {
     {
       id: "subComponentId",
       name: <div>Sub-Component #</div>,
-      selector: (row) => row.id,
+      selector: (row) => row.subComponentNumber,
       wrap: true,
       sortable: false,
     },
-    {
-      id: "subComponentFamily",
-      name: <div>Family</div>,
-      selector: (row) => row.id,
-      wrap: true,
-      sortable: false,
-    },
-    {
-      id: "subComponentModel",
-      name: <div>Model</div>,
-      selector: (row) => row.id,
-      wrap: true,
-      sortable: false,
-    },
+    // {
+    //   id: "subComponentFamily",
+    //   name: <div>Family</div>,
+    //   selector: (row) => row.family,
+    //   wrap: true,
+    //   sortable: false,
+    // },
+    // {
+    //   id: "subComponentModel",
+    //   name: <div>Model</div>,
+    //   selector: (row) => row.model,
+    //   wrap: true,
+    //   sortable: false,
+    // },
     {
       id: "subComponentSerialNumber",
       name: <div>Serial Number</div>,
-      selector: (row) => row.id,
+      selector: (row) => row.serialNumber,
       wrap: true,
       sortable: false,
     },
     {
       id: "subComponentWarrentyCategory",
       name: <div>Warranty Category</div>,
-      selector: (row) => row.id,
+      selector: (row) => row.warrantyCategory,
       wrap: true,
       sortable: false,
     },
-    {
-      id: "subComponentWarrentySerialNumber",
-      name: <div>Machine Serial Number</div>,
-      selector: (row) => row.id,
-      wrap: true,
-      sortable: false,
-    },
+    // {
+    //   id: "subComponentWarrentySerialNumber",
+    //   name: <div>Machine Serial Number</div>,
+    //   selector: (row) => row?.machineSerialNumber,
+    //   wrap: true,
+    //   sortable: false,
+    // },
     {
       id: "subComponentWarrentyStartDate",
       name: <div>Warranty Start Date</div>,
-      selector: (row) => row.id,
+      selector: (row) => row.warrantyStartDate,
       wrap: true,
       sortable: false,
     },
     {
       id: "subComponentWarrentyEndDate",
       name: <div>Warranty End Date</div>,
-      selector: (row) => row.id,
+      selector: (row) => row.warrantyEndDate,
       wrap: true,
       sortable: false,
     },
     {
       id: "subComponentSupplierId",
       name: <div>Supplier ID</div>,
-      selector: (row) => row.id,
+      selector: (row) => row.supplierId,
       wrap: true,
       sortable: false,
     },
     {
       id: "subComponentSupplierId",
       name: <div>Supplier Name</div>,
-      selector: (row) => row.id,
+      selector: (row) => row.supplierName,
       wrap: true,
       sortable: false,
     },
@@ -1746,7 +1746,7 @@ const EquipmentMaster = () => {
         <EquipmentDataTable
           // columns={erpComponentColumns}
           columns={newComponentsColumns}
-          data={warrantyDetailsList}
+          data={equipmentComponentRecords}
           title="Component"
           expandable={true}
           expandablColumns={sunComponentsColumns}

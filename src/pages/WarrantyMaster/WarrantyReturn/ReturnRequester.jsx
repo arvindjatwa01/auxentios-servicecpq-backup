@@ -165,6 +165,7 @@ const ReturnRequester = ({
   handleSnack,
   countryRegionOptionsList,
   partSelectionData = [],
+  disposenNeed = true,
 }) => {
   const [tabValue, setTabValue] = useState("overview");
   const [returnReceivedTabValue, setReturnReceivedTabValue] =
@@ -180,6 +181,10 @@ const ReturnRequester = ({
     ...returnShippingReqObj,
   });
   const [shipmentHeaderData, setShipmentHeaderData] = useState({
+    ...shipmentHeaderReqObj,
+  });
+
+  const [returnRecivedData, setReturnRecivedData] = useState({
     ...shipmentHeaderReqObj,
   });
 
@@ -898,6 +903,9 @@ const ReturnRequester = ({
   const viewPartsSelectionDetails = () => {
     return (
       <>
+        <div className="row mb-1" style={{ justifyContent: "right" }}>
+          <button className="btn btn-primary mx-3">+ Add</button>
+        </div>
         <Box
           sx={{
             width: "100%",
@@ -908,7 +916,7 @@ const ReturnRequester = ({
         >
           <DataGrid
             rows={partSelectionData}
-            columns={partsSelectionColumns}
+            columns={disposenNeed ? partsSelectionColumns : shipmentColumns}
             sx={GRID_STYLE}
             pageSizeOptions={[5, 10, 50, 100]}
             // disableRowSelectionOnClick
@@ -931,10 +939,11 @@ const ReturnRequester = ({
                   Return Number
                 </label>
                 <input
-                  type="number"
+                  type="text"
                   className="form-control border-radius-10 text-primary"
                   name="returnNumber"
-                  placeholder="Return Number"
+                  disabled
+                  placeholder="Auto generated"
                   value={shipmentHeaderData.returnNumber}
                   onChange={handleShipmentHeaderTextChange}
                 />
@@ -1050,7 +1059,12 @@ const ReturnRequester = ({
             </div>
           </div>
         </div>
-        <h5 style={{ fontWeight: "bold" }}>Shipment Items</h5>
+        <div className="d-flex justify-content-between mb-1">
+          <h5 style={{ fontWeight: "bold" }}>Shipment Items</h5>
+          <div className="row" style={{ justifyContent: "right" }}>
+            <button className="btn btn-primary mx-3">+ Add</button>
+          </div>
+        </div>
         <Box
           sx={{
             width: "100%",
@@ -1077,7 +1091,10 @@ const ReturnRequester = ({
     return (
       <>
         <>
-          <ReturnSearch />
+          <ReturnSearch
+            number={shipmentHeaderData["returnNumber"]}
+            setReturnRecivedData={setReturnRecivedData}
+          />
           <div className="card border px-3 py-2">
             <div className="row input-fields">
               <div className="col-lg-4 col-md-4 col-sm-12 col-12">
@@ -1086,11 +1103,12 @@ const ReturnRequester = ({
                     Return Number
                   </label>
                   <input
-                    type="number"
+                    type="text"
                     className="form-control border-radius-10 text-primary"
                     name="returnNumber"
+                    disabled
                     placeholder="Return Number"
-                    //   value={evaluatedByRecordObj.firstName}
+                    value={returnRecivedData.returnNumber}
                     //   onChange={handleEvaluatedByInputTextChange}
                   />
                 </div>
@@ -1105,6 +1123,7 @@ const ReturnRequester = ({
                     className="form-control border-radius-10 text-primary"
                     name="returnType"
                     placeholder="Return Type"
+                    value={"Intra Company"}
                     //   value={evaluatedByRecordObj.firstName}
                     //   onChange={handleEvaluatedByInputTextChange}
                   />
@@ -1145,10 +1164,11 @@ const ReturnRequester = ({
                     Tracking Number
                   </label>
                   <input
-                    type="number"
+                    type="text"
                     className="form-control border-radius-10 text-primary"
                     name="trackingNumber"
                     placeholder="Tracking Number"
+                    value={"RTN-6883"}
                     //   value={evaluatedByRecordObj.firstName}
                     //   onChange={handleEvaluatedByInputTextChange}
                   />
@@ -1164,6 +1184,7 @@ const ReturnRequester = ({
                     className="form-control border-radius-10 text-primary"
                     name="senderLocation"
                     placeholder="Sender Location"
+                    value={"Australia"}
                     //   value={evaluatedByRecordObj.firstName}
                     //   onChange={handleEvaluatedByInputTextChange}
                   />
@@ -1179,6 +1200,7 @@ const ReturnRequester = ({
                     className="form-control border-radius-10 text-primary"
                     name="returnNumber"
                     placeholder="Recevier Location"
+                    value={"Australia"}
                     //   value={evaluatedByRecordObj.firstName}
                     //   onChange={handleEvaluatedByInputTextChange}
                   />
@@ -1195,6 +1217,7 @@ const ReturnRequester = ({
                     cols="30"
                     rows="2"
                     placeholder="Receiver Address..."
+                    value={"20 Kullara Cl, Beresfield NSW 2322, Australia"}
                   ></textarea>
                 </div>
               </div>
@@ -1215,7 +1238,7 @@ const ReturnRequester = ({
               sx={GRID_STYLE}
               pageSizeOptions={[5, 10, 50, 100]}
               disableRowSelectionOnClick
-                getRowId={(row) => row.index}
+              getRowId={(row) => row.index}
             />
           </Box>
         </>
@@ -1321,22 +1344,56 @@ const ReturnRequester = ({
     const reqObj = {
       ...shipmentHeaderData,
       returnType: shipmentHeaderData.returnType?.value || "EMPTY",
+      disposeType: "RECEIVED",
     };
-    callPostApi(
-      null,
-      rUrl,
-      reqObj,
-      (response) => {
-        if (response.status === API_SUCCESS) {
-          handleSnack("success", "Shipment Details Saved Successfully");
-        } else {
-          handleSnack("error", "Something went wrong");
-        }
-      },
-      (error) => {
-        handleSnack("error", "Something went wrong");
-      }
+    const shipmentNumber = Math.floor(Math.random() * 9000) + 1000;
+    handleSnack(
+      "success",
+      `Shipment with return number ${shipmentNumber} Created Successfully.`
     );
+    setShipmentHeaderData({
+      ...shipmentHeaderData,
+      returnNumber: "RM-" + shipmentNumber,
+      disposeType: "RECEIVED",
+    });
+    // setReturnRecivedData({
+    //   ...returnRecivedData,
+    //   returnNumber: "RM-" + shipmentNumber,
+    // })
+
+    setTabValue("returnRecived");
+    // callPostApi(
+    //   null,
+    //   rUrl,
+    //   reqObj,
+    //   (response) => {
+    //     if (response.status === API_SUCCESS) {
+    //       const shipmentNumber = Math.floor(Math.random() * 9000) + 1000;
+    //       handleSnack(
+    //         "success",
+    //         `Shipment with return number ${shipmentNumber} Created Successfully.`
+    //       );
+    //       setShipmentHeaderData({
+    //         ...shipmentHeaderData,
+    //         returnNumber: "RM-" + shipmentNumber,
+    //         disposeType: "RECEIVED",
+    //       });
+    //       setTabValue("shipment");
+    //     } else {
+    //       handleSnack("error", "Something went wrong");
+    //     }
+    //   },
+    //   (error) => {
+    //     handleSnack("error", "Something went wrong");
+    //   }
+    // );
+  };
+
+  // create parts header and shippping info
+  const handleCreatePartsAndShiipingInfo = () => {
+    // handleCreatePartHeader();
+    // handleSaveShippmentDetails();
+    setTabValue("shipment");
   };
 
   return (
@@ -1364,14 +1421,38 @@ const ReturnRequester = ({
               <h5 style={{ fontWeight: "bold" }}>Shipping Details</h5>
               {viewShippingInfo()}
               {viewPartsSelectionDetails()}
+              <div
+                className="row mt-2 mb-2"
+                style={{ justifyContent: "right" }}
+              >
+                <button
+                  className="btn btn-primary mx-3"
+                  onClick={handleCreatePartsAndShiipingInfo}
+                >
+                  Save & Next
+                </button>
+              </div>
             </TabPanel>
-            <TabPanel value={"shipment"}>{viewShipmentInformation()}</TabPanel>
+            <TabPanel value={"shipment"}>
+              {viewShipmentInformation()}
+              <div
+                className="row mt-2 mb-2"
+                style={{ justifyContent: "right" }}
+              >
+                <button
+                  className="btn btn-primary mx-3"
+                  onClick={handleSaveShippmentDetails}
+                >
+                  Create Shipment
+                </button>
+              </div>
+            </TabPanel>
             <TabPanel value={"returnRecived"}>
               {viewReturnReceivedInfo()}
             </TabPanel>
             <TabPanel value={"correctiveAction"}>
               <>
-                <ReturnSearch />
+                <ReturnSearch number={shipmentHeaderData["returnNumber"]} />
                 <div className="card border px-3 py-2">
                   <div className="row input-fields">
                     <div className="col-lg-4 col-md-4 col-sm-12 col-12">

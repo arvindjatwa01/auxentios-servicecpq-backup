@@ -22,6 +22,7 @@ const EquipmentDataTable = ({
   const expendSubComponentRow = (data, searchFlag) => {
     return (
       <div className="p-5 border-bottom">
+        {console.log("data ====== ", data)}
         <div className="border border-radius-10">
           <div className="d-flex align-items-center justify-content-between p-3">
             <div className="d-flex align-items-center">
@@ -56,14 +57,14 @@ const EquipmentDataTable = ({
               </div>
             )}
           </div>
-          {/* {bundelServiceItems.associatedServiceOrBundle.length !== 0 && (
+          {data.subcomponents.length !== 0 && (
             <DataTable
               customStyles={dataTableCustomStyle}
-              data={bundelServiceItems.associatedServiceOrBundle}
-              columns={searchBundleServiceItemColumns}
+              data={data.subcomponents}
+              columns={expandablColumns}
               pagination={true}
             />
-          )} */}
+          )}
         </div>
       </div>
     );

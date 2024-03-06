@@ -10,6 +10,37 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
 // const warrantyCard = [""]
 
+const data = [
+  {
+    index: Math.floor(Math.random() * 900) + 10000,
+    partNumber: "N90058041",
+    partDescription: "Cylinder Pack",
+    quantity: "1",
+    analysis: "Known to be faulty",
+  },
+  {
+    index: Math.floor(Math.random() * 9000) + 1000,
+    partNumber: "10R4469",
+    partDescription: "Cylinder Pack",
+    quantity: "1",
+    analysis: "Known to be faulty",
+  },
+  {
+    index: Math.floor(Math.random() * 9000) + 1000,
+    partNumber: "039720N2",
+    partDescription: "Cylinder Pack",
+    quantity: "1",
+    analysis: "Known to be faulty",
+  },
+  {
+    index: Math.floor(Math.random() * 9000) + 10000,
+    partNumber: "5788987",
+    partDescription: "Cylinder Pack",
+    quantity: "1",
+    analysis: "Known to be faulty",
+  },
+];
+
 const WarrantyReturnMaster = () => {
   const [showReturnRequesterModal, setShowReturnRequesterModal] =
     useState(false);
@@ -295,6 +326,8 @@ const WarrantyReturnMaster = () => {
           hideModal={() => setShowReturnRequesterModal(false)}
           handleSnack={handleSnack}
           countryRegionOptionsList={countryList}
+          partSelectionData={data}
+          disposenNeed={false}
         />
       )}
     </>

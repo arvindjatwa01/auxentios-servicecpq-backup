@@ -1,12 +1,24 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Autocomplete } from "@mui/material";
 
-import searchIcon from '../../../assets/icons/svg/search.svg';
+import searchIcon from "../../../assets/icons/svg/search.svg";
 
-const ReturnSearch = () => {
-  const [modelSuggestions, setModelSuggestions] = useState([]);
+const data = ["RD-4132", "RD-4153", "RD-4154", "RD-8621"];
+
+const ReturnSearch = ({ number, setReturnRecivedData }) => {
+  const [modelSuggestions, setModelSuggestions] = useState([...data]);
   const [open, setOpen] = useState(false);
-    const [model, setModel] = useState("");
+  const [model, setModel] = useState("");
+
+  console.log("number :::::: ", number);
+
+  useEffect(() => {
+    const _modelSuggestions = [...modelSuggestions];
+    if (number) {
+      _modelSuggestions.push(number);
+    }
+    setModelSuggestions(_modelSuggestions);
+  }, [number]);
   return (
     <>
       <div>
@@ -18,7 +30,7 @@ const ReturnSearch = () => {
             if (newInputValue.length === 0) {
               if (open) setOpen(false);
             } else {
-            //   handleFilterChange(event, newInputValue);
+              //   handleFilterChange(event, newInputValue);
               if (!open) setOpen(true);
             }
           }}
@@ -34,6 +46,14 @@ const ReturnSearch = () => {
                 fontSize: 12,
                 borderBottom: "1px solid #00000025",
               }}
+              onClick={(e) =>{
+                setReturnRecivedData((pre) => ({
+                  ...pre,
+                  returnNumber: option,
+                }));
+                setOpen(false);
+              }
+              }
             >
               {option}
             </li>
