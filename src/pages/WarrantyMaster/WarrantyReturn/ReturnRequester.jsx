@@ -118,6 +118,47 @@ const warrantyDiagnosisOptions = [
   },
 ];
 
+const dummyRecords = [
+  {
+    index: Math.floor(Math.random() * 900) + 10000,
+    partNumber: "N90058041",
+    partDescription: "Cylinder Pack",
+    quantity: "1",
+    analysis: "Known to be faulty",
+    dispose: "Received",
+  },
+  {
+    index: Math.floor(Math.random() * 9000) + 1000,
+    partNumber: "10R4469",
+    partDescription: "Cylinder Pack",
+    quantity: "1",
+    analysis: "Known to be faulty",
+    dispose: "Received",
+  },
+  {
+    index: Math.floor(Math.random() * 9000) + 1000,
+    partNumber: "039720N2",
+    partDescription: "Cylinder Pack",
+    quantity: "1",
+    analysis: "Known to be faulty",
+    dispose: "Received",
+  },
+  {
+    index: Math.floor(Math.random() * 9000) + 10000,
+    partNumber: "5788987",
+    partDescription: "Cylinder Pack",
+    quantity: "1",
+    analysis: "Known to be faulty",
+    dispose: "Received",
+  },
+];
+
+const failedPartAnalysisOptions = [
+  `known to be faulty i.e. “sticky”`,
+  `suspected faulty`,
+  `without any fault`,
+];
+
 const ReturnRequester = ({
   show,
   hideModal,
@@ -781,20 +822,76 @@ const ReturnRequester = ({
       flex: 1,
     },
     {
-      field: "returnType",
-      headerName: "Return Type",
+      field: "analysis",
+      headerName: "Analysis",
+      flex: 1,
+      type: "singleSelect",
+      valueOptions: ({ row }) => failedPartAnalysisOptions,
+      valueFormatter: (params) => {
+        const option = failedPartAnalysisOptions.find(
+          ({ value: optionValue }) => params.value === optionValue
+        );
+
+        if (option) return option.label;
+      },
+    },
+    {
+      field: "dispose",
+      headerName: "Dispose",
+      flex: 1,
+    },
+    // {
+    //   field: "partsCost",
+    //   headerName: "Parts Cost",
+    //   flex: 1,
+    // },
+    // {
+    //   field: "status",
+    //   headerName: "Status",
+    //   flex: 1,
+    // },
+  ];
+
+  const shipmentColumns = [
+    {
+      field: "partNumber",
+      headerName: "Part Number",
       flex: 1,
     },
     {
-      field: "partsCost",
-      headerName: "Parts Cost",
+      field: "partDescription",
+      headerName: "Part Descritpion",
       flex: 1,
     },
     {
-      field: "status",
-      headerName: "Status",
+      field: "quantity",
+      headerName: "Requested Quantity",
       flex: 1,
     },
+    {
+      field: "analysis",
+      headerName: "Analysis",
+      flex: 1,
+      type: "singleSelect",
+      valueOptions: ({ row }) => failedPartAnalysisOptions,
+      valueFormatter: (params) => {
+        const option = failedPartAnalysisOptions.find(
+          ({ value: optionValue }) => params.value === optionValue
+        );
+
+        if (option) return option.label;
+      },
+    },
+    // {
+    //   field: "partsCost",
+    //   headerName: "Parts Cost",
+    //   flex: 1,
+    // },
+    // {
+    //   field: "status",
+    //   headerName: "Status",
+    //   flex: 1,
+    // },
   ];
 
   // view parts selections details
@@ -959,16 +1056,16 @@ const ReturnRequester = ({
             width: "100%",
             height: 400,
             // marginBottom: 8,
-            marginInline: 2,
+            // marginInline: 2,
           }}
         >
           <DataGrid
-            rows={[]}
-            columns={partsSelectionColumns}
+            rows={dummyRecords}
+            columns={shipmentColumns}
             sx={GRID_STYLE}
             pageSizeOptions={[5, 10, 50, 100]}
             disableRowSelectionOnClick
-            //   getRowId={(row) => row.claimId}
+            getRowId={(row) => row.index}
           />
         </Box>
       </>
@@ -979,7 +1076,150 @@ const ReturnRequester = ({
   const viewReturnReceivedInfo = () => {
     return (
       <>
-        <Box sx={{ typography: "body1" }}>
+        <>
+          <ReturnSearch />
+          <div className="card border px-3 py-2">
+            <div className="row input-fields">
+              <div className="col-lg-4 col-md-4 col-sm-12 col-12">
+                <div className="form-group">
+                  <label className="text-light-dark font-size-14 font-weight-500">
+                    Return Number
+                  </label>
+                  <input
+                    type="number"
+                    className="form-control border-radius-10 text-primary"
+                    name="returnNumber"
+                    placeholder="Return Number"
+                    //   value={evaluatedByRecordObj.firstName}
+                    //   onChange={handleEvaluatedByInputTextChange}
+                  />
+                </div>
+              </div>
+              <div className="col-lg-4 col-md-4 col-sm-12 col-12">
+                <div className="form-group">
+                  <label className="text-light-dark font-size-14 font-weight-500">
+                    Return Type
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control border-radius-10 text-primary"
+                    name="returnType"
+                    placeholder="Return Type"
+                    //   value={evaluatedByRecordObj.firstName}
+                    //   onChange={handleEvaluatedByInputTextChange}
+                  />
+                </div>
+              </div>
+              <div className="col-lg-4 col-md-4 col-sm-12 col-12">
+                <div className="form-group">
+                  <label className="text-light-dark font-size-14 font-weight-500">
+                    Shiped On
+                  </label>
+                  <div className="align-items-center date-box">
+                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                      <MobileDatePicker
+                        inputFormat="dd/MM/yyyy"
+                        className="form-controldate border-radius-10"
+                        // maxDate={new Date()}
+                        closeOnSelect
+                        // value={claimRecord.fillDate}
+                        // onChange={(e) => handleSelectChange(e, "fillDate")}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            variant="standard"
+                            inputProps={{
+                              ...params.inputProps,
+                              style: FONT_STYLE,
+                            }}
+                          />
+                        )}
+                      />
+                    </LocalizationProvider>
+                  </div>
+                </div>
+              </div>
+              <div className="col-lg-4 col-md-4 col-sm-12 col-12">
+                <div className="form-group">
+                  <label className="text-light-dark font-size-14 font-weight-500">
+                    Tracking Number
+                  </label>
+                  <input
+                    type="number"
+                    className="form-control border-radius-10 text-primary"
+                    name="trackingNumber"
+                    placeholder="Tracking Number"
+                    //   value={evaluatedByRecordObj.firstName}
+                    //   onChange={handleEvaluatedByInputTextChange}
+                  />
+                </div>
+              </div>
+              <div className="col-lg-4 col-md-4 col-sm-12 col-12">
+                <div className="form-group">
+                  <label className="text-light-dark font-size-14 font-weight-500">
+                    Sender Location
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control border-radius-10 text-primary"
+                    name="senderLocation"
+                    placeholder="Sender Location"
+                    //   value={evaluatedByRecordObj.firstName}
+                    //   onChange={handleEvaluatedByInputTextChange}
+                  />
+                </div>
+              </div>
+              <div className="col-lg-4 col-md-4 col-sm-12 col-12">
+                <div className="form-group">
+                  <label className="text-light-dark font-size-14 font-weight-500">
+                    Receiver Location
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control border-radius-10 text-primary"
+                    name="returnNumber"
+                    placeholder="Recevier Location"
+                    //   value={evaluatedByRecordObj.firstName}
+                    //   onChange={handleEvaluatedByInputTextChange}
+                  />
+                </div>
+              </div>
+              <div className="col-lg-12 col-md-12 col-sm-12 col-12">
+                <div className="form-group">
+                  <label className="text-light-dark font-size-14 font-weight-500">
+                    Receiver Address
+                  </label>
+                  <textarea
+                    className="form-control border-radius-10 text-primary"
+                    name="receiverAddress"
+                    cols="30"
+                    rows="2"
+                    placeholder="Receiver Address..."
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+          <h5 style={{ fontWeight: "bold" }}>Shipment Items</h5>
+          <Box
+            sx={{
+              width: "100%",
+              height: 400,
+              // marginBottom: 8,
+              // marginInline: 2,
+            }}
+          >
+            <DataGrid
+              rows={dummyRecords}
+              columns={partsSelectionColumns}
+              sx={GRID_STYLE}
+              pageSizeOptions={[5, 10, 50, 100]}
+              disableRowSelectionOnClick
+                getRowId={(row) => row.index}
+            />
+          </Box>
+        </>
+        {/* <Box sx={{ typography: "body1" }}>
           <TabContext value={returnReceivedTabValue}>
             <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
               <TabList
@@ -993,151 +1233,143 @@ const ReturnRequester = ({
               </TabList>
             </Box>
             <TabPanel value={"returnRequested"}>
-              <>
-                <ReturnSearch />
-                <div className="card border px-3 py-2">
-                  <div className="row input-fields">
-                    <div className="col-lg-4 col-md-4 col-sm-12 col-12">
-                      <div className="form-group">
-                        <label className="text-light-dark font-size-14 font-weight-500">
-                          Return Number
-                        </label>
-                        <input
-                          type="number"
-                          className="form-control border-radius-10 text-primary"
-                          name="returnNumber"
-                          placeholder="Return Number"
-                          //   value={evaluatedByRecordObj.firstName}
-                          //   onChange={handleEvaluatedByInputTextChange}
-                        />
-                      </div>
-                    </div>
-                    <div className="col-lg-4 col-md-4 col-sm-12 col-12">
-                      <div className="form-group">
-                        <label className="text-light-dark font-size-14 font-weight-500">
-                          Return Type
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control border-radius-10 text-primary"
-                          name="returnType"
-                          placeholder="Return Type"
-                          //   value={evaluatedByRecordObj.firstName}
-                          //   onChange={handleEvaluatedByInputTextChange}
-                        />
-                      </div>
-                    </div>
-                    <div className="col-lg-4 col-md-4 col-sm-12 col-12">
-                      <div className="form-group">
-                        <label className="text-light-dark font-size-14 font-weight-500">
-                          Shiped On
-                        </label>
-                        <div className="align-items-center date-box">
-                          <LocalizationProvider dateAdapter={AdapterDateFns}>
-                            <MobileDatePicker
-                              inputFormat="dd/MM/yyyy"
-                              className="form-controldate border-radius-10"
-                              // maxDate={new Date()}
-                              closeOnSelect
-                              // value={claimRecord.fillDate}
-                              // onChange={(e) => handleSelectChange(e, "fillDate")}
-                              renderInput={(params) => (
-                                <TextField
-                                  {...params}
-                                  variant="standard"
-                                  inputProps={{
-                                    ...params.inputProps,
-                                    style: FONT_STYLE,
-                                  }}
-                                />
-                              )}
-                            />
-                          </LocalizationProvider>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-lg-4 col-md-4 col-sm-12 col-12">
-                      <div className="form-group">
-                        <label className="text-light-dark font-size-14 font-weight-500">
-                          Tracking Number
-                        </label>
-                        <input
-                          type="number"
-                          className="form-control border-radius-10 text-primary"
-                          name="trackingNumber"
-                          placeholder="Tracking Number"
-                          //   value={evaluatedByRecordObj.firstName}
-                          //   onChange={handleEvaluatedByInputTextChange}
-                        />
-                      </div>
-                    </div>
-                    <div className="col-lg-4 col-md-4 col-sm-12 col-12">
-                      <div className="form-group">
-                        <label className="text-light-dark font-size-14 font-weight-500">
-                          Sender Location
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control border-radius-10 text-primary"
-                          name="senderLocation"
-                          placeholder="Sender Location"
-                          //   value={evaluatedByRecordObj.firstName}
-                          //   onChange={handleEvaluatedByInputTextChange}
-                        />
-                      </div>
-                    </div>
-                    <div className="col-lg-4 col-md-4 col-sm-12 col-12">
-                      <div className="form-group">
-                        <label className="text-light-dark font-size-14 font-weight-500">
-                          Receiver Location
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control border-radius-10 text-primary"
-                          name="returnNumber"
-                          placeholder="Recevier Location"
-                          //   value={evaluatedByRecordObj.firstName}
-                          //   onChange={handleEvaluatedByInputTextChange}
-                        />
-                      </div>
-                    </div>
-                    <div className="col-lg-12 col-md-12 col-sm-12 col-12">
-                      <div className="form-group">
-                        <label className="text-light-dark font-size-14 font-weight-500">
-                          Receiver Address
-                        </label>
-                        <textarea
-                          className="form-control border-radius-10 text-primary"
-                          name="receiverAddress"
-                          cols="30"
-                          rows="2"
-                          placeholder="Receiver Address..."
-                        ></textarea>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <h5 style={{ fontWeight: "bold" }}>Shipment Items</h5>
-                <Box
-                  sx={{
-                    width: "100%",
-                    height: 400,
-                    // marginBottom: 8,
-                    marginInline: 2,
-                  }}
-                >
-                  <DataGrid
-                    rows={[]}
-                    columns={partsSelectionColumns}
-                    sx={GRID_STYLE}
-                    pageSizeOptions={[5, 10, 50, 100]}
-                    disableRowSelectionOnClick
-                    //   getRowId={(row) => row.claimId}
-                  />
-                </Box>
-              </>
+              
             </TabPanel>
-            <TabPanel value={"returnReceived"}>
+            <TabPanel value={"returnReceived"}></TabPanel>
+          </TabContext>
+        </Box> */}
+      </>
+    );
+  };
+
+  // save and Create New Claim Return Value
+  const handleCreateReturnRequest = () => {
+    const reqUrl = Warranty_Return_Create_POST;
+    const reqObj = {
+      ...returnData,
+      reasonForReturnType: returnData.reasonForReturnType?.value || "EMPTY",
+      region: returnData.region?.value || "",
+      qecAssigned: returnData.qecAssigned?.value || "",
+      requestType: returnData.requestType?.value || "EMPTY",
+      claimTransactionType: returnData.claimTransactionType?.value || "EMPTY",
+    };
+    callPostApi(
+      null,
+      reqUrl,
+      reqObj,
+      (response) => {
+        if (response.status === API_SUCCESS) {
+          handleSnack("success", "Warranty Return Created Successfully");
+          setTabValue("partsSelection");
+        } else {
+          handleSnack("error", "Something went wrong.");
+        }
+      },
+      (error) => {
+        handleSnack("error", "Something went wrong.");
+      }
+    );
+  };
+
+  // save and Create Part Header
+  const handleCreatePartHeader = () => {
+    const rUrl = `${Warranty_Parts_Header_Create_POST}`;
+    const rObj = { ...returnPartsHeaderData };
+    callPostApi(
+      null,
+      rUrl,
+      rObj,
+      (response) => {
+        if (response.status === API_SUCCESS) {
+          handleSnack("success", "Parts Header Created Successfully");
+        } else {
+          handleSnack("error", "Something went wrong");
+        }
+      },
+      (error) => {
+        handleSnack("error", "Something went wrong");
+      }
+    );
+  };
+
+  // save and Create Shipping Info
+  const handleSaveShippingInfo = () => {
+    const rUrl = `${Warranty_Shipping_Info_Create_POST}`;
+    const reqObj = {
+      ...shippingInfoData,
+    };
+    callPostApi(
+      null,
+      rUrl,
+      reqObj,
+      (response) => {
+        if (response.status === API_SUCCESS) {
+          handleSnack("success", "Shipping Info Saved Successfully");
+        } else {
+          handleSnack("error", "Something went wrong");
+        }
+      },
+      (error) => {
+        handleSnack("error", "Something went wrong");
+      }
+    );
+  };
+
+  // save the Shipment Header Details
+  const handleSaveShippmentDetails = () => {
+    const rUrl = `${Warranty_Shipment_Header_Create_POST}`;
+    const reqObj = {
+      ...shipmentHeaderData,
+      returnType: shipmentHeaderData.returnType?.value || "EMPTY",
+    };
+    callPostApi(
+      null,
+      rUrl,
+      reqObj,
+      (response) => {
+        if (response.status === API_SUCCESS) {
+          handleSnack("success", "Shipment Details Saved Successfully");
+        } else {
+          handleSnack("error", "Something went wrong");
+        }
+      },
+      (error) => {
+        handleSnack("error", "Something went wrong");
+      }
+    );
+  };
+
+  return (
+    <Modal show={show} onHide={hideModal} size="xl">
+      <Modal.Body>
+        <Box sx={{ typography: "body1" }}>
+          <TabContext value={tabValue}>
+            <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+              <TabList
+                className="custom-tabs-div"
+                aria-label="lab API tabs example"
+                onChange={(e, value) => setTabValue(value)}
+              >
+                <Tab label={`Return Request`} value="overview" />
+                <Tab label={`Parts Selection`} value="partsSelection" />
+                <Tab label={`Shipment`} value="shipment" />
+                <Tab label={`Return Received`} value="returnRecived" />
+                <Tab label={`Corrective Action`} value="correctiveAction" />
+              </TabList>
+            </Box>
+            <TabPanel value={"overview"}>{viewOverviewTabData()}</TabPanel>
+            <TabPanel value={"partsSelection"}>
+              <h5 style={{ fontWeight: "bold" }}>Parts Selection Critria</h5>
+              {viewPartsSelectioncritria()}
+              <h5 style={{ fontWeight: "bold" }}>Shipping Details</h5>
+              {viewShippingInfo()}
+              {viewPartsSelectionDetails()}
+            </TabPanel>
+            <TabPanel value={"shipment"}>{viewShipmentInformation()}</TabPanel>
+            <TabPanel value={"returnRecived"}>
+              {viewReturnReceivedInfo()}
+            </TabPanel>
+            <TabPanel value={"correctiveAction"}>
               <>
                 <ReturnSearch />
                 <div className="card border px-3 py-2">
@@ -1494,138 +1726,6 @@ const ReturnRequester = ({
                   </div>
                 </div>
               </>
-            </TabPanel>
-          </TabContext>
-        </Box>
-      </>
-    );
-  };
-
-  // save and Create New Claim Return Value
-  const handleCreateReturnRequest = () => {
-    const reqUrl = Warranty_Return_Create_POST;
-    const reqObj = {
-      ...returnData,
-      reasonForReturnType: returnData.reasonForReturnType?.value || "EMPTY",
-      region: returnData.region?.value || "",
-      qecAssigned: returnData.qecAssigned?.value || "",
-      requestType: returnData.requestType?.value || "EMPTY",
-      claimTransactionType: returnData.claimTransactionType?.value || "EMPTY",
-    };
-    callPostApi(
-      null,
-      reqUrl,
-      reqObj,
-      (response) => {
-        if (response.status === API_SUCCESS) {
-          handleSnack("success", "Warranty Return Created Successfully");
-          setTabValue("partsSelection");
-        } else {
-          handleSnack("error", "Something went wrong.");
-        }
-      },
-      (error) => {
-        handleSnack("error", "Something went wrong.");
-      }
-    );
-  };
-
-  // save and Create Part Header
-  const handleCreatePartHeader = () => {
-    const rUrl = `${Warranty_Parts_Header_Create_POST}`;
-    const rObj = { ...returnPartsHeaderData };
-    callPostApi(
-      null,
-      rUrl,
-      rObj,
-      (response) => {
-        if (response.status === API_SUCCESS) {
-          handleSnack("success", "Parts Header Created Successfully");
-        } else {
-          handleSnack("error", "Something went wrong");
-        }
-      },
-      (error) => {
-        handleSnack("error", "Something went wrong");
-      }
-    );
-  };
-
-  // save and Create Shipping Info
-  const handleSaveShippingInfo = () => {
-    const rUrl = `${Warranty_Shipping_Info_Create_POST}`;
-    const reqObj = {
-      ...shippingInfoData,
-    };
-    callPostApi(
-      null,
-      rUrl,
-      reqObj,
-      (response) => {
-        if (response.status === API_SUCCESS) {
-          handleSnack("success", "Shipping Info Saved Successfully");
-        } else {
-          handleSnack("error", "Something went wrong");
-        }
-      },
-      (error) => {
-        handleSnack("error", "Something went wrong");
-      }
-    );
-  };
-
-  // save the Shipment Header Details
-  const handleSaveShippmentDetails = () => {
-    const rUrl = `${Warranty_Shipment_Header_Create_POST}`;
-    const reqObj = {
-      ...shipmentHeaderData,
-      returnType: shipmentHeaderData.returnType?.value || "EMPTY",
-    };
-    callPostApi(
-      null,
-      rUrl,
-      reqObj,
-      (response) => {
-        if (response.status === API_SUCCESS) {
-          handleSnack("success", "Shipment Details Saved Successfully");
-        } else {
-          handleSnack("error", "Something went wrong");
-        }
-      },
-      (error) => {
-        handleSnack("error", "Something went wrong");
-      }
-    );
-  };
-
-  return (
-    <Modal show={show} onHide={hideModal} size="xl">
-      <Modal.Body>
-        <Box sx={{ typography: "body1" }}>
-          <TabContext value={tabValue}>
-            <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-              <TabList
-                className="custom-tabs-div"
-                aria-label="lab API tabs example"
-                onChange={(e, value) => setTabValue(value)}
-              >
-                <Tab label={`Overview`} value="overview" />
-                <Tab label={`Parts Selection`} value="partsSelection" />
-                <Tab label={`Shipment`} value="shipment" />
-                <Tab label={`Return Received`} value="returnRecived" />
-              </TabList>
-            </Box>
-            <TabPanel value={"overview"}>{viewOverviewTabData()}</TabPanel>
-            <TabPanel value={"partsSelection"}>
-              <h5 style={{ fontWeight: "bold" }}>Parts Selection Critria</h5>
-              {viewPartsSelectioncritria()}
-              <h5 style={{ fontWeight: "bold" }}>Shipping Details</h5>
-              {viewShippingInfo()}
-              {viewPartsSelectionDetails()}
-            </TabPanel>
-            <TabPanel value={"shipment"}>{viewShipmentInformation()}</TabPanel>
-            <TabPanel value={"returnRecived"}>
-              {viewReturnReceivedInfo()}
             </TabPanel>
           </TabContext>
         </Box>

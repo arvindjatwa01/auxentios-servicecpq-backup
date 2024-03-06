@@ -15,6 +15,7 @@ import ClaimDetails from "./ClaimDetails";
 import {
   Recent_Warranty_List_GET,
   Search_By_Fields_Warranty_List_GET,
+  Warranty_Country_List_GET,
 } from "services/CONSTANTS";
 import { callGetApi } from "services/ApiCaller";
 import { API_SUCCESS } from "services/ResponseCode";
@@ -35,8 +36,7 @@ import $ from "jquery";
 import WarrantyOverviewModal from "./WarrantyOverviewModal";
 import ClaimRequestProcess from "pages/WarrantyMaster/CheckWarranty/ClaimRequestProcess";
 import ClaimFailedPartModal from "pages/WarrantyMaster/CheckWarranty/ClaimFailedPartModal";
-
-let newPartRecord = {};
+import ReturnRequester from "pages/WarrantyMaster/WarrantyReturn/ReturnRequester";
 
 const WarrantyMaster = () => {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
@@ -60,6 +60,7 @@ const WarrantyMaster = () => {
     claimType: "",
     claimNumber: "",
   });
+  const [countryList, setCountryList] = useState([]);
 
   const [showAddPartModal, setShowAddPartModal] = useState(false);
 
@@ -73,6 +74,9 @@ const WarrantyMaster = () => {
       dropdownOptions: [],
     },
   ]);
+
+  const [newPartRecord, setNewPartRecord] = useState(null);
+  const [isFailurePart, setIsFailurePart] = useState(false);
 
   // Snack Bar State
   const [severity, setSeverity] = useState("");
@@ -111,6 +115,7 @@ const WarrantyMaster = () => {
 
   useEffect(() => {
     getRecentWarrantyList();
+    getCountryKeyValueList();
   }, []);
 
   // get the recent warranty List without any Filter applied
@@ -128,6 +133,22 @@ const WarrantyMaster = () => {
         console.log(error);
       }
     );
+  };
+
+  // country key value list
+  const getCountryKeyValueList = () => {
+    const rUrl = `${Warranty_Country_List_GET}?pageNumber=${0}&pageSize=${10}`;
+    callGetApi(null, rUrl, (response) => {
+      if (response.status === API_SUCCESS) {
+        const responseData = response.data;
+        const options = [];
+        responseData.map((row) =>
+          // options.push({ label: row.countryName, value: row.countryId })
+          options.push({ label: row.countryName, value: row.countryName })
+        );
+        setCountryList(options);
+      }
+    });
   };
 
   const handleShowClaimAddEditModal = () => {
@@ -161,7 +182,7 @@ const WarrantyMaster = () => {
   const handleShowHideAddPartModal = () => {
     setOpenReturnRequsterModal(!openReturnRequsterModal);
     setOpenClaimRequestProcess(!openClaimRequestProcess);
-    setShowOverviewModal(!showOverviewModal)
+    setShowOverviewModal(!showOverviewModal);
     setShowAddPartModal(!showAddPartModal);
   };
 
@@ -777,14 +798,31 @@ const WarrantyMaster = () => {
         handleShowHideAddPartModal={handleShowHideAddPartModal}
         fromClaim={false}
         newPartRecord={newPartRecord}
+        setNewPartRecord={setNewPartRecord}
+        isFailurePar={isFailurePart}
+        setIsFailurePart={setIsFailurePart}
       />
       {/* )} */}
 
-      <ClaimFailedPartModal
-        show={showAddPartModal}
-        hideModal={handleShowHideAddPartModal}
-        newPartRecord={newPartRecord}
-      />
+      {openReturnRequsterModal && (
+        <ReturnRequester
+          show={openReturnRequsterModal}
+          hideModal={() => setOpenReturnRequsterModal(false)}
+          handleSnack={handleSnack}
+          countryRegionOptionsList={countryList}
+          partSelectionData={partSelectionData}
+        />
+      )}
+
+      {showAddPartModal && (
+        <ClaimFailedPartModal
+          show={showAddPartModal}
+          hideModal={handleShowHideAddPartModal}
+          newPartRecord={newPartRecord}
+          setNewPartRecord={setNewPartRecord}
+          handleSnack={handleSnack}
+        />
+      )}
     </>
   );
 };

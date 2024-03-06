@@ -87,15 +87,32 @@ const failedPartAnalysisOptions = [
 
 const failedPartRecords = [
   {
-    index: 0,
-    partNumber: "1239",
+    index: Math.floor(Math.random() * 900) + 10000,
+    partNumber: "N90058041",
     partDescription: "Cylinder Pack",
     quantity: "1",
     analysis: "Known to be faulty",
   },
   {
-    index: 1,
-    partNumber: "1239",
+    index: Math.floor(Math.random() * 9000) + 1000,
+    partNumber: "10R4469",
+    partDescription: "Cylinder Pack",
+    quantity: "1",
+    analysis: "Known to be faulty",
+  },
+];
+
+const causalPartRecords = [
+  {
+    index: Math.floor(Math.random() * 9000) + 1000,
+    partNumber: "039720N2",
+    partDescription: "Cylinder Pack",
+    quantity: "1",
+    analysis: "Known to be faulty",
+  },
+  {
+    index: Math.floor(Math.random() * 9000) + 10000,
+    partNumber: "5788987",
     partDescription: "Cylinder Pack",
     quantity: "1",
     analysis: "Known to be faulty",
@@ -118,7 +135,10 @@ const ClaimRequestProcess = ({
   handeleShowReturnRequester,
   fromClaim = true,
   handleShowHideAddPartModal,
-  newPartRecord = {},
+  newPartRecord = null,
+  setNewPartRecord,
+  isFailurePart,
+  setIsFailurePart,
 }) => {
   // Retrieve labor codes
   const laborCodeList = useAppSelector(
@@ -169,11 +189,21 @@ const ClaimRequestProcess = ({
     ...failedPartRecords,
   ]);
 
+  const [causalPartRecordsData, setCausalPartRecordsData] = useState([
+    ...causalPartRecords,
+  ]);
+
   useEffect(() => {
-    if (Object.keys(newPartRecord).length !== 0) {
-      setFailedPartRecordsData([...failedPartRecordsData, newPartRecord]);
+    if (isFailurePart) {
+      if (newPartRecord && newPartRecord?.index !== undefined) {
+        setCausalPartRecordsData([...causalPartRecordsData, newPartRecord]);
+      }
+    } else {
+      if (newPartRecord && newPartRecord?.index !== undefined) {
+        setFailedPartRecordsData([...failedPartRecordsData, newPartRecord]);
+      }
     }
-  }, [Object.keys(newPartRecord).length]);
+  }, [newPartRecord, isFailurePart]);
 
   const [viewOnlyTab, setViewOnlyTab] = useState({
     generalViewOnly: false,
@@ -763,6 +793,53 @@ const ClaimRequestProcess = ({
     }
   };
 
+  const failedPartListColumns = [
+    {
+      field: "partNumber",
+      headerName: "Part Number",
+      flex: 1,
+    },
+    {
+      field: "partDescription",
+      headerName: "Part Description",
+      flex: 1,
+    },
+    {
+      field: "quantity",
+      headerName: "Quantity",
+      flex: 1,
+    },
+    {
+      field: "analysis",
+      headerName: "Analysis",
+      flex: 1,
+      type: "singleSelect",
+      valueOptions: ({ row }) => failedPartAnalysisOptions,
+      valueFormatter: (params) => {
+        const option = failedPartAnalysisOptions.find(
+          ({ value: optionValue }) => params.value === optionValue
+        );
+
+        if (option) return option.label;
+      },
+    },
+    {
+      field: "actions",
+      type: "actions",
+      headerName: "Actions",
+      width: 250,
+      cellClassName: "actions",
+      renderCell: (params) => (
+        <button
+          className="btn btn-primary"
+          onClick={() => handleEvaluationReturn(params)}
+        >
+          Claim Supplier Warranty
+        </button>
+      ),
+    },
+  ];
+
   const failedPartColumns = [
     {
       field: "partNumber",
@@ -845,17 +922,15 @@ const ClaimRequestProcess = ({
   };
 
   const handleAddNewFailedPart = () => {
+    setIsFailurePart(true);
     handleShowHideAddPartModal();
-    // const _failedPartRecordsData = [...failedPartRecordsData];
-    // _failedPartRecordsData.push({
-    //   index: Math.floor(Math.random() * 1000) + 100,
-    //   partNumber: Math.floor(Math.random() * 9000) + 1000,
-    //   partDescription: "Cylinder Pack",
-    //   quantity: "1",
-    //   analysis: "Known to be faulty",
-    // });
+    setNewPartRecord(null);
+  };
 
-    // setFailedPartRecordsData(_failedPartRecordsData);
+  const handleAddNewCausalPart = () => {
+    setIsFailurePart(false);
+    handleShowHideAddPartModal();
+    setNewPartRecord(null);
   };
 
   return (
@@ -907,7 +982,7 @@ const ClaimRequestProcess = ({
                   onClick={() => handleChangeUpperTabs("adjustPrice")}
                 >
                   <MonetizationOnOutlinedIcon className=" font-size-16" />
-                  <span className="ml-2"> Adjust price</span>
+                  <span className="ml-2"> Adjust Claim Value</span>
                 </span>
                 <span
                   className={`mr-3 cursor ${
@@ -929,7 +1004,7 @@ const ClaimRequestProcess = ({
                   }
                 >
                   <AccessAlarmOutlinedIcon className=" font-size-16" />
-                  <span className="ml-2">Related service estimate(s)</span>
+                  <span className="ml-2">Related Hours & expenses</span>
                 </span>
                 <span
                   className={`cursor ${
@@ -938,7 +1013,7 @@ const ClaimRequestProcess = ({
                   onClick={() => handleChangeUpperTabs("splitPrice")}
                 >
                   <SellOutlinedIcon className=" font-size-16" />
-                  <span className="ml-2">Split price</span>
+                  <span className="ml-2">Settlement</span>
                 </span>
               </>
             )}
@@ -2206,7 +2281,7 @@ const ClaimRequestProcess = ({
                             </div>
                             <div className="col-lg-12 col-md-12 col-sm-12 col-12">
                               <div className="form-group">
-                                <label className="text-light-dark font-size-14 font-weight-500">
+                                <label className="text-light-dark font-size-16 font-weight-500">
                                   What is the causes?
                                 </label>
                                 <textarea
@@ -2249,7 +2324,7 @@ const ClaimRequestProcess = ({
                           </div>
                         </div>
                         <h4>Evaluated By</h4>
-                        <div className="card border px-2 py-2">
+                        <div className="card border px-3 py-3">
                           <div className="row input-fields">
                             <div className="col-lg-6 col-md-6 col-sm-12 col-12">
                               <div className="form-group">
@@ -2496,11 +2571,25 @@ const ClaimRequestProcess = ({
                             }}
                             variant="outlined"
                           >
-                            <Typography
-                              sx={{ fontSize: 18, fontWeight: 600, margin: 2 }}
-                            >
-                              Causal Part
-                            </Typography>
+                            <div className="d-flex justify-content-between py-4">
+                              <Typography
+                                sx={{
+                                  fontSize: 18,
+                                  fontWeight: 600,
+                                  // margin: 2,
+                                }}
+                              >
+                                Causal Part
+                              </Typography>
+                              <div className="row">
+                                <button
+                                  className="btn btn-primary mx-3"
+                                  onClick={handleAddNewCausalPart}
+                                >
+                                  + Add
+                                </button>
+                              </div>
+                            </div>
                             <Box
                               sx={{
                                 height: 300,
@@ -2513,7 +2602,7 @@ const ClaimRequestProcess = ({
                                 sx={GRID_STYLE}
                                 getRowId={(row) => row.index}
                                 columns={failedPartColumns}
-                                rows={failedPartRecords}
+                                rows={causalPartRecordsData}
                                 rowsPerPageOptions={[10, 20, 50]}
                               />
                             </Box>
@@ -3141,12 +3230,21 @@ const ClaimRequestProcess = ({
               </TabContext>
             )}
             {activeUpperTabs === "adjustPrice" && (
-              <ClaimAdjustPrice handleSnack={handleSnack} />
+              <ClaimAdjustPrice
+                handleSnack={handleSnack}
+                setActiveUpperTabs={setActiveUpperTabs}
+              />
             )}
             {activeUpperTabs === "realtedPartList" && (
               <ClaimRelatedPartList
                 selectedVersion={selectedVersion}
                 handleSnack={handleSnack}
+                setActiveUpperTabs={setActiveUpperTabs}
+                failedPartRecordsData={[
+                  ...failedPartRecordsData,
+                  ...causalPartRecordsData,
+                ]}
+                partsColumns={failedPartListColumns}
               />
             )}
             {activeUpperTabs === "realtedServiceEstimate" && (
@@ -3162,10 +3260,14 @@ const ClaimRequestProcess = ({
                 consumableTypeList={consumableTypeList}
                 priceMethodOptions={priceMethodOptions}
                 activityIdList={activityIdList}
+                setActiveUpperTabs={setActiveUpperTabs}
               />
             )}
             {activeUpperTabs === "splitPrice" && (
-              <ClaimSplitPrice handleSnack={handleSnack} />
+              <ClaimSplitPrice
+                handleSnack={handleSnack}
+                setActiveUpperTabs={setActiveUpperTabs}
+              />
             )}
           </Box>
         </div>

@@ -98,7 +98,13 @@ function CommentEditInputCell(props) {
   );
 }
 
-const ClaimRelatedPartList = ({ selectedVersion, handleSnack }) => {
+const ClaimRelatedPartList = ({
+  selectedVersion,
+  handleSnack,
+  setActiveUpperTabs,
+  failedPartRecordsData,
+  partsColumns,
+}) => {
   const [partsData, setPartsData] = useState({
     id: "",
     jobCode: "",
@@ -426,6 +432,15 @@ const ClaimRelatedPartList = ({ selectedVersion, handleSnack }) => {
 
   return (
     <>
+      <div className="row mb-2" style={{ justifyContent: "right" }}>
+        <button
+          type="button"
+          className="btn btn-light bg-primary text-white mr-2"
+          onClick={() => setActiveUpperTabs("")}
+        >
+          Back
+        </button>
+      </div>
       <div className="card border mt-3 px-3">
         <div className="row mt-2 input-fields">
           <div className="col-md-4 col-sm-4">
@@ -542,12 +557,15 @@ const ClaimRelatedPartList = ({ selectedVersion, handleSnack }) => {
         </div>
         <DataGrid
           sx={GRID_STYLE}
-          rows={spareparts}
+          getRowId={(row) => row.index}
+          // rows={spareparts}
+          rows={failedPartRecordsData}
           autoHeight
-          columns={columnsPartListSpareParts.map((column) => ({
-            ...column,
-            filterOperators,
-          }))}
+          // columns={columnsPartListSpareParts.map((column) => ({
+          //   ...column,
+          //   filterOperators,
+          // }))}
+          columns={partsColumns}
           editMode="row"
           page={page}
           pageSize={pageSize}

@@ -6,6 +6,10 @@ import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
 import TabPanel from "@mui/lab/TabPanel";
 
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { MobileDatePicker } from "@mui/x-date-pickers";
+
 import $ from "jquery";
 
 import {
@@ -43,6 +47,7 @@ import {
   CONS_EXT_PRICE_OPTIONS,
   CONSUMABLE_SEARCH_Q_OPTIONS,
   EXTWORK_SEARCH_Q_OPTIONS,
+  FONT_STYLE,
   FONT_STYLE_SELECT,
   GRID_STYLE,
   INITIAL_PAGE_NO,
@@ -116,6 +121,25 @@ const initialExtWorkItemData = {
   dimensions: "",
 };
 
+const typeOptions = [
+  { label: "OEM", value: "OEM" },
+  { label: "Supplier", value: "SUPPLIER" },
+  { label: "Dealer", value: "DEALER" },
+  { label: "Channel Partner", value: "CHANNEL_PARTNER" },
+];
+
+const codeOptions = [
+  { label: "User-defined", value: "USER_DEFINED" },
+  { label: "Auto-derived", value: "AUTO_DERIVED" },
+];
+
+const coverageTypeOptions = [
+  { label: "Parts & Labour", value: "PARTS_AND_LABOUR" },
+  { label: "Only Parts", value: "ONLY_PARTS" },
+  { label: "Part & Labour & Misc.", value: "PART_AND_LABOUR_AND_MISC" },
+  { label: "All Covered", value: "ALL_COVERED" },
+];
+
 const ClaimRelatedServiceEstimate = ({
   laborCodeList,
   chargeCodeList,
@@ -127,6 +151,7 @@ const ClaimRelatedServiceEstimate = ({
   priceMethodOptions,
   activityIdList,
   handleSnack,
+  setActiveUpperTabs,
 }) => {
   //   const { activeElement, setActiveElement } = props.builderDetails;
   const [activeElement, setActiveElement] = useState({
@@ -1213,1072 +1238,216 @@ const ClaimRelatedServiceEstimate = ({
 
   return (
     <>
-      <Box className="mt-4" sx={{ width: "100%", typography: "body1" }}>
-        <TabContext value={value}>
-          <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-            <TabList className="custom-tabs-div" onChange={handleChange}>
-              <Tab label="Labor" value="labor" />
-              <Tab label="Consumables" value="consumables" />
-              <Tab label="External Work" value="extwork" />
-              <Tab label="Other misc." value="othrMisc" />
-            </TabList>
-          </Box>
-          <TabPanel value="labor">
-            <div className="col-md-12 col-sm-12">
-              <div className=" d-flex justify-content-between align-items-center">
-                <div>
-                  <FormGroup>
-                    <FormControlLabel
-                      control={
-                        <Switch
-                          checked={flagRequired.labourEnabled}
-                          onChange={handleChangeSwitch}
-                          name="labourEnabled"
-                        />
-                      }
-                      label="REQUIRED"
-                    />
-                  </FormGroup>
-                </div>
-              </div>
+      <div className="row mb-2" style={{ justifyContent: "right" }}>
+        <button
+          type="button"
+          className="btn btn-light bg-primary text-white mr-2"
+          onClick={() => setActiveUpperTabs("")}
+        >
+          Back
+        </button>
+      </div>
+      <div className="card border px-3 py-3">
+        <div className="row input-fields">
+          <div className="col-lg-4 col-md-4 col-sm-4 col-12">
+            <div className="form-group">
+              <label className="text-light-dark font-size-14 font-weight-500">
+                Type
+              </label>
+              <Select
+                className="text-primary"
+                options={typeOptions}
+                // onChange={(e) =>
+                //   handleSelectChange(e, `questions${row.questionId}`)
+                // }
+                // value={recordObj[`questions${row.questionId}`]}
+                styles={FONT_STYLE_SELECT}
+              />
             </div>
-
-            {flagRequired.labourEnabled && (
-              <React.Fragment>
-                {!laborViewOnly ? (
-                  <div className="row mt-2 input-fields">
-                    <div className="col-md-4 col-sm-4">
-                      <div class="form-group mt-3">
-                        <label className="text-light-dark font-size-12 font-weight-600">
-                          JOB CODE
-                        </label>
-                        <input
-                          type="text"
-                          disabled
-                          class="form-control border-radius-10 text-primary"
-                          value={labourData.jobCode}
-                        />
-                        <div className="css-w8dmq8">*Mandatory</div>
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div class="form-group mt-3">
-                        <label className="text-light-dark font-size-12 font-weight-600">
-                          JOB CODE DESCRIPTION
-                        </label>
-                        <input
-                          type="text"
-                          disabled
-                          class="form-control border-radius-10 text-primary"
-                          value={labourData.jobCodeDescription}
-                        />
-                        <div className="css-w8dmq8">*Mandatory</div>
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4"></div>
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group  mt-3">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          LABOR CODE
-                        </label>
-                        <Select
-                          onChange={(e) =>
-                            setLabourData({
-                              ...labourData,
-                              laborCode: e,
-                            })
-                          }
-                          options={laborCodeList}
-                          value={labourData.laborCode}
-                          styles={FONT_STYLE_SELECT}
-                        />
-                        <div className="css-w8dmq8">*Mandatory</div>
-                      </div>
-                    </div>
-
-                    <div className="col-md-4 col-sm-4">
-                      <div class="form-group mt-3">
-                        <label className="text-light-dark font-size-12 font-weight-600">
-                          TOTAL HOURS (PLANNED/RECOMMENDED)
-                        </label>
-                        <input
-                          type="text"
-                          class="form-control border-radius-10 text-primary"
-                          value={labourData.totalHours}
-                          onChange={(e) =>
-                            setLabourData({
-                              ...labourData,
-                              totalHours: e.target.value,
-                            })
-                          }
-                        />
-                      </div>
-                    </div>
-                    {/* <div className="col-md-4 col-sm-4"></div> */}
-
-                    {/* <div className="col-md-4 col-sm-4">
-                                  <div className="form-group  mt-3">
-                                    <label className="text-light-dark font-size-12 font-weight-500">
-                                      PRICE METHOD
-                                    </label>
-                                    <input
-                                      type="text"
-                                      disabled
-                                      class="form-control border-radius-10 text-primary"
-                                      value={labourData.pricingMethod?.label}
-                                    />
-                                  </div>
-                                </div> 
-                                <div className="col-md-4 col-sm-4">
-                                  <div class="form-group mt-3">
-                                    <label className="text-light-dark font-size-12 font-weight-600">
-                                      RATE PER HOUR / DAY
-                                    </label>
-                                    <input
-                                      type="text"
-                                      disabled
-                                      class="form-control border-radius-10 text-primary"
-                                      value={labourData.ratePerHourOrDay}
-                                    />
-                                  </div>
-                                </div> */}
-                    <div className="col-md-4 col-sm-4">
-                      <div class="form-group mt-3">
-                        <label className="text-light-dark font-size-12 font-weight-600">
-                          NET PRICE
-                        </label>
-                        <input
-                          type="text"
-                          disabled
-                          class="form-control border-radius-10 text-primary"
-                          value={labourData.totalPrice}
-                        />
-                      </div>
-                    </div>
-                    {/* </>
-                            ) : (
-                              <></>
-                            )} */}
-                    {/* <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <FormGroup>
-                                  <FormControlLabel
-                                    style={{
-                                      alignItems: "start",
-                                      marginLeft: 0,
-                                    }}
-                                    control={
-                                      <Switch
-                                        checked={labourData.flatRateIndicator}
-                                        onChange={(e) =>
-                                          setLabourData({
-                                            ...labourData,
-                                            flatRateIndicator: e.target.checked,
-                                            adjustedPrice: e.target.checked
-                                              ? labourData.adjustedPrice
-                                              : 0.0,
-                                          })
-                                        }
-                                      />
-                                    }
-                                    labelPlacement="top"
-                                    label={
-                                      <span className="text-light-dark font-size-12 font-weight-600">
-                                        FLAT RATE INDICATOR
-                                      </span>
-                                    }
-                                  />
-                                </FormGroup>
-                              </div>
-                            </div> */}
-                    {/* <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <label className="text-light-dark font-size-12 font-weight-600">
-                                  ADJUSTED PRICE
-                                </label>
-                                <input
-                                  type="text"
-                                  disabled={!labourData.flatRateIndicator}
-                                  class="form-control border-radius-10 text-primary"
-                                  value={labourData.adjustedPrice}
-                                  onChange={(e) =>
-                                    setLabourData({
-                                      ...labourData,
-                                      adjustedPrice: e.target.value,
-                                    })
-                                  }
-                                />
-                              </div>
-                            </div> */}
-
-                    <div className="col-md-12">
-                      <div class="form-group mt-3 mb-0 text-right">
-                        <button
-                          type="button"
-                          className="btn btn-light bg-primary text-white"
-                          onClick={updateLabourEstHeader}
-                          disabled={
-                            !(labourData.laborCode && labourData.totalHours)
-                          }
-                        >
-                          Save
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="row mt-4">
-                    <ReadOnlyField
-                      label="JOB CODE"
-                      value={labourData.jobCode}
-                      className="col-md-4 col-sm-4"
-                    />
-                    <ReadOnlyField
-                      label="JOB CODE DESCRIPTION"
-                      value={labourData.jobCodeDescription}
-                      className="col-md-4 col-sm-4"
-                    />
-                    <div className="col-md-4 col-sm-4"></div>
-                    <ReadOnlyField
-                      label="LABOR CODE"
-                      value={labourData.laborCode?.label}
-                      className="col-md-4 col-sm-4"
-                    />
-                    <ReadOnlyField
-                      label="TOTAL HOURS (PLANNED / RECOMMENDED)"
-                      value={labourData.totalHours}
-                      className="col-md-4 col-sm-4"
-                    />
-                    <div className="col-md-4 col-sm-4"></div>
-
-                    <ReadOnlyField
-                      label="PRICE METHOD"
-                      value={labourData.pricingMethod?.label}
-                      className="col-md-4 col-sm-4"
-                    />
-                    <ReadOnlyField
-                      label="RATE PER HOUR / DAY"
-                      value={labourData.ratePerHourOrDay}
-                      className="col-md-4 col-sm-4"
-                    />
-                    <ReadOnlyField
-                      label="NET PRICE"
-                      value={labourData.totalPrice}
-                      className="col-md-4 col-sm-4"
-                    />
-
-                    {/* <ReadOnlyField
-                              label="ADJUSTED PRICE"
-                              value={labourData.adjustedPrice}
-                              className="col-md-4 col-sm-4"
-                            /> */}
-                  </div>
-                )}
-                <hr />
-
-                <div className="">
-                  <div className="bg-primary px-3 mb-3 border-radius-6">
-                    <div className="row align-items-center">
-                      <div className="col-11 mx-2">
-                        <div className="d-flex align-items-center bg-primary w-100">
-                          <div
-                            className="d-flex mr-3"
-                            style={{ whiteSpace: "pre" }}
-                          >
-                            <h5 className="mr-2 mb-0 text-white">
-                              <span>Labor</span>
-                            </h5>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="">
-                        <div className="text-center border-left pl-2 py-3">
-                          <Link
-                            onClick={() => handleAddItemLabor()}
-                            to="#"
-                            className="p-1 text-white"
-                            data-toggle="modal"
-                            data-target="#Datatable"
-                          >
-                            <span className="ml-1">Add Items</span>
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <DataGrid
-                    sx={GRID_STYLE}
-                    paginationMode="client"
-                    rows={laborItems}
-                    columns={laborColumns}
-                    pageSize={5}
-                    rowsPerPageOptions={[5]}
-                    autoHeight
+          </div>
+          <div className="col-lg-4 col-md-4 col-sm-4 col-12">
+            <div className="form-group">
+              <label className="text-light-dark font-size-14 font-weight-500">
+                Code
+              </label>
+              <Select
+                className="text-primary"
+                options={codeOptions}
+                // onChange={(e) =>
+                //   handleSelectChange(e, `questions${row.questionId}`)
+                // }
+                // value={recordObj[`questions${row.questionId}`]}
+                styles={FONT_STYLE_SELECT}
+              />
+            </div>
+          </div>
+          <div className="col-lg-4 col-md-4 col-sm-4 col-12">
+            <div className="form-group">
+              <label className="text-light-dark font-size-14 font-weight-500">
+                Name
+              </label>
+              <Select
+                className="text-primary"
+                options={typeOptions}
+                // onChange={(e) =>
+                //   handleSelectChange(e, `questions${row.questionId}`)
+                // }
+                // value={recordObj[`questions${row.questionId}`]}
+                styles={FONT_STYLE_SELECT}
+              />
+            </div>
+          </div>
+          <div className="col-lg-4 col-md-4 col-sm-4 col-12">
+            <div className="form-group">
+              <label className="text-light-dark font-size-14 font-weight-500">
+                ALternate Code
+              </label>
+              <Select
+                className="text-primary"
+                options={codeOptions}
+                // onChange={(e) =>
+                //   handleSelectChange(e, `questions${row.questionId}`)
+                // }
+                // value={recordObj[`questions${row.questionId}`]}
+                styles={FONT_STYLE_SELECT}
+              />
+            </div>
+          </div>
+          <div className="col-lg-4 col-md-4 col-sm-4 col-12">
+            <div className="form-group">
+              <label className="text-light-dark font-size-14 font-weight-500">
+                Claim Number
+              </label>
+              <input
+                type="text"
+                disabled
+                class="form-control border-radius-10 text-primary"
+                // value={labourData.jobCode}
+                value={"CO8635"}
+              />
+            </div>
+          </div>
+          <div className="col-lg-4 col-md-4 col-sm-4 col-12">
+            <div className="form-group">
+              <label className="text-light-dark font-size-14 font-weight-500">
+                Coverage Type
+              </label>
+              <Select
+                className="text-primary"
+                options={coverageTypeOptions}
+                // onChange={(e) =>
+                //   handleSelectChange(e, `questions${row.questionId}`)
+                // }
+                // value={recordObj[`questions${row.questionId}`]}
+                styles={FONT_STYLE_SELECT}
+              />
+            </div>
+          </div>
+          <div className="col-lg-4 col-md-4 col-sm-6 col-12">
+            <div className="form-group">
+              <label className="text-light-dark font-size-14 font-weight-500">
+                Repair Date
+              </label>
+              <div className="align-items-center date-box">
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                  <MobileDatePicker
+                    inputFormat="dd/MM/yyyy"
+                    className="form-controldate border-radius-10"
+                    // maxDate={new Date()}
+                    closeOnSelect
+                    // value={evaluatedByRecordObj.evaluatedOn}
+                    // onChange={(e) =>
+                    //   handleEvaluatedBySelectChange(e, "evaluatedOn")
+                    // }
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        variant="standard"
+                        inputProps={{
+                          ...params.inputProps,
+                          style: FONT_STYLE,
+                        }}
+                      />
+                    )}
                   />
-                </div>
-              </React.Fragment>
-            )}
-          </TabPanel>
-          <TabPanel value="consumables">
-            {/* {!consumableData.id && ( */}
-            <div className="col-md-12 col-sm-12">
-              <div className=" d-flex justify-content-between align-items-center">
-                <div>
-                  <FormGroup>
-                    <FormControlLabel
-                      control={
-                        <Switch
-                          checked={flagRequired.consumableEnabled}
-                          onChange={handleChangeSwitch}
-                          name="consumableEnabled"
-                        />
-                      }
-                      label="REQUIRED"
-                    />
-                  </FormGroup>
-                </div>
+                </LocalizationProvider>
               </div>
             </div>
-            {/* )} */}
-            {flagRequired.consumableEnabled && (
-              <React.Fragment>
-                {!consumableViewOnly ? (
-                  <div className="row mt-2 input-fields">
-                    <div className="col-md-4 col-sm-4">
-                      <div class="form-group mt-3">
-                        <label className="text-light-dark font-size-12 font-weight-600">
-                          JOB CODE
-                        </label>
-                        <input
-                          type="text"
-                          disabled
-                          class="form-control border-radius-10 text-primary"
-                          value={consumableData.jobCode}
-                        />
-                        <div className="css-w8dmq8">*Mandatory</div>
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div class="form-group mt-3">
-                        <label className="text-light-dark font-size-12 font-weight-600">
-                          JOB CODE DESCRIPTION
-                        </label>
-                        <input
-                          type="text"
-                          disabled
-                          class="form-control border-radius-10 text-primary"
-                          value={consumableData.jobCodeDescription}
-                        />
-                        <div className="css-w8dmq8">*Mandatory</div>
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4"></div>
-                    <div className="col-md-4 col-sm-4">
-                      <div class="form-group mt-3">
-                        <label className="text-light-dark font-size-12 font-weight-600">
-                          PAYER
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control border-radius-10 text-primary"
-                          value={consumableData.payer}
-                          onChange={(e) =>
-                            setConsumableData({
-                              ...consumableData,
-                              payer: e.target.value,
-                            })
-                          }
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div class="form-group mt-3">
-                        <label className="text-light-dark font-size-12 font-weight-600">
-                          NET PRICE
-                        </label>
-                        <input
-                          type="text"
-                          disabled
-                          class="form-control border-radius-10 text-primary"
-                          value={consumableData.totalPrice}
-                        />
-                        <div className="css-w8dmq8">*Mandatory</div>
-                      </div>
-                    </div>
-                    <div className="col-md-12">
-                      <div class="form-group mt-3 mb-0 text-right">
-                        <button
-                          type="button"
-                          className="btn btn-light bg-primary text-white"
-                          onClick={updateConsumableHeader}
-                          // disabled={
-                          //   !(
-                          //     (!consumableData.flatRateIndicator
-                          //       ? consumableData.pricingMethod &&
-                          //         consumableData.pricingMethod.value.includes(
-                          //           "PER"
-                          //         )
-                          //         ? consumableData.percentageOfBase &&
-                          //           consumableData.basePrice
-                          //         : consumableData.pricingMethod
-                          //       : true) &&
-                          //     (consumableData.flatRateIndicator
-                          //       ? consumableData.adjustedPrice
-                          //       : true)
-                          //   )
-                          // }
-                        >
-                          Save
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="row mt-4">
-                    <ReadOnlyField
-                      label="JOB CODE"
-                      value={consumableData.jobCode}
-                      className="col-md-4 col-sm-4"
-                    />
-                    <ReadOnlyField
-                      label="JOB CODE DESCRIPTION"
-                      value={consumableData.jobCodeDescription}
-                      className="col-md-4 col-sm-4"
-                    />
-                    <ReadOnlyField
-                      label="PAYER"
-                      value={consumableData.payer}
-                      className="col-md-4 col-sm-4"
-                    />
-
-                    <ReadOnlyField
-                      label="PRICE METHOD"
-                      value={consumableData.pricingMethod?.label}
-                      className="col-md-4 col-sm-4"
-                    />
-
-                    <ReadOnlyField
-                      label="NET PRICE"
-                      value={consumableData.totalPrice}
-                      className="col-md-4 col-sm-4"
-                    />
-                    {/* <ReadOnlyField
-                              label="ADJUSTED PRICE"
-                              value={consumableData.adjustedPrice}
-                              className="col-md-4 col-sm-4"
-                            /> */}
-                  </div>
-                )}
-                <hr />
-                <div className="">
-                  <div className="bg-primary px-3 mb-3 border-radius-6">
-                    <div className="row align-items-center">
-                      <div className="col-10 mr-5">
-                        <div className="d-flex align-items-center bg-primary w-100">
-                          <div
-                            className="d-flex mr-3"
-                            style={{ whiteSpace: "pre" }}
-                          >
-                            <h5 className="mr-2 mb-0 text-white">
-                              <span>Consumables</span>
-                            </h5>
-                            {/* <p className="ml-4 mb-0">
-                                    <a href="#" className="ml-3 text-white">
-                                      <EditOutlinedIcon />
-                                    </a>
-                                    <a href="#" className="ml-3 text-white">
-                                      <ShareOutlinedIcon />
-                                    </a>
-                                  </p> */}
-                          </div>
-                          <SearchComponent
-                            querySearchSelector={queryConsSearchSelector}
-                            setQuerySearchSelector={setQueryConsSearchSelector}
-                            clearFilteredData={clearFilteredData}
-                            handleSnack={handleSnack}
-                            searchAPI={getConsumables}
-                            type={"consumables"}
-                            searchClick={handleQuerySearchClick}
-                            options={CONSUMABLE_SEARCH_Q_OPTIONS}
-                            color={"white"}
-                            buttonText={"ADD ITEM"}
-                          />
-                        </div>
-                      </div>
-                      {/* <div className="ml-5">
-                                <div className="text-center border-left pl-1 py-3">
-                                  <Link
-                                    onClick={() => handleAddItemConsumable()}
-                                    to="#"
-                                    className="p-1 text-white"
-                                    data-toggle="modal"
-                                    data-target="#Datatableconsumables"
-                                  >
-                                    <span className="ml-3">Add Items</span>
-                                  </Link>
-                                </div>
-                              </div> */}
-                    </div>
-                  </div>
-                  <DataGrid
-                    sx={GRID_STYLE}
-                    rows={consumableItems}
-                    columns={columnsConsumables}
-                    pageSize={5}
-                    rowsPerPageOptions={[5]}
-                    autoHeight
-                    // checkboxSelection
-                    // onCellClick={(e) => handleRowClick(e)}
-                  />
-                  {/* </div> */}
-                  {/* <div className=" text-right mt-3">
-                          <button
-                            type="button"
-                            className="btn border bg-primary text-white"
-                            // onClick={updateLabourEstHeader}
-                          >
-                            Save
-                          </button>
-                        </div> */}
-                </div>
-              </React.Fragment>
-            )}
-          </TabPanel>
-          <TabPanel value="extwork">
-            {/* {!extWorkData.id && ( */}
-            <div className="col-md-12 col-sm-12">
-              <div className=" d-flex justify-content-between align-items-center">
-                <div>
-                  <FormGroup>
-                    <FormControlLabel
-                      control={
-                        <Switch
-                          checked={flagRequired.externalWorkEnabled}
-                          onChange={handleChangeSwitch}
-                          name="externalWorkEnabled"
-                        />
-                      }
-                      label="REQUIRED"
-                      value={flagRequired.externalWorkEnabled}
-                    />
-                  </FormGroup>
-                </div>
-              </div>
+          </div>
+          <div className="col-lg-4 col-md-4 col-sm-4 col-12">
+            <div className="form-group">
+              <label className="text-light-dark font-size-14 font-weight-500">
+                Work Order Number
+              </label>
+              <input
+                type="text"
+                // disabled
+                class="form-control border-radius-10 text-primary"
+                // value={labourData.jobCode}
+                // value={"CO8635"}
+              />
             </div>
-            {/* )} */}
-            {flagRequired.externalWorkEnabled && (
-              <React.Fragment>
-                {!extWorkViewOnly ? (
-                  <div className="row mt-2 input-fields">
-                    <div className="col-md-4 col-sm-4">
-                      <div class="form-group mt-3">
-                        <label className="text-light-dark font-size-12 font-weight-600">
-                          JOB CODE
-                        </label>
-                        <input
-                          type="text"
-                          disabled
-                          class="form-control border-radius-10 text-primary"
-                          value={extWorkData.jobCode}
-                        />
-                        <div className="css-w8dmq8">*Mandatory</div>
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div class="form-group mt-3">
-                        <label className="text-light-dark font-size-12 font-weight-600">
-                          JOB CODE DESCRIPTION
-                        </label>
-                        <input
-                          type="text"
-                          disabled
-                          class="form-control border-radius-10 text-primary"
-                          value={extWorkData.jobCodeDescription}
-                        />
-                        <div className="css-w8dmq8">*Mandatory</div>
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4"></div>
-                    <div className="col-md-4 col-sm-4">
-                      <div class="form-group mt-3">
-                        <label className="text-light-dark font-size-12 font-weight-600">
-                          PAYER
-                        </label>
-                        <input
-                          type="text"
-                          class="form-control border-radius-10 text-primary"
-                          value={extWorkData.payer}
-                          onChange={(e) =>
-                            setExtWorkData({
-                              ...extWorkData,
-                              payer: e.target.value,
-                            })
-                          }
-                        />
-                      </div>
-                    </div>
-
-                    {/* </>
-                            ) : (
-                              <></>
-                            )} 
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <FormGroup>
-                                  <FormControlLabel
-                                    style={{
-                                      alignItems: "start",
-                                      marginLeft: 0,
-                                    }}
-                                    control={
-                                      <Switch
-                                        checked={extWorkData.flatRateIndicator}
-                                        onChange={(e) =>
-                                          setExtWorkData({
-                                            ...extWorkData,
-                                            flatRateIndicator: e.target.checked,
-                                            adjustedPrice: e.target.checked
-                                              ? extWorkData.adjustedPrice
-                                              : 0.0,
-                                          })
-                                        }
-                                      />
-                                    }
-                                    labelPlacement="top"
-                                    label={
-                                      <span className="text-light-dark font-size-12 font-weight-600">
-                                        FLAT RATE INDICATOR
-                                      </span>
-                                    }
-                                  />
-                                </FormGroup>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <label className="text-light-dark font-size-12 font-weight-600">
-                                  ADJUSTED PRICE
-                                </label>
-                                <input
-                                  type="text"
-                                  disabled={!extWorkData.flatRateIndicator}
-                                  class="form-control border-radius-10 text-primary"
-                                  value={extWorkData.adjustedPrice}
-                                  onChange={(e) =>
-                                    setExtWorkData({
-                                      ...extWorkData,
-                                      adjustedPrice: e.target.value,
-                                    })
-                                  }
-                                />
-                              </div>
-                            </div>*/}
-                    <div className="col-md-4 col-sm-4">
-                      <div class="form-group mt-3">
-                        <label className="text-light-dark font-size-12 font-weight-600">
-                          NET PRICE
-                        </label>
-                        <input
-                          type="text"
-                          disabled
-                          class="form-control border-radius-10 text-primary"
-                          value={extWorkData.totalPrice}
-                        />
-                        <div className="css-w8dmq8">*Mandatory</div>
-                      </div>
-                    </div>
-                    <div className="col-md-12">
-                      <div class="form-group mt-3 mb-0 text-right">
-                        <button
-                          type="button"
-                          className="btn btn-light bg-primary text-white"
-                          onClick={updateExtWorkHeader}
-                          // disabled={
-                          //   !(
-                          //     (!extWorkData.flatRateIndicator
-                          //       ? extWorkData.pricingMethod &&
-                          //         extWorkData.pricingMethod.value.includes(
-                          //           "PER"
-                          //         )
-                          //         ? extWorkData.percentageOfBase &&
-                          //           extWorkData.basePrice
-                          //         : extWorkData.pricingMethod
-                          //       : true) &&
-                          //     (extWorkData.flatRateIndicator
-                          //       ? extWorkData.adjustedPrice
-                          //       : true)
-                          //   )
-                          // }
-                        >
-                          Save
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="row mt-4">
-                    <ReadOnlyField
-                      label="JOB CODE"
-                      value={extWorkData.jobCode}
-                      className="col-md-4 col-sm-4"
-                    />
-                    <ReadOnlyField
-                      label="JOB CODE DESCRIPTION"
-                      value={extWorkData.jobCodeDescription}
-                      className="col-md-4 col-sm-4"
-                    />
-                    <ReadOnlyField
-                      label="PAYER"
-                      value={extWorkData.payer}
-                      className="col-md-4 col-sm-4"
-                    />
-                    {/* {!extWorkData.flatRateIndicator ? (
-                              <> */}
-                    <ReadOnlyField
-                      label="PRICE METHOD"
-                      value={extWorkData.pricingMethod?.label}
-                      className="col-md-4 col-sm-4"
-                    />
-
-                    {/* </>
-                            ) : (
-                              <></>
-                            )} */}
-                    <ReadOnlyField
-                      label="NET PRICE"
-                      value={extWorkData.totalPrice}
-                      className="col-md-4 col-sm-4"
-                    />
-                    {/* <ReadOnlyField
-                              label="ADJUSTED PRICE"
-                              value={extWorkData.adjustedPrice}
-                              className="col-md-4 col-sm-4"
-                            /> */}
-                  </div>
-                )}
-                <hr />
-
-                <div className="">
-                  <div className="bg-primary px-3 mb-3 border-radius-6">
-                    <div className="row align-items-center">
-                      <div className="col-10 mr-5">
-                        <div className="d-flex align-items-center bg-primary w-100">
-                          <div
-                            className="d-flex mr-3"
-                            style={{ whiteSpace: "pre" }}
-                          >
-                            <h5 className="mr-2 mb-0 text-white">
-                              <span>External Work</span>
-                            </h5>
-                            {/* <p className="ml-4 mb-0">
-                                    <a href="#" className="ml-3 text-white">
-                                      <EditOutlinedIcon />
-                                    </a>
-                                    <a href="#" className="ml-3 text-white">
-                                      <ShareOutlinedIcon />
-                                    </a>
-                                  </p> */}
-                          </div>
-                          <SearchComponent
-                            querySearchSelector={queryExtSearchSelector}
-                            setQuerySearchSelector={setQueryExtSearchSelector}
-                            clearFilteredData={clearFilteredData}
-                            handleSnack={handleSnack}
-                            searchAPI={getExtWork}
-                            type={"extwork"}
-                            searchClick={handleQuerySearchClick}
-                            options={EXTWORK_SEARCH_Q_OPTIONS}
-                            color={"white"}
-                            buttonText="ADD ITEM"
-                          />
-                        </div>
-                      </div>
-                      {/* <div className="ml-5">
-                                <div className="text-center border-left pl-3 py-3">
-                                  <Link
-                                    onClick={() => setExtWorkItemOpen(true)}
-                                    to="#"
-                                    className="p-1 text-white"
-                                    data-toggle="modal"
-                                    data-target="#Datatable"
-                                  >
-                                    <span className="ml-1">Add Items</span>
-                                  </Link>
-                                </div>
-                              </div> */}
-                    </div>
-                  </div>
-                  <DataGrid
-                    sx={GRID_STYLE}
-                    rows={extWorkItems}
-                    columns={columnsExternal}
-                    pageSize={5}
-                    autoHeight
-                    rowsPerPageOptions={[5]}
-                    // onCellClick={(e) => handleRowClick(e)}
-                  />
-                </div>
-              </React.Fragment>
-            )}
-          </TabPanel>
-          <TabPanel value="othrMisc">
-            <div className="col-md-12 col-sm-12">
-              <div className=" d-flex justify-content-between align-items-center">
-                <div>
-                  <FormGroup>
-                    <FormControlLabel
-                      control={
-                        <Switch
-                          checked={flagRequired.miscEnabled}
-                          onChange={handleChangeSwitch}
-                          name="miscEnabled"
-                        />
-                      }
-                      label="REQUIRED"
-                    />
-                  </FormGroup>
-                </div>
-              </div>
+          </div>
+          <div className="col-lg-4 col-md-4 col-sm-4 col-12">
+            <div className="form-group">
+              <label className="text-light-dark font-size-14 font-weight-500">
+                Hours on the Job
+              </label>
+              <input
+                type="text"
+                // disabled
+                class="form-control border-radius-10 text-primary"
+                // value={labourData.jobCode}
+                // value={"CO8635"}
+              />
             </div>
-            {flagRequired.miscEnabled && (
-              <React.Fragment>
-                {!miscViewOnly ? (
-                  <div className="row mt-2 input-fields">
-                    <div className="col-md-4 col-sm-4">
-                      <div class="form-group mt-3">
-                        <label className="text-light-dark font-size-12 font-weight-600">
-                          JOB CODE
-                        </label>
-                        <input
-                          type="text"
-                          disabled
-                          class="form-control border-radius-10 text-primary"
-                          value={miscData.jobCode}
-                        />
-                        <div className="css-w8dmq8">*Mandatory</div>
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div class="form-group mt-3">
-                        <label className="text-light-dark font-size-12 font-weight-600">
-                          JOB CODE DESCRIPTION
-                        </label>
-                        <input
-                          type="text"
-                          disabled
-                          class="form-control border-radius-10 text-primary"
-                          value={miscData.jobCodeDescription}
-                        />
-                        <div className="css-w8dmq8">*Mandatory</div>
-                      </div>
-                    </div>
-
-                    <div className="col-md-4 col-sm-4">
-                      <div class="form-group mt-3">
-                        <label className="text-light-dark font-size-12 font-weight-600">
-                          TYPE OF MISC.
-                        </label>
-                        <Select
-                          onChange={(e) =>
-                            setMiscData({ ...miscData, type: e })
-                          }
-                          // closeMenuOnSelect={false}
-                          options={miscTypeList}
-                          value={miscData.type}
-                          isMulti
-                          styles={FONT_STYLE_SELECT}
-                        />
-                        <div className="css-w8dmq8">*Mandatory</div>
-                      </div>
-                    </div>
-                    {/* <div className="col-md-8 col-sm-4"></div> */}
-                    {/* {!miscData.flatRateIndicator ? (
-                              <> */}
-                    {/* <div className="col-md-4 col-sm-4">
-                                  <div class="form-group mt-3">
-                                    <label className="text-light-dark font-size-12 font-weight-600">
-                                      PRICE METHOD
-                                    </label>
-                                    
-                                     <input
-                                      type="text"
-                                      disabled
-                                      class="form-control border-radius-10 text-primary"
-                                      value={miscData.pricingMethod?.label}
-                                    />
-                                  </div>
-                                </div> */}
-
-                    {/* </>
-                            ) : (
-                              <></>
-                            )} 
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <FormGroup>
-                                  <FormControlLabel
-                                    style={{
-                                      alignItems: "start",
-                                      marginLeft: 0,
-                                    }}
-                                    control={
-                                      <Switch
-                                        checked={miscData.flatRateIndicator}
-                                        onChange={(e) =>
-                                          setMiscData({
-                                            ...miscData,
-                                            flatRateIndicator: e.target.checked,
-                                            adjustedPrice: e.target.checked
-                                              ? miscData.adjustedPrice
-                                              : 0.0,
-                                          })
-                                        }
-                                      />
-                                    }
-                                    labelPlacement="top"
-                                    label={
-                                      <span className="text-light-dark font-size-12 font-weight-600">
-                                        FLAT RATE INDICATOR
-                                      </span>
-                                    }
-                                  />
-                                </FormGroup>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <label className="text-light-dark font-size-12 font-weight-600">
-                                  ADJUSTED PRICE
-                                </label>
-                                <input
-                                  type="text"
-                                  disabled={!miscData.flatRateIndicator}
-                                  class="form-control border-radius-10 text-primary"
-                                  value={miscData.adjustedPrice}
-                                  onChange={(e) =>
-                                    setMiscData({
-                                      ...miscData,
-                                      adjustedPrice: e.target.value,
-                                    })
-                                  }
-                                />
-                              </div>
-                            </div>*/}
-                    <div className="col-md-4 col-sm-4">
-                      <div class="form-group mt-3">
-                        <label className="text-light-dark font-size-12 font-weight-600">
-                          NET PRICE
-                        </label>
-                        <input
-                          type="text"
-                          disabled
-                          class="form-control border-radius-10 text-primary"
-                          value={miscData.totalPrice}
-                        />
-                        <div className="css-w8dmq8">*Mandatory</div>
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div class="form-group mt-3">
-                        <label className="text-light-dark font-size-12 font-weight-600">
-                          PAYER
-                        </label>
-                        <input
-                          type="text"
-                          class="form-control border-radius-10 text-primary"
-                          value={miscData.payer}
-                          onChange={(e) =>
-                            setMiscData({
-                              ...miscData,
-                              payer: e.target.value,
-                            })
-                          }
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-12">
-                      <div class="form-group mt-3 mb-0 text-right">
-                        <button
-                          type="button"
-                          className="btn btn-light bg-primary text-white"
-                          onClick={updateMiscHeader}
-                          disabled={
-                            !(
-                              // (!miscData.flatRateIndicator
-                              //   ? miscData.percentageOfBase &&
-                              //     miscData.pricingMethod &&
-                              //     miscData.basePrice
-                              //   : true) &&
-                              miscData.type
-                              // &&
-                              // (miscData.flatRateIndicator
-                              //   ? miscData.adjustedPrice
-                              //   : true)
-                            )
-                          }
-                        >
-                          Save
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="row mt-4">
-                    <ReadOnlyField
-                      label="JOB CODE"
-                      value={miscData.jobCode}
-                      className="col-md-4 col-sm-4"
-                    />
-                    <ReadOnlyField
-                      label="JOB CODE DESCRIPTION"
-                      value={miscData.jobCodeDescription}
-                      className="col-md-4 col-sm-4"
-                    />
-                    <ReadOnlyField
-                      label="PAYER"
-                      value={miscData.payer}
-                      className="col-md-4 col-sm-4"
-                    />
-                    <ReadOnlyField
-                      label="TYPE OF MISC."
-                      value={
-                        <>
-                          {miscData.type?.map((element) => (
-                            <div>{element.label}</div>
-                          ))}
-                        </>
-                      }
-                      className="col-md-4 col-sm-4"
-                    />
-                    {/* {!miscData.flatRateIndicator ? (
-                              <> */}
-                    <ReadOnlyField
-                      label="PRICE METHOD"
-                      value={miscData.pricingMethod?.label}
-                      className="col-md-4 col-sm-4"
-                    />
-
-                    {/* </>
-                            ) : (
-                              <></>
-                            )} */}
-                    <ReadOnlyField
-                      label="NET PRICE"
-                      value={miscData.totalPrice}
-                      className="col-md-4 col-sm-4"
-                    />
-                    {/* <ReadOnlyField
-                              label="ADJUSTED PRICE"
-                              value={miscData.adjustedPrice}
-                              className="col-md-4 col-sm-4"
-                            /> */}
-                  </div>
-                )}
-              </React.Fragment>
-            )}
-          </TabPanel>
-        </TabContext>
-      </Box>
+          </div>
+          <div className="col-lg-4 col-md-4 col-sm-4 col-12">
+            <div className="form-group">
+              <label className="text-light-dark font-size-14 font-weight-500">
+                Travel Time
+              </label>
+              <input
+                type="text"
+                // disabled
+                class="form-control border-radius-10 text-primary"
+                // value={labourData.jobCode}
+                // value={"CO8635"}
+              />
+            </div>
+          </div>
+          <div className="col-lg-4 col-md-4 col-sm-4 col-12">
+            <div className="form-group">
+              <label className="text-light-dark font-size-14 font-weight-500">
+                Vehicle KM
+              </label>
+              <input
+                type="text"
+                // disabled
+                class="form-control border-radius-10 text-primary"
+                // value={labourData.jobCode}
+                // value={"CO8635"}
+              />
+            </div>
+          </div>
+          <div className="col-lg-12 col-md-12 col-sm-12 col-12">
+            <div className="form-group">
+              <label className="text-light-dark font-size-14 font-weight-500">
+                Misc. Details
+              </label>
+              <textarea
+                className="form-control border-radius-10 text-primary"
+                // name={`questions${row.questionId}`}
+                cols="30"
+                rows="3"
+                // value={recordObj[`questions${row.questionId}`]}
+                // onChange={handleInputTextChange}
+                // placeholder="causes"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
     </>
   );
 };
