@@ -1,7 +1,15 @@
+import SearchBox from "pages/Repair/components/SearchBox";
 import React, { useState } from "react";
 import { Modal } from "react-bootstrap";
+import { sparePartSearch } from "services/searchServices";
 
-const ClaimFailedPartModal = ({ show, hideModal, newPartRecord }) => {
+const ClaimFailedPartModal = ({
+  show,
+  hideModal,
+  newPartRecord,
+  setNewPartRecord,
+  handleSnack,
+}) => {
   const [recordData, setRecordData] = useState({
     partNumber: "",
     partDescription: "",
@@ -9,16 +17,52 @@ const ClaimFailedPartModal = ({ show, hideModal, newPartRecord }) => {
     analysis: "",
   });
 
+  const [searchPartsResult, setSearchPartsResult] = useState([]);
+  const [noOptionsParts, setNoOptionsParts] = useState(false);
+
   const handleInputFieldChange = (e) => {
     const { name, value } = e.target;
     setRecordData({ ...recordData, [name]: value });
   };
 
+  // Search Customer with customer ID
+  const handleCustSearch = async (searchCustfieldName, searchText) => {
+    setSearchPartsResult([]);
+
+    recordData.partNumber = searchText;
+    // customerData.customerID = searchText;
+    if (searchText) {
+      await sparePartSearch(`partNumber~${searchText}`)
+        .then((result) => {
+          if (result && result.length > 0) {
+            setSearchPartsResult(result);
+            setNoOptionsParts(false);
+          } else {
+            setNoOptionsParts(true);
+          }
+        })
+        .catch((e) => {
+          handleSnack("error", "Error occurred while searching the customer!");
+        });
+    }
+  };
+
+  // Select the customer from search result
+  const handleCustSelect = (type, currentItem) => {
+    console.log("current Item", currentItem);
+    setRecordData({
+      ...recordData,
+      partNumber: currentItem.partNumber,
+      partDescription: currentItem.partDescription,
+    });
+    setSearchPartsResult([]);
+  };
+
   const handleSavePartsData = () => {
-    newPartRecord = {
+    setNewPartRecord({
       ...recordData,
       index: Math.floor(Math.random() * 1000) + 100,
-    };
+    });
     hideModal();
   };
   return (
@@ -32,13 +76,15 @@ const ClaimFailedPartModal = ({ show, hideModal, newPartRecord }) => {
                 <label className="text-light-dark font-size-14 font-weight-500">
                   Part Number
                 </label>
-                <input
-                  type="text"
-                  className="form-control border-radius-10 text-primary"
+                <SearchBox
                   value={recordData.partNumber}
-                  name="partNumber"
-                  placeholder="Part Number"
-                  onChange={handleInputFieldChange}
+                  onChange={(e) =>
+                    handleCustSearch("customerId", e.target.value)
+                  }
+                  type="partNumber"
+                  result={searchPartsResult}
+                  onSelect={handleCustSelect}
+                  noOptions={noOptionsParts}
                 />
               </div>
             </div>

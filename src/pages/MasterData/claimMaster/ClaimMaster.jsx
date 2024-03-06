@@ -54,6 +54,7 @@ import ClaimCreateModal from "pages/WarrantyMaster/CheckWarranty/ClaimCreateModa
 import ClaimWarrantyDetails from "pages/WarrantyMaster/CheckWarranty/ClaimWarrantyDetails";
 import ClaimRequestProcess from "pages/WarrantyMaster/CheckWarranty/ClaimRequestProcess";
 import ReturnRequester from "pages/WarrantyMaster/WarrantyReturn/ReturnRequester";
+import ClaimFailedPartModal from "pages/WarrantyMaster/CheckWarranty/ClaimFailedPartModal";
 
 const colorStatus = {
   draft: "lightgreen",
@@ -293,6 +294,10 @@ const ClaimMaster = () => {
     claimType: "",
     claimNumber: "",
   });
+
+  const [showAddPartModal, setShowAddPartModal] = useState(false);
+  const [newPartRecord, setNewPartRecord] = useState(null);
+  const [isFailurePart, setIsFailurePart] = useState(false);
 
   // Snack Bar State
   const [severity, setSeverity] = useState("");
@@ -559,6 +564,13 @@ const ClaimMaster = () => {
     setPartSelectionData([...options]);
     setOpenReturnRequsterModal(true);
     setOpenClaimRequestProcess(false);
+  };
+
+  const handleShowHideAddPartModal = () => {
+    setOpenReturnRequsterModal(!openReturnRequsterModal);
+    // setOpenClaimRequestProcess(!openClaimRequestProcess);
+    // setShowOverviewModal(!showOverviewModal);
+    setShowAddPartModal(!showAddPartModal);
   };
 
   const claimColumn = [
@@ -1066,7 +1078,7 @@ const ClaimMaster = () => {
         handleFilesUploadModal={handleFilesUploadModal}
       />
 
-      {openClaimRequestProcess && (
+      {/* {openClaimRequestProcess && ( */}
         <ClaimRequestProcess
           show={openClaimRequestProcess}
           hideModal={() => setOpenClaimRequestProcess(false)}
@@ -1081,8 +1093,14 @@ const ClaimMaster = () => {
           assesstmentId={assesstmentId}
           setAssesstmentId={setAssesstmentId}
           handeleShowReturnRequester={handeleShowReturnRequester}
+          handleShowHideAddPartModal={handleShowHideAddPartModal}
+          fromClaim={false}
+          newPartRecord={newPartRecord}
+          setNewPartRecord={setNewPartRecord}
+          isFailurePar={isFailurePart}
+          setIsFailurePart={setIsFailurePart}
         />
-      )}
+      // )}
 
       {openReturnRequsterModal && (
         <ReturnRequester
@@ -1091,6 +1109,16 @@ const ClaimMaster = () => {
           handleSnack={handleSnack}
           countryRegionOptionsList={countryList}
           partSelectionData={partSelectionData}
+        />
+      )}
+
+      {showAddPartModal && (
+        <ClaimFailedPartModal
+          show={showAddPartModal}
+          hideModal={handleShowHideAddPartModal}
+          newPartRecord={newPartRecord}
+          setNewPartRecord={setNewPartRecord}
+          handleSnack={handleSnack}
         />
       )}
     </>
