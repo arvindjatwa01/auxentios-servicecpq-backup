@@ -217,7 +217,7 @@ const WarrantyMaster = () => {
       headerName: "Component Code",
       //   width: 90,
       flex: 1,
-      renderCell: (params) => <div></div>,
+      renderCell: (params) => <div>NA</div>,
     },
     {
       field: "warrantyBasics",
@@ -339,12 +339,14 @@ const WarrantyMaster = () => {
       field: "componentNumber",
       headerName: "Component Code",
       flex: 1,
+      renderCell: (params) => <div>NA</div>,
       // renderCell: (params) => <div></div>,
     },
     {
       field: "basis",
       headerName: "Basis",
       flex: 1,
+      renderCell: (params) => <div>TIME</div>
     },
     {
       field: "unit",
@@ -355,21 +357,25 @@ const WarrantyMaster = () => {
       field: "warrantyStartDate",
       headerName: "Start Date",
       flex: 1,
+      renderCell: (params) => <div>12/11/2023</div>
     },
     {
       field: "warrantyEndDate",
       headerName: "End Date",
       flex: 1,
+      renderCell: (params) => <div>11/11/2023</div>
     },
     {
       field: "warrantyStartUsage",
       headerName: "Start Usage",
       flex: 1,
+      renderCell: (params) => <div>NA</div>
     },
     {
       field: "warrantyEndUsage",
       headerName: "End Usage",
       flex: 1,
+      renderCell: (params) => <div>NA</div>
     },
     // {
     //   field: "warrantyStatus",
