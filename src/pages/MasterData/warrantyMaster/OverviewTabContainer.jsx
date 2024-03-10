@@ -251,7 +251,7 @@ const OverviewTabContainer = ({
                           className="form-control border-radius-10 text-primary"
                           value={warrantyRecord.warrantyStartUsage}
                           name="warrantyStartUsage"
-                          placeholder="Start Usag"
+                          placeholder="Start Usage"
                           onChange={hadleWarrantyInputChange}
                         />
                       </div>
@@ -268,7 +268,7 @@ const OverviewTabContainer = ({
                           className="form-control border-radius-10 text-primary"
                           value={warrantyRecord.warrantyEndUsage}
                           name="warrantyEndUsage"
-                          placeholder="End USage"
+                          placeholder="End Usage"
                           onChange={hadleWarrantyInputChange}
                         />
                       </div>
