@@ -18,6 +18,8 @@ import { GRID_STYLE } from "pages/Repair/CONSTANTS";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import { RenderConfirmDialog } from "pages/Repair/components/ConfirmationBox";
 import AddCustomerModal from "./AddCustomerModal";
+import ProductSummary from "pages/use-case-2/ProductSummary";
+import EquipmentRecordModal from "pages/use-case-2/EquipmentRecordModal";
 
 const DataGridContainer = (props) => (
   <Box
@@ -35,6 +37,168 @@ const DataGridContainer = (props) => (
   </Box>
 );
 
+const dummyProductSummary = {
+  portfolioId: 201,
+  name: "PS_B6C_SM",
+  description:
+    "This is a Portfolio Solution for B6C for a Scheduled Maintenance",
+  machineType: "EMPTY",
+  searchTerm: "",
+  lubricant: true,
+  customerId: 0,
+  optionalServices: "SRVS_571G_PM3,SRVS_D6C_SM,SRVS_3508B_PM4",
+  customerGroup: "",
+  customerSegment: "Construction",
+  externalReference: "345",
+  status: "0",
+  validFrom: "2023-07-26",
+  validTo: "2025-07-26",
+  strategyTask: "SERVICE_UNDER_WARRANTY",
+  taskType: "INSTALATION",
+  usageCategory: "NEW_EQUIPMENT_SOLUTION",
+  productHierarchy: "END_PRODUCT",
+  geographic: "OFFSITE",
+  availability: "EMPTY",
+  responseTime: "PROACTIVE",
+  type: "EMPTY",
+  application: "EMPTY",
+  contractOrSupport: "EMPTY",
+  lifeStageOfMachine: "EMPTY",
+  supportLevel: "STANDARD",
+  numberOfEvents: 0,
+  rating: "",
+  startUsage: 0,
+  endUsage: 0,
+  unit: "EMPTY",
+  additionals: "",
+  preparedBy: "WEJHGG@gmail.com",
+  approvedBy: null,
+  preparedOn: "2023-07-26",
+  revisedBy: null,
+  revisedOn: "2023-07-26",
+  salesOffice: "Location2",
+  offerValidity: "30",
+  createdAt: "2023-07-26T11:14:24.775873",
+  updatedAt: "2023-08-07T14:06:58.263019",
+  saveState: false,
+  userId: "1",
+  createdBy: null,
+  updatedBy: null,
+  tenantId: 0,
+  freeServices: "",
+  coverages: [
+    {
+      coverageId: 317,
+      serviceId: 0,
+      modelNo: "3516B",
+      serialNumber: "GZS00556",
+      startSerialNumber: "",
+      endSerialNumber: "",
+      serialNumberPrefix: "GZS",
+      family: "39",
+      make: "CATERPILLAR",
+      fleet: "",
+      fleetSize: "SMALL",
+      location: "",
+      startDate: null,
+      endDate: null,
+      actions: "",
+      createdAt: "2023-07-26T11:15:20.225792",
+      updatedAt: "2023-08-07T14:09:58.30935",
+      createdBy: null,
+      updatedBy: null,
+      tenantId: 74,
+      deleted: false,
+    },
+    {
+      coverageId: 316,
+      serviceId: 0,
+      modelNo: "3516B",
+      serialNumber: "GZS00954",
+      startSerialNumber: "",
+      endSerialNumber: "",
+      serialNumberPrefix: "GZS",
+      family: "41",
+      make: "CATERPILLAR",
+      fleet: "",
+      fleetSize: "SMALL",
+      location: "",
+      startDate: null,
+      endDate: null,
+      actions: "",
+      createdAt: "2023-07-26T11:15:20.139828",
+      updatedAt: "2023-08-07T14:08:52.829159",
+      createdBy: null,
+      updatedBy: null,
+      tenantId: 74,
+      deleted: false,
+    },
+    {
+      coverageId: 2,
+      serviceId: 0,
+      modelNo: "992K",
+      serialNumber: "",
+      startSerialNumber: "",
+      endSerialNumber: "",
+      serialNumberPrefix: "ZMX",
+      family: "GENERATORS SET ENGINES",
+      make: "CATERPILLAR",
+      fleet: "",
+      fleetSize: "SMALL",
+      location: "",
+      startDate: null,
+      endDate: null,
+      actions: "",
+      createdAt: "2022-09-26T09:23:03.244423",
+      updatedAt: "2022-09-26T09:23:03.244461",
+      createdBy: null,
+      updatedBy: null,
+      tenantId: 1,
+      deleted: false,
+    },
+  ],
+  items: [],
+  portfolioCart: null,
+  portfolioPrice: {
+    portfolioPriceId: 717,
+    priceMethod: "LIST_PRICE",
+    priceType: null,
+    priceList: null,
+    priceDate: "2023-07-26",
+    price: 13000,
+    sparePartsPrice: 6000,
+    labourPrice: 5000,
+    servicePrice: 0,
+    miscPrice: 2000,
+    optionPrice: 0,
+    specialPrice: 19662.5,
+    flatPrice: 0,
+    calculatedPrice: 13000,
+    unitPrice: 13000,
+    extendedPrice: 39000,
+    discount: 0,
+    totalPrice: 39000,
+    cartCalculatedPrice: 0,
+    currency: null,
+    validFrom: null,
+    validTo: null,
+    calculatedPriceRule: null,
+    createdAt: "2023-07-26T11:15:03.682575",
+    updatedAt: "2023-08-07T14:06:58.265069",
+    userId: null,
+    createdBy: null,
+    updatedBy: null,
+    tenantId: 74,
+    deleted: false,
+  },
+  additionalPrice: null,
+  escalationPrice: null,
+  coverageCart: null,
+  template: true,
+  deleted: false,
+  visibleInCommerce: true,
+};
+
 export const Users = (props) => {
   const [tabValue, setTabValue] = useState("activeUsersAndsubscriptions");
   const [pageSize, setPageSize] = useState(5);
@@ -44,6 +208,10 @@ export const Users = (props) => {
   const [openAddUser, setOpenAddUser] = useState(false);
   const [addUserModalTitle, setAddUserModalTitle] = useState("Add User");
   const [openAddCustomer, setOpenAddCustomer] = useState(false);
+
+  const [openProductSummary, setOpenProductSummary] = useState(false);
+  const [openEquipmentRecordModal, setOpenEquipmentRecordModal] =
+    useState(true);
 
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const newUser = {
@@ -296,7 +464,7 @@ export const Users = (props) => {
       .catch((e) => handleSnack("error", "Error occurred while adding user"));
   };
 
-  // add new Customer 
+  // add new Customer
   const addNewCustomer = async () => {
     let data = {
       firstName: subscriberData.firstName,
@@ -370,12 +538,12 @@ export const Users = (props) => {
                   <Tab
                     label="Active User & Subscription"
                     value={"activeUsersAndsubscriptions"}
-                    className="heading-tabs"
+                    // className="heading-tabs"
                   />
                   <Tab
                     label="Partners & Customers"
                     value={"partnersAndCustomers"}
-                    className="heading-tabs"
+                    // className="heading-tabs"
                   />
                 </TabList>
               </Box>
@@ -522,6 +690,18 @@ export const Users = (props) => {
           addUser={addNewUser}
           updateUser={updateUser}
           roles={userRoles}
+        />
+        <ProductSummary
+          show={openProductSummary}
+          handleClose={() => setOpenProductSummary(false)}
+          portfolio={dummyProductSummary}
+          // addItem={}
+        />
+
+        <EquipmentRecordModal
+          show={openEquipmentRecordModal}
+          handleClose={() => setOpenEquipmentRecordModal(false)}
+          handleSnack={handleSnack}
         />
       </div>
     </Fragment>
