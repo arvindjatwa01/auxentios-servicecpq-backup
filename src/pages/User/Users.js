@@ -239,7 +239,8 @@ export const Users = (props) => {
   };
   const [customerData, setCustomerData] = useState(newCustomer);
   const [dealerTypes, setDealerTypes] = useState([
-    { label: "Dealer", value: "DEALER" },
+    { label: "Partner", value: "PARTNER" },
+    { label: "Customer", value: "CUSTOMER" },
   ]);
 
   const [severity, setSeverity] = useState("");
@@ -363,7 +364,7 @@ export const Users = (props) => {
       flex: 1,
       minWidth: 100,
     },
-    { field: "email", headerName: "Address", flex: 1, minWidth: 100 },
+    { field: "email", headerName: "Email", flex: 1, minWidth: 100 },
     {
       field: "actions",
       type: "actions",
@@ -456,7 +457,7 @@ export const Users = (props) => {
   // open add customer modal
   const handleOpenAddCustomer = () => {
     setSubscriberData(newUser);
-    setAddUserModalTitle("Add Customer");
+    setAddUserModalTitle("Add Partner/Customer");
     setOpenAddCustomer(true);
   };
 
