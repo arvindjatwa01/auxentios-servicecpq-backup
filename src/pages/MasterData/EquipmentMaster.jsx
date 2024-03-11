@@ -25,7 +25,11 @@ import { API_SUCCESS } from "services/ResponseCode";
 
 import PaginationStackedChart from "./PaginationStackedChart";
 import EquipmentReportDetails from "./EquipmentReportDetails";
-import { defaultContactData, defaultWarrentyData, equipmentComponentRecords } from "./equipmentConstant";
+import {
+  defaultContactData,
+  defaultWarrentyData,
+  equipmentComponentRecords,
+} from "./equipmentConstant";
 import EquipmentDataTable from "./EquipmentDataTable";
 import EquipmentSearchMaster from "./EquipmentSearchMaster";
 import {
@@ -53,6 +57,7 @@ import { warrantyTypeOptions } from "pages/WarrantyMaster/CheckWarranty/claimWar
 import { getFormatDateTime } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/dateUtilities";
 import { FONT_STYLE, FONT_STYLE_SELECT } from "pages/Repair/CONSTANTS";
 import { getWarratyComponentData } from "services/warrantyServices";
+import EquipmentRecordModal from "pages/use-case-2/EquipmentRecordModal";
 
 const EquipmentMaster = () => {
   const [showModal, setShowModal] = useState(false);
@@ -179,6 +184,9 @@ const EquipmentMaster = () => {
       maintenance: 239,
     },
   ];
+
+  const [openEquipmentRecordModal, setOpenEquipmentRecordModal] =
+    useState(false);
 
   const [yearWarrantyData, setYearWarrantyData] = useState({
     ...yearWarratyRequestObj,
@@ -1433,6 +1441,14 @@ const EquipmentMaster = () => {
     return (
       <>
         <div className="bg-white p-3 border-radius-10 overflow-hidden">
+          <div className="row" style={{ justifyContent: "right" }}>
+            <button
+              className="btn btn-primary"
+              onClick={() => setOpenEquipmentRecordModal(true)}
+            >
+              Edit
+            </button>
+          </div>
           <div className="row align-items-end">
             <div className="col-lg-4 col-md-4 col-sm-6 col-12">
               <div className="d-block">
@@ -2435,6 +2451,12 @@ const EquipmentMaster = () => {
           yearWarrantyComponentData={yearWarrantyComponentData}
         />
       )}
+
+      <EquipmentRecordModal 
+        show={openEquipmentRecordModal}
+        handleClose={() => setOpenEquipmentRecordModal(false)}
+        handleSnack={handleSnack}
+      />
     </>
   );
 };

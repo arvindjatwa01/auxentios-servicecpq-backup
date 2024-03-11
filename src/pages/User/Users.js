@@ -211,7 +211,7 @@ export const Users = (props) => {
 
   const [openProductSummary, setOpenProductSummary] = useState(false);
   const [openEquipmentRecordModal, setOpenEquipmentRecordModal] =
-    useState(true);
+    useState(false);
 
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const newUser = {
@@ -223,6 +223,25 @@ export const Users = (props) => {
     email: "",
   };
   const [subscriberData, setSubscriberData] = useState(newUser);
+
+  const newCustomer = {
+    builderId: "",
+    type: "",
+    dealerName: "",
+    dealerNumber: "",
+    email: "",
+    address: "",
+    city: "",
+    state: "",
+    country: "",
+    zipCode: "",
+    phoneNumber: "",
+  };
+  const [customerData, setCustomerData] = useState(newCustomer);
+  const [dealerTypes, setDealerTypes] = useState([
+    { label: "Dealer", value: "DEALER" },
+  ]);
+
   const [severity, setSeverity] = useState("");
   const [openSnack, setOpenSnack] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
@@ -684,12 +703,13 @@ export const Users = (props) => {
         <AddCustomerModal
           openAddCustomer={openAddCustomer}
           handleAddCustomerClose={handleAddCustomerClose}
-          subscriberData={subscriberData}
-          setSubscriberData={setSubscriberData}
+          subscriberData={customerData}
+          setSubscriberData={setCustomerData}
           title={addUserModalTitle}
           addUser={addNewUser}
           updateUser={updateUser}
           roles={userRoles}
+          dealerTypes={dealerTypes}
         />
         <ProductSummary
           show={openProductSummary}
@@ -698,11 +718,11 @@ export const Users = (props) => {
           // addItem={}
         />
 
-        <EquipmentRecordModal
+        {/* <EquipmentRecordModal
           show={openEquipmentRecordModal}
           handleClose={() => setOpenEquipmentRecordModal(false)}
           handleSnack={handleSnack}
-        />
+        /> */}
       </div>
     </Fragment>
   );

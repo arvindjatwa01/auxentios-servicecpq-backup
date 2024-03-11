@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { Card, Grid } from "@mui/material";
+import { Box, Card, Grid, Tooltip } from "@mui/material";
 import ReturnRequester from "./ReturnRequester";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import { callGetApi } from "services/ApiCaller";
 import { API_SUCCESS } from "services/ResponseCode";
 import { Warranty_Country_List_GET } from "services/CONSTANTS";
+import penIcon from "../../../assets/images/pen.png";
 
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import SelectBox from "pages/Insights/SelectBox";
+import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
+import { GRID_STYLE } from "pages/Repair/CONSTANTS";
+import SearchBox from "pages/Insights/SearchBox";
 
 // const warrantyCard = [""]
 
@@ -41,11 +46,59 @@ const data = [
   },
 ];
 
+const dummyReturnData = [
+  {
+    index: Math.floor(Math.random() * 90000) + 10000,
+    returnNumber: "RN00237",
+    returnType: "Intra company",
+    rmaNumber: "812374582",
+    trackingNumber: "TN7458263",
+    shipedOn: "11/02/2024",
+  },
+  {
+    index: Math.floor(Math.random() * 9000) + 1000,
+    returnNumber: "RN00259",
+    returnType: "Intra company",
+    rmaNumber: "812374592",
+    trackingNumber: "TN7458233",
+    shipedOn: "11/02/2024",
+  },
+  {
+    index: Math.floor(Math.random() * 900) + 10000,
+    returnNumber: "RN00291",
+    returnType: "Intra company",
+    rmaNumber: "812374522",
+    trackingNumber: "TN7458213",
+    shipedOn: "11/02/2024",
+  },
+  {
+    index: Math.floor(Math.random() * 90) + 10000,
+    returnNumber: "RN00242",
+    returnType: "Intra company",
+    rmaNumber: "812374572",
+    trackingNumber: "TN7458203",
+    shipedOn: "11/02/2024",
+  },
+  {
+    index: Math.floor(Math.random() * 900) + 1000,
+    returnNumber: "RN00834",
+    returnType: "Intra company",
+    rmaNumber: "812374882",
+    trackingNumber: "TN7458963",
+    shipedOn: "11/02/2024",
+  },
+];
+
 const WarrantyReturnMaster = () => {
   const [showReturnRequesterModal, setShowReturnRequesterModal] =
     useState(false);
 
   const [countryList, setCountryList] = useState([]);
+
+  const [returnNumber, setReturnNumber] = useState("");
+  const [returnType, setReturnType] = useState("");
+
+  const returnTypeOptions = ["Intra Company", "With in Company"];
 
   // Snack Bar State
   const [severity, setSeverity] = useState("");
@@ -87,6 +140,70 @@ const WarrantyReturnMaster = () => {
   const toggleReturnRequesterModal = () => {
     setShowReturnRequesterModal(true);
   };
+
+  const handleEditReturnData = (params) => {
+    setShowReturnRequesterModal(true)
+  }
+
+  const columns = [
+    {
+      field: "returnNumber",
+      headerName: "Return Number",
+      flex: 1,
+    },
+    {
+      field: "returnType",
+      headerName: "Return Type",
+      //   width: 90,
+      flex: 1,
+    },
+    {
+      field: "rmaNumber",
+      headerName: "RMA Number",
+      width: 150,
+      flex: 1,
+    },
+    {
+      field: "trackingNumber",
+      headerName: "Tracking Number",
+      flex: 1,
+      // renderCell: (params) => <div>ZMX00507</div>,
+    },
+    {
+      field: "shipedOn",
+      headerName: "Shiped On",
+      flex: 1,
+      // renderCell: (params) => <div>NA</div>,
+    },
+    {
+      field: "action",
+      type: "actions",
+      headerName: "Action",
+      //   width: 150,
+      flex: 1,
+      cellClassName: "actions",
+      getActions: (params) => {
+        return [
+          <GridActionsCellItem
+            icon={
+              <div
+                className="cursor"
+                onClick={() => handleEditReturnData(params)}
+              >
+                <Tooltip title="Edit">
+                  <img className="m-1" src={penIcon} alt="Edit" />
+                </Tooltip>
+              </div>
+            }
+            label="Edit"
+            className="textPrimary"
+            color="inherit"
+          />,
+        ];
+      },
+    },
+  ];
+
   return (
     <>
       <CustomizedSnackbar
@@ -317,6 +434,66 @@ const WarrantyReturnMaster = () => {
                 </div>
               </div>
             </div>
+            <Grid
+              container
+              sx={{
+                width: "100%",
+                backgroundColor: "#f3eafe",
+                borderRadius: 5,
+                marginBlock: 3,
+                padding: 2,
+                marginTop: 0.5,
+                marginBottom: 2,
+              }}
+            >
+              <Box
+                sx={{
+                  width: "100%",
+                  height: 700,
+                  // marginBottom: 8,
+                  marginInline: 2,
+                }}
+              >
+                <SearchBox
+                  label={"Return Number"}
+                  value={returnNumber}
+                  handleChange={(e) => setReturnNumber(e.target.value)}
+                  size={250}
+                />
+                <SelectBox
+                  label={"Return Type"}
+                  value={returnType}
+                  options={returnTypeOptions}
+                  handleChange={(e) => setReturnType(e.target.value)}
+                  showClearIcon={true}
+                  handleUnselect={() => setReturnType("")}
+                />
+                <DataGrid
+                  // loading={partClassALoading}
+                  sx={GRID_STYLE}
+                  getRowId={(row) => row.index}
+                  // page={partClassAPageNo}
+                  // pageSize={partClassAPageSize}
+                  // onPageChange={(newPage) =>
+                  //   fetchPartClassARecords(newPage, partClassAPageSize)
+                  // }
+                  // onPageSizeChange={(newPageSize) =>
+                  //   fetchPartClassARecords(partClassAPageNo, newPageSize)
+                  // }
+                  rows={dummyReturnData}
+                  columns={columns}
+                  rowsPerPageOptions={[10, 20, 50]}
+                  paginationMode="server"
+                  // rowCount={partClassATotlaRecord}
+                  checkboxSelection={true}
+                  keepNonExistentRowsSelected
+                  // onSelectionModelChange={(newRowSelectionModel) => {
+                  //   setRowSelectionModel(newRowSelectionModel);
+                  // }}
+                  // selectionModel={rowSelectionModel}
+                />
+              </Box>
+            </Grid>
           </div>
         </div>
       </div>

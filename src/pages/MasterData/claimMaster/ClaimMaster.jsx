@@ -5,6 +5,7 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CachedIcon from "@mui/icons-material/Cached";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
 import VisibilityTwoToneIcon from "@mui/icons-material/VisibilityTwoTone";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -767,206 +768,278 @@ const ClaimMaster = () => {
         message={snackMessage}
       />
       <div>
-        <div className="content-body" style={{ minHeight: "884px" }}>
-          <div class="container-fluid mt-3">
+        <div className="content-body bg-white" style={{ minHeight: "884px" }}>
+          <div className="container-fluid mt-3">
+            <h4 className="mb-3">Warranty Dashboard</h4>
+            <div class="row gx-3">
+              <div class="col mt-3">
+                <div class="card" style={{ width: "30rem" }}>
+                  <ul class="list-group list-group-flush ">
+                    <li
+                      class="list-group-item d-flex justify-content-between align-items-center p-3"
+                      style={{ backgroundColor: "rgb(245, 224, 245)" }}
+                    >
+                      <div>
+                        <span class="material-icons mr-2">
+                          {" "}
+                          <i
+                            class="fa-regular fa-square-minus me-2"
+                            style={{ color: "blue" }}
+                          ></i>
+                        </span>{" "}
+                        Recent Activity
+                      </div>
+                      <span>
+                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                      </span>
+                    </li>
+                    <li class="list-group-item ">
+                      <div class="list-group-item d-flex justify-content-between align-items-center border border-white">
+                        <div className="text-primary">
+                          <span class="material-icons ">
+                            {" "}
+                            <i class="fa-regular fa-square-minus me-2"></i>
+                          </span>{" "}
+                          <strong>Claim 12920-2</strong>
+                        </div>
+                        <span>5:45PM</span>
+                      </div>
+                      <p>Discount has been changed from 797 to 700 </p>
+                      <p className="text-primary">for SB12930</p>
+                      <p>Discount has been changed from 797 to700</p>
+                      <p>
+                        <small>
+                          <i class="fa-solid fa-angle-up me-2"></i>View more
+                        </small>
+                      </p>
+                    </li>
+                    <li class="list-group-item">
+                      <div class="list-group-item d-flex justify-content-between align-items-center border border-white">
+                        <div>
+                          <span class="material-icons mr-2">
+                            {" "}
+                            <i
+                              class="fa-solid fa-triangle-exclamation me-2"
+                              style={{ color: "red" }}
+                            ></i>
+                          </span>{" "}
+                          <strong>Claim 12920-2</strong>
+                        </div>
+                        <span>5:45PM</span>
+                      </div>
+                      <p>Discount has been changed from 797 to 700</p>
+                      <p>
+                        <small>
+                          <i class="fa-solid fa-angle-down me-2"></i>View less
+                        </small>{" "}
+                      </p>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div class="col">
+                <div class="p-3">
+                  <div class="card" style={{ width: "25rem" }}>
+                    <div
+                      class="list-group-item d-flex justify-content-between align-items-center p-3"
+                      style={{ backgroundColor: "#ADD8E6" }}
+                    >
+                      <div>
+                        <span class="material-icons  text-primary">
+                          {" "}
+                          <i class="fa-regular fa-square-minus me-2"></i>
+                        </span>{" "}
+                        Workflow Tasks
+                      </div>
+                      <span>
+                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                      </span>
+                    </div>
+
+                    <ul class="list-group list-group-flush">
+                      <li class="list-group-item">
+                        <div class="list-group-item d-flex justify-content-between align-items-center border border-white">
+                          <div>
+                            <span class="material-icons text-primary">
+                              <i class="fa-regular fa-square-minus"></i>
+                            </span>{" "}
+                            <strong style={{ color: "blue" }}>CL456 </strong>
+                            requires your approval
+                            {/* <strong>CL456 requires your approval</strong> */}
+                          </div>
+                          <span>5:45PM</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-start  border border-white">
+                          <p className="me-2">
+                            <strong>Approve </strong>
+                          </p>
+                          <p className="mx-2">Reject </p>
+                          <p>Review</p>
+                        </div>
+                      </li>
+                      <li class="list-group-item">
+                        <div class="list-group-item d-flex justify-content-between align-items-center border border-white">
+                          <div>
+                            <span class="material-icons text-primary">
+                              {" "}
+                              <i class="fa-regular fa-square-minus"></i>
+                            </span>{" "}
+                            <strong style={{ color: "blue" }}>CL456 </strong>
+                            requires your approval
+                            {/* <strong>CL456 requires your approval</strong> */}
+                          </div>
+                          <span>5:45PM</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-start  border border-white">
+                          <p className="me-2">
+                            <strong>Approve </strong>
+                          </p>
+
+                          <p className="mx-2">Reject </p>
+                          <p>Review</p>
+                        </div>
+                      </li>
+                      <li class="list-group-item">
+                        <div class="list-group-item d-flex justify-content-between align-items-center border border-white">
+                          <div>
+                            <span class="material-icons text-primary ">
+                              {" "}
+                              <i class="fa-regular fa-square-minus"></i>
+                            </span>{" "}
+                            <strong style={{ color: "blue" }}>CL456 </strong>
+                            requires your approval
+                          </div>
+                          <span>5:45PM</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-start  border border-white">
+                          <p className="me-2">
+                            <strong>Approve </strong>
+                          </p>
+
+                          <p className="mx-2">Reject </p>
+                          <p>Review</p>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <div class="p-3">
+                  <div class="mb-3">
+                    <div
+                      class="border  border-success rounded"
+                      style={{ color: "green", backgroundColor: "#D1FFBD" }}
+                    >
+                      <div class="list-group-item d-flex justify-content-between align-items-center p-3 cursor-pointer">
+                        <div>
+                          <span class="material-icons ">
+                            {" "}
+                            <i class="fa-regular fa-square-minus me-2"></i>
+                          </span>{" "}
+                          Warranty Administration
+                        </div>
+                        <span>
+                          <ArrowForwardIosIcon />
+                        </span>
+                      </div>
+                    </div>
+                    <div
+                      class=" rounded mt-4 "
+                      style={{
+                        color: "purple",
+                        border: "1px solid purple",
+                        backgroundColor: "rgb(245, 224, 245)",
+                      }}
+                    >
+                      <div class="list-group-item d-flex justify-content-between align-items-center p-3 cursor-pointer">
+                        <div>
+                          <span class="material-icons ">
+                            {" "}
+                            <i class="fa-regular fa-square-minus me-2"></i>
+                          </span>{" "}
+                          Warranty Claims
+                        </div>
+                        <span>
+                          <ArrowForwardIosIcon />
+                        </span>
+                      </div>
+                    </div>
+                    <div
+                      class="border border-info rounded mt-4  text-black "
+                      style={{ backgroundColor: "#add8e6 " }}
+                    >
+                      <div
+                        class="list-group-item d-flex justify-content-between align-items-center p-3 cursor-pointer"
+                        // onClick={toggleReturnRequesterModal}
+                      >
+                        <div>
+                          <span class="material-icons ">
+                            {" "}
+                            <i class="fa-regular fa-square-minus me-2"></i>
+                          </span>{" "}
+                          Parts Return
+                        </div>
+                        <span>
+                          <ArrowForwardIosIcon />
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
             <Grid
               container
               sx={{
                 width: "100%",
                 backgroundColor: "#f3eafe",
                 borderRadius: 5,
-                marginBlock: 2,
+                marginBlock: 3,
+                padding: 2,
+                marginTop: 0.5,
+                marginBottom: 2,
               }}
             >
-              <Grid item xs={12}>
-                <TabContext value={tabValue}>
-                  <Box
-                    sx={{
-                      borderBottom: 1,
-                      borderColor: "divider",
-                      marginTop: 3,
-                      marginInline: 5,
-                    }}
-                  >
-                    <TabList className="" onChange={changeTab}>
-                      <Tab
-                        label="Claim"
-                        value={"claim"}
-                        className="heading-tabs"
-                      />
-                      <Tab
-                        label="Warranty"
-                        value={"warranty"}
-                        className="heading-tabs"
-                      />
-                    </TabList>
-                  </Box>
-                  <TabPanel value="claim" sx={{ marginTop: 0 }}>
-                    <Grid container>
-                      <Grid item xs={2}>
-                        <Box sx={{ marginBlock: 2 }}>
-                          <Accordion
-                            //   sx={{ backgroundColor: "#f3eafe" }}
-                            defaultExpanded
-                            expanded={quoteExpanded === "claimStatus"}
-                            onChange={handleQuoteExpand("claimStatus")}
-                          >
-                            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                              <Typography
-                                sx={{ fontSize: 14, fontWeight: 600 }}
-                              >
-                                Claim Status
-                              </Typography>
-                            </AccordionSummary>
-                            <AccordionDetails>
-                              <RadioGroup
-                                value={claimStatus}
-                                onChange={handleClaimStatus}
-                              >
-                                <FormControl>
-                                  {claimsStatus.map((status, i) => (
-                                    <FormControlLabel
-                                      key={`${status.value}-${i}`}
-                                      label={
-                                        <Typography sx={{ fontSize: 14 }}>
-                                          {status.label}
-                                        </Typography>
-                                      }
-                                      value={status.value}
-                                      control={<Radio />}
-                                    />
-                                  ))}
-                                </FormControl>
-                              </RadioGroup>
-                            </AccordionDetails>
-                          </Accordion>
-                          <Divider sx={{ my: 2 }} />
-                          <Accordion
-                            //   sx={{ backgroundColor: "#f3eafe" }}
-                            defaultExpanded
-                            expanded={quoteExpanded === "claimType"}
-                            onChange={handleQuoteExpand("claimType")}
-                          >
-                            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                              <Typography
-                                sx={{ fontSize: 14, fontWeight: 600 }}
-                              >
-                                Claim Type
-                              </Typography>
-                            </AccordionSummary>
-                            <AccordionDetails>
-                              <RadioGroup
-                                value={claimType}
-                                onChange={handleClaimType}
-                              >
-                                <FormControl>
-                                  {claimTypes.map((type, i) => (
-                                    <FormControlLabel
-                                      key={`${type.value}-${i}`}
-                                      label={
-                                        <Typography sx={{ fontSize: 14 }}>
-                                          {type.label}
-                                        </Typography>
-                                      }
-                                      value={type.value}
-                                      control={<Radio />}
-                                    />
-                                  ))}
-                                </FormControl>
-                              </RadioGroup>
-                            </AccordionDetails>
-                          </Accordion>
-                          <Divider />
-                        </Box>
-                      </Grid>
-                      <Grid item xs={10} container>
-                        <DataGridContainer>
-                          <DataGrid
-                            // loading={isLoading}
-                            sx={DATA_GRID_STYLE}
-                            getRowId={(row) => row.claimId}
-                            rows={claimRecordData}
-                            columns={claimColumn}
-                            columnVisibilityModel={columnVisibilityModel}
-                            onColumnVisibilityModelChange={(newModel) =>
-                              setColumnVisibilityModel(newModel)
-                            }
-                            pageSize={pageSize}
-                            onPageSizeChange={(newPageSize) =>
-                              setPageSize(newPageSize)
-                            }
-                            rowsPerPageOptions={[5, 10, 20, 50]}
-                          />
-                        </DataGridContainer>
-                      </Grid>
-                    </Grid>
-                  </TabPanel>
-                  <TabPanel value="warranty" sx={{ marginTop: 0 }}>
-                    <Grid container>
-                      <Grid item xs={2}>
-                        <Box sx={{ marginBlock: 2 }}>
-                          <Accordion
-                            //   sx={{ backgroundColor: "#f3eafe" }}
-                            defaultExpanded
-                            expanded={quoteExpanded === "claimStatus"}
-                            onChange={handleQuoteExpand("claimStatus")}
-                          >
-                            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                              <Typography
-                                sx={{ fontSize: 14, fontWeight: 600 }}
-                              >
-                                Warranty Status
-                              </Typography>
-                            </AccordionSummary>
-                            <AccordionDetails>
-                              <RadioGroup
-                                value={warrantyStatus}
-                                onChange={handleWarrantyStatus}
-                              >
-                                <FormControl>
-                                  {warrantyStatusOptions.map((status, i) => (
-                                    <FormControlLabel
-                                      key={`${status.value}-${i}-1`}
-                                      label={
-                                        <Typography sx={{ fontSize: 14 }}>
-                                          {status.label}
-                                        </Typography>
-                                      }
-                                      value={status.value}
-                                      control={<Radio />}
-                                    />
-                                  ))}
-                                </FormControl>
-                              </RadioGroup>
-                            </AccordionDetails>
-                          </Accordion>
-                          <Divider />
-                        </Box>
-                      </Grid>
-                      <Grid item xs={10} container>
-                        <DataGridContainer>
-                          <DataGrid
-                            // loading={isLoading}
-                            sx={DATA_GRID_STYLE}
-                            rows={warrantyData}
-                            columns={warrantyColumns}
-                            columnVisibilityModel={columnVisibilityModel}
-                            onColumnVisibilityModelChange={(newModel) =>
-                              setColumnVisibilityModel(newModel)
-                            }
-                            pageSize={pageSize}
-                            onPageSizeChange={(newPageSize) =>
-                              setPageSize(newPageSize)
-                            }
-                            rowsPerPageOptions={[5, 10, 20, 50]}
-                            getRowId={(row) => row.warrantyId}
-                          />
-                        </DataGridContainer>
-                      </Grid>
-                    </Grid>
-                  </TabPanel>
-                </TabContext>
-              </Grid>
+              <Box
+                sx={{
+                  width: "100%",
+                  height: 700,
+                  // marginBottom: 8,
+                  marginInline: 2,
+                }}
+              >
+                {/* <SearchBox
+                  label={"Return Number"}
+                  // value={returnNumber}
+                  // handleChange={(e) => setReturnNumber(e.target.value)}
+                  size={250}
+                />
+                <SelectBox
+                  label={"Return Type"}
+                  value={returnType}
+                  options={returnTypeOptions}
+                  handleChange={(e) => setReturnType(e.target.value)}
+                  showClearIcon={true}
+                  handleUnselect={() => setReturnType("")}
+                /> */}
+                <DataGridContainer>
+                  <DataGrid
+                    // loading={isLoading}
+                    sx={DATA_GRID_STYLE}
+                    getRowId={(row) => row.claimId}
+                    rows={claimRecordData}
+                    columns={claimColumn}
+                    columnVisibilityModel={columnVisibilityModel}
+                    onColumnVisibilityModelChange={(newModel) =>
+                      setColumnVisibilityModel(newModel)
+                    }
+                    pageSize={pageSize}
+                    onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+                    rowsPerPageOptions={[5, 10, 20, 50]}
+                  />
+                </DataGridContainer>
+              </Box>
             </Grid>
           </div>
         </div>
@@ -1079,27 +1152,27 @@ const ClaimMaster = () => {
       />
 
       {/* {openClaimRequestProcess && ( */}
-        <ClaimRequestProcess
-          show={openClaimRequestProcess}
-          hideModal={() => setOpenClaimRequestProcess(false)}
-          claimRecordId={claimRecordId}
-          handleSnack={handleSnack}
-          evaluationQuestions={evaluationQuestions}
-          claimOrderId={claimOrderId}
-          setClaimOrderId={setClaimOrderId}
-          claimDetails={claimData}
-          evaluationId={evaluationId}
-          setEvaluationId={setEvaluationId}
-          assesstmentId={assesstmentId}
-          setAssesstmentId={setAssesstmentId}
-          handeleShowReturnRequester={handeleShowReturnRequester}
-          handleShowHideAddPartModal={handleShowHideAddPartModal}
-          fromClaim={false}
-          newPartRecord={newPartRecord}
-          setNewPartRecord={setNewPartRecord}
-          isFailurePar={isFailurePart}
-          setIsFailurePart={setIsFailurePart}
-        />
+      <ClaimRequestProcess
+        show={openClaimRequestProcess}
+        hideModal={() => setOpenClaimRequestProcess(false)}
+        claimRecordId={claimRecordId}
+        handleSnack={handleSnack}
+        evaluationQuestions={evaluationQuestions}
+        claimOrderId={claimOrderId}
+        setClaimOrderId={setClaimOrderId}
+        claimDetails={claimData}
+        evaluationId={evaluationId}
+        setEvaluationId={setEvaluationId}
+        assesstmentId={assesstmentId}
+        setAssesstmentId={setAssesstmentId}
+        handeleShowReturnRequester={handeleShowReturnRequester}
+        handleShowHideAddPartModal={handleShowHideAddPartModal}
+        fromClaim={false}
+        newPartRecord={newPartRecord}
+        setNewPartRecord={setNewPartRecord}
+        isFailurePar={isFailurePart}
+        setIsFailurePart={setIsFailurePart}
+      />
       {/* )} */}
 
       {openReturnRequsterModal && (
