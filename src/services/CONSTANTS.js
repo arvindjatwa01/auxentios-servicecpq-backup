@@ -71,6 +71,8 @@ export const REMOVE_USER = (id) => USER_SERVICE_URI + `tenant-user/${id}`;
 export const SEARCH_USERS = (query) =>
   USER_SERVICE_URI + "tenant-user/search?search=" + query;
 
+export const USER_SERVICE_TENANT_MASTER_URL = USER_SERVICE_URI + "tenant";
+
 export const FETCH_ROLES = () => USER_SERVICE_URI + "user-role";
 
 // Audit Service
@@ -532,6 +534,7 @@ export const SEARCH_SPARC_PART = (endPath) =>
 export const Get_Spare_Parts_Datails_By_Id_GET = DATA_SVC_PARTS;
 
 // Master Customer
+export const DATA_SVC_CUSTOMER_MASTER_URL = DATA_SERVICE_URI + "customer"; 
 export const DATA_SVC_CUSTOMER = DATA_SERVICE_URI + "customer/";
 export const SEARCH_CUSTOMER_MASTER = (endPath) =>
   DATA_SVC_CUSTOMER + `/search?search=${endPath}`;

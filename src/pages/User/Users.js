@@ -701,17 +701,21 @@ export const Users = (props) => {
           updateUser={updateUser}
           roles={userRoles}
         />
-        <AddCustomerModal
-          openAddCustomer={openAddCustomer}
-          handleAddCustomerClose={handleAddCustomerClose}
-          subscriberData={customerData}
-          setSubscriberData={setCustomerData}
-          title={addUserModalTitle}
-          addUser={addNewUser}
-          updateUser={updateUser}
-          roles={userRoles}
-          dealerTypes={dealerTypes}
-        />
+
+        {openAddCustomer && (
+          <AddCustomerModal
+            openAddCustomer={openAddCustomer}
+            handleAddCustomerClose={handleAddCustomerClose}
+            subscriberData={customerData}
+            setSubscriberData={setCustomerData}
+            title={addUserModalTitle}
+            addUser={addNewUser}
+            updateUser={updateUser}
+            roles={userRoles}
+            dealerTypes={dealerTypes}
+            handleSnack={handleSnack}
+          />
+        )}
         <ProductSummary
           show={openProductSummary}
           handleClose={() => setOpenProductSummary(false)}
