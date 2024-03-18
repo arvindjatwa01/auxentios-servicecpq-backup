@@ -1,5 +1,54 @@
+import { useState } from "react";
 import { Modal } from "react-bootstrap";
 import { default as Select, default as SelectFilter } from "react-select";
+import { callPostApi } from "services/ApiCaller";
+import {
+  DATA_SVC_CUSTOMER_MASTER_URL,
+  USER_SERVICE_ADD_USER,
+  USER_SERVICE_TENANT_MASTER_URL,
+} from "services/CONSTANTS";
+import { API_SUCCESS } from "services/ResponseCode";
+
+const masterSelectObj = {
+  id: 0,
+  customerId: "",
+  firstName: "",
+  lastName: "",
+  fullName: "",
+  customerType: "",
+  businessArea: "",
+  distributionChannel: "",
+  email: "",
+  serviceRecipent: "",
+  payer: "",
+  shipTo: "",
+  billTo: "",
+  customerGroup: "",
+  customerSegment: "",
+  taxRelevant: "",
+  currency: "",
+  contactType: "",
+  contactName: "",
+  primaryContact: "",
+  contactAddress: "",
+  addressDTO: null,
+  createdBy: "",
+  updatedBy: "",
+};
+
+const addressDTOObj = {
+  id: 3,
+  addressId: 0,
+  addressLine1: "",
+  addressLine2: "",
+  addressLine3: "",
+  fullAddress: "",
+  district: "",
+  regionOrState: "",
+  country: "",
+  createdBy: "",
+  updatedBy: "",
+};
 
 const AddCustomerModal = (props) => {
   let fontColor = "#872ff7 !important";
@@ -22,7 +71,107 @@ const AddCustomerModal = (props) => {
       };
     },
   };
-  // console.log(props.subscriberData)
+
+  const [record, setRecord] = useState({
+    ...masterSelectObj,
+    type: "",
+    customerName: "",
+    customerNumber: "",
+    role: "",
+    email: "",
+    phoneNumber: "",
+    address: "",
+    city: "",
+    state: "",
+    country: "",
+  });
+
+  const [addressRecord, setAddressRecord] = useState({ ...addressDTOObj });
+
+  // change input fields value
+  const handleInputValueChange = (e) => {
+    const { name, value } = e.target;
+    setRecord({ ...record, [name]: value });
+  };
+
+  // change input fields value
+  const handleAddressInputValueChange = (e) => {
+    const { name, value } = e.target;
+    setAddressRecord({ ...addressRecord, [name]: value });
+  };
+
+  const handleAddUpdateCustomer = () => {
+    const rObj = {
+      ...record,
+      fullName: record.firstName + " " + record.lastName,
+      customerType: record.customerType?.value || "CUSTOMER",
+      contactType: record.contactType?.label || "End_Customer",
+      addressDTO: addressRecord,
+    };
+    callPostApi(null, DATA_SVC_CUSTOMER_MASTER_URL, rObj, (response) => {
+      if (response.status === API_SUCCESS) {
+        const responseData = response.data;
+        handleAddUpdateTenetUser(responseData);
+      } else {
+        props.handleSnack("info", response?.data?.message);
+      }
+    });
+  };
+
+  const handleAddUpdateTenetUser = () => {
+    const rObj = {
+      firstName: record.firstName,
+      lastName: record.lastName,
+      email: record.email || "",
+      password: "test123",
+      isApproved: true,
+      roleName: record.contactType?.label || "TENANT_ADMIN",
+      type: "TENANT_BUSINESS_USER",
+      customerId: parseInt(record.customerId),
+    };
+    callPostApi(null, USER_SERVICE_ADD_USER(), rObj, (response) => {
+      if (response.status === API_SUCCESS) {
+        const responseData = response.data;
+        if (record.customerType?.value === "CUSTOMER") {
+          handleCreateTenent(responseData);
+        } else {
+          props.handleSnack(
+            "success",
+            `Partner ${parseInt(record.customerId)} created successfully.`
+          );
+          props.handleAddCustomerClose();
+        }
+      } else {
+        props.handleSnack("info", response?.data?.message);
+      }
+    });
+  };
+
+  const handleCreateTenent = (result) => {
+    const rObj = {
+      tenantOwnerId: result.userId,
+      firstName: record.firstName,
+      lastName: record.lastName,
+      email: record.email,
+      domain: "TENANT_DOMAIN",
+      customerId: parseInt(record.customerId),
+      active: true,
+      apackage: "MOMENTUM",
+    };
+
+    callPostApi(null, USER_SERVICE_TENANT_MASTER_URL, rObj, (response) => {
+      if (response.status === API_SUCCESS) {
+        props.handleSnack(
+          "success",
+          `Customer ${parseInt(record.customerId)} created successfully.`
+        );
+        props.handleAddCustomerClose();
+      } else {
+        props.handleSnack("info", response?.data?.message);
+      }
+    });
+  };
+
   return (
     <Modal
       show={props.openAddCustomer}
@@ -36,64 +185,90 @@ const AddCustomerModal = (props) => {
       </Modal.Header>
       <Modal.Body className="px-3 bg-white">
         <div>
-          <div className="p-3">
-            <div className="row input-fields mt-4">
-              <div className="col-md-6 col-sm-6">
+          <div className="card border px-3 pt-2 mb-4">
+            <div className="row input-fields mt-3">
+              <div className="col-md-4 col-sm-4">
                 <div class="form-group w-100">
-                  <label className="text-light-dark font-size-14 font-weight-500">
-                    Type
+                  <label className="text-light-dark font-size-12 font-weight-500">
+                    TYPE
                   </label>
                   <Select
                     onChange={(e) =>
-                      props.setSubscriberData({
-                        ...props.subscriberData,
-                        type: e,
+                      setRecord({
+                        ...record,
+                        customerType: e,
                       })
                     }
                     styles={customStyle}
                     getOptionLabel={(option) => `${option.label}`}
-                    value={props.subscriberData.type}
+                    value={record.customerType}
                     options={props.dealerTypes}
-                  />
-                  <div className="css-w8dmq8">*Mandatory</div>
-                </div>
-              </div>
-              <div className="col-md-6 col-sm-6">
-                <div class="form-group w-100">
-                  <label className="text-light-dark font-size-14 font-weight-500">
-                    NAME
-                  </label>
-                  <input
-                    type="text"
-                    value={props.subscriberData.dealerName}
-                    className="form-control border-radius-10 text-primary"
-                    onChange={(e) =>
-                      props.setSubscriberData({
-                        ...props.subscriberData,
-                        dealerName: e.target.value,
-                      })
-                    }
                   />
                   <div className="css-w8dmq8">*Mandatory</div>
                 </div>
               </div>
               <div className="col-md-4 col-sm-4">
                 <div class="form-group w-100">
-                  <label className="text-light-dark font-size-14 font-weight-500">
-                    Dealer Number
+                  <label className="text-light-dark font-size-12 font-weight-500">
+                    PARTNER/CUSTOMER FIRST NAME
                   </label>
                   <input
                     type="text"
-                    value={props.subscriberData.dealerNumber}
-                    onChange={(e) =>
-                      props.setSubscriberData({
-                        ...props.subscriberData,
-                        dealerNumber: e.target.value,
-                      })
-                    }
+                    name="firstName"
+                    value={record.firstName}
+                    className="form-control border-radius-10 text-primary"
+                    onChange={handleInputValueChange}
+                  />
+                  <div className="css-w8dmq8">*Mandatory</div>
+                </div>
+              </div>
+              <div className="col-md-4 col-sm-4">
+                <div class="form-group w-100">
+                  <label className="text-light-dark font-size-12 font-weight-500">
+                    PARTNER/CUSTOMER LAST NAME
+                  </label>
+                  <input
+                    type="text"
+                    name="lastName"
+                    value={record.lastName}
+                    className="form-control border-radius-10 text-primary"
+                    onChange={handleInputValueChange}
+                  />
+                  <div className="css-w8dmq8">*Mandatory</div>
+                </div>
+              </div>
+              <div className="col-md-4 col-sm-4">
+                <div class="form-group w-100">
+                  <label className="text-light-dark font-size-12 font-weight-500">
+                    PARTNER/CUSTOMER NUMBER
+                  </label>
+                  <input
+                    type="number"
+                    name="customerId"
+                    value={record.customerId}
+                    onChange={handleInputValueChange}
                     className="form-control border-radius-10 text-primary"
                   />
-                  {/* <div className="css-w8dmq8">*Mandatory</div> */}
+                </div>
+              </div>
+              <div className="col-md-4 col-sm-4">
+                <div class="form-group w-100">
+                  <label className="text-light-dark font-size-12 font-weight-500">
+                    ROLE
+                  </label>
+                  <Select
+                    onChange={(e) =>
+                      setRecord({
+                        ...record,
+                        contactType: e,
+                      })
+                    }
+                    styles={customStyle}
+                    getOptionLabel={(option) => `${option.label}`}
+                    value={record.contactType}
+                    options={props.roles}
+                  />
+                  <div className="css-w8dmq8">*Mandatory</div>
                 </div>
               </div>
               <div className="col-md-4 col-sm-4">
@@ -103,13 +278,9 @@ const AddCustomerModal = (props) => {
                   </label>
                   <input
                     type="email"
-                    onChange={(e) =>
-                      props.setSubscriberData({
-                        ...props.subscriberData,
-                        email: e.target.value,
-                      })
-                    }
-                    value={props.subscriberData.email}
+                    name="email"
+                    onChange={handleInputValueChange}
+                    value={record.email}
                     className="form-control border-radius-10 text-primary font-size-14"
                   />
                   <div className="css-w8dmq8">*Mandatory</div>
@@ -118,118 +289,75 @@ const AddCustomerModal = (props) => {
               <div className="col-md-4 col-sm-4">
                 <div class="form-group w-100">
                   <label className="text-light-dark font-size-14 font-weight-500">
-                    Phone Number
+                    PHONE NUMBER
                   </label>
                   <input
                     type="text"
-                    value={props.subscriberData.phoneNumber}
-                    onChange={(e) =>
-                      props.setSubscriberData({
-                        ...props.subscriberData,
-                        phoneNumber: e.target.value,
-                      })
-                    }
+                    name="primaryContact"
+                    value={record.primaryContact}
+                    onChange={handleInputValueChange}
                     className="form-control border-radius-10 text-primary"
                   />
-                  {/* <div className="css-w8dmq8">*Mandatory</div> */}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="card border px-3 pt-2 mb-4">
+            <div className="row input-fields mt-3">
+              <div className="col-md-12 col-sm-12">
+                <div class="form-group w-100">
+                  <label className="text-light-dark font-size-14 font-weight-500">
+                    ADDRESS
+                  </label>
+                  <input
+                    type="text"
+                    name="fullAddress"
+                    value={addressRecord.fullAddress}
+                    onChange={handleAddressInputValueChange}
+                    className="form-control border-radius-10 text-primary"
+                  />
                 </div>
               </div>
               <div className="col-md-4 col-sm-4">
                 <div class="form-group w-100">
                   <label className="text-light-dark font-size-14 font-weight-500">
-                    City
+                    CITY
                   </label>
                   <input
                     type="text"
-                    value={props.subscriberData.city}
-                    onChange={(e) =>
-                      props.setSubscriberData({
-                        ...props.subscriberData,
-                        city: e.target.value,
-                      })
-                    }
+                    name="district"
+                    value={addressRecord.district}
+                    onChange={handleAddressInputValueChange}
                     className="form-control border-radius-10 text-primary"
                   />
-                  {/* <div className="css-w8dmq8">*Mandatory</div> */}
                 </div>
               </div>
               <div className="col-md-4 col-sm-4">
                 <div class="form-group w-100">
                   <label className="text-light-dark font-size-14 font-weight-500">
-                    State
+                    STATE
                   </label>
                   <input
                     type="text"
-                    value={props.subscriberData.state}
-                    onChange={(e) =>
-                      props.setSubscriberData({
-                        ...props.subscriberData,
-                        state: e.target.value,
-                      })
-                    }
+                    name="regionOrState"
+                    value={addressRecord.regionOrState}
+                    onChange={handleAddressInputValueChange}
                     className="form-control border-radius-10 text-primary"
                   />
-                  {/* <div className="css-w8dmq8">*Mandatory</div> */}
                 </div>
               </div>
               <div className="col-md-4 col-sm-4">
                 <div class="form-group w-100">
                   <label className="text-light-dark font-size-14 font-weight-500">
-                    Country
+                    COUNTRY
                   </label>
                   <input
                     type="text"
-                    value={props.subscriberData.country}
-                    onChange={(e) =>
-                      props.setSubscriberData({
-                        ...props.subscriberData,
-                        country: e.target.value,
-                      })
-                    }
+                    name="country"
+                    value={addressRecord.country}
+                    onChange={handleAddressInputValueChange}
                     className="form-control border-radius-10 text-primary"
                   />
-                  {/* <div className="css-w8dmq8">*Mandatory</div> */}
-                </div>
-              </div>
-              {props.title === "Add User" && (
-                <div className="col-md-6 col-sm-6">
-                  <div class="form-group w-100">
-                    <label className="text-light-dark font-size-14 font-weight-500">
-                      PASSWORD
-                    </label>
-                    <input
-                      type="password"
-                      onChange={(e) =>
-                        props.setSubscriberData({
-                          ...props.subscriberData,
-                          password: e.target.value,
-                        })
-                      }
-                      value={props.subscriberData.password}
-                      className="form-control border-radius-10 text-primary font-size-12"
-                    />
-                    <div className="css-w8dmq8">*Mandatory</div>
-                  </div>
-                </div>
-              )}
-              <div className="col-md-6 col-sm-6">
-                <div class="form-group w-100">
-                  <label className="text-light-dark font-size-14 font-weight-500">
-                    ROLE
-                  </label>
-                  <Select
-                    onChange={(e) =>
-                      props.setSubscriberData({
-                        ...props.subscriberData,
-                        roles: e,
-                      })
-                    }
-                    styles={customStyle}
-                    getOptionLabel={(option) => `${option.label}`}
-                    value={props.subscriberData.roles}
-                    options={props.roles}
-                  />
-                  <div className="css-w8dmq8">*Mandatory</div>
                 </div>
               </div>
             </div>
@@ -245,18 +373,14 @@ const AddCustomerModal = (props) => {
             <button
               type="button"
               className="btn text-white bg-primary"
-              onClick={
-                props.title === "Add User" ? props.addUser : props.updateUser
-              }
+              onClick={handleAddUpdateCustomer}
               disabled={
                 !(
-                  props.subscriberData.email &&
-                  (props.title === "Add User"
-                    ? props.subscriberData.password
-                    : true) &&
-                  props.subscriberData.roles &&
-                  props.subscriberData.firstName &&
-                  props.subscriberData.lastName
+                  record.customerType &&
+                  record.firstName &&
+                  record.lastName &&
+                  record.email &&
+                  record.contactType
                 )
               }
             >
