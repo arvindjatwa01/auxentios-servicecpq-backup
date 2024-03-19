@@ -199,16 +199,16 @@ export const partsSearch = [
 
 export const laborOptions = [
   { value: "A", label: "By internal or external" },
-  { value: "B", label: "Service code" },
-  { value: "C", label: "Description" },
-  { value: "D", label: "Labor type" },
+  // { value: "B", label: "Service code" },
+  // { value: "C", label: "Description" },
+  { value: "B", label: "Labor type" },
 ];
 
 export const serviceOptions = [
-  { value: "A", label: "By internal or external" },
-  { value: "B", label: "Service code" },
-  { value: "C", label: "Description" },
-  { value: "D", label: "Labor type" },
+  // { value: "A", label: "By internal or external" },
+  { value: "activityId", label: "Service code" },
+  { value: "activityDescription", label: "Description" },
+  // { value: "D", label: "Labor type" },
 ];
 
 export const customerSearchOptions = [

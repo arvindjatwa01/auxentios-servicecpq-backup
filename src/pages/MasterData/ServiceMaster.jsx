@@ -10,14 +10,24 @@ import { Stack } from "@mui/material";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 
+import LoadingProgress from "pages/Repair/components/Loader";
 import EquipmentSearchMaster from "./EquipmentSearchMaster";
 import SearchListMaster from "./SearchListMaster";
 import WithoutSearchDataTable from "./WithoutSearchDataTable";
 import LabourAndServiceReport from "./LabourAndServiceMaster/LabourAndServiceReport";
+import ServiceMasterSearchList from "./LabourAndServiceMaster/ServiceMasterSearchList";
+import { service_search_uri, External_PRICE } from "services/CONSTANTS";
+import { API_SUCCESS } from "services/ResponseCode";
+import { callGetApi } from "services/ApiCaller";
 import {
   LABOUR_AND_SERVICE_ERP_DETAILS,
   LABOUR_AND_SERVICE_PRICE_DETAILS,
+  SEARCH_FLAG_SERVICE,
+  SERVICE_PRICE_DETAILS
 } from "./equipmentMasterConstants";
+import { isEmpty } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/textUtilities";
+import { ReadOnlyField } from "pages/Repair/components/ReadOnlyField";
+
 
 const tempdata = [
   {
@@ -250,6 +260,24 @@ const dummyPriceDeatilsData = [
   },
 ];
 
+const dummyServiceData = {
+  "id": 1,
+  "activityId": "AC01",
+  "activityDescription": "Chroming",
+  "activityType": "Purchase",
+  "longDescription": "Description 1",
+  "dimension1": "4 X 5 X 6 Chromes",
+  "dimension2": "",
+  "supplyingVendorCode": "103456",
+  "supplyingVendorName": "Test Agency -1",
+  "contractedPrice": 600,
+  "validFrom": "2021-01-01",
+  "validTo": "2024-01-01",
+  "createdAt": null,
+  "updatedAt": null,
+  "createdBy": null,
+  "updatedBy": null
+}
 const ServiceMaster = () => {
   const [bundleItems, setBundleItems] = useState([...tempdata]);
 
@@ -271,6 +299,11 @@ const ServiceMaster = () => {
   ]);
   const [erpItemsService, setErpItemsService] = useState([...erpservicedata]);
   const [value, setValue] = React.useState("1");
+  const [searchList, setSearchList] = useState([])
+  const [searchedService, setSearchedService] = useState({ ...dummyServiceData });
+  const [loading, setLoading] = useState(false);
+  const [selectedServiceId, setSelectedServiceId] = useState(null);
+  const [searchedServicePriceDetails, setSearchedServicePriceDetails] = useState([]);
 
   useEffect(() => {
     if (!showModal) {
@@ -396,6 +429,148 @@ const ServiceMaster = () => {
       ),
     },
   ];
+  // const priceServiceColumns = [
+  //   {
+  //     name: (
+  //       <>
+  //         <div>Activity ID</div>
+  //       </>
+  //     ),
+  //     selector: (row) => row.itemName,
+  //     wrap: true,
+  //     sortable: true,
+  //     format: (row) => row.itemName,
+  //   },
+  //   {
+  //     name: (
+  //       <>
+  //         <div>Activity Name</div>
+  //       </>
+  //     ),
+  //     selector: (row) => row.itemDescription,
+  //     wrap: true,
+  //     sortable: true,
+  //     format: (row) => row.itemDescription,
+  //   },
+
+  //   {
+  //     name: (
+  //       <>
+  //         <div>Supplying Vendor</div>
+  //       </>
+  //     ),
+  //     selector: (row) => row?.itemHeaderStrategy,
+  //     wrap: true,
+  //     sortable: true,
+  //     format: (row) => row?.itemHeaderStrategy,
+  //     // minWidth: "150px",
+  //     // maxWidth: "150px",
+  //   },
+  //   {
+  //     name: (
+  //       <>
+  //         <div>Unit Of Measure</div>
+  //       </>
+  //     ),
+  //     selector: (row) => row?.taskType,
+  //     wrap: true,
+  //     sortable: true,
+  //     format: (row) => row?.taskType,
+  //   },
+  //   {
+  //     name: (
+  //       <>
+  //         <div>Unit Price</div>
+  //       </>
+  //     ),
+  //     selector: (row) => row?.quantity,
+  //     wrap: true,
+  //     sortable: true,
+  //     format: (row) => row?.quantity,
+  //   },
+  //   {
+  //     name: (
+  //       <>
+  //         <div>Currency</div>
+  //       </>
+  //     ),
+  //     selector: (row) => row?.recommendedValue,
+  //     wrap: true,
+  //     sortable: true,
+  //     format: (row) => row?.recommendedValue,
+  //   },
+  //   {
+  //     name: (
+  //       <>
+  //         <div>Start Date</div>
+  //       </>
+  //     ),
+  //     selector: (row) => row?.recommendedValue,
+  //     wrap: true,
+  //     sortable: true,
+  //     format: (row) => row?.recommendedValue,
+  //   },
+  //   {
+  //     name: (
+  //       <>
+  //         <div>End Date</div>
+  //       </>
+  //     ),
+  //     selector: (row) => row?.recommendedValue,
+  //     wrap: true,
+  //     sortable: true,
+  //     format: (row) => row?.recommendedValue,
+  //   },
+  //   {
+  //     name: (
+  //       <>
+  //         <div>Effective From</div>
+  //       </>
+  //     ),
+  //     selector: (row) => row?.recommendedValue,
+  //     wrap: true,
+  //     sortable: true,
+  //     format: (row) => row?.recommendedValue,
+  //   },
+  //   {
+  //     name: (
+  //       <>
+  //         <div>Last Updated</div>
+  //       </>
+  //     ),
+  //     selector: (row) => row?.recommendedValue,
+  //     wrap: true,
+  //     sortable: true,
+  //     format: (row) => row?.recommendedValue,
+  //   },
+  //   {
+  //     name: (
+  //       <>
+  //         <div>Actions</div>
+  //       </>
+  //     ),
+  //     wrap: true,
+  //     sortable: true,
+  //     cell: (row) => (
+  //       <div
+  //         className="d-flex justify-content-center align-items-center row-svg-div"
+  //         style={{ minWidth: "180px !important" }}
+  //       >
+  //         <EditOutlinedIcon
+  //           className="mr-1"
+  //           onClick={() =>
+  //             handleShowReportDetails(
+  //               "Price Details",
+  //               LABOUR_AND_SERVICE_ERP_DETAILS,
+  //               row
+  //             )
+  //           }
+  //         />
+  //         <DeleteOutlineOutlinedIcon />
+  //       </div>
+  //     ),
+  //   },
+  // ];
   const priceServiceColumns = [
     {
       name: (
@@ -403,10 +578,10 @@ const ServiceMaster = () => {
           <div>Activity ID</div>
         </>
       ),
-      selector: (row) => row.itemName,
+      selector: (row) => row.code,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemName,
+      format: (row) => row.code,
     },
     {
       name: (
@@ -414,10 +589,11 @@ const ServiceMaster = () => {
           <div>Activity Name</div>
         </>
       ),
-      selector: (row) => row.itemDescription,
+      selector: (row) => row.description,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemDescription,
+      format: (row) => row.description,
+      width: '100px',
     },
 
     {
@@ -426,10 +602,11 @@ const ServiceMaster = () => {
           <div>Supplying Vendor</div>
         </>
       ),
-      selector: (row) => row?.itemHeaderStrategy,
+      selector: (row) => row?.vendorName,
       wrap: true,
       sortable: true,
-      format: (row) => row?.itemHeaderStrategy,
+      format: (row) => row?.vendorName,
+      width: "90px",
       // minWidth: "150px",
       // maxWidth: "150px",
     },
@@ -439,10 +616,10 @@ const ServiceMaster = () => {
           <div>Unit Of Measure</div>
         </>
       ),
-      selector: (row) => row?.taskType,
+      selector: (row) => row?.unit,
       wrap: true,
       sortable: true,
-      format: (row) => row?.taskType,
+      format: (row) => row?.unit,
     },
     {
       name: (
@@ -450,10 +627,10 @@ const ServiceMaster = () => {
           <div>Unit Price</div>
         </>
       ),
-      selector: (row) => row?.quantity,
+      selector: (row) => row?.price,
       wrap: true,
       sortable: true,
-      format: (row) => row?.quantity,
+      format: (row) => row?.price,
     },
     {
       name: (
@@ -461,10 +638,11 @@ const ServiceMaster = () => {
           <div>Currency</div>
         </>
       ),
-      selector: (row) => row?.recommendedValue,
+      selector: (row) => row?.currency,
       wrap: true,
       sortable: true,
-      format: (row) => row?.recommendedValue,
+      format: (row) => row?.currency,
+      width: "100px"
     },
     {
       name: (
@@ -472,10 +650,10 @@ const ServiceMaster = () => {
           <div>Start Date</div>
         </>
       ),
-      selector: (row) => row?.recommendedValue,
+      selector: (row) => row?.validFrom,
       wrap: true,
       sortable: true,
-      format: (row) => row?.recommendedValue,
+      format: (row) => row?.validFrom,
     },
     {
       name: (
@@ -483,33 +661,33 @@ const ServiceMaster = () => {
           <div>End Date</div>
         </>
       ),
-      selector: (row) => row?.recommendedValue,
+      selector: (row) => row?.validTo,
       wrap: true,
       sortable: true,
-      format: (row) => row?.recommendedValue,
+      format: (row) => row?.validTo,
     },
-    {
-      name: (
-        <>
-          <div>Effective From</div>
-        </>
-      ),
-      selector: (row) => row?.recommendedValue,
-      wrap: true,
-      sortable: true,
-      format: (row) => row?.recommendedValue,
-    },
-    {
-      name: (
-        <>
-          <div>Last Updated</div>
-        </>
-      ),
-      selector: (row) => row?.recommendedValue,
-      wrap: true,
-      sortable: true,
-      format: (row) => row?.recommendedValue,
-    },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Effective From</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row?.createdAt,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row?.createdAt,
+    // },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Last Updated</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row?.updatedAt,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row?.updatedAt,
+    // },
     {
       name: (
         <>
@@ -528,7 +706,8 @@ const ServiceMaster = () => {
             onClick={() =>
               handleShowReportDetails(
                 "Price Details",
-                LABOUR_AND_SERVICE_ERP_DETAILS,
+                // LABOUR_AND_SERVICE_ERP_DETAILS,
+                SERVICE_PRICE_DETAILS,
                 row
               )
             }
@@ -608,12 +787,56 @@ const ServiceMaster = () => {
     setGlobalLaborList(updatedGlobalLaborList);
   };
   const viewServiceDetails = (id) => {
-    const _globalServiceList = [...globalServiceList];
-    const updatedGlobalServiceList = _globalServiceList.map((data) => ({
-      ...data,
-      active: data.id === id ? true : false,
-    }));
-    setGlobalServiceList(updatedGlobalServiceList);
+    // const _globalServiceList = [...globalServiceList];
+    // const updatedGlobalServiceList = _globalServiceList.map((data) => ({
+    //   ...data,
+    //   active: data.id === id ? true : false,
+    // }));
+    // setGlobalServiceList(updatedGlobalServiceList);
+    const serviceReqUrl = `${service_search_uri}${id}`;
+    const searchpricedetailsurl = `${External_PRICE}${id}`;
+    console.log(searchpricedetailsurl);
+    setSelectedServiceId(id);
+    setServicePageNo(1);
+    setLoading(true);
+
+    // console.log(serviceReqUrl);
+    callGetApi(
+      null,
+      serviceReqUrl,
+      (response) => {
+        if (response.status === API_SUCCESS) {
+          const responseData = response.data;
+          setSearchedService(responseData);
+
+        } else {
+
+        }
+      },
+      (error) => {
+
+      }
+    );
+    callGetApi(
+      null,
+      searchpricedetailsurl,
+      (response) => {
+        if (response.status === API_SUCCESS) {
+          const responseData = response.data;
+          setSearchedServicePriceDetails(responseData);
+          setSearchedServicePriceDetails(prevState => ({
+            ...prevState,
+            vendorName: searchedService.supplyingVendorName,
+          }));
+          setLoading(false);
+        } else {
+          setLoading(false);
+        }
+      },
+      (error) => {
+        setLoading(false);
+      }
+    );
   };
 
   // Labor page 1 details
@@ -785,49 +1008,54 @@ const ServiceMaster = () => {
       <>
         <div className="bg-white p-3 border-radius-10 overflow-hidden br-t">
           <div className="row align-items-end">
+            {/* <ReadOnlyField className={"col-lg-4 col-md-4 col-sm-6 col-12"} label={"ACTIVITY ID"} value={searchedService.activityId}/> */}
             <div className="col-lg-4 col-md-4 col-sm-6 col-12">
               <div className="d-block">
                 <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                  Activity Id
+                  ACTIVITY ID
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500">
-                  Full Core Deposit
+                  {isEmpty(searchedService.activityId) ? "N/A" : searchedService.activityId.toUpperCase()}
                 </p>
               </div>
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6 col-12">
               <div className="d-block">
                 <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                  Activity Name
+                  {/* Activity Name */}
+                  ACTIVITY NAME
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500">
-                  Reman
+                  {isEmpty(searchedService.activityDescription) ? "N/A" : searchedService.activityDescription.toUpperCase()}
                 </p>
               </div>
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
               <div className="d-block">
                 <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                  Activity Description
+                  {/* Activity Description */}
+                  ACTIVITY DESCRIPTION
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500">
-                  Active
+                  {isEmpty(searchedService.longDescription) ? "N/A" : searchedService.longDescription.toUpperCase()}
                 </p>
               </div>
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
               <div className="d-block">
                 <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                  Supplying Vendor
+                  {/* Supplying Vendor */}
+                  SUPPLYING VENDOR
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500">
-                  Caterpillar
+                  {isEmpty(searchedService.supplyingVendorName) ? "N/A" : searchedService.supplyingVendorName.toUpperCase()}
                 </p>
               </div>
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                Unit Of Measure
+                {/* Unit Of Measure */}
+                UNIT OF MEASURE
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
                 336D2 L
@@ -836,7 +1064,8 @@ const ServiceMaster = () => {
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
               <div className="d-block">
                 <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                  Estimated Hours/Days
+                  {/* Estimated Hours/Days */}
+                  ESTIMATED HOURS/DAYS
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500">
                   3620656
@@ -846,10 +1075,11 @@ const ServiceMaster = () => {
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
               <div className="d-block">
                 <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                  Activity Dimensions
+                  {/* Activity Dimensions */}
+                  ACTIVITY DIMENSIONS
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500">
-                  REMAN
+                  {isEmpty(searchedService.dimension1) ? "N/A" : searchedService.dimension1.toUpperCase()}
                 </p>
               </div>
             </div>
@@ -859,7 +1089,8 @@ const ServiceMaster = () => {
           <div className="row">
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                Model
+                {/* Model */}
+                MODEL
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
                 AA: 0S1619
@@ -867,7 +1098,8 @@ const ServiceMaster = () => {
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                Family
+                {/* Family */}
+                FAMILY
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
                 AA: 0S1619
@@ -875,7 +1107,8 @@ const ServiceMaster = () => {
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                Customer
+                {/* Customer */}
+                CUSTOMER
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
                 AA: 0S1619
@@ -883,7 +1116,8 @@ const ServiceMaster = () => {
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                Related Job Code
+                {/* Related Job Code */}
+                RELATED JOB CODE
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
                 $ 90534
@@ -891,7 +1125,8 @@ const ServiceMaster = () => {
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                Related Component Code
+                {/* Related Component Code */}
+                RELATED COMPONENT CODE
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
                 Stock
@@ -908,9 +1143,15 @@ const ServiceMaster = () => {
     return (
       <>
         <h6 className="font-weight-500 pl-2 mt-5">Price</h6>
-        <WithoutSearchDataTable
+        {/* <WithoutSearchDataTable
           columns={priceServiceColumns}
           data={bundleItems}
+          title="Price Details"
+          showAddBtn={true}
+        /> */}
+        <WithoutSearchDataTable
+          columns={priceServiceColumns}
+          data={[searchedServicePriceDetails]}
           title="Price Details"
           showAddBtn={true}
         />
@@ -985,40 +1226,55 @@ const ServiceMaster = () => {
                 <p className="mb-1 mt-4 font-size-12">
                   Select the search criteria for equipment
                 </p>
-                <EquipmentSearchMaster falgType="service" />
+                <EquipmentSearchMaster falgType="service" searchFlag={SEARCH_FLAG_SERVICE} setSearchList={setSearchList} />
                 <div className="row mt-3">
-                  <SearchListMaster
+                  {/* <SearchListMaster
                     searchList={globalServiceList}
                     viewEquipmentDetails={viewServiceDetails}
-                  />
+                  />*/}
+                  {searchList.length !== 0 &&
+                    <ServiceMasterSearchList
+                      searchList={searchList}
+                      viewEquipmentDetails={viewServiceDetails}
+                    />
+                  }
                   <div className="col-xl-8 col-lg-7 col-md-12 col-sm-12 equipment-master-chart mt-custom">
-                    <div className="">
-                      <div className="bg-white p-3 border-radius-10 ">
-                        <div className="d-flex align-items-center justify-content-between equipment-pagination">
-                          <h5 className="font-weight-600 mb-0">Machining</h5>
-                          <Stack spacing={2}>
-                            <Pagination
-                              boundaryCount={0}
-                              siblingCount={0}
-                              shape="rounded"
-                              hidePrevButton={servicePageNo === 1 && true}
-                              hideNextButton={servicePageNo === 2 && true}
-                              count={2}
-                              page={servicePageNo}
-                              onChange={handleServicePageChange}
-                            />
-                          </Stack>
-                        </div>
-                        <div className="d-block mt-3">
-                          <h6 className="text-primary font-weight-600">AC01</h6>
-                          <p className="text-light-60 font-size-12 mb-0">
-                            Description 3 - Test Agency 3
-                          </p>
-                        </div>
-                      </div>
-                      {servicePageNo === 1 && viewServicePage_1()}
-                      {servicePageNo === 2 && viewServicePage_2()}
-                    </div>
+                    {loading ? (
+                      <LoadingProgress />
+                    ) : (
+                      <>
+                        {selectedServiceId && (<>
+                          <div className="">
+                            <div className="bg-white p-3 border-radius-10 ">
+                              <div className="d-flex align-items-center justify-content-between equipment-pagination">
+                                <h5 className="font-weight-600 mb-0">Machining</h5>
+                                <Stack spacing={2}>
+                                  <Pagination
+                                    boundaryCount={0}
+                                    siblingCount={0}
+                                    shape="rounded"
+                                    hidePrevButton={servicePageNo === 1 && true}
+                                    hideNextButton={servicePageNo === 2 && true}
+                                    count={2}
+                                    page={servicePageNo}
+                                    onChange={handleServicePageChange}
+                                  />
+                                </Stack>
+                              </div>
+                              <div className="d-block mt-3">
+                                <h6 className="text-primary font-weight-600">{searchedService.activityId.toUpperCase()}</h6>
+                                <p className="text-light-60 font-size-12 mb-0">
+                                  {searchedService.longDescription.toUpperCase()} - {searchedService.supplyingVendorName.toUpperCase()}
+                                </p>
+                              </div>
+                            </div>
+                            {servicePageNo === 1 && viewServicePage_1()}
+                            {servicePageNo === 2 && viewServicePage_2()}
+                          </div>
+
+                        </>)}
+
+                      </>)}
                   </div>
                 </div>
               </TabPanel>
@@ -1032,7 +1288,7 @@ const ServiceMaster = () => {
           hideModal={() => setShowModal(false)}
           headerTitle={modelHeaderTitle}
           contentReportType={modelContentReportType}
-          contetntReportObj={modelContentReportObj}
+          contentReportObj={modelContentReportObj}
         />
       )}
       {/* {showModal && (
