@@ -50,6 +50,11 @@ const addressDTOObj = {
   updatedBy: "",
 };
 
+const customerTypeOption = [
+  { label: "Partner", value: "P" },
+  { label: "Customer", value: "C" },
+];
+
 const AddCustomerModal = (props) => {
   let fontColor = "#872ff7 !important";
   const customStyle = {
@@ -197,12 +202,13 @@ const AddCustomerModal = (props) => {
                       setRecord({
                         ...record,
                         customerType: e,
+                        customerId: "",
                       })
                     }
                     styles={customStyle}
                     getOptionLabel={(option) => `${option.label}`}
                     value={record.customerType}
-                    options={props.dealerTypes}
+                    options={customerTypeOption}
                   />
                   <div className="css-w8dmq8">*Mandatory</div>
                 </div>
@@ -248,6 +254,10 @@ const AddCustomerModal = (props) => {
                     value={record.customerId}
                     onChange={handleInputValueChange}
                     className="form-control border-radius-10 text-primary"
+                    disabled={
+                      record.customerType === "" ||
+                      record.customerType?.value === "P"
+                    }
                   />
                 </div>
               </div>
