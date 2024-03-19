@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
 
 import Pagination from "@mui/material/Pagination";
-import { Box, Divider, Grid, Stack, Tab, TextField } from "@mui/material";
+import { Box, Divider, Grid, Stack, Tab, TextField ,PaginationItem} from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import Switch from "@mui/material/Switch";
-
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import Select from "react-select";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { MobileDatePicker } from "@mui/x-date-pickers";
+
 import $ from "jquery";
 
 import { callGetApi, callPutApi } from "services/ApiCaller";
@@ -58,6 +58,8 @@ import { getFormatDateTime } from "pages/PortfolioAndBundle/newCreatePortfolioDa
 import { FONT_STYLE, FONT_STYLE_SELECT } from "pages/Repair/CONSTANTS";
 import { getWarratyComponentData } from "services/warrantyServices";
 import EquipmentRecordModal from "pages/use-case-2/EquipmentRecordModal";
+import UploadFilesModal from "./warrantyMaster/UploadFilesModal";
+import EquipmentServiceModal from "./EquipmentServiceModal";
 
 const EquipmentMaster = () => {
   const [showModal, setShowModal] = useState(false);
@@ -211,6 +213,10 @@ const EquipmentMaster = () => {
   const [severity, setSeverity] = useState("");
   const [openSnack, setOpenSnack] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
+
+  const [showSignatureModal, setShowSignatureModal] = useState(false);
+  const [showService, setShowService] = useState(false);
+
   const handleSnackBarClose = (event, reason) => {
     if (reason === "clickaway") {
       return;
@@ -231,6 +237,24 @@ const EquipmentMaster = () => {
       setModelContentReportObj(null);
     }
   }, [showModal]);
+
+  //Pagination Code
+
+  const [displayedPages, setDisplayedPages] = useState([1, 2, 3]);
+  const totalPage = 7;
+  useEffect(() => {
+    const calculateDisplayedPages = () => {
+      if (pageNo === 1) {
+        setDisplayedPages([1, 2, 3]);
+      } else if (pageNo === totalPage) {
+        setDisplayedPages([totalPage - 2, totalPage - 1, totalPage]);
+      } else {
+        setDisplayedPages([pageNo - 1, pageNo, pageNo + 1]);
+      }
+    };
+
+    calculateDisplayedPages();
+  }, [pageNo, totalPage]);
 
   const handlePageChange = (event, value) => {
     setPageNo(value);
@@ -346,6 +370,11 @@ const EquipmentMaster = () => {
     setShowWarrantyOverviewModal(!showWarrantyOverviewModal);
     setShowUploadFilesModal(!showUploadFilesModal);
   };
+
+  const handleSignautreUploadModal = () => {
+    setShowSignatureModal(!showSignatureModal);
+    setShowService(!showService);
+  }
 
   // Contrect detauls columns
   const contractDetailsColumns = [
@@ -965,11 +994,12 @@ const EquipmentMaster = () => {
           <EditOutlinedIcon
             className="mr-1"
             onClick={() =>
-              handleShowReportDetails(
-                "Service Report",
-                EQUIPMENT_SERVICE_REPORT_DETAILS,
-                row
-              )
+              // handleShowReportDetails(
+              //   "Service Report",
+              //   EQUIPMENT_SERVICE_REPORT_DETAILS,
+              //   row
+              // )
+              setShowService(true)
             }
           />
           <DeleteOutlineOutlinedIcon />
@@ -2367,7 +2397,19 @@ const EquipmentMaster = () => {
                               {`${selectEquipmentDetails.description}`}
                             </h5>
                             <Stack spacing={2}>
-                              <Pagination
+                            <Pagination
+                              count={totalPage}
+                              page={pageNo}
+                              onChange={handlePageChange}
+                              shape="rounded"
+                              renderItem={(item) => (
+                                <PaginationItem
+                                  {...item}
+                                  style={{ display: displayedPages.includes(item.page) ? 'block' : 'none' }}
+                                />
+                              )}
+                            />
+                              {/* <Pagination
                                 boundaryCount={0}
                                 siblingCount={0}
                                 shape="rounded"
@@ -2376,7 +2418,7 @@ const EquipmentMaster = () => {
                                 count={7}
                                 page={pageNo}
                                 onChange={handlePageChange}
-                              />
+                              /> */}
                             </Stack>
                           </div>
                           <div className="d-block mt-3">
@@ -2413,7 +2455,19 @@ const EquipmentMaster = () => {
           reportType={modelContentReportType}
         />
       )} */}
-
+      {showSignatureModal && (
+        <UploadFilesModal
+          show={showSignatureModal}
+          hideModal={handleSignautreUploadModal}
+        />
+      )}
+       {showService && (
+        <EquipmentServiceModal
+          show={showService}
+          hideModal={() => setShowService(false)}
+          handleSignautreUploadModal={handleSignautreUploadModal}
+        />
+      )}
       {showModal && (
         <EquipmentReportDetail
           show={showModal}

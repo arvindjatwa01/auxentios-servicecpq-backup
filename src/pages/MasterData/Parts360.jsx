@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import Pagination from "@mui/material/Pagination";
-import { Stack } from "@mui/material";
+import { PaginationItem, Stack } from "@mui/material";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import Box from "@mui/material/Box";
@@ -115,7 +115,17 @@ const warrentydata = [
     servicePrice: "5879.24",
   },
 ];
-
+const partsPriceData={
+  groupNumber: "3620566",
+  type: "reman",
+  partNumber: "OR6158",
+  salesUnit: "PC",
+  quantity: "1.00",
+  price: "498.00",
+  currency: "USD",
+  validFrom: "44481",
+  validTo: "45291",
+}
 const Parts360 = () => {
   const [bundleItems, setBundleItems] = useState([
     {
@@ -127,19 +137,7 @@ const Parts360 = () => {
       price: "0",
     },
   ]);
-  const [partsPriceDetails, setPartsPriceDetails] = useState([
-    {
-      groupNumber: "3620566",
-      type: "reman",
-      partNumber: "OR6158",
-      salesUnit: "PC",
-      quantity: "1.00",
-      price: "498.00",
-      currency: "USD",
-      validFrom: "44481",
-      validTo: "45291",
-    },
-  ]);
+  const [partsPriceDetails, setPartsPriceDetails] = useState({...partsPriceData});
   const [partsERPPriceDetails, setPartsERPPriceDetails] = useState([
     {
       erpCondition: "C12345",
@@ -180,6 +178,23 @@ const Parts360 = () => {
     }
   }, [showModal]);
 
+  //pagination code
+  const [displayedPages, setDisplayedPages] = useState([1, 2, 3]);
+  const totalPage = 4;
+  useEffect(() => {
+    const calculateDisplayedPages = () => {
+      if (pageNo === 1) {
+        setDisplayedPages([1, 2, 3]);
+      } else if (pageNo === totalPage) {
+        setDisplayedPages([totalPage - 2, totalPage - 1, totalPage]);
+      } else {
+        setDisplayedPages([pageNo - 1, pageNo, pageNo + 1]);
+      }
+    };
+
+    calculateDisplayedPages();
+  }, [pageNo, totalPage]);
+
   // handle Page change
   const handlePageChange = (event, value) => {
     setPageNo(value);
@@ -188,6 +203,7 @@ const Parts360 = () => {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+
 
   // replaced by columns
   const replpacedItemColumns = [
@@ -556,6 +572,7 @@ const Parts360 = () => {
 
   // view select search parts details
   const handleViewDetails = (id) => {
+    
     setLoading(true);
     setPageNo(1);
     const rUrl = Get_Spare_Parts_Datails_By_Id_GET + id;
@@ -567,6 +584,15 @@ const Parts360 = () => {
           const responseData = response.data;
           setSelectedPartsId(id);
           setSelectedPartsDetails(responseData);
+          setPartsPriceDetails(prevState => ({
+            ...prevState, 
+            groupNumber:responseData.groupNumber,
+            type:responseData.partType,
+            price:responseData.listPrice,
+            salesUnit:responseData.salesUnit,
+            currency:responseData.currency,
+            partNumber:responseData.partNumber
+          }));    
           setLoading(false);
         } else {
           setLoading(false);
@@ -576,7 +602,9 @@ const Parts360 = () => {
         setLoading(false);
       }
     );
+    
   };
+  
 
   // view the detais for data table row
   const handleShowReportDetails = (title, reportType, row) => {
@@ -835,11 +863,11 @@ const Parts360 = () => {
             <Switch {...label} disabled size="small" />
           </div>
         </div>
-        {/* <EquipmentDataTable
+        <EquipmentDataTable
           columns={alternateItemColumns}
           data={bundleItems}
           title="Alternate Parts"
-        /> */}
+        />
         <div className="d-flex align-items-center mt-4">
           <h6 className="m-0 mr-2 font-weight-600">Reman or Refurb Option</h6>
           <div className="equipment-switch">
@@ -847,11 +875,11 @@ const Parts360 = () => {
             <Switch {...label} disabled size="small" />
           </div>
         </div>
-        {/* <EquipmentDataTable
+        <EquipmentDataTable
           columns={remanItemColumns}
           data={bundleItems}
           title="Reman or Refurb Option"
-        /> */}
+        />
       </>
     );
   };
@@ -915,7 +943,7 @@ const Parts360 = () => {
             </div>
             <WithoutSearchDataTable
               columns={priceItemColumns}
-              data={partsPriceDetails}
+              data={[partsPriceDetails]}
               title="Price Details"
               showAddBtn={true}
             />
@@ -974,7 +1002,7 @@ const Parts360 = () => {
             </div>
             <WithoutSearchDataTable
               columns={priceItemColumns}
-              data={partsPriceDetails}
+              data={[partsPriceDetails]}
               title="Price Details"
               showAddBtn={true}
             />
@@ -1036,12 +1064,24 @@ const Parts360 = () => {
                       <div className="bg-white p-3 border-radius-10 ">
                         <div className="d-flex align-items-center justify-content-between equipment-pagination">
                           <h5 className="font-weight-600 mb-0">
-                          {!isEmpty(selectedPartsDetails.partDescription) &&
+                            {!isEmpty(selectedPartsDetails.partDescription) &&
                               selectedPartsDetails.partDescription}
                             {/* Turbocharger Catridge - Reman */}
                           </h5>
                           <Stack spacing={2}>
                             <Pagination
+                              count={totalPage}
+                              page={pageNo}
+                              onChange={handlePageChange}
+                              shape="rounded"
+                              renderItem={(item) => (
+                                <PaginationItem
+                                  {...item}
+                                  style={{ display: displayedPages.includes(item.page) ? 'block' : 'none' }}
+                                />
+                              )}
+                            />
+                            {/* <Pagination
                               boundaryCount={0}
                               siblingCount={0}
                               shape="rounded"
@@ -1050,7 +1090,7 @@ const Parts360 = () => {
                               count={4}
                               page={pageNo}
                               onChange={handlePageChange}
-                            />
+                            /> */}
                           </Stack>
                         </div>
                         <div className="d-block mt-3">

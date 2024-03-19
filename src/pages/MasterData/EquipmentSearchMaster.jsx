@@ -14,6 +14,7 @@ import {
   SEARCH_FLAG_CONSUMABLE,
   SEARCH_FLAG_CUSTOMER,
   SEARCH_FLAG_PARTS,
+  SEARCH_FLAG_SERVICE,
   consumableSearchOptions,
   customerSearchOptions,
   equipmentSearchOptions,
@@ -25,6 +26,7 @@ import {
   SEARCH_CUSTOMER_MASTER,
   SEARCH_EQUIPMENT,
   SEARCH_SPARC_PART,
+  SEARCH_EXTWORK,
 } from "services/CONSTANTS";
 import { API_SUCCESS } from "services/ResponseCode";
 import { isEmpty } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/textUtilities";
@@ -90,6 +92,8 @@ const EquipmentSearchMaster = ({ falgType, searchFlag, setSearchList }) => {
             dropdownReqUrl = SEARCH_CUSTOMER_MASTER(searchString);
           } else if (searchFlag === SEARCH_FLAG_CONSUMABLE) {
             dropdownReqUrl = SEARCH_CONSUMABLE_MASTER(searchString);
+          } else if(searchFlag===SEARCH_FLAG_SERVICE){
+            dropdownReqUrl=SEARCH_EXTWORK(searchString);
           } else {
             dropdownReqUrl = "";
           }
@@ -196,13 +200,16 @@ const EquipmentSearchMaster = ({ falgType, searchFlag, setSearchList }) => {
         let reqUrl = "";
         if (searchFlag === SEARCH_FALG_EQUIPMENT) {
           reqUrl = SEARCH_EQUIPMENT(searchStr);
+          console.log(reqUrl);
         } else if (searchFlag === SEARCH_FLAG_PARTS) {
           reqUrl = SEARCH_SPARC_PART(searchStr);
         } else if (searchFlag === SEARCH_FLAG_CUSTOMER) {
           reqUrl = SEARCH_CUSTOMER_MASTER(searchStr);
         } else if (searchFlag === SEARCH_FLAG_CONSUMABLE) {
           reqUrl = SEARCH_CONSUMABLE_MASTER(searchStr);
-        } else {
+        } else if(searchFlag===SEARCH_FLAG_SERVICE){
+          reqUrl=SEARCH_EXTWORK(searchStr);
+        }else {
           reqUrl = "";
         }
         callGetApi(null, reqUrl, (response) => {
@@ -297,6 +304,7 @@ const EquipmentSearchMaster = ({ falgType, searchFlag, setSearchList }) => {
                               {searchFlag === SEARCH_FALG_EQUIPMENT ||
                               searchFlag === SEARCH_FLAG_PARTS ||
                               searchFlag === SEARCH_FLAG_CUSTOMER ||
+                              searchFlag===SEARCH_FLAG_SERVICE ||
                               searchFlag === SEARCH_FLAG_CONSUMABLE
                                 ? currentItem[searchFiled.selectCategory.value]
                                 : currentItem}

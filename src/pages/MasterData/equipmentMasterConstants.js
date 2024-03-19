@@ -2,6 +2,7 @@ export const SEARCH_FALG_EQUIPMENT = "EQUIPMENT";
 export const SEARCH_FLAG_PARTS = "PARTS";
 export const SEARCH_FLAG_CUSTOMER = "CUSTOMER";
 export const SEARCH_FLAG_CONSUMABLE = "CONSUMABLE";
+export const SEARCH_FLAG_SERVICE= "SERVICE";
 
 // Model Content Type
 // Equipment Master
@@ -26,6 +27,7 @@ export const SPARE_PARTS_WARRENTY_DETAILS = "SPARE_PARTS_WARRANTY_DETAILS";
 export const LABOUR_AND_SERVICE_PRICE_DETAILS =
   "LABOUR_AND_SERVICE_PRICE_DETAILS";
 export const LABOUR_AND_SERVICE_ERP_DETAILS = "LABOUR_AND_SERVICE_ERP_DETAILS";
+export const SERVICE_PRICE_DETAILS="SERVICE_PRICE_DETAILS";
 
 // Error occurred while fetching spare parts!
 export const INPUT_SEARCH_ERROR_MESSAGE = "Please fill current search criteria";
