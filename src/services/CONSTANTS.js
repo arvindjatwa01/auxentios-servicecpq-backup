@@ -20,6 +20,7 @@ const DATA_SERVICE_URI = BASE_URL + "data-svc/api/v1/";
 const REPAIR_BUILDER_URI = BASE_URL + "repair-builder-svc/v1/";
 const COMMON_SERVICE_URI = BASE_URL + "common-svc/v1/";
 const WARRANTY_CLAIM_URI = BASE_URL + "warranty-claim-svc/v1/";
+const WARRANTY_URI = BASE_URL + "warranty-claim-svc/v1/";
 
 // search for coverage
 
@@ -649,3 +650,18 @@ const Service_serach_external_work=DATA_SERVICE_URI+'external-work/'
 export const service_search_uri=Service_serach_external_work
 const  External_Work_Price_Controller=PRICE_CONTROLLER_URI+'external-work-price/'
 export const External_PRICE=External_Work_Price_Controller
+
+export const CLAIM_MASTER_URL = WARRANTY_URI + "claim";
+export const WARRANTY_MASTER_URL = WARRANTY_URI + "warranty";
+export const WARRANTY_INSTALLER_MASTER_URL = WARRANTY_URI + "installer";
+export const CLAIM_VALUE_MASTER_URL = WARRANTY_URI + "claim_value";
+export const RELATED_HOURS_EXPENSES_MASTER_URL = WARRANTY_URI + "related_hours_expenses";
+export const SETTLEMENT_VALUE_MASTER_URL = WARRANTY_URI + "settlement_value";
+export const RELATED_PARTS_MASTER_URL = WARRANTY_URI + "relatedParts";
+export const EVALUATION_PARTS_MASTER_URL = WARRANTY_URI + "evaluation/parts";
+export const WARRANTY_EQUIPMENT_MASTER_URL = WARRANTY_URI + "equipment";
+export const WARRANTY_RETURN_MASTER_URL = WARRANTY_URI + "warrantyReturn"; 
+export const SHIPMENT_PARTS_MASTER_URL = WARRANTY_URI + "shipment/parts"
+export const PARTS_HEADER_MASTER_URL = WARRANTY_URI + "partsHeader"
+export const SHIPPING_INFO_MASTER_URL = WARRANTY_URI + "shippingInfo";
+export const SHIPMENT_HEADER_MASTER_URL = WARRANTY_URI + "shipmentHeader";
