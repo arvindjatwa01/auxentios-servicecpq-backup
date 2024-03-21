@@ -112,6 +112,7 @@ const ClaimRequestModal = ({
   const [settlementValueId, setSettlementValueId] = useState(null);
   const [relatedPartsId, setRelatedPartsId] = useState(null);
   const [relatedPartsRecords, setRelatedPartsRecords] = useState([]);
+  const [coverageTypeValue, setCoverageTypeValue] = useState("");
 
   const [viewOnlyTab, setViewOnlyTab] = useState({
     generalViewOnly: false,
@@ -3459,6 +3460,8 @@ const ClaimRequestModal = ({
                     claimValueId={claimValueId}
                     setClaimValueId={setClaimValueId}
                     claimOrderId={claimOrderId}
+                    relatedPartsRecords={relatedPartsRecords}
+                    setCoverageTypeValue={setCoverageTypeValue}
                   />
                 )}
 
@@ -3484,6 +3487,7 @@ const ClaimRequestModal = ({
                     setRelatedHEId={setRelatedHEId}
                     claimOrderId={claimOrderId}
                     claimNumber={claimNumber}
+                    coverageTypeValue={coverageTypeValue}
                   />
                 )}
 

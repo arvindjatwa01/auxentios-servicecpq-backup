@@ -15,7 +15,6 @@ import { Modal } from "react-bootstrap";
 import Select from "react-select";
 import Moment from "react-moment";
 
-import { FONT_STYLE, FONT_STYLE_SELECT } from "../../common/constants";
 import {
   equipmentAddressDtoObj,
   equipmentContractRecordsObj,
@@ -30,24 +29,20 @@ import {
   warrantyTypeOptions,
   yearlyWarrantyObj,
 } from "../warrantyManagementConstants";
-import {
-  customerSearch,
-  machineSearch,
-} from "../../../services/searchServices";
-import { ReadOnlyField } from "../../common/ReadOnlyField";
-import SearchBox from "../../common/SearchBox";
-import {
-  callGetApi,
-  callPostApi,
-  callPutApi,
-} from "../../../services/ApiCaller";
+
+import { FONT_STYLE, FONT_STYLE_SELECT } from "pages/Common/constants";
+import { ReadOnlyField } from "pages/Common/ReadOnlyField";
+import SearchBox from "pages/Common/SearchBox";
+
 import {
   DATA_SVC_EQUIPMENT,
   WARRANTY_INSTALLER_MASTER_URL,
   WARRANTY_MASTER_URL,
   Warranty_Yearly_GetById_GET,
-} from "../../../services/CONSTANTS";
-import { API_SUCCESS } from "../../../services/ResponseCode";
+} from "services/CONSTANTS";
+import { API_SUCCESS } from "services/ResponseCode";
+import { customerSearch, machineSearch } from "services/searchServices";
+import { callGetApi, callPostApi, callPutApi } from "services/ApiCaller";
 
 const equipmentObj = {
   equipmentId: "",
@@ -613,7 +608,7 @@ const EquipmentEnrollModal = ({
         <Modal.Title className="mb-2">
           {recordId ? "Update " : "Registered New "}Equipment and Warranty
         </Modal.Title>
-        <div className="card border px-2 py-1">
+        <div className="card border px-2 py-1 mb-0">
           <Box className="mt-0" sx={{ width: "100%", typography: "body1" }}>
             <TabContext value={tabValue}>
               <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
@@ -627,10 +622,13 @@ const EquipmentEnrollModal = ({
               </Box>
               <TabPanel
                 value="productData"
-                sx={{ paddingTop: recordId ? 0.3 : 1.5 }}
+                sx={{ paddingTop: recordId ? 0.3 : 1.5, paddingBottom: 1 }}
               >
                 {recordId && (
-                  <div className="row my-2 mx-1" style={{ justifyContent: "right" }}>
+                  <div
+                    className="row my-2 mx-1"
+                    style={{ justifyContent: "right" }}
+                  >
                     <button
                       className="btn btn-primary text-white"
                       onClick={() =>
@@ -1086,10 +1084,13 @@ const EquipmentEnrollModal = ({
               </TabPanel>
               <TabPanel
                 value="warrantyData"
-                sx={{ paddingTop: recordId ? 0.3 : 1.5 }}
+                sx={{ paddingTop: recordId ? 0.3 : 1.5, paddingBottom: 1 }}
               >
                 {recordId && (
-                  <div className="row my-2 mx-1" style={{ justifyContent: "right" }}>
+                  <div
+                    className="row my-2 mx-1"
+                    style={{ justifyContent: "right" }}
+                  >
                     <button
                       className="btn btn-primary text-white"
                       onClick={() =>

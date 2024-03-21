@@ -369,6 +369,7 @@ export const claimAssessmentRequestObj = {
 // claim value request object
 export const claimValueRequestObj = {
   type: "",
+  coverageType: "",
   totalAmountClaimed: 0,
   totalPartsClaimed: 0,
   totalHoursClaimed: 0,

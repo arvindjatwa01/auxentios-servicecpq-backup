@@ -7,13 +7,10 @@ import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 
 import { Modal } from "react-bootstrap";
 
-import { callGetApi } from "../../../services/ApiCaller";
-import { API_SUCCESS } from "../../../services/ResponseCode";
-import {
-  CLAIM_MASTER_URL,
-  WARRANTY_MASTER_URL,
-} from "../../../services/CONSTANTS";
-import { GRID_STYLE } from "../../common/constants";
+import { callGetApi } from "services/ApiCaller";
+import { API_SUCCESS } from "services/ResponseCode";
+import { CLAIM_MASTER_URL, WARRANTY_MASTER_URL } from "services/CONSTANTS";
+import { GRID_STYLE } from "pages/Common/constants";
 import ClaimCreateModal from "../claimMaster/ClaimCreateModal";
 import {
   warrantyCategoryOptions,
@@ -37,13 +34,14 @@ const ClaimReportModal = ({
   handleOpenClaimRequestModal,
   openClaimRequestModal,
   handleCloseClaimRequestModal,
+  isReportModal = true,
 }) => {
   const [warrantyRecord, setWarrantyRecord] = useState({
     ...warrantyRequestObj,
   });
   const [loading, setLoading] = useState(false);
   const [claimRecord, setClaimRecord] = useState([]);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
 
   const [claimRecordDetail, setClaimRecordDetail] = useState(null);
@@ -187,6 +185,10 @@ const ClaimReportModal = ({
 
   return (
     <>
+      {show &&
+        !openClaimCreateModal &&
+        !openClaimEditModal &&
+        !openClaimRequestModal}
       <Modal show={show} onHide={hideModal} size="xl">
         <Modal.Body>
           <div className="row d-flex justify-content-between align-items-center mb-2 mx-1">
@@ -226,7 +228,7 @@ const ClaimReportModal = ({
           </div>
         </Modal.Body>
       </Modal>
-      {openClaimCreateModal && (
+      {isReportModal && openClaimCreateModal && (
         <ClaimCreateModal
           show={openClaimCreateModal}
           hideModal={handleClaimCreate}
@@ -234,7 +236,7 @@ const ClaimReportModal = ({
           handleSnack={handleSnack}
         />
       )}
-      {openClaimEditModal && (
+      {isReportModal && openClaimEditModal && (
         <ClaimEditModal
           show={openClaimEditModal}
           hideModal={handleOpenClaimEditModal}
@@ -244,7 +246,7 @@ const ClaimReportModal = ({
           handleOpenClaimRequestModal={handleOpenClaimRequestModal}
         />
       )}
-      {openClaimRequestModal && (
+      {isReportModal && openClaimRequestModal && (
         <ClaimRequestModal
           show={openClaimRequestModal}
           hideModal={handleCloseClaimRequestModal}
