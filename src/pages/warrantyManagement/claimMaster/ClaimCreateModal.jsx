@@ -145,7 +145,7 @@ const ClaimCreateModal = ({ show, hideModal, warrantyRecord, handleSnack }) => {
             </div>
           </div>
           <div className="col-xl-9 col-lg-9 col-md-12 col-sm-12 border-50">
-            <div className="card px-2 py-3 border mb-2">
+            <div className="card px-2 py-3 border mb-0">
               <div className="card border px-3 py-2 mb-3">
                 <div className="row input-fields mt-2">
                   <div className="col-lg-3 col-md-3 col-sm-6 col-12">
@@ -168,13 +168,29 @@ const ClaimCreateModal = ({ show, hideModal, warrantyRecord, handleSnack }) => {
                   <div className="col-lg-3 col-md-3 col-sm-6 col-12">
                     <div className="form-group">
                       <label className="text-light-dark font-size-12 font-weight-500">
+                        WARRANTY ID
+                      </label>
+                      <input
+                        type="text"
+                        className="form-control border-radius-10 text-primary"
+                        // value={claimRecordData?.customerName}
+                        disabled
+                        name="warrantyId"
+                        placeholder="Warranty Id"
+                        onChange={handleClaimInputFieldChange}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+                    <div className="form-group">
+                      <label className="text-light-dark font-size-12 font-weight-500">
                         WARRANTY REQUEST ID
                       </label>
                       <input
                         type="text"
                         className="form-control border-radius-10 text-primary"
                         // value={claimRecordData.claimOrderId}
-                        placeholder="Claiment"
+                        placeholder="Warranty Request Id"
                         disabled={true}
                         // name="claiment"
                         // onChange={handleClaimRecordDataChange}
@@ -239,22 +255,6 @@ const ClaimCreateModal = ({ show, hideModal, warrantyRecord, handleSnack }) => {
                         name="serialNumber"
                         placeholder="Serial Number"
                         onChange={handleClaimInputFieldChange}
-                      />
-                    </div>
-                  </div>
-                  <div className="col-lg-3 col-md-3 col-sm-6 col-12">
-                    <div className="form-group">
-                      <label className="text-light-dark font-size-12 font-weight-500">
-                        WARRANTY ID
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control border-radius-10 text-primary"
-                        // value={claimRecordData?.customerName}
-                        disabled
-                        name="partnerName"
-                        placeholder="Partner Name"
-                        // onChange={handleClaimRecordDataChange}
                       />
                     </div>
                   </div>
@@ -565,22 +565,22 @@ const ClaimCreateModal = ({ show, hideModal, warrantyRecord, handleSnack }) => {
                   </div>
                 </div>
               </div>
-            </div>
-            <div className="row" style={{ justifyContent: "right" }}>
-              <button
-                type="button"
-                className="btn btn-light bg-primary text-white"
-                onClick={hideModal}
-              >
-                Close
-              </button>
-              <button
-                type="button"
-                className="btn btn-light bg-primary text-white mx-3"
-                onClick={handleCreateNewClaim}
-              >
-                Create
-              </button>
+              <div className="row" style={{ justifyContent: "right" }}>
+                <button
+                  type="button"
+                  className="btn btn-light bg-primary text-white"
+                  onClick={hideModal}
+                >
+                  Close
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-light bg-primary text-white mx-3"
+                  onClick={handleCreateNewClaim}
+                >
+                  Create
+                </button>
+              </div>
             </div>
           </div>
         </div>

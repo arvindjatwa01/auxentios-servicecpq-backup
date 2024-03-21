@@ -11,9 +11,9 @@ import $ from "jquery";
 import SelectFilter from "react-select";
 import { Link } from "react-router-dom";
 
-import CustomizedSnackbar from "../../../shared/CustomSnackBar";
-import { equipmentSearch } from "../../../services/searchServices";
-import { GRID_STYLE } from "../../common/constants";
+import CustomizedSnackbar from "pages/Common/CustomSnackBar";
+import { equipmentSearch } from "services/searchServices";
+import { GRID_STYLE } from "pages/Common/constants";
 import EquipmentSummaryModal from "./EquipmentSummaryModal";
 import EquipmentDetailsModal from "./EquipmentDetailsModal";
 import EquipmentCreateModal from "./EquipmentCreateModal";
@@ -49,6 +49,7 @@ const EquipmentDashboard = () => {
   const [serialNumber, setSerialNumber] = useState(null);
   const [equRecordId, setEquRecordId] = useState(null);
   const [equipmentData, setEquipmentData] = useState(null);
+  const [isReportModal, setIsReportModal] = useState(false);
 
   const [claimRecordDetail, setClaimRecordDetail] = useState(null);
   const [claimRecordId, setClaimRecordId] = useState(null);
@@ -197,7 +198,7 @@ const EquipmentDashboard = () => {
 
   // edit ewuipment data
   const handleViewEquModal = (params) => {
-    const serialNo = params.row["equipmentNumber"];
+    const serialNo = params.row["makerSerialNumber"];
     const id = params.row["id"];
     setEquipmentData(params.row);
     setSerialNumber(serialNo);
@@ -266,13 +267,18 @@ const EquipmentDashboard = () => {
       flex: 1,
     },
     {
-      field: "customer",
-      headerName: "Customer Name",
+      field: "customerId",
+      headerName: "Customer Id",
       flex: 1,
     },
     {
       field: "currentClient",
-      headerName: "Customer Id",
+      headerName: "Customer Number",
+      flex: 1,
+    },
+    {
+      field: "customer",
+      headerName: "Customer Name",
       flex: 1,
     },
     {
@@ -290,8 +296,8 @@ const EquipmentDashboard = () => {
                 className="cursor"
                 onClick={() => handleViewEquModal(params)}
               >
-                <Tooltip title="Edit">
-                  <EditOutlinedIcon />
+                <Tooltip title="View">
+                  <VisibilityIcon />
                 </Tooltip>
               </div>
             }
@@ -305,8 +311,8 @@ const EquipmentDashboard = () => {
                 className=" cursor"
                 onClick={() => handleOpenWarrantyOverview(params)}
               >
-                <Tooltip title="Overview">
-                  <VisibilityIcon />
+                <Tooltip title="Edit Details">
+                  <EditOutlinedIcon />
                 </Tooltip>
               </div>
             }
@@ -342,6 +348,7 @@ const EquipmentDashboard = () => {
   const handleOpenWarrantyOverview = (params) => {
     const warrantyId = params.row["warrantyId"];
     setWarrantyRecordId(warrantyId);
+    setIsReportModal(false);
     setShowOverviewModal(true);
   };
 
@@ -352,6 +359,9 @@ const EquipmentDashboard = () => {
 
     const warrantyId = params.row["warrantyId"];
     setWarrantyRecordId(warrantyId);
+
+    setIsReportModal(true);
+
     setOpenClaimReport(true);
   };
 
@@ -649,6 +659,7 @@ const EquipmentDashboard = () => {
             handleShowPartCreateModal={handleShowPartCreateModal}
             openFileUploadModal={openFileUploadModal}
             handleShowFileUploadModal={handleShowFileUploadModal}
+            isReportModal={isReportModal}
           />
         )}
       {!showOverviewModal &&
@@ -669,6 +680,7 @@ const EquipmentDashboard = () => {
             handleOpenClaimRequestModal={handleOpenClaimRequestByHistory}
             openClaimRequestModal={openClaimRequestModal}
             handleCloseClaimRequestModal={handleCloseClaimRequestModalByHistory}
+            isReportModal={isReportModal}
           />
         )}
     </>

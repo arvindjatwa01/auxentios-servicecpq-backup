@@ -33,20 +33,10 @@ const codeOptions = [
 ];
 
 const coverageTypeOptions = [
-  // { label: "Parts & Labour", value: "PARTS_AND_LABOUR" },
-  // { label: "Only Parts", value: "ONLY_PARTS" },
-  // { label: "Part & Labour & Misc.", value: "PART_AND_LABOUR_AND_MISC" },
-  // { label: "All Covered", value: "ALL_COVERED" },
-
+  { label: "All Covered", value: "CT_04" },
   { label: "Parts & Labour", value: "CT_01" },
   { label: "Only Parts", value: "CT_02" },
   { label: "Part & Labour & Misc.", value: "CT_03" },
-  { label: "All Covered", value: "CT_04" },
-
-  // { label: "CT 01", value: "CT_01" },
-  // { label: "CT 02", value: "CT_02" },
-  // { label: "CT 03", value: "CT_03" },
-  // { label: "CT 04", value: "CT_04" },
 ];
 
 const ClaimRelatedHoursAndExpenses = ({
@@ -56,12 +46,14 @@ const ClaimRelatedHoursAndExpenses = ({
   setRelatedHEId,
   claimOrderId,
   claimNumber,
+  coverageTypeValue,
 }) => {
   const [claimRelateHERecordData, setClaimRelateHERecordData] = useState({
     ...claimRelatedHERequestObj,
     type: climentOpt[0],
     name: "KOOLAN IRON ORE PTY LTD",
     claimOrderId: claimOrderId,
+    coverageType: coverageTypeValue,
   });
 
   const [viewOnly, setViewOnly] = useState(false);
@@ -364,6 +356,7 @@ const ClaimRelatedHoursAndExpenses = ({
                     onChange={(e) => handleSelectFiledChange(e, "coverageType")}
                     value={claimRelateHERecordData.coverageType}
                     styles={FONT_STYLE_SELECT}
+                    isDisabled={true}
                   />
                 </div>
               </div>
