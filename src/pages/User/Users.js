@@ -20,6 +20,9 @@ import { RenderConfirmDialog } from "pages/Repair/components/ConfirmationBox";
 import AddCustomerModal from "./AddCustomerModal";
 import ProductSummary from "pages/use-case-2/ProductSummary";
 import EquipmentRecordModal from "pages/use-case-2/EquipmentRecordModal";
+import { DATA_SVC_CUSTOMER_MASTER_URL } from "services/CONSTANTS";
+import { callGetApi } from "services/ApiCaller";
+import { API_SUCCESS } from "services/ResponseCode";
 
 const DataGridContainer = (props) => (
   <Box
@@ -209,6 +212,9 @@ export const Users = (props) => {
   const [addUserModalTitle, setAddUserModalTitle] = useState("Add User");
   const [openAddCustomer, setOpenAddCustomer] = useState(false);
 
+  const [customerData, setCustomerData] = useState([]);
+  const [customerId, setCustomerId] = useState(null);
+
   const [openProductSummary, setOpenProductSummary] = useState(false);
   const [openEquipmentRecordModal, setOpenEquipmentRecordModal] =
     useState(false);
@@ -224,25 +230,6 @@ export const Users = (props) => {
   };
   const [subscriberData, setSubscriberData] = useState(newUser);
 
-  const newCustomer = {
-    builderId: "",
-    type: "",
-    dealerName: "",
-    dealerNumber: "",
-    email: "",
-    address: "",
-    city: "",
-    state: "",
-    country: "",
-    zipCode: "",
-    phoneNumber: "",
-  };
-  const [customerData, setCustomerData] = useState(newCustomer);
-  const [dealerTypes, setDealerTypes] = useState([
-    { label: "Partner", value: "PARTNER" },
-    { label: "Customer", value: "CUSTOMER" },
-  ]);
-
   const [severity, setSeverity] = useState("");
   const [openSnack, setOpenSnack] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
@@ -252,6 +239,13 @@ export const Users = (props) => {
     }
     setOpenSnack(false);
   };
+
+  useEffect(() => {
+    if (!openAddCustomer) {
+      setCustomerId(null);
+    }
+  }, [openAddCustomer]);
+
   // To display the notifications
   const handleSnack = (snackSeverity, snackMessage) => {
     setSnackMessage(snackMessage);
@@ -288,6 +282,7 @@ export const Users = (props) => {
     setAddUserModalTitle("Update User");
     setOpenAddUser(true);
   };
+
   const handleDeleteUser = async () => {
     await removeUser(subscriberData.userId)
       .then((res) => {
@@ -300,10 +295,12 @@ export const Users = (props) => {
         setConfirmationOpen(false);
       });
   };
+
   const handleConfirm = (row) => {
     setSubscriberData(row);
     setConfirmationOpen(true);
   };
+
   const usersColumn = [
     { field: "firstName", headerName: "First Name", flex: 1, minWidth: 100 },
     { field: "lastName", headerName: "Last Name", flex: 1, minWidth: 100 },
@@ -347,20 +344,38 @@ export const Users = (props) => {
     },
   ];
 
+  // customer  record open
+  const handleOpenCustomer = (row) => {
+    setCustomerId(row.id);
+    setAddUserModalTitle("Update Partner/Customer");
+    setOpenAddCustomer(true);
+  };
+
   const customerPartnersColumn = [
-    // { field: "firstName", headerName: "First Name", flex: 1, minWidth: 100 },
-    { field: "lastName", headerName: "Last Name", flex: 1, minWidth: 100 },
-    // { field: "email", headerName: "Email Id", flex: 1, minWidth: 100 },
-    { field: "roles", headerName: "Role", flex: 1, minWidth: 100 },
     {
-      field: "userId",
+      field: "customerId",
       headerName: "Customer/Partner ID",
       flex: 1,
       minWidth: 100,
     },
     {
-      field: "firstName",
+      field: "fullName",
       headerName: "Customer/Partner Name",
+      flex: 1,
+      minWidth: 100,
+    },
+    {
+      field: "customerType",
+      headerName: "Type",
+      flex: 1,
+      minWidth: 100,
+      renderCell: ({ row }) => (
+        <>{row.customerType === "C" ? "CUSTOMER" : "PARTNER"}</>
+      ),
+    },
+    {
+      field: "contactType",
+      headerName: "Role",
       flex: 1,
       minWidth: 100,
     },
@@ -383,7 +398,7 @@ export const Users = (props) => {
             }
             label="Edit"
             className="textPrimary"
-            onClick={() => openUserRow(params.row, true)}
+            onClick={() => handleOpenCustomer(params.row, true)}
             color="inherit"
           />,
           <GridActionsCellItem
@@ -443,9 +458,21 @@ export const Users = (props) => {
         handleSnack("error", "Error occurred while searching users")
       );
   };
+
+  const fetchCustomers = async () => {
+    const rUrl = `${DATA_SVC_CUSTOMER_MASTER_URL}/?pageSize=${50}&sortColumn=updatedAt&orderBY=DESC`;
+    callGetApi(null, rUrl, (response) => {
+      if (response.status === API_SUCCESS) {
+        const responseData = response.data;
+        setCustomerData(responseData);
+      }
+    });
+  };
+
   useEffect(() => {
     fetchUserRoles();
     fetchUsers();
+    fetchCustomers();
   }, []);
 
   const handleOpenAddUser = () => {
@@ -456,7 +483,6 @@ export const Users = (props) => {
 
   // open add customer modal
   const handleOpenAddCustomer = () => {
-    setSubscriberData(newUser);
     setAddUserModalTitle("Add Partner/Customer");
     setOpenAddCustomer(true);
   };
@@ -552,16 +578,18 @@ export const Users = (props) => {
               >
                 <TabList
                   className=""
-                  variant="fullWidth"
+                  // variant="fullWidth"
                   onChange={handelTabChange}
                 >
                   <Tab
-                    label="Active User & Subscription"
+                    // label="Active User & Subscription"
+                    label="ACTIVE USER & SUBSCRIPTION"
                     value={"activeUsersAndsubscriptions"}
                     // className="heading-tabs"
                   />
                   <Tab
-                    label="Partners & Customers"
+                    // label="Partners & Customers"
+                    label="PARTNERS & CUSTOMERS"
                     value={"partnersAndCustomers"}
                     // className="heading-tabs"
                   />
@@ -651,7 +679,7 @@ export const Users = (props) => {
                   className="p-2 text-black font-size-14 mt-3 border-radius-10"
                   style={{ backgroundColor: "#872ff950" }}
                 >
-                  {totalUsers} users have subscribed to the plan
+                  {50} users have subscribed to the plan
                 </div>
                 <div>
                   <div class="input-group icons border-radius-10 border overflow-hidden my-3">
@@ -675,9 +703,9 @@ export const Users = (props) => {
                   <DataGridContainer>
                     <DataGrid
                       // loading={isLoading}
-                      getRowId={(row) => row.userId}
+                      getRowId={(row) => row.id}
                       sx={GRID_STYLE}
-                      rows={userData}
+                      rows={customerData}
                       columns={customerPartnersColumn}
                       pageSize={pageSize}
                       onPageSizeChange={(newPageSize) =>
@@ -706,14 +734,10 @@ export const Users = (props) => {
           <AddCustomerModal
             openAddCustomer={openAddCustomer}
             handleAddCustomerClose={handleAddCustomerClose}
-            subscriberData={customerData}
-            setSubscriberData={setCustomerData}
+            customerId={customerId}
             title={addUserModalTitle}
-            addUser={addNewUser}
-            updateUser={updateUser}
-            roles={userRoles}
-            dealerTypes={dealerTypes}
             handleSnack={handleSnack}
+            roles={userRoles}
           />
         )}
         <ProductSummary
