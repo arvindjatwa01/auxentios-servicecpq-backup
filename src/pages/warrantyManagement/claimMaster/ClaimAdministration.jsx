@@ -283,7 +283,7 @@ const ClaimAdministration = () => {
       <div>
         <div className="content-body bg-white" style={{ minHeight: "884px" }}>
           <div className="container-fluid mt-3">
-            <h4 className="font-weight-600 mb-0 mt-4">Claim Administration</h4>
+            <h4 className="font-weight-600 mb-0">Claim Administration</h4>
             <Grid
               container
               spacing={3}
@@ -298,13 +298,13 @@ const ClaimAdministration = () => {
                   <Grid item xs={6}>
                     <div
                       className="card border border-radius-10"
-                      style={{ height: "380px" }}
+                      style={{ height: "350px" }}
                     >
                       <div
                         className="d-flex justify-content-between align-items-center p-3 border-bottom bg-light-pink"
                         style={{ borderRadius: "10px 10px 0px 0px" }}
                       >
-                        <span>Recent Activity</span>
+                        <h6 className="mb-0">Recent Activity</h6>
                         {/* <MuiMenuComponent options={workFlowOptions} /> */}
                       </div>
                       <div className="px-3 py-1">
@@ -316,21 +316,21 @@ const ClaimAdministration = () => {
                               } py-2`}
                               key={claimRow?.claimId}
                             >
-                              <div>
+                              <div className="mb-0">
                                 <h6 className="mb-1 text-primary">
                                   Claim {claimRow?.claimNumber}
                                 </h6>
-                                <span
-                                  className="cursor"
+                                <h6
+                                  className="cursor mb-0"
                                   onClick={() =>
                                     handleOpenClaimDetailsModal(claimRow)
                                   }
                                 >
                                   <KeyboardArrowUpIcon />
                                   View Details
-                                </span>
+                                </h6>
                               </div>
-                              <span>
+                              <h6>
                                 <Moment format="HH:MM A">
                                   {claimRow.updatedAt}
                                 </Moment>
@@ -338,7 +338,7 @@ const ClaimAdministration = () => {
                                 <Moment format="DD MMM YY">
                                   {claimRow.updatedAt}
                                 </Moment>
-                              </span>
+                              </h6>
                             </div>
                           ))}
                       </div>
@@ -347,36 +347,64 @@ const ClaimAdministration = () => {
                   <Grid item xs={6}>
                     <div
                       className="card border border-radius-10"
-                      style={{ height: "380px" }}
+                      style={{ height: "350px" }}
                     >
                       <div
                         className="d-flex justify-content-between align-items-center p-3 border-bottom workflow-task"
                         style={{ borderRadius: "10px 10px 0px 0px" }}
                       >
-                        <span>Workflow Task</span>
+                        <h6 className="mb-0">Workflow Task</h6>
                         {/* <MuiMenuComponent options={workFlowOptions} /> */}
                       </div>
-                      <div className="px-3 py-1">
-                        <div className="d-flex justify-content-between align-items-center border-bottom py-3">
+                      <div className="px-3 py-0">
+                        <div className="d-flex justify-content-between align-items-center border-bottom py-3 mb-0">
                           <h6>
                             <span className="text-primary">77699</span> requires
                             your attention
                           </h6>
-                          <span>view Details</span>
+                          <h6>view Details</h6>
+                        </div>
+                        <div className="d-flex justify-content-between align-items-center border-bottom py-3 mb-0">
+                          <h6>
+                            <span className="text-primary">77699</span> requires
+                            your attention
+                          </h6>
+                          <h6>view Details</h6>
+                        </div>
+                        <div className="d-flex justify-content-between align-items-center border-bottom py-3 mb-0">
+                          <h6>
+                            <span className="text-primary">77699</span> requires
+                            your attention
+                          </h6>
+                          <h6>view Details</h6>
+                        </div>
+                        <div className="d-flex justify-content-between align-items-center border-bottom py-3 mb-0">
+                          <h6 className="mb-0">
+                            <span className="text-primary">77699</span> requires
+                            your attention
+                          </h6>
+                          <h6 className="mb-0">view Details</h6>
+                        </div>
+                        <div className="d-flex justify-content-between align-items-center py-3 mb-0">
+                          <h6>
+                            <span className="text-primary">77699</span> requires
+                            your attention
+                          </h6>
+                          <h6>view Details</h6>
+                        </div>
+                        {/* <div className="d-flex justify-content-between align-items-center border-bottom py-3">
+                          <h6>
+                            <span className="text-primary">77699</span> requires
+                            your attention
+                          </h6>
+                          <h6>view Details</h6>
                         </div>
                         <div className="d-flex justify-content-between align-items-center border-bottom py-3">
                           <h6>
                             <span className="text-primary">77699</span> requires
                             your attention
                           </h6>
-                          <span>view Details</span>
-                        </div>
-                        <div className="d-flex justify-content-between align-items-center border-bottom py-3">
-                          <h6>
-                            <span className="text-primary">77699</span> requires
-                            your attention
-                          </h6>
-                          <span>view Details</span>
+                          <h6>view Details</h6>
                         </div>
                         <div className="d-flex justify-content-between align-items-center border-bottom py-3">
                           <h6>
@@ -391,7 +419,7 @@ const ClaimAdministration = () => {
                             your attention
                           </h6>
                           <span>view Details</span>
-                        </div>
+                        </div> */}
                       </div>
                     </div>
                   </Grid>
@@ -400,10 +428,10 @@ const ClaimAdministration = () => {
               <Grid item xs={3}>
                 <div className="card border px-3 py-2 warranty-req-dash-card mb-4">
                   <div
-                    className="d-flex justify-content-between align-items-baseline cursor"
+                    className="d-flex justify-content-between align-items-baseline cursor py-2"
                     onClick={() => setOpenWarrantyRequestModal(true)}
                   >
-                    <span className=" mb-0">Warranty Request</span>
+                    <h6 className=" mb-0">Warranty Request</h6>
                     <span>
                       <ArrowForwardIosIcon />
                     </span>
@@ -411,10 +439,10 @@ const ClaimAdministration = () => {
                 </div>
                 <div className="card border px-3 py-2 claim-req-dash-card mb-4">
                   <div
-                    className="d-flex justify-content-between align-items-center cursor"
+                    className="d-flex justify-content-between align-items-center cursor py-2"
                     onClick={() => setOpenClaimRequestModal(true)}
                   >
-                    <span className=" mb-0">Claim Request</span>
+                    <h6 className=" mb-0">Claim Request</h6>
                     <span className="font-weight-500">
                       <ArrowForwardIosIcon />
                     </span>

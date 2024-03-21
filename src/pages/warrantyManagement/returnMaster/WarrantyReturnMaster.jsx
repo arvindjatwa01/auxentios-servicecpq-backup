@@ -276,13 +276,13 @@ const WarrantyReturnMaster = () => {
                   <Grid item xs={6}>
                     <div
                       className="card border border-radius-10"
-                      style={{ height: "380px" }}
+                      style={{ height: "350px" }}
                     >
                       <div
                         className="d-flex justify-content-between align-items-center p-3 border-bottom bg-light-pink"
                         style={{ borderRadius: "10px 10px 0px 0px" }}
                       >
-                        <span>Recent Activity</span>
+                        <h6 className="mb-0">Recent Activity</h6>
                         {/* <MuiMenuComponent options={workFlowOptions} /> */}
                       </div>
                       <div className="px-3 py-1">
@@ -292,22 +292,22 @@ const WarrantyReturnMaster = () => {
                               className="d-flex justify-content-between align-items-baseline border-bottom py-2"
                               key={requestRow?.warrantyReturnId}
                             >
-                              <div>
+                              <div className="mb-0">
                                 <h6 className="mb-1 ">
                                   Request Title -
                                   <span className="text-primary">
                                     {requestRow?.requestTitle}
                                   </span>
                                 </h6>
-                                <span
-                                  className="cursor"
+                                <h6
+                                  className="cursor mb-0"
                                   onClick={() =>
                                     handleEditReturnData(requestRow)
                                   }
                                 >
                                   <KeyboardArrowUpIcon />
                                   View Details
-                                </span>
+                                </h6>
                               </div>
                               <span>
                                 <Moment format="HH:MM A">
@@ -326,50 +326,50 @@ const WarrantyReturnMaster = () => {
                   <Grid item xs={6}>
                     <div
                       className="card border border-radius-10"
-                      style={{ height: "380px" }}
+                      style={{ height: "350px" }}
                     >
                       <div
                         className="d-flex justify-content-between align-items-center p-3 border-bottom workflow-task"
                         style={{ borderRadius: "10px 10px 0px 0px" }}
                       >
-                        <span>Workflow Task</span>
+                        <h6 className="mb-0">Workflow Task</h6>
                         {/* <MuiMenuComponent options={workFlowOptions} /> */}
                       </div>
-                      <div className="px-3 py-1">
-                        <div className="d-flex justify-content-between align-items-center border-bottom py-3">
+                      <div className="px-3 py-0">
+                        <div className="d-flex justify-content-between align-items-center border-bottom py-3 mb-0">
                           <h6>
                             <span className="text-primary">77699</span> requires
                             your attention
                           </h6>
-                          <span>view Details</span>
+                          <h6>view Details</h6>
                         </div>
-                        <div className="d-flex justify-content-between align-items-center border-bottom py-3">
+                        <div className="d-flex justify-content-between align-items-center border-bottom py-3 mb-0">
                           <h6>
                             <span className="text-primary">77699</span> requires
                             your attention
                           </h6>
-                          <span>view Details</span>
+                          <h6>view Details</h6>
                         </div>
-                        <div className="d-flex justify-content-between align-items-center border-bottom py-3">
+                        <div className="d-flex justify-content-between align-items-center border-bottom py-3 mb-0">
                           <h6>
                             <span className="text-primary">77699</span> requires
                             your attention
                           </h6>
-                          <span>view Details</span>
+                          <h6>view Details</h6>
                         </div>
-                        <div className="d-flex justify-content-between align-items-center border-bottom py-3">
-                          <h6>
+                        <div className="d-flex justify-content-between align-items-center border-bottom py-3 mb-0">
+                          <h6 className="mb-0">
                             <span className="text-primary">77699</span> requires
                             your attention
                           </h6>
-                          <span>view Details</span>
+                          <h6 className="mb-0">view Details</h6>
                         </div>
-                        <div className="d-flex justify-content-between align-items-center py-3">
+                        <div className="d-flex justify-content-between align-items-center py-3 mb-0">
                           <h6>
                             <span className="text-primary">77699</span> requires
                             your attention
                           </h6>
-                          <span>view Details</span>
+                          <h6>view Details</h6>
                         </div>
                       </div>
                     </div>
@@ -379,10 +379,10 @@ const WarrantyReturnMaster = () => {
               <Grid item xs={3}>
                 <div className="card border px-3 py-2 warranty-req-dash-card mb-4">
                   <div
-                    className="d-flex justify-content-between align-items-baseline cursor"
+                    className="d-flex justify-content-between align-items-baseline cursor py-2"
                     onClick={toggleReturnRequesterModal}
                   >
-                    <span className=" mb-0">Return Request</span>
+                    <h6 className="mb-0">Return Request</h6>
                     <span>
                       <ArrowForwardIosIcon />
                     </span>
@@ -390,10 +390,10 @@ const WarrantyReturnMaster = () => {
                 </div>
                 <div className="card border px-3 py-2 claim-req-dash-card mb-4">
                   <div
-                    className="d-flex justify-content-between align-items-center cursor"
+                    className="d-flex justify-content-between align-items-center cursor py-2"
                     onClick={() => setOpenReturnReceivedModal(true)}
                   >
-                    <span className=" mb-0">Return Received</span>
+                    <h6 className=" mb-0">Return Received</h6>
                     <span className="font-weight-500">
                       <ArrowForwardIosIcon />
                     </span>
@@ -401,10 +401,10 @@ const WarrantyReturnMaster = () => {
                 </div>
                 <div className="card border px-3 py-2 req-anlysis-dash-card mb-4">
                   <div
-                    className="d-flex justify-content-between align-items-center cursor"
+                    className="d-flex justify-content-between align-items-center cursor py-2"
                     onClick={() => setOpenReturnAnalysisModal(true)}
                   >
-                    <span className=" mb-0">Return Analysis</span>
+                    <h6 className=" mb-0">Return Analysis</h6>
                     <span className="font-weight-500">
                       <ArrowForwardIosIcon />
                     </span>
