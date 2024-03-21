@@ -75,7 +75,10 @@ import { CreateSolutionQuote } from "pages/SolutionModules/CreateSolutionQuote";
 import WarrantyMaster from "pages/MasterData/warrantyMaster/WarrentyMaster";
 import ClaimMaster from "pages/MasterData/claimMaster/ClaimMaster";
 import ServiceProgessMaster from "pages/MasterData/ServiceProgressMaster/ServiceProgessMaster";
-import WarrantyReturnMaster from "pages/WarrantyMaster/WarrantyReturn/WarrantyReturnMaster";
+// import WarrantyReturnMaster from "pages/WarrantyMaster/WarrantyReturn/WarrantyReturnMaster";
+import WarrantyAdministration from "pages/warrantyManagement/warrantyMaster/WarrantyAdministration";
+import ClaimAdministration from "pages/warrantyManagement/claimMaster/ClaimAdministration";
+import WarrantyReturnMaster from "pages/warrantyManagement/returnMaster/WarrantyReturnMaster";
 
 // alert(window.location.pathname)
 export const RouterConfig = () => {
@@ -141,8 +144,11 @@ export const RouterConfig = () => {
         <Route exact path={SERVICE_MASTER} component={ServiceMaster} />
         <Route exact path={CONSUMABLE_MASTER} component={ConsumableMaster} />
         <Route exact path={CUSTOMER_MASTER} component={CustomerMaster} />
-        <Route exact path={WARRENTY_MASTER} component={WarrantyMaster} />
-        <Route exact path={CLAIM_MASTER} component={ClaimMaster} />
+        {/* <Route exact path={WARRENTY_MASTER} component={WarrantyMaster} /> */}
+        {/* <Route exact path={CLAIM_MASTER} component={ClaimMaster} /> */}
+        {/* <Route exact path={WARRANTY_RETURN} component={WarrantyReturnMaster} /> */}
+        <Route exact path={WARRENTY_MASTER} component={WarrantyAdministration} />
+        <Route exact path={CLAIM_MASTER} component={ClaimAdministration} />
         <Route exact path={SERVICE_PROGRESS} component={ServiceProgessMaster} />
         <Route exact path={WARRANTY_RETURN} component={WarrantyReturnMaster} />
         

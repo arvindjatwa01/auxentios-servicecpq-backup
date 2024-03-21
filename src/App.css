@@ -4491,3 +4491,35 @@ input::-ms-clear {
 .active-span {
   color: #872ff7 !important;
 }
+
+
+.claim-react-activity {
+  background-color: #e0f9f5 !important;
+}
+
+.workflow-task {
+  background: #e0f9f5 !important;
+}
+
+.file-upload-input {
+  border: 1px solid #ced4da;
+  padding: 7px 9px;
+}
+
+.warranty-req-dash-card {
+  background: #e0f9f5 !important;
+  /* color: #00bb98 !important; */
+  border-color: #00bb98 !important;
+}
+
+.claim-req-dash-card {
+  background: #e2b9e2b3 !important;
+  /* color: #ff00ff42 !important; */
+  border-color: #ff00ff42 !important;
+}
+
+.req-anlysis-dash-card {
+  background: #ea4d141f !important;
+  color: #ff4500d9 !important;
+  border-color: #ee622f69 !important;
+}
