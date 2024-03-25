@@ -1,7 +1,7 @@
 import axios from "axios";
 import { SYSTEM_ERROR } from "config/CONSTANTS";
 import Cookies from "js-cookie";
-import { SEARCH_COMPONENT_CODE, SEARCH_CONSUMABLE, SEARCH_CUSTOMER, SEARCH_EXTWORK, SEARCH_JOB_CODE, SEARCH_MACHINE, SEARCH_SPAREPART, SEARCH_SPAREPART_MARGIN, SEARCH_VENDOR, validate_Coverage_Get_Url } from "./CONSTANTS";
+import { SEARCH_COMPONENT_CODE, SEARCH_CONSUMABLE, SEARCH_CUSTOMER, SEARCH_EQUIPMENT, SEARCH_EXTWORK, SEARCH_JOB_CODE, SEARCH_MACHINE, SEARCH_SPAREPART, SEARCH_SPAREPART_MARGIN, SEARCH_VENDOR, validate_Coverage_Get_Url } from "./CONSTANTS";
 
 /* ----------------- Authorization ------------------- */
 
@@ -266,3 +266,31 @@ export const getValidateCoverage = (rObj) => {
     }
   });
 }
+
+
+//Search Equipment based on the search criteria
+export const equipmentSearch = async (searchStr) => {
+  console.log("searchServices > equipmentSearch called...");
+  return new Promise(async (resolve, reject) => {
+    try {
+      await axios
+        .get(SEARCH_EQUIPMENT(searchStr), {headers: headersData})
+        .then((res) => {
+          console.log("equipmentSearch > axios res=", res);
+          if (res.status === 200) {
+            resolve(res.data);
+          } else {
+            console.log("Status:", res.status);
+            reject("Error in Search Sparepart axios!");
+          }
+        })
+        .catch((err) => {
+          console.log("equipmentSearch > axios err=", err);
+          reject("Error in itemSearch axios!");
+        });
+    } catch (error) {
+      console.error("in RepairBuilder > equipmentSearch, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};

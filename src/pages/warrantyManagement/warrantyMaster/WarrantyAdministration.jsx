@@ -32,6 +32,7 @@ import { API_SUCCESS } from "services/ResponseCode";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import WarrantyEditModal from "./WarrantyEditModal";
 import WarrantyOverviewModal from "./WarrantyOverviewModal";
+import { equipmentSearch } from "services/searchServices";
 
 const WarrantyAdministration = () => {
   const [loading, setLoading] = useState(false);
@@ -111,7 +112,11 @@ const WarrantyAdministration = () => {
       rUrl,
       (response) => {
         if (response.status === API_SUCCESS) {
-          setWarrantyRecord(response.data);
+          const responseData = response.data;
+          if (responseData.length !== 0) {
+            handleGetEquipmentData(responseData);
+          }
+          // setWarrantyRecord(response.data);
           setLoading(false);
         } else {
           setLoading(false);
@@ -121,6 +126,23 @@ const WarrantyAdministration = () => {
         setLoading(false);
       }
     );
+  };
+
+  // get model number and serial number using equipment number
+  const handleGetEquipmentData = async (responseData) => {
+    const recordArr = [];
+    for (let row of responseData) {
+      const searchStr = `equipmentNumber:${row.equipmentNumber}`;
+      const res = await equipmentSearch(searchStr);
+
+      recordArr.push({
+        ...row,
+        modelNumber: res[0].model,
+        serialNumber: res[0].makerSerialNumber,
+      });
+    }
+
+    setWarrantyRecord(recordArr);
   };
 
   // country key value list
@@ -258,7 +280,12 @@ const WarrantyAdministration = () => {
                 handleSnack("info", INPUT_SEARCH_NO_RESULT_FOUND_ERROR_MESSAGE);
                 return;
               }
-              setWarrantyRecord(responseData);
+              if (responseData.length !== 0) {
+                handleGetEquipmentData(responseData);
+              } else {
+                setWarrantyRecord([]);
+              }
+              // setWarrantyRecord(responseData);
             } else {
               handleSnack("info", INPUT_SEARCH_API_ERROR_MESSAGE);
             }
@@ -298,13 +325,17 @@ const WarrantyAdministration = () => {
       headerName: "Component Code",
       flex: 1,
       renderCell: (params) => <div>NA</div>,
-      // renderCell: (params) => <div></div>,
     },
     {
       field: "basis",
       headerName: "Basis",
       flex: 1,
-      renderCell: (params) => <div>TIME</div>,
+      // renderCell: (params) => <div>TIME</div>,
+      renderCell: ({ row }) => (
+        <div>
+          {row.yearlyWarranties ? row["yearlyWarranties"][0]["basis"] : "TIME"}
+        </div>
+      ),
     },
     {
       field: "unit",
@@ -315,25 +346,57 @@ const WarrantyAdministration = () => {
       field: "warrantyStartDate",
       headerName: "Start Date",
       flex: 1,
-      renderCell: (params) => <div>12/11/2023</div>,
+      // renderCell: (params) => <div>12/11/2023</div>,
+      renderCell: ({ row }) => (
+        <div>
+          {row.yearlyWarranties
+            ? row["yearlyWarranties"][0]["warrantyStartDate"]
+            : "NA"}
+        </div>
+      ),
     },
     {
       field: "warrantyEndDate",
       headerName: "End Date",
       flex: 1,
-      renderCell: (params) => <div>11/11/2023</div>,
+      // renderCell: (params) => <div>11/11/2023</div>,
+      renderCell: ({ row }) => (
+        <div>
+          {row.yearlyWarranties
+            ? row["yearlyWarranties"][0]["warrantyEndDate"]
+            : "NA"}
+        </div>
+      ),
     },
     {
       field: "warrantyStartUsage",
       headerName: "Start Usage",
       flex: 1,
-      renderCell: (params) => <div>NA</div>,
+      // renderCell: (params) => <div>NA</div>,
+      renderCell: ({ row }) => (
+        <div>
+          {row.yearlyWarranties
+            ? row["yearlyWarranties"][0]["warrantyStartUsage"]
+              ? row["yearlyWarranties"][0]["warrantyStartUsage"]
+              : "NA"
+            : "NA"}
+        </div>
+      ),
     },
     {
       field: "warrantyEndUsage",
       headerName: "End Usage",
       flex: 1,
-      renderCell: (params) => <div>NA</div>,
+      // renderCell: (params) => <div>NA</div>,
+      renderCell: ({ row }) => (
+        <div>
+          {row.yearlyWarranties
+            ? row["yearlyWarranties"][0]["warrantyEndUsage"]
+              ? row["yearlyWarranties"][0]["warrantyEndUsage"]
+              : "NA"
+            : "NA"}
+        </div>
+      ),
     },
     // {
     //   field: "warrantyStatus",
