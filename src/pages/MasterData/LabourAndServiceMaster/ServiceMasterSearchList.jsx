@@ -1,7 +1,7 @@
 import React from 'react'
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
-const ServiceMasterSearchList = ({ searchList = [], viewEquipmentDetails, image }) => {
+const ServiceMasterSearchList = ({ searchList = [],selectedServiceId, viewServiceDetails, image }) => {
     return (
         <div className="col-xl-4 col-lg-5 col-md-12 col-sm-12 border-50">
             <div className="bg-grey border-radius-10 p-3">
@@ -9,11 +9,13 @@ const ServiceMasterSearchList = ({ searchList = [], viewEquipmentDetails, image 
                     <ul>
                         {searchList.length !== 0 && searchList.map((Data, i) => (
                             <li
-                                key={`parts-master-${i}`}
-                                className={`${Data.active ? "active" : ""}`}
-                                onClick={() => viewEquipmentDetails(Data.id)}
+                                key={`service-master-${i}`}
+                                className={`cursor ${
+                                    Data.id === selectedServiceId ? "active" : ""
+                                  }`}
+                                onClick={() => viewServiceDetails(Data.id)}
                             >
-                                <div className="row position-relative">
+                                <div className="row position-relative align-items-center">
                                     <div className="global-serach-arrow">
                                         <ArrowForwardIosIcon className="text-primary font-size-20 mb-0 pb-0" />
                                     </div>

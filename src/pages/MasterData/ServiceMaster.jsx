@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 
 import Box from "@mui/material/Box";
+import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import Tab from "@mui/material/Tab";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import Pagination from "@mui/material/Pagination";
-import { Stack } from "@mui/material";
+import { Stack, Tooltip } from "@mui/material";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 
@@ -27,6 +28,7 @@ import {
 } from "./equipmentMasterConstants";
 import { isEmpty } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/textUtilities";
 import { ReadOnlyField } from "pages/Repair/components/ReadOnlyField";
+import { GRID_STYLE } from "pages/Common/constants";
 
 
 const tempdata = [
@@ -313,6 +315,10 @@ const ServiceMaster = () => {
     }
   }, [showModal]);
 
+  useEffect(() => {
+    setSelectedServiceId(null);
+  }, [searchList])
+
   //Labor Page Change
   const handleLaborPageChange = (event, value) => {
     setLaborPageNo(value);
@@ -429,354 +435,118 @@ const ServiceMaster = () => {
       ),
     },
   ];
-  // const priceServiceColumns = [
-  //   {
-  //     name: (
-  //       <>
-  //         <div>Activity ID</div>
-  //       </>
-  //     ),
-  //     selector: (row) => row.itemName,
-  //     wrap: true,
-  //     sortable: true,
-  //     format: (row) => row.itemName,
-  //   },
-  //   {
-  //     name: (
-  //       <>
-  //         <div>Activity Name</div>
-  //       </>
-  //     ),
-  //     selector: (row) => row.itemDescription,
-  //     wrap: true,
-  //     sortable: true,
-  //     format: (row) => row.itemDescription,
-  //   },
 
-  //   {
-  //     name: (
-  //       <>
-  //         <div>Supplying Vendor</div>
-  //       </>
-  //     ),
-  //     selector: (row) => row?.itemHeaderStrategy,
-  //     wrap: true,
-  //     sortable: true,
-  //     format: (row) => row?.itemHeaderStrategy,
-  //     // minWidth: "150px",
-  //     // maxWidth: "150px",
-  //   },
-  //   {
-  //     name: (
-  //       <>
-  //         <div>Unit Of Measure</div>
-  //       </>
-  //     ),
-  //     selector: (row) => row?.taskType,
-  //     wrap: true,
-  //     sortable: true,
-  //     format: (row) => row?.taskType,
-  //   },
-  //   {
-  //     name: (
-  //       <>
-  //         <div>Unit Price</div>
-  //       </>
-  //     ),
-  //     selector: (row) => row?.quantity,
-  //     wrap: true,
-  //     sortable: true,
-  //     format: (row) => row?.quantity,
-  //   },
-  //   {
-  //     name: (
-  //       <>
-  //         <div>Currency</div>
-  //       </>
-  //     ),
-  //     selector: (row) => row?.recommendedValue,
-  //     wrap: true,
-  //     sortable: true,
-  //     format: (row) => row?.recommendedValue,
-  //   },
-  //   {
-  //     name: (
-  //       <>
-  //         <div>Start Date</div>
-  //       </>
-  //     ),
-  //     selector: (row) => row?.recommendedValue,
-  //     wrap: true,
-  //     sortable: true,
-  //     format: (row) => row?.recommendedValue,
-  //   },
-  //   {
-  //     name: (
-  //       <>
-  //         <div>End Date</div>
-  //       </>
-  //     ),
-  //     selector: (row) => row?.recommendedValue,
-  //     wrap: true,
-  //     sortable: true,
-  //     format: (row) => row?.recommendedValue,
-  //   },
-  //   {
-  //     name: (
-  //       <>
-  //         <div>Effective From</div>
-  //       </>
-  //     ),
-  //     selector: (row) => row?.recommendedValue,
-  //     wrap: true,
-  //     sortable: true,
-  //     format: (row) => row?.recommendedValue,
-  //   },
-  //   {
-  //     name: (
-  //       <>
-  //         <div>Last Updated</div>
-  //       </>
-  //     ),
-  //     selector: (row) => row?.recommendedValue,
-  //     wrap: true,
-  //     sortable: true,
-  //     format: (row) => row?.recommendedValue,
-  //   },
-  //   {
-  //     name: (
-  //       <>
-  //         <div>Actions</div>
-  //       </>
-  //     ),
-  //     wrap: true,
-  //     sortable: true,
-  //     cell: (row) => (
-  //       <div
-  //         className="d-flex justify-content-center align-items-center row-svg-div"
-  //         style={{ minWidth: "180px !important" }}
-  //       >
-  //         <EditOutlinedIcon
-  //           className="mr-1"
-  //           onClick={() =>
-  //             handleShowReportDetails(
-  //               "Price Details",
-  //               LABOUR_AND_SERVICE_ERP_DETAILS,
-  //               row
-  //             )
-  //           }
-  //         />
-  //         <DeleteOutlineOutlinedIcon />
-  //       </div>
-  //     ),
-  //   },
-  // ];
   const priceServiceColumns = [
     {
-      name: (
-        <>
-          <div>Activity ID</div>
-        </>
-      ),
-      selector: (row) => row.code,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.code,
+      field: "code",
+      headerName: "Activity ID",
+      flex: 1,
     },
     {
-      name: (
-        <>
-          <div>Activity Name</div>
-        </>
-      ),
-      selector: (row) => row.description,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.description,
-      width: '100px',
-    },
-
-    {
-      name: (
-        <>
-          <div>Supplying Vendor</div>
-        </>
-      ),
-      selector: (row) => row?.vendorName,
-      wrap: true,
-      sortable: true,
-      format: (row) => row?.vendorName,
-      width: "90px",
-      // minWidth: "150px",
-      // maxWidth: "150px",
+      field: "description",
+      headerName: "Activity Name",
+      flex: 1,
     },
     {
-      name: (
-        <>
-          <div>Unit Of Measure</div>
-        </>
-      ),
-      selector: (row) => row?.unit,
-      wrap: true,
-      sortable: true,
-      format: (row) => row?.unit,
+      field: "vendorName",
+      headerName: "Supplying Vendor",
+      flex: 1,
     },
     {
-      name: (
-        <>
-          <div>Unit Price</div>
-        </>
-      ),
-      selector: (row) => row?.price,
-      wrap: true,
-      sortable: true,
-      format: (row) => row?.price,
+      field: "unit",
+      headerName: "Unit Of Measure",
+      flex: 1,
     },
     {
-      name: (
-        <>
-          <div>Currency</div>
-        </>
-      ),
-      selector: (row) => row?.currency,
-      wrap: true,
-      sortable: true,
-      format: (row) => row?.currency,
-      width: "100px"
+      field: "price",
+      headerName: "Unit Price",
+      flex: 1,
     },
     {
-      name: (
-        <>
-          <div>Start Date</div>
-        </>
-      ),
-      selector: (row) => row?.validFrom,
-      wrap: true,
-      sortable: true,
-      format: (row) => row?.validFrom,
+      field: "currency",
+      headerName: "Currency",
+      flex: 1,
     },
     {
-      name: (
-        <>
-          <div>End Date</div>
-        </>
-      ),
-      selector: (row) => row?.validTo,
-      wrap: true,
-      sortable: true,
-      format: (row) => row?.validTo,
+      field: "validFrom",
+      headerName: "Start Date",
+      flex: 1,
     },
-    // {
-    //   name: (
-    //     <>
-    //       <div>Effective From</div>
-    //     </>
-    //   ),
-    //   selector: (row) => row?.createdAt,
-    //   wrap: true,
-    //   sortable: true,
-    //   format: (row) => row?.createdAt,
-    // },
-    // {
-    //   name: (
-    //     <>
-    //       <div>Last Updated</div>
-    //     </>
-    //   ),
-    //   selector: (row) => row?.updatedAt,
-    //   wrap: true,
-    //   sortable: true,
-    //   format: (row) => row?.updatedAt,
-    // },
     {
-      name: (
-        <>
-          <div>Actions</div>
-        </>
-      ),
-      wrap: true,
-      sortable: true,
-      cell: (row) => (
-        <div
-          className="d-flex justify-content-center align-items-center row-svg-div"
-          style={{ minWidth: "180px !important" }}
-        >
-          <EditOutlinedIcon
-            className="mr-1"
-            onClick={() =>
-              handleShowReportDetails(
-                "Price Details",
-                // LABOUR_AND_SERVICE_ERP_DETAILS,
-                SERVICE_PRICE_DETAILS,
-                row
-              )
+      field: "validTo",
+      headerName: "End Date",
+      flex: 1,
+    },
+    {
+      field: "action",
+      type: "actions",
+      headerName: "Actions",
+      flex: 1,
+      cellClassName: "actions",
+      getActions: (params) => {
+        return [
+          <GridActionsCellItem
+            icon={
+              <div
+                className="cursor"
+                onClick={() => handleShowReportDetails("Price Details",
+                  SERVICE_PRICE_DETAILS,
+                  params.row)}
+              >
+                <Tooltip title="Edit">
+                  <EditOutlinedIcon />
+                </Tooltip>
+              </div>
             }
-          />
-          <DeleteOutlineOutlinedIcon />
-        </div>
-      ),
+            label="Edit"
+            className="textPrimary"
+            color="inherit"
+          />,
+          <GridActionsCellItem
+            icon={
+              <div
+                className=" cursor"
+              >
+                <Tooltip title="Delete">
+                  <DeleteOutlineOutlinedIcon />
+                </Tooltip>
+              </div>
+            }
+            label="Edit"
+            className="textPrimary"
+            color="inherit"
+          />,
+        ];
+      },
     },
   ];
   const erpLaborColumns = [
     {
-      name: (
-        <>
-          <div>Activity Cost</div>
-        </>
-      ),
-      selector: (row) => row.itemName,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.itemName,
+      field: "itemName",
+      headerName: "Activity Cost",
+      flex: 1,
     },
     {
-      name: (
-        <>
-          <div>Activity Number</div>
-        </>
-      ),
-      selector: (row) => row.itemDescription,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.itemDescription,
-    },
-
-    {
-      name: (
-        <>
-          <div>Period</div>
-        </>
-      ),
-      selector: (row) => row?.itemHeaderStrategy,
-      wrap: true,
-      sortable: true,
-      format: (row) => row?.itemHeaderStrategy,
-      // minWidth: "150px",
-      // maxWidth: "150px",
+      field: "itemDescription",
+      headerName: "Activity Number",
+      flex: 1,
     },
     {
-      name: (
-        <>
-          <div>Fiscal Year</div>
-        </>
-      ),
-      selector: (row) => row?.taskType,
-      wrap: true,
-      sortable: true,
-      format: (row) => row?.taskType,
+      field: "itemHeaderStrategy",
+      headerName: "Period ",
+      flex: 1,
     },
     {
-      name: (
-        <>
-          <div>Average/Fixed Cost</div>
-        </>
-      ),
-      selector: (row) => row?.quantity,
-      wrap: true,
-      sortable: true,
-      format: (row) => row?.quantity,
+      field: "taskType",
+      headerName: "Fiscal Year",
+      flex: 1,
     },
-  ];
+    {
+      field: "quantity",
+      headerName: "Average/Fixed Cost",
+      flex: 1,
+    }
+  ]
 
   const viewLaborDetails = (id) => {
     const _globalLaborList = [...globalLaborList];
@@ -786,6 +556,7 @@ const ServiceMaster = () => {
     }));
     setGlobalLaborList(updatedGlobalLaborList);
   };
+
   const viewServiceDetails = (id) => {
     // const _globalServiceList = [...globalServiceList];
     // const updatedGlobalServiceList = _globalServiceList.map((data) => ({
@@ -795,12 +566,10 @@ const ServiceMaster = () => {
     // setGlobalServiceList(updatedGlobalServiceList);
     const serviceReqUrl = `${service_search_uri}${id}`;
     const searchpricedetailsurl = `${External_PRICE}${id}`;
-    console.log(searchpricedetailsurl);
+    // console.log(searchpricedetailsurl);
     setSelectedServiceId(id);
     setServicePageNo(1);
     setLoading(true);
-
-    // console.log(serviceReqUrl);
     callGetApi(
       null,
       serviceReqUrl,
@@ -808,26 +577,6 @@ const ServiceMaster = () => {
         if (response.status === API_SUCCESS) {
           const responseData = response.data;
           setSearchedService(responseData);
-
-        } else {
-
-        }
-      },
-      (error) => {
-
-      }
-    );
-    callGetApi(
-      null,
-      searchpricedetailsurl,
-      (response) => {
-        if (response.status === API_SUCCESS) {
-          const responseData = response.data;
-          setSearchedServicePriceDetails(responseData);
-          setSearchedServicePriceDetails(prevState => ({
-            ...prevState,
-            vendorName: searchedService.supplyingVendorName,
-          }));
           setLoading(false);
         } else {
           setLoading(false);
@@ -837,7 +586,36 @@ const ServiceMaster = () => {
         setLoading(false);
       }
     );
+    // console.log(serviceReqUrl);
+    callGetApi(
+      null,
+      searchpricedetailsurl,
+      (response) => {
+        if (response.status === API_SUCCESS) {
+          const responseData = response.data;
+          setSearchedServicePriceDetails(responseData);
+          if (searchedService) {
+            console.log(searchedService);
+            setSearchedServicePriceDetails(prevState => ({
+              ...prevState,
+              vendorName: searchedService.supplyingVendorName,
+            }));
+          }
+
+        } else {
+
+        }
+      },
+      (error) => {
+
+      }
+    );
+
+
   };
+
+
+
 
   // Labor page 1 details
   const viewLaborPage_1 = () => {
@@ -848,7 +626,7 @@ const ServiceMaster = () => {
             <div className="col-lg-4 col-md-4 col-sm-6 col-12">
               <div className="d-block">
                 <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                  Service Code
+                  SERVICE CODE
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500">
                   S012
@@ -858,7 +636,7 @@ const ServiceMaster = () => {
             <div className="col-lg-4 col-md-4 col-sm-6 col-12">
               <div className="d-block">
                 <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                  Service Description
+                  SERVICE DESCRIPTION
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500">
                   Breakdown Service
@@ -868,7 +646,7 @@ const ServiceMaster = () => {
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
               <div className="d-block">
                 <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                  Service Type
+                  SERVICE TYPE
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500">
                   Normal
@@ -878,7 +656,7 @@ const ServiceMaster = () => {
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
               <div className="d-block">
                 <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                  Labor Type
+                  LABOR TYPE
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500">
                   Field
@@ -887,7 +665,7 @@ const ServiceMaster = () => {
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                Charge Code
+                CHARGE CODE
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
                 All
@@ -896,7 +674,7 @@ const ServiceMaster = () => {
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
               <div className="d-block">
                 <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                  Labor Code
+                  LABOR CODE
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500">
                   L3 - Inspetion + Travel
@@ -906,7 +684,7 @@ const ServiceMaster = () => {
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
               <div className="d-block">
                 <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                  Recommended Duration
+                  RECOMMENDED DURATION
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500">
                   NA
@@ -915,7 +693,7 @@ const ServiceMaster = () => {
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                Actual duration
+                ACTUAL DURATION
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
                 NA
@@ -924,7 +702,7 @@ const ServiceMaster = () => {
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
               <div className="d-block">
                 <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                  Estimated Duration
+                  ESTIMATED DURATION
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500">
                   10 Hours
@@ -937,7 +715,7 @@ const ServiceMaster = () => {
           <div className="row">
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                Model
+                MODEL
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
                 NA
@@ -945,7 +723,7 @@ const ServiceMaster = () => {
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                Family
+                FAMILY
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
                 Dozers
@@ -953,7 +731,7 @@ const ServiceMaster = () => {
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                Customer
+                CUSTOMER
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
                 All
@@ -961,7 +739,7 @@ const ServiceMaster = () => {
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                Related Job Code
+                RELATED JOB CODE
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
                 034 - Inspection
@@ -969,7 +747,7 @@ const ServiceMaster = () => {
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                Related Component Code
+                RELATED COMPONENT CODE
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
                 7000 - Machine
@@ -993,11 +771,15 @@ const ServiceMaster = () => {
           showAddBtn={true}
         />
         <h6 className="font-weight-500 pl-2 mt-5">ERP Price</h6>
-        <WithoutSearchDataTable
-          columns={erpLaborColumns}
-          data={bundleItems}
-          title="ERP Details"
-        />
+        <div className="bg-white p-3 border-radius-10 mt-3 overflow-hidden">
+          <div className="d-flex align-items-center justify-content-between mb-3">
+            <h6 className="font-weight-600 mb-0 mr-3">ERP Details</h6>
+            <a className="btn cursor bg-primary text-white">Add New</a>
+          </div>
+          <div style={{ height: 300, width: '100%' }}>
+            <DataGrid sx={GRID_STYLE} rows={bundleItems} columns={erpLaborColumns} getRowId={(row) => row.itemName} pageSize={5} />
+          </div>
+        </div>
       </>
     );
   };
@@ -1143,24 +925,25 @@ const ServiceMaster = () => {
     return (
       <>
         <h6 className="font-weight-500 pl-2 mt-5">Price</h6>
-        {/* <WithoutSearchDataTable
-          columns={priceServiceColumns}
-          data={bundleItems}
-          title="Price Details"
-          showAddBtn={true}
-        /> */}
-        <WithoutSearchDataTable
-          columns={priceServiceColumns}
-          data={[searchedServicePriceDetails]}
-          title="Price Details"
-          showAddBtn={true}
-        />
+        <div className="bg-white p-3 border-radius-10 mt-3 overflow-hidden">
+          <div className="d-flex align-items-center justify-content-between mb-3">
+            <h6 className="font-weight-600 mb-0 mr-3">Price Details</h6>
+            <a className="btn cursor bg-primary text-white">Add New</a>
+          </div>
+          <div style={{ height: 180, width: '100%' }}>
+            <DataGrid sx={GRID_STYLE} rows={[searchedServicePriceDetails]} columns={priceServiceColumns} getRowId={(row) => row.code} pageSize={5} />
+          </div>
+        </div>
         <h6 className="font-weight-500 pl-2 mt-5">ERP Price</h6>
-        <WithoutSearchDataTable
-          columns={erpLaborColumns}
-          data={erpItemsService}
-          title="ERP Details"
-        />
+        <div className="bg-white p-3 border-radius-10 mt-3 overflow-hidden">
+          <div className="d-flex align-items-center justify-content-between mb-3">
+            <h6 className="font-weight-600 mb-0 mr-3">ERP Details</h6>
+            <a className="btn cursor bg-primary text-white">Add New</a>
+          </div>
+          <div style={{ height: 300, width: '100%' }}>
+            <DataGrid sx={GRID_STYLE} rows={erpItemsService} columns={erpLaborColumns} getRowId={(row) => row.itemName} pageSize={5} />
+          </div>
+        </div>
       </>
     );
   };
@@ -1235,7 +1018,8 @@ const ServiceMaster = () => {
                   {searchList.length !== 0 &&
                     <ServiceMasterSearchList
                       searchList={searchList}
-                      viewEquipmentDetails={viewServiceDetails}
+                      selectedServiceId={selectedServiceId}
+                      viewServiceDetails={viewServiceDetails}
                     />
                   }
                   <div className="col-xl-8 col-lg-7 col-md-12 col-sm-12 equipment-master-chart mt-custom">

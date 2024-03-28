@@ -1,15 +1,19 @@
 import React, { useEffect, useState } from "react";
 
 import Pagination from "@mui/material/Pagination";
-import { PaginationItem, Stack } from "@mui/material";
+import { PaginationItem, Stack, Tooltip } from "@mui/material";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import AddIcon from "@mui/icons-material/Add";
 import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
 import TabList from "@mui/lab/TabList";
 import TabContext from "@mui/lab/TabContext";
 import TabPanel from "@mui/lab/TabPanel";
 import Switch from "@mui/material/Switch";
+import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
+import FormGroup from "@mui/material/FormGroup";
+import { FormControlLabel } from "@material-ui/core";
 
 import Select from "react-select";
 
@@ -32,6 +36,10 @@ import PartsMasterSearchList from "./SparePartsMaster/PartsMasterSearchList";
 import LoadingProgress from "pages/Repair/components/Loader";
 import { isEmpty } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/textUtilities";
 import PartsReportDetails from "./SparePartsMaster/PartsReportDetails";
+import { GRID_STYLE } from "pages/Common/constants";
+import SearchBox from "pages/Common/SearchBox";
+import EquipmentSearchComponent from "./EquipmentSearchComponent";
+
 
 const label = { inputProps: { "aria-label": "Switch demo" } };
 
@@ -115,7 +123,7 @@ const warrentydata = [
     servicePrice: "5879.24",
   },
 ];
-const partsPriceData={
+const partsPriceData = {
   groupNumber: "3620566",
   type: "reman",
   partNumber: "OR6158",
@@ -131,19 +139,33 @@ const Parts360 = () => {
     {
       replacedBy: "OR6159",
       quantity: "2.00",
-      availablity: "Not available",
-      totalAvailablity: "0",
+      availability: "Not available",
+      totalAvailability: "0",
       salesUnit: "PC",
       price: "0",
+      id: 1
     },
   ]);
-  const [partsPriceDetails, setPartsPriceDetails] = useState({...partsPriceData});
+
+  const [dummyalternateRefurb, setDummyalternateRefurb] = useState([
+    {
+      itemName: "OR6159",
+      quantity: "2.00",
+      itemDescription: "Not available",
+      itemHeaderStrategy: "N/A",
+      taskType: "PC",
+      recommendedValue: "36",
+      id: 1
+    },
+  ]);
+
+  const [partsPriceDetails, setPartsPriceDetails] = useState({ ...partsPriceData });
   const [partsERPPriceDetails, setPartsERPPriceDetails] = useState([
     {
       erpCondition: "C12345",
       amount: "498",
       costPrice: "335",
-      margin: "",
+      margin: "890",
       lastPricedDate: "12-10-2021",
       priceChangeDate: "12-10-2021",
     },
@@ -158,7 +180,8 @@ const Parts360 = () => {
       warrantyType: "Parts",
       warrentyDuration: "6 Months",
       dateOfSale: "12-11-2022",
-      dateOfInstallation: "NA",
+      dateOfInstallation: "N/A",
+      id: "1"
     },
   ]);
   const [searchList, setSearchList] = useState([]);
@@ -169,6 +192,9 @@ const Parts360 = () => {
 
   const [pageNo, setPageNo] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [showReplacedBy, setShowReplacedBy] = useState(true);
+  const [showAlternateParts, setShowAlternateParts] = useState(true);
+  const [showRefurbOption, setShowRefurbOptions] = useState(true);
 
   useEffect(() => {
     if (!showModal) {
@@ -177,6 +203,10 @@ const Parts360 = () => {
       setModelContentReportObj(null);
     }
   }, [showModal]);
+
+  useEffect(()=>{
+    setSelectedPartsId(null);
+  },[searchList])
 
   //pagination code
   const [displayedPages, setDisplayedPages] = useState([1, 2, 3]);
@@ -204,375 +234,495 @@ const Parts360 = () => {
     setValue(newValue);
   };
 
+  const handleShowReplaceBy = () => {
+    setShowReplacedBy(!showReplacedBy);
+  }
 
-  // replaced by columns
-  const replpacedItemColumns = [
+  const handleShowAlternateParts = () => {
+    setShowAlternateParts(!showAlternateParts);
+  }
+
+  const handleShowRefurbOptions = () => {
+    setShowRefurbOptions(!showRefurbOption);
+  }
+
+  //updatedreplpacedItemColumns
+  const replacedItemColumns = [
     {
-      name: <div>Replaced By</div>,
-      selector: (row) => row.replacedBy,
-      wrap: true,
-      sortable: false,
+      field: "replacedBy",
+      headerName: "Replaced By",
+      flex: 1,
     },
     {
-      name: <div>Replaced Quantity</div>,
-      selector: (row) => row.quantity,
-      wrap: true,
-      sortable: false,
+      field: "quantity",
+      headerName: "Replaced Quantity",
+      flex: 1,
     },
     {
-      name: <div>Availability</div>,
-      selector: (row) => row?.availablity,
-      wrap: true,
-      sortable: false,
-      // minWidth: "150px",
-      // maxWidth: "150px",
+      field: "availability",
+      headerName: "Availability",
+      flex: 1,
     },
     {
-      name: <div>Total Available</div>,
-      selector: (row) => row?.totalAvailablity,
-      wrap: true,
-      sortable: false,
+      field: "totalAvailability",
+      headerName: "Total Available",
+      flex: 1,
     },
     {
-      name: <div>Sales Unit</div>,
-      selector: (row) => row?.salesUnit,
-      wrap: true,
-      sortable: false,
+      field: "salesUnit",
+      headerName: "Sales Unit",
+      flex: 1,
     },
     {
-      name: <div>Price</div>,
-      selector: (row) => row?.price,
-      wrap: true,
-      sortable: false,
+      field: "price",
+      headerName: "Price",
+      flex: 1,
     },
     {
-      name: <div>Actions</div>,
-      wrap: true,
-      sortable: false,
-      cell: (row) => (
-        <div
-          className="d-flex justify-content-center align-items-center row-svg-div"
-          style={{ minWidth: "180px !important" }}
-        >
-          <EditOutlinedIcon
-            className="mr-1"
-            onClick={() =>
-              handleShowReportDetails(
-                "Replaced By",
-                SPARE_PARTS_REPLACED_BY_DETAILS,
-                row
-              )
+      field: "action",
+      type: "actions",
+      headerName: "Action",
+      flex: 1,
+      cellClassName: "actions",
+      getActions: (params) => {
+        return [
+          <GridActionsCellItem
+            icon={
+              <div
+                className="cursor"
+                onClick={() => handleShowReportDetails("Replaced By",
+                  SPARE_PARTS_REPLACED_BY_DETAILS,
+                  params.row)}
+              >
+                <Tooltip title="Edit">
+                  <EditOutlinedIcon />
+                </Tooltip>
+              </div>
             }
-          />
-          <DeleteOutlineOutlinedIcon />
-        </div>
-      ),
+            label="Edit"
+            className="textPrimary"
+            color="inherit"
+          />,
+          <GridActionsCellItem
+            icon={
+              <div
+                className=" cursor"
+              >
+                <Tooltip title="Delete">
+                  <DeleteOutlineOutlinedIcon />
+                </Tooltip>
+              </div>
+            }
+            label="Edit"
+            className="textPrimary"
+            color="inherit"
+          />,
+        ];
+      },
     },
   ];
 
-  // alternate parts columns
+  //updated  alternate parts columns
   const alternateItemColumns = [
     {
-      name: <div>Alternate Part #</div>,
-      selector: (row) => row.itemName,
-      wrap: true,
-      sortable: false,
+      field: "itemName",
+      headerName: "Alternte Part #",
+      flex: 1,
     },
     {
-      name: <div>Quantity</div>,
-      selector: (row) => row.itemDescription,
-      wrap: true,
-      sortable: false,
+      field: "itemDescription",
+      headerName: "Quantity",
+      flex: 1,
     },
     {
-      name: <div>Availability</div>,
-      selector: (row) => row?.itemHeaderStrategy,
-      wrap: true,
-      sortable: false,
-      // minWidth: "150px",
-      // maxWidth: "150px",
+      field: "itemHeaderStrategy",
+      headerName: "Availability",
+      flex: 1,
     },
     {
-      name: <div>Total Available</div>,
-      selector: (row) => row?.taskType,
-      wrap: true,
-      sortable: false,
+      field: "taskType",
+      headerName: "Total Available",
+      flex: 1,
     },
     {
-      name: <div>Sales Unit</div>,
-      selector: (row) => row?.quantity,
-      wrap: true,
-      sortable: false,
+      field: "quantity",
+      headerName: "Sales Unit",
+      flex: 1,
     },
     {
-      name: <div>Price</div>,
-      selector: (row) => row?.recommendedValue,
-      wrap: true,
-      sortable: false,
+      field: "recommendedValue",
+      headerName: "Price",
+      flex: 1,
     },
     {
-      name: <div>Actions</div>,
-      wrap: true,
-      sortable: false,
-      cell: (row) => (
-        <div
-          className="d-flex justify-content-center align-items-center row-svg-div"
-          style={{ minWidth: "180px !important" }}
-        >
-          <EditOutlinedIcon
-            className="mr-1"
-            onClick={() =>
-              handleShowReportDetails(
-                "Alternate Parts",
-                SPARE_PARTS_ALTERNATE_PARTS_DETAILS,
-                row
-              )
+      field: "action",
+      type: "actions",
+      headerName: "Action",
+      flex: 1,
+      cellClassName: "actions",
+      getActions: (params) => {
+        return [
+          <GridActionsCellItem
+            icon={
+              <div
+                className="cursor"
+                onClick={() => handleShowReportDetails(
+                  "Alternate Parts",
+                  SPARE_PARTS_ALTERNATE_PARTS_DETAILS,
+                  params.row
+                )}
+              >
+                <Tooltip title="Edit">
+                  <EditOutlinedIcon />
+                </Tooltip>
+              </div>
             }
-          />
-          <DeleteOutlineOutlinedIcon />
-        </div>
-      ),
+            label="Edit"
+            className="textPrimary"
+            color="inherit"
+          />,
+          <GridActionsCellItem
+            icon={
+              <div
+                className=" cursor"
+              >
+                <Tooltip title="Delete">
+                  <DeleteOutlineOutlinedIcon />
+                </Tooltip>
+              </div>
+            }
+            label="Edit"
+            className="textPrimary"
+            color="inherit"
+          />,
+        ];
+      },
     },
   ];
 
-  // reman or reverb columns
+// updatedremanItemColumns
+
   const remanItemColumns = [
     {
-      name: <div>Reman Part #</div>,
-      selector: (row) => row.itemName,
-      wrap: true,
-      sortable: false,
+      field: "itemName",
+      headerName: "Alternte Part #",
+      flex: 1,
     },
     {
-      name: <div>Refurbished Part #</div>,
-      selector: (row) => row.itemDescription,
-      wrap: true,
-      sortable: false,
+      field: "itemDescription",
+      headerName: "Quantity",
+      flex: 1,
     },
     {
-      name: <div>Availability</div>,
-      selector: (row) => row?.itemHeaderStrategy,
-      wrap: true,
-      sortable: false,
-      // minWidth: "150px",
-      // maxWidth: "150px",
+      field: "itemHeaderStrategy",
+      headerName: "Availability",
+      flex: 1,
     },
     {
-      name: <div>Total Available</div>,
-      selector: (row) => row?.taskType,
-      wrap: true,
-      sortable: false,
+      field: "taskType",
+      headerName: "Total Available",
+      flex: 1,
     },
     {
-      name: <div>Sales Unit</div>,
-      selector: (row) => row?.quantity,
-      wrap: true,
-      sortable: false,
+      field: "quantity",
+      headerName: "Sales Unit",
+      flex: 1,
     },
     {
-      name: <div>Price</div>,
-      selector: (row) => row?.recommendedValue,
-      wrap: true,
-      sortable: false,
+      field: "recommendedValue",
+      headerName: "Price",
+      flex: 1,
     },
     {
-      name: <div>Actions</div>,
-      wrap: true,
-      sortable: false,
-      cell: (row) => (
-        <div
-          className="d-flex justify-content-center align-items-center row-svg-div"
-          style={{ minWidth: "180px !important" }}
-        >
-          <EditOutlinedIcon
-            className="mr-1"
-            onClick={() =>
-              handleShowReportDetails(
-                "Reman or Refurb Options",
-                SPARE_PARTS_REMAN_OR_REFURB_DETAILS,
-                row
-              )
+      field: "action",
+      type: "actions",
+      headerName: "Action",
+      flex: 1,
+      cellClassName: "actions",
+      getActions: (params) => {
+        return [
+          <GridActionsCellItem
+            icon={
+              <div
+                className="cursor"
+                onClick={() =>
+                  handleShowReportDetails(
+                    "Reman or Refurb Options",
+                    SPARE_PARTS_REMAN_OR_REFURB_DETAILS,
+                    params.row
+                  )}
+              >
+                <Tooltip title="Edit">
+                  <EditOutlinedIcon />
+                </Tooltip>
+              </div>
             }
-          />
-          <DeleteOutlineOutlinedIcon />
-        </div>
-      ),
+            label="Edit"
+            className="textPrimary"
+            color="inherit"
+          />,
+          <GridActionsCellItem
+            icon={
+              <div
+                className=" cursor"
+              >
+                <Tooltip title="Delete">
+                  <DeleteOutlineOutlinedIcon />
+                </Tooltip>
+              </div>
+            }
+            label="Edit"
+            className="textPrimary"
+            color="inherit"
+          />,
+        ];
+      },
     },
   ];
 
-  // parts price columns
+  //Price itemColumns
+
   const priceItemColumns = [
     {
-      name: <div>Group#</div>,
-      selector: (row) => row.groupNumber,
-      wrap: true,
-      sortable: false,
+      field: "groupNumber",
+      headerName: "Group#",
+      flex: 1,
     },
     {
-      name: <div>Type</div>,
-      selector: (row) => row.type,
-      wrap: true,
-      sortable: false,
+      field: "type",
+      headerName: "Type",
+      flex: 1,
     },
     {
-      name: <div>Part #</div>,
-      selector: (row) => row?.partNumber,
-      wrap: true,
-      sortable: false,
-      // minWidth: "150px",
-      // maxWidth: "150px",
+      field: "partNumber",
+      headerName: "Part#",
+      flex: 1,
     },
     {
-      name: <div>Sales Unit</div>,
-      selector: (row) => row?.salesUnit,
-      wrap: true,
-      sortable: false,
+      field: "salesUnit",
+      headerName: "Sales Unit",
+      flex: 1,
     },
     {
-      name: <div>Quantity</div>,
-      selector: (row) => row?.quantity,
-      wrap: true,
-      sortable: false,
+      field: "quantity",
+      headerName: "Quantity",
+      flex: 1,
     },
     {
-      name: <div>Price</div>,
-      selector: (row) => row?.price,
-      wrap: true,
-      sortable: false,
+      field: "price",
+      headerName: "Price",
+      flex: 1,
     },
     {
-      name: <div>Valid From</div>,
-      selector: (row) => row?.validFrom,
-      wrap: true,
-      sortable: false,
+      field: "validFrom",
+      headerName: "Valid From",
+      flex: 1,
     },
     {
-      name: <div>Valid To</div>,
-      selector: (row) => row?.validTo,
-      wrap: true,
-      sortable: false,
+      field: "validTo",
+      headerName: "Valid To",
+      flex: 1,
     },
     {
-      name: <div>Actions</div>,
-      wrap: true,
-      sortable: false,
-      cell: (row) => (
-        <div
-          className="d-flex justify-content-center align-items-center row-svg-div"
-          style={{ minWidth: "180px !important" }}
-        >
-          <EditOutlinedIcon
-            className="mr-1"
-            onClick={() =>
-              handleShowReportDetails(
-                "Price Details",
-                SPARE_PARTS_PRICE_DETAILS,
-                row
-              )
+      field: "action",
+      type: "actions",
+      headerName: "Action",
+      flex: 1,
+      cellClassName: "actions",
+      getActions: (params) => {
+        return [
+          <GridActionsCellItem
+            icon={
+              <div
+                className="cursor"
+                onClick={() => handleShowReportDetails("Price Details",
+                  SPARE_PARTS_PRICE_DETAILS,
+                  params.row)}
+              >
+                <Tooltip title="Edit">
+                  <EditOutlinedIcon />
+                </Tooltip>
+              </div>
             }
-          />
-          <DeleteOutlineOutlinedIcon />
-        </div>
-      ),
+            label="Edit"
+            className="textPrimary"
+            color="inherit"
+          />,
+          <GridActionsCellItem
+            icon={
+              <div
+                className=" cursor"
+              >
+                <Tooltip title="Delete">
+                  <DeleteOutlineOutlinedIcon />
+                </Tooltip>
+              </div>
+            }
+            label="Edit"
+            className="textPrimary"
+            color="inherit"
+          />,
+        ];
+      },
     },
   ];
 
-  // parts erp detals columns
+  //new erp Details column
+
   const erpDetailsItemColumns = [
     {
-      name: <div>ERP Condition</div>,
-      selector: (row) => row.erpCondition,
-      wrap: true,
-      sortable: false,
+      field: "erpCondition",
+      headerName: "ERP Condition",
+      flex: 1,
     },
     {
-      name: <div>ERP Amount</div>,
-      selector: (row) => row.amount,
-      wrap: true,
-      sortable: false,
+      field: "amount",
+      headerName: "ERP Amount",
+      flex: 1,
     },
     {
-      name: <div>ERP Cost Price</div>,
-      selector: (row) => row?.costPrice,
-      wrap: true,
-      sortable: false,
-      // minWidth: "150px",
-      // maxWidth: "150px",
+      field: "costPrice",
+      headerName: "ERP Cost Price",
+      flex: 1,
     },
     {
-      name: <div>ERP Margin</div>,
-      selector: (row) => row?.margin,
-      wrap: true,
-      sortable: false,
+      field: "margin",
+      headerName: "ERP Margin",
+      flex: 1,
     },
     {
-      name: <div>Last Priced Date </div>,
-      selector: (row) => row?.lastPricedDate,
-      wrap: true,
-      sortable: false,
+      field: "lastPricedDate",
+      headerName: "Last Priced Date",
+      flex: 1,
     },
     {
-      name: <div>Price Change Date</div>,
-      selector: (row) => row?.priceChangeDate,
-      wrap: true,
-      sortable: false,
+      field: "priceChangeDate",
+      headerName: "Price Change Date",
+      flex: 1,
     },
   ];
+
 
   // parts warrenty columns
+  // const warrentyItemColumns = [
+  //   {
+  //     name: <div>Warranty Type</div>,
+  //     selector: (row) => row.warrantyType,
+  //     wrap: true,
+  //     sortable: false,
+  //   },
+  //   {
+  //     name: <div>Warranty Duration</div>,
+  //     selector: (row) => row.warrentyDuration,
+  //     wrap: true,
+  //     sortable: false,
+  //   },
+  //   {
+  //     name: <div>Date Of Sale</div>,
+  //     selector: (row) => row?.dateOfSale,
+  //     wrap: true,
+  //     sortable: false,
+  //   },
+  //   {
+  //     name: <div>Date Of Installation</div>,
+  //     selector: (row) => row?.dateOfInstallation,
+  //     wrap: true,
+  //     sortable: false,
+  //   },
+  //   {
+  //     name: <div>Actions</div>,
+  //     wrap: true,
+  //     sortable: false,
+  //     cell: (row) => (
+  //       <div
+  //         className="d-flex justify-content-center align-items-center row-svg-div"
+  //         style={{ minWidth: "180px !important" }}
+  //       >
+  //         <EditOutlinedIcon
+  //           className="mr-1"
+  //           onClick={() =>
+  //             handleShowReportDetails(
+  //               "Warranty Details",
+  //               SPARE_PARTS_WARRENTY_DETAILS,
+  //               row
+  //             )
+  //           }
+  //         />
+  //         <DeleteOutlineOutlinedIcon />
+  //       </div>
+  //     ),
+  //   },
+  // ];
+
   const warrentyItemColumns = [
     {
-      name: <div>Warranty Type</div>,
-      selector: (row) => row.warrantyType,
-      wrap: true,
-      sortable: false,
+      field: "warrantyType",
+      headerName: "Warranty Type",
+      flex: 1,
     },
     {
-      name: <div>Warranty Duration</div>,
-      selector: (row) => row.warrentyDuration,
-      wrap: true,
-      sortable: false,
+      field: "warrentyDuration",
+      headerName: "Warranty Duration",
+      //   width: 90,
+      flex: 1,
     },
     {
-      name: <div>Date Of Sale</div>,
-      selector: (row) => row?.dateOfSale,
-      wrap: true,
-      sortable: false,
+      field: "dateOfSale",
+      headerName: "Date of Sale",
+      //   width: 90,
+      flex: 1,
     },
     {
-      name: <div>Date Of Installation</div>,
-      selector: (row) => row?.dateOfInstallation,
-      wrap: true,
-      sortable: false,
+      field: "dateOfInstallation",
+      headerName: "Date of Installation",
+      flex: 1
     },
     {
-      name: <div>Actions</div>,
-      wrap: true,
-      sortable: false,
-      cell: (row) => (
-        <div
-          className="d-flex justify-content-center align-items-center row-svg-div"
-          style={{ minWidth: "180px !important" }}
-        >
-          <EditOutlinedIcon
-            className="mr-1"
-            onClick={() =>
-              handleShowReportDetails(
-                "Warranty Details",
-                SPARE_PARTS_WARRENTY_DETAILS,
-                row
-              )
+      field: "action",
+      type: "actions",
+      headerName: "Action",
+      flex: 1,
+      cellClassName: "actions",
+      getActions: (params) => {
+        return [
+          <GridActionsCellItem
+            icon={
+              <div
+                className="cursor"
+                onClick={() => handleShowReportDetails("Warranty Details",
+                  SPARE_PARTS_WARRENTY_DETAILS,
+                  params.row)}
+              >
+                <Tooltip title="Edit">
+                  <EditOutlinedIcon />
+                </Tooltip>
+              </div>
             }
-          />
-          <DeleteOutlineOutlinedIcon />
-        </div>
-      ),
+            label="Edit"
+            className="textPrimary"
+            color="inherit"
+          />,
+          <GridActionsCellItem
+            icon={
+              <div
+                className=" cursor"
+              >
+                <Tooltip title="Delete">
+                  <DeleteOutlineOutlinedIcon />
+                </Tooltip>
+              </div>
+            }
+            label="Edit"
+            className="textPrimary"
+            color="inherit"
+          />,
+        ];
+      },
     },
-  ];
-
+  ]
   // view select search parts details
   const handleViewDetails = (id) => {
-    
+
     setLoading(true);
     setPageNo(1);
     const rUrl = Get_Spare_Parts_Datails_By_Id_GET + id;
@@ -585,14 +735,14 @@ const Parts360 = () => {
           setSelectedPartsId(id);
           setSelectedPartsDetails(responseData);
           setPartsPriceDetails(prevState => ({
-            ...prevState, 
-            groupNumber:responseData.groupNumber,
-            type:responseData.partType,
-            price:responseData.listPrice,
-            salesUnit:responseData.salesUnit,
-            currency:responseData.currency,
-            partNumber:responseData.partNumber
-          }));    
+            ...prevState,
+            groupNumber: responseData.groupNumber,
+            type: responseData.partType,
+            price: responseData.listPrice,
+            salesUnit: responseData.salesUnit,
+            currency: responseData.currency,
+            partNumber: responseData.partNumber
+          }));
           setLoading(false);
         } else {
           setLoading(false);
@@ -602,9 +752,9 @@ const Parts360 = () => {
         setLoading(false);
       }
     );
-    
+
   };
-  
+
 
   // view the detais for data table row
   const handleShowReportDetails = (title, reportType, row) => {
@@ -623,7 +773,7 @@ const Parts360 = () => {
             <div className="col-lg-4 col-md-4 col-sm-6 col-12">
               <div className="d-block">
                 <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                  Description
+                  DESCRIPTION
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
                   {/* {isEmpty(selectedPartsDetails.description)
@@ -637,7 +787,7 @@ const Parts360 = () => {
             <div className="col-lg-4 col-md-4 col-sm-6 col-12">
               <div className="d-block">
                 <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                  Type
+                  TYPE
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
                   {isEmpty(selectedPartsDetails.partType)
@@ -657,7 +807,7 @@ const Parts360 = () => {
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
               <div className="d-block">
                 <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                  Manufacturer
+                  MANUFACTURER
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
                   {isEmpty(selectedPartsDetails.manufacturer)
@@ -670,7 +820,7 @@ const Parts360 = () => {
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
               <div className="d-block">
                 <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                  Model
+                  MODEL
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
                   {isEmpty(selectedPartsDetails.model)
@@ -682,7 +832,7 @@ const Parts360 = () => {
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                Group Number
+                GROUP NUMBER
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
                 {isEmpty(selectedPartsDetails.groupNumber)
@@ -694,7 +844,7 @@ const Parts360 = () => {
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
               <div className="d-block">
                 <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                  Parts Group
+                  PARTS GROUP
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
                   {isEmpty(selectedPartsDetails.partsGroup)
@@ -707,7 +857,7 @@ const Parts360 = () => {
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
               <div className="d-block">
                 <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                  BEC Code
+                  BEC CODE
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
                   {isEmpty(selectedPartsDetails.becCode)
@@ -719,7 +869,7 @@ const Parts360 = () => {
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                BEC Code Description
+                BEC CODE DESCRIPTION
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
                 {isEmpty(selectedPartsDetails.becCodeDescription)
@@ -730,7 +880,7 @@ const Parts360 = () => {
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
               <div className="d-block">
                 <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                  Serial Number (If Any)
+                  SERIAL NUMBER (IF ANY)
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
                   {isEmpty(selectedPartsDetails.serialNo)
@@ -742,7 +892,7 @@ const Parts360 = () => {
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
               <div className="d-block">
                 <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                  Status
+                  STATUS
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
                   {isEmpty(selectedPartsDetails.status)
@@ -759,7 +909,7 @@ const Parts360 = () => {
           <div className="row">
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                Material Group
+                MATERIAL GROUP
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
                 {/* {isEmpty(selectedPartsDetails.materialGroup)
@@ -770,7 +920,7 @@ const Parts360 = () => {
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                Material Number
+                MATERIAL NUMBER
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
                 {/* {isEmpty(selectedPartsDetails.erpMaterialNumber)
@@ -781,7 +931,7 @@ const Parts360 = () => {
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                Old Material Number
+                OLD MATERIAL NUMBER
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
                 {/* {isEmpty(selectedPartsDetails.oldMaterialNumber)
@@ -792,7 +942,7 @@ const Parts360 = () => {
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                Average Cost
+                AVERAGE COST
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
                 {/* {isEmpty(selectedPartsDetails.costPrice)
@@ -803,7 +953,7 @@ const Parts360 = () => {
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                Availability
+                AVAILABILITY
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
                 {/* {isEmpty(selectedPartsDetails.availability)
@@ -814,7 +964,7 @@ const Parts360 = () => {
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                Total Number Available
+                TOTAL NUMBER AVAILABLE
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
                 {/* {isEmpty(selectedPartsDetails.totalAvailability)
@@ -825,7 +975,7 @@ const Parts360 = () => {
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                Status
+                STATUS
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
                 {/* {isEmpty(selectedPartsDetails.status)
@@ -844,42 +994,108 @@ const Parts360 = () => {
   const viewDetailsPage_2 = () => {
     return (
       <>
-        <h5 className="font-weight-500 mt-4 ">Substitute Details</h5>
-        <div className="d-flex align-items-center">
+        <h5 className="font-weight-500 mt-4">Substitute Details</h5>
+
+        <div className="d-flex align-items-center mt-4">
           <h6 className="m-0 mr-2 font-weight-600">Replaced By</h6>
           <div className="equipment-switch">
-            <Switch {...label} defaultChecked size="small" />
+            <Switch {...label} checked={showReplacedBy} onChange={handleShowReplaceBy} size="small" />
           </div>
+          {/* <FormGroup>
+            <FormControlLabel
+              style={{ alignItems: "start", marginLeft: 0 }}
+              control={
+                <Switch
+                  checked={showReplacedBy}
+                  onChange={handleShowReplaceBy}
+                  size="small"
+                />
+              }
+            />
+          </FormGroup> */}
         </div>
-        <EquipmentDataTable
-          columns={replpacedItemColumns}
-          data={bundleItems}
-          title="Replaced by"
-        />
+
+        {showReplacedBy && <div className="bg-white p-3 border-radius-10 mt-3 overflow-hidden">
+          <div className="row align-items-center mb-3">
+            <div className="col-lg-9 col-md-9">
+              <div className="d-flex align-items-center">
+                <h6 className="font-weight-500 mb-0 mr-3">Replaced By</h6>
+                <EquipmentSearchComponent searchPlaceholder={"Replaced By"}/>
+              </div>
+            </div>
+            <div className="col-lg-3 col-md-3 text-right">
+              <a href="#" className="btn bg-primary text-white">
+                <span className="mr-1">
+                  <AddIcon />
+                </span>
+                Upload
+              </a>
+            </div>
+          </div>
+          <div style={{ height: 180, width: '100%' }}>
+            <DataGrid sx={GRID_STYLE} rows={bundleItems} columns={replacedItemColumns} getRowId={(row) => row.id} pageSize={5} />
+          </div>
+        </div>}
+
         <div className="d-flex align-items-center mt-4">
           <h6 className="m-0 mr-2 font-weight-600">Alternate Parts</h6>
           <div className="equipment-switch">
             {/* <Switch {...label} defaultChecked size="small" /> */}
-            <Switch {...label} disabled size="small" />
+            <Switch {...label} checked={showAlternateParts} onChange={handleShowAlternateParts} size="small" />
           </div>
         </div>
-        <EquipmentDataTable
-          columns={alternateItemColumns}
-          data={bundleItems}
-          title="Alternate Parts"
-        />
+       
+       {showAlternateParts && <div className="bg-white p-3 border-radius-10 mt-3 overflow-hidden">
+          <div className="row align-items-center mb-3">
+            <div className="col-lg-9 col-md-9">
+              <div className="d-flex align-items-center">
+                <h6 className="font-weight-500 mb-0 mr-3">Alternate Parts</h6>
+                <EquipmentSearchComponent searchPlaceholder={"Alternate Parts"}/>
+              </div>
+            </div>
+            <div className="col-lg-3 col-md-3 text-right">
+              <a href="#" className="btn bg-primary text-white">
+                <span className="mr-1">
+                  <AddIcon />
+                </span>
+                Upload
+              </a>
+            </div>
+          </div>
+          <div style={{ height: 180, width: '100%' }}>
+            <DataGrid sx={GRID_STYLE} rows={dummyalternateRefurb} columns={alternateItemColumns} getRowId={(row) => row.id} pageSize={5} />
+          </div>
+        </div>}
+
         <div className="d-flex align-items-center mt-4">
           <h6 className="m-0 mr-2 font-weight-600">Reman or Refurb Option</h6>
           <div className="equipment-switch">
-            {/* <Switch {...label} defaultChecked size="small" /> */}
-            <Switch {...label} disabled size="small" />
+            <Switch {...label} checked={showRefurbOption} onChange={handleShowRefurbOptions} size="small" />
           </div>
         </div>
-        <EquipmentDataTable
-          columns={remanItemColumns}
-          data={bundleItems}
-          title="Reman or Refurb Option"
-        />
+       
+
+      {showRefurbOption &&  <div className="bg-white p-3 border-radius-10 mt-3 overflow-hidden">
+          <div className="row align-items-center mb-3">
+            <div className="col-lg-9 col-md-9">
+              <div className="d-flex align-items-center">
+                <h6 className="font-weight-500 mb-0 mr-3">Reman or Refurb Option</h6>
+                <EquipmentSearchComponent searchPlaceholder={"Reman or Refurb Options"} />
+              </div>
+            </div>
+            <div className="col-lg-3 col-md-3 text-right">
+              <a href="#" className="btn bg-primary text-white">
+                <span className="mr-1">
+                  <AddIcon />
+                </span>
+                Upload
+              </a>
+            </div>
+          </div>
+          <div style={{ height: 180, width: '100%' }}>
+            <DataGrid sx={GRID_STYLE} rows={dummyalternateRefurb} columns={remanItemColumns} getRowId={(row) => row.id} pageSize={5} />
+          </div>
+        </div>}
       </>
     );
   };
@@ -941,18 +1157,25 @@ const Parts360 = () => {
                 </div>
               </div>
             </div>
-            <WithoutSearchDataTable
-              columns={priceItemColumns}
-              data={[partsPriceDetails]}
-              title="Price Details"
-              showAddBtn={true}
-            />
+            <div className="bg-white p-3 border-radius-10 mt-3 overflow-hidden">
+              <div className="d-flex align-items-center justify-content-between mb-3">
+                <h6 className="font-weight-600 mb-0 mr-3">Price Details</h6>
+                <a className="btn cursor bg-primary text-white">Add New</a>
+              </div>
+              <div style={{ height: 180, width: '100%' }}>
+                <DataGrid sx={GRID_STYLE} rows={[partsPriceDetails]} columns={priceItemColumns} getRowId={(row) => row.partNumber} pageSize={5} />
+              </div>
+            </div>
             <h6 className="font-weight-500 pl-2 mt-5">ERP Price</h6>
-            <WithoutSearchDataTable
-              columns={erpDetailsItemColumns}
-              data={partsERPPriceDetails}
-              title="ERP Details"
-            />
+            <div className="bg-white p-3 border-radius-10 mt-3 overflow-hidden">
+              <div className="d-flex align-items-center justify-content-between mb-3">
+                <h6 className="font-weight-600 mb-0 mr-3">ERP Details</h6>
+                <a className="btn cursor bg-primary text-white">Add New</a>
+              </div>
+              <div style={{ height: 180, width: '100%' }}>
+                <DataGrid sx={GRID_STYLE} rows={partsERPPriceDetails} columns={erpDetailsItemColumns} getRowId={(row) => row.erpCondition} pageSize={5} />
+              </div>
+            </div>
           </TabPanel>
           <TabPanel value="2" className="px-0">
             <div className="bg-white p-3 border-radius-10">
@@ -1000,18 +1223,27 @@ const Parts360 = () => {
                 </div>
               </div>
             </div>
-            <WithoutSearchDataTable
-              columns={priceItemColumns}
-              data={[partsPriceDetails]}
-              title="Price Details"
-              showAddBtn={true}
-            />
+
+            <div className="bg-white p-3 border-radius-10 mt-3 overflow-hidden">
+              <div className="d-flex align-items-center justify-content-between mb-3">
+                <h6 className="font-weight-600 mb-0 mr-3">Price Details</h6>
+                <a className="btn cursor bg-primary text-white">Add New</a>
+              </div>
+              <div style={{ height: 180, width: '100%' }}>
+                <DataGrid sx={GRID_STYLE} rows={[partsPriceDetails]} columns={priceItemColumns} getRowId={(row) => row.partNumber} pageSize={5} />
+              </div>
+            </div>
             <h6 className="font-weight-500 pl-2 mt-5">ERP Price</h6>
-            <WithoutSearchDataTable
-              columns={erpDetailsItemColumns}
-              data={partsERPPriceDetails}
-              title="ERP Details"
-            />
+
+            <div className="bg-white p-3 border-radius-10 mt-3 overflow-hidden">
+              <div className="d-flex align-items-center justify-content-between mb-3">
+                <h6 className="font-weight-600 mb-0 mr-3">ERP Details</h6>
+                <a className="btn cursor bg-primary text-white">Add New</a>
+              </div>
+              <div style={{ height: 180, width: '100%' }}>
+                <DataGrid sx={GRID_STYLE} rows={partsERPPriceDetails} columns={erpDetailsItemColumns} getRowId={(row) => row.erpCondition} pageSize={5} />
+              </div>
+            </div>
           </TabPanel>
         </TabContext>
       </Box>
@@ -1023,12 +1255,15 @@ const Parts360 = () => {
     return (
       <>
         <h5 className="font-weight-500 mt-5 ">Warranty</h5>
-        <WithoutSearchDataTable
-          columns={warrentyItemColumns}
-          data={warrentyItems}
-          title="Warranty Details"
-          showAddBtn={true}
-        />
+        <div className="bg-white p-3 border-radius-10 mt-3 overflow-hidden">
+          <div className="d-flex align-items-center justify-content-between mb-3">
+            <h6 className="font-weight-600 mb-0 mr-3">Warranty Details</h6>
+            <a className="btn cursor bg-primary text-white">Add New</a>
+          </div>
+          <div style={{ height: 180, width: '100%' }}>
+            <DataGrid sx={GRID_STYLE} rows={warrentyItems} columns={warrentyItemColumns} getRowId={(row) => row.id} pageSize={5} />
+          </div>
+        </div>
       </>
     );
   };
