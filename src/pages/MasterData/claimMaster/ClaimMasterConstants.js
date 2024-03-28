@@ -40,8 +40,8 @@ export const warrantyStatusOptions = [
 
 export const DATA_GRID_STYLE = {
   "& .MuiDataGrid-columnHeaders": {
-    // backgroundColor: "#872ff7",
-    color: "gray",
+    backgroundColor: "#872ff7",
+    color: "white",
     fontSize: 14,
   },
   "& .MuiTablePagination-displayedRows, .MuiTablePagination-selectLabel": {

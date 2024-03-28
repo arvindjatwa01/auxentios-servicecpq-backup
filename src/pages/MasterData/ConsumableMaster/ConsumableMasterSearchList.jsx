@@ -20,7 +20,7 @@ const ConsumableMasterSearchList = ({
                   }`}
                   onClick={() => handleViewDetails(consumableData.id)}
                 >
-                  <div className="row position-relative">
+                  <div className="row position-relative align-items-center ">
                     <div className="global-serach-arrow">
                       <ArrowForwardIosIcon className="text-primary font-size-20 mb-0 pb-0" />
                     </div>
@@ -39,12 +39,12 @@ const ConsumableMasterSearchList = ({
                         {consumableData.stockItem}
                       </p>
                     </div>
-                    <div className="col-lg-4 col-md-4 col-sm-4 col-4">
+                    <div className="col-lg-4 col-md-4 col-sm-4 col-4 ">
                       <div className="d-block pr-3">
                         <h6 className="font-size-12 font-weight-500 text-primary m-0 text-truncate">
                           {consumableData.name}
                         </h6>
-                        <p className="font-size-12 text-light-60 font-weight-500 m-0">
+                        <p className="font-size-12 text-light-60 font-weight-500 m-0 ">
                           {consumableData.sourceOrVendor}
                         </p>
                       </div>

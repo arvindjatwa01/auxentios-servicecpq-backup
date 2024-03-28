@@ -56,7 +56,7 @@ const CustomerMaster = () => {
           <div className="row align-items-end">
             <div className="col-lg-4 col-md-4 col-sm-6 col-12">
               <div className="d-block">
-                <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                <p className="text-light-60 font-size-12 m-0 font-weight-500 text-uppercase ">
                   Customer ID
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
@@ -68,7 +68,7 @@ const CustomerMaster = () => {
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6 col-12">
               <div className="d-block">
-                <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                <p className="text-light-60 font-size-12 m-0 font-weight-500 text-uppercase">
                   Customer Name
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
@@ -80,7 +80,7 @@ const CustomerMaster = () => {
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6 col-12">
               <div className="d-block">
-                <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                <p className="text-light-60 font-size-12 m-0 font-weight-500 text-uppercase">
                   Customer Type
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
@@ -92,7 +92,7 @@ const CustomerMaster = () => {
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
               <div className="d-block">
-                <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                <p className="text-light-60 font-size-12 m-0 font-weight-500 text-uppercase ">
                   Customer Address
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
@@ -104,7 +104,7 @@ const CustomerMaster = () => {
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
               <div className="d-block">
-                <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                <p className="text-light-60 font-size-12 m-0 font-weight-500 text-uppercase">
                   District
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
@@ -115,7 +115,7 @@ const CustomerMaster = () => {
               </div>
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
-              <p className="text-light-60 font-size-12 m-0 font-weight-500">
+              <p className="text-light-60 font-size-12 m-0 font-weight-500 text-uppercase">
                 Region/State
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
@@ -126,7 +126,7 @@ const CustomerMaster = () => {
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
               <div className="d-block">
-                <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                <p className="text-light-60 font-size-12 m-0 font-weight-500 text-uppercase">
                   Country
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
@@ -138,7 +138,7 @@ const CustomerMaster = () => {
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
               <div className="d-block">
-                <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                <p className="text-light-60 font-size-12 m-0 font-weight-500 text-uppercase ">
                   Website
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
@@ -150,7 +150,7 @@ const CustomerMaster = () => {
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
               <div className="d-block">
-                <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                <p className="text-light-60 font-size-12 m-0 font-weight-500 text-uppercase">
                   Email
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
@@ -166,7 +166,7 @@ const CustomerMaster = () => {
         <div className="bg-white p-3 border-radius-10 mt-3 mb-5">
           <div className="row">
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
-              <p className="text-light-60 font-size-12 m-0 font-weight-500">
+              <p className="text-light-60 font-size-12 m-0 font-weight-500 text-uppercase ">
                 Contact
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
@@ -176,7 +176,7 @@ const CustomerMaster = () => {
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
-              <p className="text-light-60 font-size-12 m-0 font-weight-500">
+              <p className="text-light-60 font-size-12 m-0 font-weight-500 text-uppercase ">
                 Payer Type
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
@@ -186,7 +186,7 @@ const CustomerMaster = () => {
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
-              <p className="text-light-60 font-size-12 m-0 font-weight-500">
+              <p className="text-light-60 font-size-12 m-0 font-weight-500 text-uppercase ">
                 Payer Name
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
@@ -196,7 +196,7 @@ const CustomerMaster = () => {
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
-              <p className="text-light-60 font-size-12 m-0 font-weight-500">
+              <p className="text-light-60 font-size-12 m-0 font-weight-500 text-uppercase ">
                 Insurance
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
@@ -219,7 +219,7 @@ const CustomerMaster = () => {
         <div className="bg-white p-3 border-radius-10 mt-3 mb-5">
           <div className="row">
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
-              <p className="text-light-60 font-size-12 m-0 font-weight-500">
+              <p className="text-light-60 font-size-12 m-0 font-weight-500 text-uppercase">
                 Customer Segment
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
@@ -229,7 +229,7 @@ const CustomerMaster = () => {
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
-              <p className="text-light-60 font-size-12 m-0 font-weight-500">
+              <p className="text-light-60 font-size-12 m-0 font-weight-500 text-uppercase">
                 Customer Group
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
@@ -239,7 +239,7 @@ const CustomerMaster = () => {
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
-              <p className="text-light-60 font-size-12 m-0 font-weight-500">
+              <p className="text-light-60 font-size-12 m-0 font-weight-500 text-uppercase">
                 Customer Type
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
@@ -249,7 +249,7 @@ const CustomerMaster = () => {
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
-              <p className="text-light-60 font-size-12 m-0 font-weight-500">
+              <p className="text-light-60 font-size-12 m-0 font-weight-500 text-uppercase ">
                 Customer Class
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
@@ -259,7 +259,7 @@ const CustomerMaster = () => {
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
-              <p className="text-light-60 font-size-12 m-0 font-weight-500">
+              <p className="text-light-60 font-size-12 m-0 font-weight-500 text-uppercase">
                 Customer Since
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
@@ -269,7 +269,7 @@ const CustomerMaster = () => {
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
-              <p className="text-light-60 font-size-12 m-0 font-weight-500">
+              <p className="text-light-60 font-size-12 m-0 font-weight-500 text-uppercase">
                 Status
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
@@ -284,7 +284,7 @@ const CustomerMaster = () => {
         <div className="bg-white p-3 border-radius-10 mt-3 mb-5">
           <div className="row">
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
-              <p className="text-light-60 font-size-12 m-0 font-weight-500">
+              <p className="text-light-60 font-size-12 m-0 font-weight-500 text-uppercase ">
                 Customer Code
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
@@ -294,7 +294,7 @@ const CustomerMaster = () => {
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
-              <p className="text-light-60 font-size-12 m-0 font-weight-500">
+              <p className="text-light-60 font-size-12 m-0 font-weight-500 text-uppercase ">
                 Customer Group
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
@@ -304,7 +304,7 @@ const CustomerMaster = () => {
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
-              <p className="text-light-60 font-size-12 m-0 font-weight-500">
+              <p className="text-light-60 font-size-12 m-0 font-weight-500 text-uppercase">
                 Customer Industry
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
@@ -314,17 +314,17 @@ const CustomerMaster = () => {
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
-              <p className="text-light-60 font-size-12 m-0 font-weight-500">
+              <p className="text-light-60 font-size-12 m-0 font-weight-500 text-uppercase">
                 Customer Rating
               </p>
-              <p className="text-primary font-size-12 mt-1 font-weight-500">
+              <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
                 {isEmpty(selectedCustomerDetails.customerRating)
                   ? "NA"
                   : selectedCustomerDetails.customerRating}
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
-              <p className="text-light-60 font-size-12 m-0 font-weight-500">
+              <p className="text-light-60 font-size-12 m-0 font-weight-500 text-uppercase ">
                 Customer Type
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">

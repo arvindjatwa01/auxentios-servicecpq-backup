@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Modal } from "react-bootstrap";
 import { default as Select, default as SelectFilter } from "react-select";
-import { callPostApi } from "services/ApiCaller";
+import { callGetApi, callPostApi, callPutApi } from "services/ApiCaller";
 import {
   DATA_SVC_CUSTOMER_MASTER_URL,
   USER_SERVICE_ADD_USER,
@@ -37,7 +37,7 @@ const masterSelectObj = {
 };
 
 const addressDTOObj = {
-  id: 3,
+  id: 0,
   addressId: 0,
   addressLine1: "",
   addressLine2: "",
@@ -55,7 +55,14 @@ const customerTypeOption = [
   { label: "Customer", value: "C" },
 ];
 
-const AddCustomerModal = (props) => {
+const AddCustomerModal = ({
+  openAddCustomer,
+  handleAddCustomerClose,
+  customerId,
+  title,
+  handleSnack,
+  roles,
+}) => {
   let fontColor = "#872ff7 !important";
   const customStyle = {
     control: (styles, { isDisabled }) => {
@@ -93,6 +100,33 @@ const AddCustomerModal = (props) => {
 
   const [addressRecord, setAddressRecord] = useState({ ...addressDTOObj });
 
+  useEffect(() => {
+    if (customerId) {
+      const rUrl = `${DATA_SVC_CUSTOMER_MASTER_URL}/${customerId}`;
+      console.log("Custom rURl ::: ", rUrl);
+      callGetApi(null, rUrl, (response) => {
+        if (response.status === API_SUCCESS) {
+          const responseData = response.data;
+
+          const _customerType = customerTypeOption.find(
+            (obj) => obj.value === responseData.customerType
+          );
+          const _contactType = roles.find(
+            (obj) => obj.value === responseData.contactType
+          );
+
+          setRecord({
+            ...responseData,
+            customerType: _customerType || "",
+            contactType: _contactType || "",
+          });
+
+          setAddressRecord({ ...responseData["addressDTO"] });
+        }
+      });
+    }
+  }, [customerId]);
+
   // change input fields value
   const handleInputValueChange = (e) => {
     const { name, value } = e.target;
@@ -113,14 +147,32 @@ const AddCustomerModal = (props) => {
       contactType: record.contactType?.label || "End_Customer",
       addressDTO: addressRecord,
     };
-    callPostApi(null, DATA_SVC_CUSTOMER_MASTER_URL, rObj, (response) => {
-      if (response.status === API_SUCCESS) {
-        const responseData = response.data;
-        handleAddUpdateTenetUser(responseData);
-      } else {
-        props.handleSnack("info", response?.data?.message);
-      }
-    });
+    if (customerId) {
+      callPutApi(
+        null,
+        `${DATA_SVC_CUSTOMER_MASTER_URL}/${customerId}`,
+        rObj,
+        (response) => {
+          if (response.status === API_SUCCESS) {
+            const responseData = response.data;
+            handleSnack("success", "Custome Details updated succefully.");
+            handleAddCustomerClose();
+            // handleAddUpdateTenetUser(responseData);
+          } else {
+            handleSnack("info", response?.data?.message);
+          }
+        }
+      );
+    } else {
+      callPostApi(null, DATA_SVC_CUSTOMER_MASTER_URL, rObj, (response) => {
+        if (response.status === API_SUCCESS) {
+          const responseData = response.data;
+          handleAddUpdateTenetUser(responseData);
+        } else {
+          handleSnack("info", response?.data?.message);
+        }
+      });
+    }
   };
 
   const handleAddUpdateTenetUser = () => {
@@ -140,14 +192,14 @@ const AddCustomerModal = (props) => {
         if (record.customerType?.value === "CUSTOMER") {
           handleCreateTenent(responseData);
         } else {
-          props.handleSnack(
+          handleSnack(
             "success",
             `Partner ${parseInt(record.customerId)} created successfully.`
           );
-          props.handleAddCustomerClose();
+          handleAddCustomerClose();
         }
       } else {
-        props.handleSnack("info", response?.data?.message);
+        handleSnack("info", response?.data?.message);
       }
     });
   };
@@ -166,27 +218,27 @@ const AddCustomerModal = (props) => {
 
     callPostApi(null, USER_SERVICE_TENANT_MASTER_URL, rObj, (response) => {
       if (response.status === API_SUCCESS) {
-        props.handleSnack(
+        handleSnack(
           "success",
           `Customer ${parseInt(record.customerId)} created successfully.`
         );
-        props.handleAddCustomerClose();
+        handleAddCustomerClose();
       } else {
-        props.handleSnack("info", response?.data?.message);
+        handleSnack("info", response?.data?.message);
       }
     });
   };
 
   return (
     <Modal
-      show={props.openAddCustomer}
-      onHide={props.handleAddCustomerClose}
-      size="lg"
+      show={openAddCustomer}
+      onHide={handleAddCustomerClose}
+      size="xl"
       aria-labelledby="contained-modal-title-vcenter"
       centered
     >
       <Modal.Header className="modal-header-border">
-        <Modal.Title>{props.title}</Modal.Title>
+        <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
       <Modal.Body className="px-3 bg-white">
         <div>
@@ -276,7 +328,7 @@ const AddCustomerModal = (props) => {
                     styles={customStyle}
                     getOptionLabel={(option) => `${option.label}`}
                     value={record.contactType}
-                    options={props.roles}
+                    options={roles}
                   />
                   <div className="css-w8dmq8">*Mandatory</div>
                 </div>
@@ -375,7 +427,7 @@ const AddCustomerModal = (props) => {
           <div className="m-3 text-right">
             <button
               type="button"
-              onClick={props.handleAddCustomerClose}
+              onClick={handleAddCustomerClose}
               className="btn border mr-3 "
             >
               Cancel
@@ -394,7 +446,7 @@ const AddCustomerModal = (props) => {
                 )
               }
             >
-              {props.title}
+              {title}
             </button>
           </div>
         </div>

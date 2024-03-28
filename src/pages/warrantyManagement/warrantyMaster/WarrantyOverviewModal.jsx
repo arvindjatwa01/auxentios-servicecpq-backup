@@ -32,7 +32,11 @@ import {
   warrantyTypeOptions,
   yearlyWarrantyObj,
 } from "../warrantyManagementConstants";
-import { FONT_STYLE, FONT_STYLE_SELECT, GRID_STYLE } from "pages/Common/constants";
+import {
+  FONT_STYLE,
+  FONT_STYLE_SELECT,
+  GRID_STYLE,
+} from "pages/Common/constants";
 import {
   CLAIM_MASTER_URL,
   Get_Customer_Master_Details_By_Id_GET,
@@ -65,6 +69,7 @@ const WarrantyOverviewModal = ({
   handleShowPartCreateModal,
   openFileUploadModal,
   handleShowFileUploadModal,
+  isReportModal = false,
 }) => {
   const [tabValue, setTabValue] = useState("overview");
   const [warrantyRecord, setWarrantyRecord] = useState({
@@ -93,7 +98,7 @@ const WarrantyOverviewModal = ({
     detailsViewOnly: true,
   });
 
-  const [claimPage, setClaimPage] = useState(1);
+  const [claimPage, setClaimPage] = useState(0);
   const [claimPageSize, setClaimPageSize] = useState(10);
   const [claimRecord, setClaimRecord] = useState([]);
   const [claimRecordId, setClaimRecordId] = useState(null);
@@ -2031,6 +2036,16 @@ const WarrantyOverviewModal = ({
   const viewClaimTabData = () => {
     return (
       <>
+        <div className="Add-new-segment-div p-3 border-radius-10 mb-4">
+          <div class="repairbtn-dropdown">
+            <button
+              className="btn bg-primary text-white ml-2 dropbtn"
+              onClick={handleClaimCreate}
+            >
+              Raise a Claim
+            </button>
+          </div>
+        </div>
         <div className="card border px-3 pt-4">
           <div className="d-flex justify-content-around ">
             <div
@@ -2279,7 +2294,7 @@ const WarrantyOverviewModal = ({
           </Box>
         </Modal.Body>
       </Modal>
-      {openClaimCreateModal && (
+      {!isReportModal && openClaimCreateModal && (
         <ClaimCreateModal
           show={openClaimCreateModal}
           hideModal={handleClaimCreate}
@@ -2287,7 +2302,7 @@ const WarrantyOverviewModal = ({
           handleSnack={handleSnack}
         />
       )}
-      {openClaimEditModal && (
+      {!isReportModal && openClaimEditModal && (
         <ClaimEditModal
           show={openClaimEditModal}
           hideModal={handleOpenClaimEditModal}
@@ -2322,41 +2337,6 @@ const WarrantyOverviewModal = ({
           hideModal={handleShowFileUploadModal}
         />
       )}
-
-      {/* {openClaimEditModal && (
-        <ClaimEditModal
-          show={openClaimEditModal}
-          hideModal={() => setOpenClaimEditModal(false)}
-          warrantyRecord={warrantyRecord}
-          handleSnack={handleSnack}
-          claimRecordId={claimRecordId}
-          handleShowReturnProcess={handleShowReturnProcess}
-        />
-      )}
-
-      {openClaimReturnRequest && (
-        <ReturnRequestProcessModal
-          show={openClaimReturnRequest}
-          hideModal={() => setOpenClaimReturnRequest(false)}
-          claimRecordId={claimRecordId}
-          handleSnack={handleSnack}
-          // evaluationQuestions={evaluationQuestions}
-          claimOrderId={claimOrderId}
-          setClaimOrderId={setClaimOrderId}
-          claimDetails={claimData}
-          evaluationId={evaluationId}
-          setEvaluationId={setEvaluationId}
-          assesstmentId={assesstmentId}
-          setAssesstmentId={setAssesstmentId}
-          handeleShowReturnRequester={handeleShowReturnRequester}
-          handleShowHideAddPartModal={handleShowHideAddPartModal}
-          fromClaim={false}
-          newPartRecord={newPartRecord}
-          setNewPartRecord={setNewPartRecord}
-          isFailurePar={isFailurePart}
-          setIsFailurePart={setIsFailurePart}
-        />
-      )} */}
     </>
   );
 };

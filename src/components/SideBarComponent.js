@@ -8,10 +8,7 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import { Modal } from "react-bootstrap";
 import Radio from "@material-ui/core/Radio";
 import { NavLink } from "react-router-dom";
-import {
-  QUOTE_RECENT_REPAIR,
-  QUOTE_SPARE_PARTS,
-} from "navigation/CONSTANTS";
+import { QUOTE_RECENT_REPAIR, QUOTE_SPARE_PARTS } from "navigation/CONSTANTS";
 import { Divider } from "@mui/material";
 import Cookies from "js-cookie";
 
@@ -28,7 +25,7 @@ export function SideBarComponent(props) {
       setSolutionBuilderShow(true);
     }
   };
-  const [planName, setPlanName] = useState('STARTER');
+  const [planName, setPlanName] = useState("STARTER");
   useEffect(() => {
     var CookiesSetData = Cookies.get("loginTenantDtl");
 
@@ -38,9 +35,9 @@ export function SideBarComponent(props) {
         setPlanName(getCookiesJsonData.user_planName);
       }
     }
-  }, [])
+  }, []);
 
-  const packageValue = { STARTER: 1, GROWTH: 2, MOMENTUM: 3, ENTERPRISE: 4 }
+  const packageValue = { STARTER: 1, GROWTH: 2, MOMENTUM: 3, ENTERPRISE: 4 };
 
   const handleShow = () => {
     if (solutionBuilderShow) {
@@ -64,7 +61,7 @@ export function SideBarComponent(props) {
     <div>
       <nav
         className="main-menu"
-      // style={{backgroundColor: '	#404040'}}
+        // style={{backgroundColor: '	#404040'}}
       >
         <ul className="metismenu scrollbamenu" id="menu">
           <li className="has-subnav sub-li">
@@ -80,9 +77,9 @@ export function SideBarComponent(props) {
                   id="Layer_1"
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 37 27.3"
-                // className="width-24"
-                // height={12}
-                // width={12}
+                  // className="width-24"
+                  // height={12}
+                  // width={12}
                 >
                   <g>
                     <g>
@@ -130,8 +127,8 @@ export function SideBarComponent(props) {
                   id="uuid-c05174b0-733e-42a0-8a41-26f820ee4aba"
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 107.79136 107.79136"
-                // height={13}
-                // width={13}
+                  // height={13}
+                  // width={13}
                 >
                   <path
                     className="uuid-aedeb60b-b298-4c08-abdd-280bb25795c7"
@@ -148,7 +145,7 @@ export function SideBarComponent(props) {
               </span>
             </NavLink>
           </li>
-          {packageValue[planName] > 2 &&
+          {packageValue[planName] > 2 && (
             <li className="has-subnav sub-li">
               <NavLink
                 to="/insights"
@@ -161,8 +158,8 @@ export function SideBarComponent(props) {
                     id="Layer_1"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 37 39.6"
-                  // height={14}
-                  // width={14}
+                    // height={14}
+                    // width={14}
                   >
                     <path
                       className="uuid-6dddf708-4d26-4520-b06c-bac58072bbf4"
@@ -193,8 +190,8 @@ export function SideBarComponent(props) {
                 </span>
               </NavLink>
             </li>
-          }
-          {packageValue[planName] > 2 &&
+          )}
+          {packageValue[planName] > 2 && (
             <li className="has-subnav sub-li">
               <a
                 className="has-arrow border-radius-50 cursor"
@@ -206,8 +203,8 @@ export function SideBarComponent(props) {
                     id="uuid-c284ff3d-7bb4-40a6-aa03-9e912e189278"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 88.43799 91.96899"
-                  // height={14}
-                  // width={14}
+                    // height={14}
+                    // width={14}
                   >
                     <path
                       className="uuid-0a55bafd-419d-477c-878d-be91a3e45155"
@@ -248,8 +245,8 @@ export function SideBarComponent(props) {
                         id="uuid-80f962bf-0984-4652-b8d6-016aa47e6fca"
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 115.09342 118.44688"
-                      // height={13}
-                      // width={13}
+                        // height={13}
+                        // width={13}
                       >
                         <path
                           className="uuid-6dddf708-4d26-4520-b06c-bac58072bbf4"
@@ -266,7 +263,10 @@ export function SideBarComponent(props) {
                       </svg>
                     </span>
                     <span className="nav-text">
-                      <span className="ml-2 " style={{ display: "inline-grid" }}>
+                      <span
+                        className="ml-2 "
+                        style={{ display: "inline-grid" }}
+                      >
                         <span className="font-size-13 font-weight-400 text-dark">
                           Dashboard
                         </span>
@@ -285,8 +285,8 @@ export function SideBarComponent(props) {
                         id="uuid-2339a07b-c6d4-4b85-897c-b6ee6a6101ee"
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 110.29999 145.5706"
-                      // height={13}
-                      // width={13}
+                        // height={13}
+                        // width={13}
                       >
                         <path
                           className="uuid-e32578ab-2aa2-47d9-8df4-2b8a18d4a5e3"
@@ -307,7 +307,10 @@ export function SideBarComponent(props) {
                       </svg>
                     </span>
                     <span className="nav-text">
-                      <span className="ml-2 " style={{ display: "inline-grid" }}>
+                      <span
+                        className="ml-2 "
+                        style={{ display: "inline-grid" }}
+                      >
                         <span className="font-size-13 font-weight-400 text-dark">
                           Reports
                         </span>
@@ -317,8 +320,10 @@ export function SideBarComponent(props) {
                 </li>
               </ul>
             </li>
-          }
-          <Divider sx={{ marginLeft: '5%', marginRight: '5%', marginBlock: 1 }} />
+          )}
+          <Divider
+            sx={{ marginLeft: "5%", marginRight: "5%", marginBlock: 1 }}
+          />
           <li className="has-subnav sub-li">
             <a
               className="has-arrow border-radius-50"
@@ -330,8 +335,8 @@ export function SideBarComponent(props) {
                   id="uuid-0b37c72c-fd44-4acc-9628-08cba1263678"
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 94.25342 91.96899"
-                // height={13}
-                // width={13}
+                  // height={13}
+                  // width={13}
                 >
                   <path
                     className="uuid-69931b71-db43-4993-b706-df8786023ed7"
@@ -440,15 +445,14 @@ export function SideBarComponent(props) {
                       // width={15}
                       className="tempRepair"
                     >
-
-                      <path d="M94.10235,71.7311l-8.99902-8.99878c.46387-1.40381,.84351-2.84644,1.12964-4.32568,2.19019-11.32715-1.36597-22.95361-9.51367-31.09985-10.06128-10.06226-25.01953-12.95166-38.11206-7.35815l-5.66846,2.42065,23.81982,23.81982c.77319,.77319,1.19971,1.80225,1.19971,2.896,0,1.09399-.42651,2.1228-1.19971,2.896l-4.35474,4.35498c-1.5481,1.54639-4.24414,1.54639-5.79224,0l-23.81885-23.82153-2.4209,5.66846c-3.61963,8.47339-3.69604,18.2229-.21143,26.74829,3.58203,8.76318,10.66772,15.69653,19.9502,19.52393,3.83691,1.58228,7.95386,2.37183,12.08057,2.37183,3.77539,0,7.55859-.66235,11.1416-1.98364l8.82837,8.8291c.81396,.81396,1.8811,1.2207,2.94727,1.2207s2.13354-.40674,2.94653-1.2207c1.62793-1.62646,1.62793-4.26514,.00098-5.89307l-6.93042-6.93091c4.11841-2.73682,7.54736-6.18164,10.14478-10.16333l6.93896,6.93896c.81299,.81396,1.88013,1.22119,2.94653,1.22119,1.06616,0,2.1333-.40723,2.94653-1.22119,1.62793-1.62793,1.62793-4.26514,0-5.89307Zm-32.56836,4.86108c-5.81885,2.48096-12.46899,2.53784-18.24658,.15625-9.23608-3.80762-13.47925-10.24292-15.41162-14.97046-1.81592-4.44238-2.35889-9.32129-1.63354-14.02441l14.47632,14.47559c4.69482,4.69482,12.8833,4.69482,17.57837,0l4.35474-4.35474c2.34814-2.34741,3.6416-5.46826,3.6416-8.78931,0-3.3208-1.29346-6.44165-3.6416-8.78906l-14.49438-14.49512c8.18604-1.30396,16.60083,1.33325,22.66821,7.39893,6.1875,6.18774,8.88843,15.01929,7.22388,23.62451-1.70435,8.81348-7.72461,16.0188-16.51538,19.76782Z" /><path d="M21.32744,20.9059c1.62793-1.62646,1.62793-4.26514,.00098-5.89307L11.97271,5.65541c-1.62793-1.62793-4.26587-1.62793-5.8938,0-1.62793,1.62622-1.62793,4.26514-.00098,5.89307l9.35571,9.35742c.81396,.81396,1.8811,1.2207,2.94751,1.2207,1.06616,0,2.13232-.40674,2.94629-1.2207Z" /><path d="M7.11406,30.12953c-1.62793-1.62451-4.26587-1.62622-5.8938,.00171-1.6272,1.62793-1.6272,4.26685,.00073,5.89478l4.67871,4.677c.81396,.81226,1.88037,1.21924,2.94653,1.21924s2.13354-.40698,2.94751-1.22095c1.62695-1.62793,1.62695-4.2666-.00098-5.89453l-4.67871-4.67725Z" /><path d="M35.65239,11.79262c.81396,.81396,1.8811,1.22095,2.94751,1.22095,1.06616,0,2.13257-.40698,2.94653-1.22095,1.62793-1.62622,1.62793-4.26514,.00073-5.89307l-4.67773-4.67871c-1.62793-1.62793-4.26611-1.62793-5.89404,0-1.62793,1.62646-1.62793,4.26514-.00073,5.89307l4.67773,4.67871Z" />
+                      <path d="M94.10235,71.7311l-8.99902-8.99878c.46387-1.40381,.84351-2.84644,1.12964-4.32568,2.19019-11.32715-1.36597-22.95361-9.51367-31.09985-10.06128-10.06226-25.01953-12.95166-38.11206-7.35815l-5.66846,2.42065,23.81982,23.81982c.77319,.77319,1.19971,1.80225,1.19971,2.896,0,1.09399-.42651,2.1228-1.19971,2.896l-4.35474,4.35498c-1.5481,1.54639-4.24414,1.54639-5.79224,0l-23.81885-23.82153-2.4209,5.66846c-3.61963,8.47339-3.69604,18.2229-.21143,26.74829,3.58203,8.76318,10.66772,15.69653,19.9502,19.52393,3.83691,1.58228,7.95386,2.37183,12.08057,2.37183,3.77539,0,7.55859-.66235,11.1416-1.98364l8.82837,8.8291c.81396,.81396,1.8811,1.2207,2.94727,1.2207s2.13354-.40674,2.94653-1.2207c1.62793-1.62646,1.62793-4.26514,.00098-5.89307l-6.93042-6.93091c4.11841-2.73682,7.54736-6.18164,10.14478-10.16333l6.93896,6.93896c.81299,.81396,1.88013,1.22119,2.94653,1.22119,1.06616,0,2.1333-.40723,2.94653-1.22119,1.62793-1.62793,1.62793-4.26514,0-5.89307Zm-32.56836,4.86108c-5.81885,2.48096-12.46899,2.53784-18.24658,.15625-9.23608-3.80762-13.47925-10.24292-15.41162-14.97046-1.81592-4.44238-2.35889-9.32129-1.63354-14.02441l14.47632,14.47559c4.69482,4.69482,12.8833,4.69482,17.57837,0l4.35474-4.35474c2.34814-2.34741,3.6416-5.46826,3.6416-8.78931,0-3.3208-1.29346-6.44165-3.6416-8.78906l-14.49438-14.49512c8.18604-1.30396,16.60083,1.33325,22.66821,7.39893,6.1875,6.18774,8.88843,15.01929,7.22388,23.62451-1.70435,8.81348-7.72461,16.0188-16.51538,19.76782Z" />
+                      <path d="M21.32744,20.9059c1.62793-1.62646,1.62793-4.26514,.00098-5.89307L11.97271,5.65541c-1.62793-1.62793-4.26587-1.62793-5.8938,0-1.62793,1.62622-1.62793,4.26514-.00098,5.89307l9.35571,9.35742c.81396,.81396,1.8811,1.2207,2.94751,1.2207,1.06616,0,2.13232-.40674,2.94629-1.2207Z" />
+                      <path d="M7.11406,30.12953c-1.62793-1.62451-4.26587-1.62622-5.8938,.00171-1.6272,1.62793-1.6272,4.26685,.00073,5.89478l4.67871,4.677c.81396,.81226,1.88037,1.21924,2.94653,1.21924s2.13354-.40698,2.94751-1.22095c1.62695-1.62793,1.62695-4.2666-.00098-5.89453l-4.67871-4.67725Z" />
+                      <path d="M35.65239,11.79262c.81396,.81396,1.8811,1.22095,2.94751,1.22095,1.06616,0,2.13257-.40698,2.94653-1.22095,1.62793-1.62622,1.62793-4.26514,.00073-5.89307l-4.67773-4.67871c-1.62793-1.62793-4.26611-1.62793-5.89404,0-1.62793,1.62646-1.62793,4.26514-.00073,5.89307l4.67773,4.67871Z" />
                     </svg>
                   </span>
                   <span className="nav-text">
-                    <span
-                      className="ml-2 "
-                      style={{ display: "inline-grid" }}
-                    >
+                    <span className="ml-2 " style={{ display: "inline-grid" }}>
                       <span className="font-size-13 font-weight-400 text-dark">
                         Repair Option
                       </span>
@@ -467,8 +471,8 @@ export function SideBarComponent(props) {
                       id="uuid-71879914-eb74-479f-b04a-3a9b28cfee15"
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 124.97439 124.67789"
-                    // height={13}
-                    // width={13}
+                      // height={13}
+                      // width={13}
                     >
                       <path
                         className="uuid-e6a75694-9e2b-4a4c-8f31-e708d1f611e7"
@@ -485,10 +489,7 @@ export function SideBarComponent(props) {
                     </svg>
                   </span>
                   <span className="nav-text">
-                    <span
-                      className="ml-2 "
-                      style={{ display: "inline-grid" }}
-                    >
+                    <span className="ml-2 " style={{ display: "inline-grid" }}>
                       <span className="font-size-13 font-weight-400 text-dark">
                         Service Estimate
                       </span>
@@ -499,7 +500,7 @@ export function SideBarComponent(props) {
               {/* </ul>
                   </li> */}
 
-              {packageValue[planName] > 1 &&
+              {packageValue[planName] > 1 && (
                 <li>
                   <NavLink
                     to="/RepairPartList"
@@ -511,8 +512,8 @@ export function SideBarComponent(props) {
                         id="uuid-ae0f5633-9fa9-459c-9052-9dfe57b47331"
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 107.9045 107.90369"
-                      // height={13}
-                      // width={13}
+                        // height={13}
+                        // width={13}
                       >
                         <path
                           className="uuid-ee13792e-286e-4dc4-8c1d-5f54ef7c9559"
@@ -556,7 +557,7 @@ export function SideBarComponent(props) {
                     </span>
                   </NavLink>
                 </li>
-              }
+              )}
               {/* <li>
                     <a
                       className="has-arrow border-radius-50"
@@ -609,7 +610,7 @@ export function SideBarComponent(props) {
                     </a>
 
                     <ul aria-expanded="false"> */}
-              {packageValue[planName] > 1 &&
+              {packageValue[planName] > 1 && (
                 <li>
                   <NavLink
                     to="/standard-job"
@@ -622,8 +623,8 @@ export function SideBarComponent(props) {
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 80.7229 111.22266"
                         className="tempTemplate"
-                      // height={15}
-                      // width={15}
+                        // height={15}
+                        // width={15}
                       >
                         <path
                           className="uuid-fb12aa24-59f9-42ce-94c6-88f0d5606902"
@@ -659,8 +660,8 @@ export function SideBarComponent(props) {
                     </span>
                   </NavLink>
                 </li>
-              }
-              {packageValue[planName] > 1 &&
+              )}
+              {packageValue[planName] > 1 && (
                 <li>
                   <NavLink
                     to="/RepairKits"
@@ -672,8 +673,8 @@ export function SideBarComponent(props) {
                         id="uuid-8b9cd8c2-8c40-4465-a1fa-23edb937326d"
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 108.98463 118.98497"
-                      // height={15}
-                      // width={15}
+                        // height={15}
+                        // width={15}
                       >
                         <path
                           className="uuid-c202c004-106f-49a6-aa14-c5d8120b224f"
@@ -705,18 +706,22 @@ export function SideBarComponent(props) {
                     </span>
                   </NavLink>
                 </li>
-              }
+              )}
 
-              {packageValue[planName] > 2 &&
+              {packageValue[planName] > 2 && (
                 <li>
-                  <NavLink to="/portfolio" className="border-radius-50" activeClassName="active">
+                  <NavLink
+                    to="/portfolio"
+                    className="border-radius-50"
+                    activeClassName="active"
+                  >
                     <span className="span-icon">
                       <svg
                         id="uuid-fd97eedc-9e4d-4a33-a68e-8d9f474ba343"
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 119.30736 133.59966"
-                      // height={14}
-                      // width={14}
+                        // height={14}
+                        // width={14}
                       >
                         <path
                           className="uuid-e6c3fd4e-386b-4059-8b00-0f6ea13faef9"
@@ -736,8 +741,8 @@ export function SideBarComponent(props) {
                     </span>
                   </NavLink>
                 </li>
-              }
-              {packageValue[planName] > 2 &&
+              )}
+              {packageValue[planName] > 2 && (
                 <li>
                   <NavLink
                     to="/solutionBuilder/analytics"
@@ -776,7 +781,7 @@ export function SideBarComponent(props) {
                     </span>
                   </NavLink>
                 </li>
-              }
+              )}
               {/* <li><a href="#">
                     <span className="span-icon"><img src={Disassemble}></img></span>
                     <span className="nav-text">
@@ -802,16 +807,22 @@ export function SideBarComponent(props) {
                   id="uuid-44f21729-ee7f-4ae1-a13f-50d052182172"
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 37.7 35.5"
-                // height={13}
-                // width={13}
+                  // height={13}
+                  // width={13}
                 >
-                  <path d="M7.8,35.5C3.5,35.5,0,32,0,27.7c0-0.7,0.6-1.3,1.3-1.3s1.3,0.6,1.3,1.3c0,2.9,2.4,5.3,5.3,5.3
+                  <path
+                    d="M7.8,35.5C3.5,35.5,0,32,0,27.7c0-0.7,0.6-1.3,1.3-1.3s1.3,0.6,1.3,1.3c0,2.9,2.4,5.3,5.3,5.3
 		c2.9,0,5.2-2.3,5.3-5.1c0-0.8,0.7-1.5,1.5-1.5h21.7c0.7,0,1.3,0.6,1.3,1.3S37.1,29,36.4,29H15.6C15,32.7,11.8,35.5,7.8,35.5z
-		 M15.7,28C15.7,28,15.7,28,15.7,28C15.7,28,15.7,28,15.7,28z"/>
-                  <path d="M29.8,35.5c-0.7,0-1.3-0.6-1.3-1.3s0.6-1.3,1.3-1.3c2.9,0,5.3-2.4,5.3-5.3c0-0.7,0.6-1.3,1.3-1.3
-		s1.3,0.6,1.3,1.3C37.7,32,34.2,35.5,29.8,35.5z"/>
-                  <path d="M1.3,29C0.6,29,0,28.4,0,27.7V4h31.6v19c0,0.7-0.6,1.3-1.3,1.3s-1.3-0.6-1.3-1.3V6.5H2.5v21.2
-		C2.5,28.4,1.9,29,1.3,29z"/>
+		 M15.7,28C15.7,28,15.7,28,15.7,28C15.7,28,15.7,28,15.7,28z"
+                  />
+                  <path
+                    d="M29.8,35.5c-0.7,0-1.3-0.6-1.3-1.3s0.6-1.3,1.3-1.3c2.9,0,5.3-2.4,5.3-5.3c0-0.7,0.6-1.3,1.3-1.3
+		s1.3,0.6,1.3,1.3C37.7,32,34.2,35.5,29.8,35.5z"
+                  />
+                  <path
+                    d="M1.3,29C0.6,29,0,28.4,0,27.7V4h31.6v19c0,0.7-0.6,1.3-1.3,1.3s-1.3-0.6-1.3-1.3V6.5H2.5v21.2
+		C2.5,28.4,1.9,29,1.3,29z"
+                  />
                   <path d="M23.3,12.6H7.6c-0.7,0-1.3-0.6-1.3-1.3s0.6-1.3,1.3-1.3h15.7c0.7,0,1.3,0.6,1.3,1.3S24,12.6,23.3,12.6z" />
                   <path d="M15.4,17.9H7.6c-0.7,0-1.3-0.6-1.3-1.3s0.6-1.3,1.3-1.3h7.9c0.7,0,1.3,0.6,1.3,1.3S16.1,17.9,15.4,17.9z" />
                   <path d="M24,17.9h-3.4c-0.7,0-1.3-0.6-1.3-1.3s0.6-1.3,1.3-1.3H24c0.7,0,1.3,0.6,1.3,1.3S24.7,17.9,24,17.9z" />
@@ -829,7 +840,7 @@ export function SideBarComponent(props) {
               </span>
             </a>
             <ul aria-expanded="false">
-              {packageValue[planName] > 2 &&
+              {packageValue[planName] > 2 && (
                 <li>
                   <NavLink to="/solution-quote" className="border-radius-50">
                     <span className="span-icon">
@@ -837,8 +848,8 @@ export function SideBarComponent(props) {
                         id="uuid-e1f64c88-ce49-4df1-a848-c28d42dd73fb"
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 125.60411 105.11994"
-                      // height={13}
-                      // width={13}
+                        // height={13}
+                        // width={13}
                       >
                         <path
                           className="uuid-ca01be9e-9dab-4294-845e-2b0def34245b"
@@ -851,7 +862,10 @@ export function SideBarComponent(props) {
                       </svg>
                     </span>
                     <span className="nav-text">
-                      <span className="ml-2 " style={{ display: "inline-grid" }}>
+                      <span
+                        className="ml-2 "
+                        style={{ display: "inline-grid" }}
+                      >
                         <span className="font-size-13 font-weight-400 text-dark">
                           Solution Quote
                         </span>
@@ -859,7 +873,7 @@ export function SideBarComponent(props) {
                     </span>
                   </NavLink>
                 </li>
-              }
+              )}
               <li>
                 <NavLink to={QUOTE_RECENT_REPAIR} className="border-radius-50">
                   <span className="span-icon">
@@ -867,8 +881,8 @@ export function SideBarComponent(props) {
                       id="uuid-ca4af1ef-6b2a-43ba-b263-14c9653fee82"
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 129.35077 128.95926"
-                    // height={13}
-                    // width={13}
+                      // height={13}
+                      // width={13}
                     >
                       <path
                         className="uuid-272d570e-c4ca-4b12-a836-c20f74794781"
@@ -893,7 +907,7 @@ export function SideBarComponent(props) {
                   </span>
                 </NavLink>
               </li>
-              {packageValue[planName] > 1 &&
+              {packageValue[planName] > 1 && (
                 <li>
                   <NavLink to={QUOTE_SPARE_PARTS} className="border-radius-50">
                     <span className="span-icon">
@@ -901,8 +915,8 @@ export function SideBarComponent(props) {
                         id="uuid-fff7022f-e3d4-42a4-9d61-a33e4511768e"
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 143.57476 126.95366"
-                      // height={13}
-                      // width={13}
+                        // height={13}
+                        // width={13}
                       >
                         <path
                           className="uuid-4208680f-df00-457f-87d6-d89dccaaeaab"
@@ -951,7 +965,10 @@ export function SideBarComponent(props) {
                       </svg>
                     </span>
                     <span className="nav-text">
-                      <span className="ml-2 " style={{ display: "inline-grid" }}>
+                      <span
+                        className="ml-2 "
+                        style={{ display: "inline-grid" }}
+                      >
                         <span className="font-size-13 font-weight-400 text-dark">
                           Spare Parts Quote
                         </span>
@@ -959,10 +976,10 @@ export function SideBarComponent(props) {
                     </span>
                   </NavLink>
                 </li>
-              }
+              )}
             </ul>
           </li>
-          {packageValue[planName] > 2 &&
+          {packageValue[planName] > 2 && (
             <li className="has-subnav sub-li">
               <a
                 className="has-arrow border-radius-50"
@@ -974,8 +991,8 @@ export function SideBarComponent(props) {
                     id="uuid-9ce0e2a9-dce3-4e3c-9203-296e2dedc338"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 88.73024 106.83911"
-                  // height={14}
-                  // width={14}
+                    // height={14}
+                    // width={14}
                   >
                     <path
                       className="uuid-eb24abed-0470-43cd-88a6-7d59d606a7f0"
@@ -1003,8 +1020,8 @@ export function SideBarComponent(props) {
                         id="uuid-a5522de4-b158-4b69-af44-ca862042c87a"
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 134.19385 134.19303"
-                      // height={13}
-                      // width={13}
+                        // height={13}
+                        // width={13}
                       >
                         <path
                           className="uuid-ac280b54-7eaa-476b-be59-35cdcfb4422d"
@@ -1017,7 +1034,10 @@ export function SideBarComponent(props) {
                       </svg>
                     </span>
                     <span className="nav-text">
-                      <span className="ml-2 " style={{ display: "inline-grid" }}>
+                      <span
+                        className="ml-2 "
+                        style={{ display: "inline-grid" }}
+                      >
                         <span className="font-size-13 font-weight-400 text-dark">
                           Price setting
                         </span>
@@ -1041,8 +1061,8 @@ export function SideBarComponent(props) {
                         id="uuid-de246da4-4706-4310-b3d5-ffa9f8d22cd2"
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 118.97439 128.67789"
-                      // height={13}
-                      // width={13}
+                        // height={13}
+                        // width={13}
                       >
                         <path
                           className="uuid-e6a75694-9e2b-4a4c-8f31-e708d1f611e7"
@@ -1059,7 +1079,10 @@ export function SideBarComponent(props) {
                       </svg>
                     </span>
                     <span className="nav-text">
-                      <span className="ml-2 " style={{ display: "inline-grid" }}>
+                      <span
+                        className="ml-2 "
+                        style={{ display: "inline-grid" }}
+                      >
                         <span className="font-size-13 font-weight-400 text-dark">
                           Maintenace
                         </span>
@@ -1074,8 +1097,8 @@ export function SideBarComponent(props) {
                         id="uuid-123364d5-ff3a-4fe6-9baa-8783f1001abc"
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 106.47681 131.57696"
-                      // height={13}
-                      // width={13}
+                        // height={13}
+                        // width={13}
                       >
                         <path
                           className="uuid-54238ec0-141f-4fe0-b5dd-ff9ae01b5add"
@@ -1104,7 +1127,10 @@ export function SideBarComponent(props) {
                       </svg>
                     </span>
                     <span className="nav-text">
-                      <span className="ml-2 " style={{ display: "inline-grid" }}>
+                      <span
+                        className="ml-2 "
+                        style={{ display: "inline-grid" }}
+                      >
                         <span className="font-size-13 font-weight-400 text-dark">
                           Computation
                         </span>
@@ -1114,8 +1140,10 @@ export function SideBarComponent(props) {
                 </li>
               </ul>
             </li>
-          }
-          <Divider sx={{ marginLeft: '5%', marginRight: '5%', marginBlock: 1 }} />
+          )}
+          <Divider
+            sx={{ marginLeft: "5%", marginRight: "5%", marginBlock: 1 }}
+          />
           <li className="has-subnav sub-li">
             <a
               className="has-arrow border-radius-50"
@@ -1123,9 +1151,11 @@ export function SideBarComponent(props) {
               aria-expanded="false"
             >
               <span className="span-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 90 90"
-                // height={13}
-                // width={13}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 90 90"
+                  // height={13}
+                  // width={13}
                 >
                   <path d="M37.801.799c-.92.745-2.167 2.224-2.63 3.119-.487.942-.886 2.487-1.01 3.909-.221 2.546-.661 3.09-3.405 4.211-2.522 1.03-3.404.917-5.219-.672-3.099-2.71-7.434-3.186-11.171-1.227-1.526.801-3.426 2.701-4.227 4.227-1.961 3.741-1.488 8.031 1.233 11.171 1.583 1.827 1.694 2.701.666 5.219-1.121 2.744-1.665 3.184-4.211 3.405-1.422.124-2.967.523-3.909 1.01-.913.472-2.384 1.721-3.127 2.655L0 38.819v10.722l.791.993c.743.934 2.214 2.183 3.127 2.655.942.487 2.487.886 3.909 1.01 2.546.221 3.09.661 4.211 3.405 1.03 2.522.917 3.404-.672 5.219-2.71 3.099-3.186 7.434-1.227 11.171.801 1.526 2.701 3.426 4.227 4.227 3.741 1.961 8.031 1.488 11.171-1.233 1.827-1.583 2.701-1.694 5.219-.666 2.748 1.123 3.184 1.663 3.407 4.226.079.913.291 1.991.523 2.658 1.003 2.883 3.549 5.273 6.596 6.193 1.313.396 4.483.396 5.796 0 3.047-.92 5.593-3.31 6.596-6.193.232-.667.444-1.745.523-2.658.223-2.563.659-3.103 3.407-4.226 2.518-1.028 3.392-.917 5.219.666 3.14 2.721 7.43 3.194 11.171 1.233 1.526-.801 3.426-2.701 4.227-4.227 1.961-3.741 1.488-8.031-1.233-11.171-1.583-1.827-1.694-2.701-.666-5.219 1.121-2.744 1.665-3.184 4.211-3.405 1.616-.141 3.108-.561 4.162-1.173a10.399 10.399 0 0 0 4.704-5.954c.396-1.305.396-4.477 0-5.79-.92-3.047-3.31-5.593-6.193-6.596-.667-.232-1.745-.444-2.658-.523-2.563-.223-3.103-.659-4.226-3.407-1.03-2.522-.917-3.404.672-5.219 2.71-3.099 3.186-7.434 1.227-11.171-.801-1.526-2.701-3.426-4.227-4.227-3.741-1.961-8.031-1.488-11.171 1.233-1.827 1.583-2.701 1.694-5.219.666-2.744-1.121-3.184-1.665-3.405-4.211-.124-1.422-.523-2.967-1.01-3.909-.472-.913-1.721-2.384-2.655-3.127L49.541 0l-5.383.006-5.383.006-.974.787m8.117 4.732c1.029.539 1.659 1.562 1.78 2.889.181 1.996.42 2.94 1.103 4.359.734 1.522 1.895 2.886 3.212 3.773.916.617 4.66 2.205 5.872 2.491 2.842.67 6.202-.191 8.542-2.189 1.401-1.197 1.857-1.392 3.072-1.315.788.051 1.133.161 1.659.531 1.072.753 1.588 1.62 1.663 2.791.077 1.215-.118 1.671-1.315 3.072-1.998 2.34-2.859 5.7-2.189 8.542.286 1.212 1.874 4.956 2.491 5.872 1.721 2.555 4.399 3.977 8.132 4.315 2.051.187 3.25 1.484 3.25 3.518s-1.199 3.331-3.25 3.518c-1.996.181-2.94.42-4.359 1.103-1.522.734-2.886 1.895-3.773 3.212-.617.916-2.205 4.66-2.491 5.872-.67 2.842.191 6.202 2.189 8.542 1.197 1.401 1.392 1.857 1.315 3.072-.075 1.171-.591 2.038-1.663 2.791-.526.37-.871.48-1.659.531-1.215.077-1.671-.118-3.072-1.315-2.34-1.998-5.7-2.859-8.542-2.189-1.212.286-4.956 1.874-5.872 2.491-2.555 1.721-3.977 4.399-4.315 8.132-.187 2.051-1.484 3.25-3.518 3.25s-3.331-1.199-3.518-3.25c-.181-1.996-.42-2.94-1.103-4.359-.734-1.522-1.895-2.886-3.212-3.773-.916-.617-4.66-2.205-5.872-2.491-2.842-.67-6.202.191-8.542 2.189-1.401 1.197-1.857 1.392-3.072 1.315-.788-.051-1.133-.161-1.659-.531-1.072-.753-1.588-1.62-1.663-2.791-.077-1.211.118-1.669 1.298-3.057 2.016-2.371 2.877-5.711 2.206-8.557-.286-1.212-1.874-4.956-2.491-5.872-1.721-2.555-4.399-3.977-8.132-4.315-1.331-.121-2.347-.75-2.9-1.795-.319-.601-.366-.881-.322-1.906.045-1.04.116-1.293.527-1.879.634-.902 1.463-1.345 2.73-1.459 1.956-.177 2.911-.42 4.324-1.1 1.522-.734 2.886-1.895 3.773-3.212.617-.916 2.205-4.66 2.491-5.872.67-2.842-.191-6.202-2.189-8.542-1.197-1.401-1.392-1.857-1.315-3.072.075-1.171.591-2.038 1.663-2.791.526-.37.871-.48 1.659-.531 1.215-.077 1.671.118 3.072 1.315 2.34 1.998 5.7 2.859 8.542 2.189 1.212-.286 4.956-1.874 5.872-2.491 1.665-1.121 3.134-3.107 3.825-5.17.14-.417.327-1.467.416-2.332.182-1.775.502-2.561 1.284-3.158.751-.573 1.169-.701 2.323-.712.788-.008 1.196.076 1.723.351m-5.669 16.727c-1.166.124-3.363.613-4.294.957-.733.27-5.788 2.365-5.868 2.431-.039.033 3.216 3.353 7.235 7.378 4.24 4.247 7.318 7.449 7.335 7.631.068.733-.074.971-1.378 2.311-1.385 1.425-2.138 1.918-2.654 1.74-.156-.053-3.576-3.38-7.601-7.394-4.025-4.013-7.345-7.264-7.378-7.225-.062.075-2.132 5.064-2.435 5.868-.36.958-.81 3.183-.974 4.818-.458 4.556.942 9.628 3.75 13.59 1.01 1.424 3.301 3.674 4.856 4.766 2.58 1.815 5.676 3.11 8.68 3.634 2.055.359 5.283.223 7.399-.311l1.566-.395 2.585 2.561c1.422 1.409 2.811 2.674 3.087 2.811 1.404.702 3.433-.262 4.262-2.024.685-1.457.335-2.248-2.11-4.765-1.009-1.039-1.769-1.89-1.688-1.89.24 0 2.931-2.579 3.582-3.432l.6-.787 1.862 1.808c2.392 2.323 3.237 2.728 4.546 2.182 1.318-.551 2.466-2.03 2.466-3.178 0-.375-.113-.908-.251-1.183-.137-.276-1.421-1.681-2.853-3.121l-2.602-2.62.267-1.297c.529-2.564.658-4.384.454-6.362-.508-4.924-2.243-8.796-5.508-12.29-2.579-2.759-5.971-4.743-9.705-5.675-2.55-.637-4.753-.8-7.233-.537m6.032 6.961c4.588 1.329 8.011 4.75 9.44 9.431.379 1.242.421 1.619.421 3.807 0 2.188-.042 2.564-.421 3.806-1.227 4.022-3.938 7.128-7.829 8.972-2.558 1.211-5.843 1.546-8.466.863-4.599-1.197-8.477-4.747-9.985-9.142-.613-1.787-1.01-4.499-.658-4.499.063 0 1.808 1.684 3.878 3.743 2.683 2.668 3.989 3.856 4.547 4.134 2.41 1.203 5.232 1.201 7.509-.005 1.066-.565 5.047-4.546 5.612-5.612 1.206-2.279 1.208-5.108.003-7.509-.278-.554-1.521-1.922-4.252-4.68l-3.858-3.897 1.351.097c.743.054 1.962.274 2.708.491" />
                 </svg>
@@ -1142,22 +1172,28 @@ export function SideBarComponent(props) {
               <li>
                 <NavLink to="/eqipment-master" className="border-radius-50">
                   <span className="span-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg"
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 297 297"
-                    // height={13}
-                    // width={13}
+                      // height={13}
+                      // width={13}
                     >
-                      <path d="M211.357,71.437c1.261,0.216,2.523,0.322,3.777,0.322c4.534,0,8.949-1.396,12.725-4.068
+                      <path
+                        d="M211.357,71.437c1.261,0.216,2.523,0.322,3.777,0.322c4.534,0,8.949-1.396,12.725-4.068
 		c4.82-3.412,8.023-8.497,9.019-14.317c0.996-5.821-0.335-11.682-3.746-16.502c-3.412-4.82-8.497-8.023-14.317-9.019
 		c-5.822-0.997-11.681,0.336-16.502,3.746c-4.82,3.412-8.023,8.497-9.019,14.317c-0.996,5.821,0.335,11.682,3.746,16.502
 		C200.452,67.238,205.537,70.441,211.357,71.437z M208.154,48.459C208.154,48.458,208.154,48.458,208.154,48.459
 		c0.317-1.853,1.336-3.471,2.87-4.556c1.2-0.85,2.605-1.294,4.047-1.294c0.398,0,0.8,0.033,1.201,0.102
 		c1.852,0.317,3.47,1.336,4.555,2.87c1.086,1.533,1.509,3.396,1.192,5.248s-1.336,3.47-2.87,4.555
-		c-1.532,1.085-3.393,1.51-5.248,1.192c-1.852-0.317-3.47-1.336-4.555-2.87C208.26,52.174,207.837,50.311,208.154,48.459z"/>
-                      <path d="M98.749,117.164c13.301,0,24.122-10.821,24.122-24.122S112.049,68.92,98.749,68.92S74.627,79.741,74.627,93.042
+		c-1.532,1.085-3.393,1.51-5.248,1.192c-1.852-0.317-3.47-1.336-4.555-2.87C208.26,52.174,207.837,50.311,208.154,48.459z"
+                      />
+                      <path
+                        d="M98.749,117.164c13.301,0,24.122-10.821,24.122-24.122S112.049,68.92,98.749,68.92S74.627,79.741,74.627,93.042
 		S85.448,117.164,98.749,117.164z M98.749,83.996c4.988,0,9.046,4.058,9.046,9.046s-4.058,9.046-9.046,9.046
-		s-9.046-4.058-9.046-9.046S93.761,83.996,98.749,83.996z"/>
-                      <path d="M289.462,243.05h-42.213v-42.213c0-4.164-3.374-7.538-7.538-7.538h-33.168c-4.164,0-7.538,3.374-7.538,7.538v42.213
+		s-9.046-4.058-9.046-9.046S93.761,83.996,98.749,83.996z"
+                      />
+                      <path
+                        d="M289.462,243.05h-42.213v-42.213c0-4.164-3.374-7.538-7.538-7.538h-33.168c-4.164,0-7.538,3.374-7.538,7.538v42.213
 		h-67.843V129.741c0.687-0.607,1.36-1.229,2.012-1.873l68.602-25.273l1.763,32.317c0.219,3.998,3.524,7.128,7.527,7.128h4.523
 		v25.629c0,4.164,3.374,7.538,7.538,7.538s7.538-3.374,7.538-7.538V142.04h5.528c4.039,0,7.36-3.183,7.531-7.218l2.234-52.662
 		c3.815-3.74,6.966-8.174,9.272-13.17c4.989-10.811,5.471-22.918,1.355-34.091c-4.117-11.173-12.337-20.074-23.147-25.064
@@ -1170,18 +1206,26 @@ export function SideBarComponent(props) {
 		c1.357-4.486,2.095-9.239,2.095-14.162c0-17.265-8.984-32.462-22.515-41.191L204.56,22.626z M98.749,59.121
 		c18.704,0,33.921,15.217,33.921,33.921s-15.217,33.921-33.921,33.921s-33.921-15.217-33.921-33.921S80.045,59.121,98.749,59.121z
 		 M66.459,129.849c8.63,7.58,19.928,12.191,32.29,12.191c6.103,0,11.944-1.131,17.338-3.179V243.05H34.116L66.459,129.849z
-		 M281.924,276.217H15.076v-18.091h266.848V276.217z"/>
-                      <path d="M210.096,176.731c1.963-1.962,1.963-5.144,0-7.106l-13.019-13.019c-1.961-1.963-5.145-1.963-7.106,0
+		 M281.924,276.217H15.076v-18.091h266.848V276.217z"
+                      />
+                      <path
+                        d="M210.096,176.731c1.963-1.962,1.963-5.144,0-7.106l-13.019-13.019c-1.961-1.963-5.145-1.963-7.106,0
 		c-1.963,1.962-1.963,5.144,0,7.106l13.019,13.019c0.981,0.982,2.267,1.472,3.553,1.472
-		C207.829,178.204,209.116,177.713,210.096,176.731z"/>
-                      <path d="M198.455,179.199h-13.019c-2.776,0-5.025,2.25-5.025,5.025s2.25,5.025,5.025,5.025h13.019c2.776,0,5.025-2.25,5.025-5.025
-		S201.231,179.199,198.455,179.199z"/>
-                      <path d="M256.283,156.606c-1.961-1.963-5.145-1.963-7.106,0l-13.019,13.019c-1.963,1.962-1.963,5.144,0,7.106
+		C207.829,178.204,209.116,177.713,210.096,176.731z"
+                      />
+                      <path
+                        d="M198.455,179.199h-13.019c-2.776,0-5.025,2.25-5.025,5.025s2.25,5.025,5.025,5.025h13.019c2.776,0,5.025-2.25,5.025-5.025
+		S201.231,179.199,198.455,179.199z"
+                      />
+                      <path
+                        d="M256.283,156.606c-1.961-1.963-5.145-1.963-7.106,0l-13.019,13.019c-1.963,1.962-1.963,5.144,0,7.106
 		c0.981,0.982,2.267,1.472,3.553,1.472c1.286,0,2.573-0.491,3.553-1.472l13.019-13.019
-		C258.246,161.75,258.246,158.568,256.283,156.606z"/>
-                      <path d="M242.773,184.224c0,2.776,2.25,5.025,5.025,5.025h13.019c2.776,0,5.025-2.25,5.025-5.025s-2.25-5.025-5.025-5.025h-13.019
-		C245.023,179.199,242.773,181.449,242.773,184.224z"/>
-
+		C258.246,161.75,258.246,158.568,256.283,156.606z"
+                      />
+                      <path
+                        d="M242.773,184.224c0,2.776,2.25,5.025,5.025,5.025h13.019c2.776,0,5.025-2.25,5.025-5.025s-2.25-5.025-5.025-5.025h-13.019
+		C245.023,179.199,242.773,181.449,242.773,184.224z"
+                      />
                     </svg>
                   </span>
                   <span className="nav-text">
@@ -1196,13 +1240,14 @@ export function SideBarComponent(props) {
               <li>
                 <NavLink to="/parts-360" className="border-radius-50">
                   <span className="span-icon">
-                    <svg viewBox="0 0 45 45" xmlns="http://www.w3.org/2000/svg"
-                    // height={13}
-                    // width={13}
+                    <svg
+                      viewBox="0 0 45 45"
+                      xmlns="http://www.w3.org/2000/svg"
+                      // height={13}
+                      // width={13}
                     >
                       <path d="m21.044 7.821-.812 2.404-.429.137c-.235.075-.784.299-1.22.498l-.791.361-2.243-1.118-2.243-1.117-2.215 2.215-2.214 2.214 1.119 2.243 1.119 2.243-.34.737c-.188.405-.406.948-.487 1.206l-.146.47-2.092.688c-1.15.378-2.214.722-2.363.764l-.27.075V28.14l2.397.81 2.396.81.228.641c.124.352.353.903.507 1.224l.281.583-1.12 2.243-1.12 2.243 2.215 2.215 2.214 2.214 2.243-1.119 2.243-1.119.737.34c.405.188.948.406 1.206.487l.47.146.688 2.092c.378 1.15.722 2.214.764 2.363l.075.27h3.163c1.739 0 3.163-.016 3.163-.036 0-.029.912-2.974 1.424-4.599.072-.229.161-.29.725-.495.353-.128.905-.353 1.226-.499l.583-.265 2.243 1.121 2.242 1.121 2.215-2.215 2.215-2.215-1.117-2.238-1.116-2.237.379-.909c.208-.5.424-1.049.478-1.221l.099-.313 2.368-.77 2.368-.771.001-3.141V21.76l-2.357-.764-2.356-.765-.226-.636c-.124-.35-.352-.899-.506-1.22l-.281-.583 1.12-2.243 1.12-2.243-2.215-2.215-2.214-2.214-2.243 1.118-2.242 1.119-.654-.298a17.19 17.19 0 0 0-1.209-.492l-.554-.193-.687-2.086a164.89 164.89 0 0 1-.762-2.357l-.075-.271h-6.302l-.813 2.404m5.505 2.887.679 2.082.824.216c1.185.311 2.543.892 3.722 1.593l.316.188 1.942-.97 1.941-.97.59.59.59.59-.97 1.941-.97 1.942.188.316c.701 1.179 1.282 2.537 1.593 3.722l.216.824 2.082.679 2.083.68v1.738l-2.083.68-2.084.68-.219.867a12.412 12.412 0 0 1-1.288 3.144c-.248.432-.451.817-.451.856 0 .04.428.928.952 1.974l.952 1.903-.59.59-.591.59-1.941-.97-1.942-.97-.316.188c-1.227.73-2.518 1.286-3.68 1.585l-.865.222-.68 2.084-.68 2.083h-1.738l-.68-2.083-.68-2.084-.865-.222c-1.162-.299-2.453-.855-3.68-1.585l-.316-.188-1.942.97-1.941.97-.59-.59-.59-.59.97-1.941.97-1.942-.188-.316c-.701-1.179-1.282-2.537-1.593-3.722l-.216-.824-2.082-.679-2.083-.68v-1.738l2.083-.68 2.084-.68.219-.867a12.412 12.412 0 0 1 1.288-3.144c.248-.432.451-.817.451-.856 0-.04-.428-.928-.952-1.974l-.952-1.903.59-.59.591-.59 1.941.97 1.942.97.316-.188c1.179-.701 2.537-1.282 3.722-1.593l.824-.216.638-1.957c.352-1.077.665-2.025.696-2.107.051-.131.156-.146.911-.125l.853.024.679 2.083m-3.132 4.827c-.878.157-1.272.272-2.084.605-3.606 1.484-5.916 4.943-5.916 8.86A9.538 9.538 0 0 0 25 34.583c3.093 0 5.877-1.408 7.743-3.917 2.787-3.746 2.366-9.182-.965-12.46-1.287-1.267-3.009-2.213-4.695-2.58-.849-.185-2.862-.235-3.666-.091m3.315 3.306c1.058.268 1.871.754 2.768 1.655 1.344 1.351 1.849 2.579 1.849 4.504 0 1.772-.499 3.092-1.625 4.301-.936 1.004-1.77 1.523-3.027 1.881-.93.265-2.464.265-3.394 0-1.26-.359-2.089-.875-3.037-1.89-1.118-1.198-1.615-2.517-1.615-4.292 0-1.928.508-3.166 1.845-4.504 1.115-1.114 2.185-1.65 3.655-1.829.739-.089 1.831-.016 2.581.174" />
                     </svg>
-
                   </span>
                   <span className="nav-text">
                     <span className="ml-2 " style={{ display: "inline-grid" }}>
@@ -1216,20 +1261,35 @@ export function SideBarComponent(props) {
               <li>
                 <NavLink to="/service-progress" className="border-radius-50">
                   <span className="span-icon">
-                    <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25.7 25.7"  >
+                    <svg
+                      version="1.1"
+                      id="Layer_1"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 25.7 25.7"
+                    >
                       <path d="M11.7,8c-0.7,0-1.3-0.6-1.3-1.3V1.3C10.4,0.6,11,0,11.7,0s1.3,0.6,1.3,1.3v5.5C12.9,7.5,12.4,8,11.7,8z" />
                       <path d="M11.7,2.5H6.2c-0.7,0-1.3-0.6-1.3-1.3S5.5,0,6.2,0h5.5c0.7,0,1.3,0.6,1.3,1.3S12.4,2.5,11.7,2.5z" />
-                      <path d="M24.4,20.8c-0.7,0-1.3-0.6-1.3-1.3V14c0-0.7,0.6-1.3,1.3-1.3s1.3,0.6,1.3,1.3v5.5
-      C25.7,20.2,25.1,20.8,24.4,20.8z"/>
+                      <path
+                        d="M24.4,20.8c-0.7,0-1.3-0.6-1.3-1.3V14c0-0.7,0.6-1.3,1.3-1.3s1.3,0.6,1.3,1.3v5.5
+      C25.7,20.2,25.1,20.8,24.4,20.8z"
+                      />
                       <path d="M24.4,15.3h-5.5c-0.7,0-1.3-0.6-1.3-1.3s0.6-1.3,1.3-1.3h5.5c0.7,0,1.3,0.6,1.3,1.3S25.1,15.3,24.4,15.3z" />
-                      <path d="M12.7,23.3c-2.6,0-5.3-1-7.3-3c-4-4-4-10.5,0-14.5c0.5-0.5,1.3-0.5,1.8,0s0.5,1.3,0,1.8c-3,3-3,8,0,11
-    c3,3,8,3,11,0c0.5-0.5,1.3-0.5,1.8,0s0.5,1.3,0,1.8C18,22.3,15.3,23.3,12.7,23.3z"/>
-                      <path d="M6.3,7.9C6,7.9,5.7,7.7,5.4,7.5C4.9,7,4.9,6.2,5.4,5.7l4.1-4.1c0.5-0.5,1.3-0.5,1.8,0s0.5,1.3,0,1.8L7.2,7.5
-    C7,7.7,6.6,7.9,6.3,7.9z"/>
-                      <path d="M19.1,20.6c-0.3,0-0.6-0.1-0.9-0.4c-0.5-0.5-0.5-1.3,0-1.8l4.1-4.1c0.5-0.5,1.3-0.5,1.8,0s0.5,1.3,0,1.8
-    L20,20.3C19.7,20.5,19.4,20.6,19.1,20.6z"/>
-                      <path d="M1.3,25.7c-0.3,0-0.6-0.1-0.9-0.4c-0.5-0.5-0.5-1.3,0-1.8l5.1-5.1c0.5-0.5,1.3-0.5,1.8,0s0.5,1.3,0,1.8
-    l-5.1,5.1C1.9,25.6,1.6,25.7,1.3,25.7z"/>
+                      <path
+                        d="M12.7,23.3c-2.6,0-5.3-1-7.3-3c-4-4-4-10.5,0-14.5c0.5-0.5,1.3-0.5,1.8,0s0.5,1.3,0,1.8c-3,3-3,8,0,11
+    c3,3,8,3,11,0c0.5-0.5,1.3-0.5,1.8,0s0.5,1.3,0,1.8C18,22.3,15.3,23.3,12.7,23.3z"
+                      />
+                      <path
+                        d="M6.3,7.9C6,7.9,5.7,7.7,5.4,7.5C4.9,7,4.9,6.2,5.4,5.7l4.1-4.1c0.5-0.5,1.3-0.5,1.8,0s0.5,1.3,0,1.8L7.2,7.5
+    C7,7.7,6.6,7.9,6.3,7.9z"
+                      />
+                      <path
+                        d="M19.1,20.6c-0.3,0-0.6-0.1-0.9-0.4c-0.5-0.5-0.5-1.3,0-1.8l4.1-4.1c0.5-0.5,1.3-0.5,1.8,0s0.5,1.3,0,1.8
+    L20,20.3C19.7,20.5,19.4,20.6,19.1,20.6z"
+                      />
+                      <path
+                        d="M1.3,25.7c-0.3,0-0.6-0.1-0.9-0.4c-0.5-0.5-0.5-1.3,0-1.8l5.1-5.1c0.5-0.5,1.3-0.5,1.8,0s0.5,1.3,0,1.8
+    l-5.1,5.1C1.9,25.6,1.6,25.7,1.3,25.7z"
+                      />
                     </svg>
                   </span>
                   <span className="nav-text">
@@ -1248,8 +1308,8 @@ export function SideBarComponent(props) {
                       id="uuid-de246da4-4706-4310-b3d5-ffa9f8d22cd2"
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 124.97439 124.67789"
-                    // height={13}
-                    // width={13}
+                      // height={13}
+                      // width={13}
                     >
                       <path
                         className="uuid-e6a75694-9e2b-4a4c-8f31-e708d1f611e7"
@@ -1277,10 +1337,11 @@ export function SideBarComponent(props) {
               <li>
                 <NavLink to="/customer-master" className="border-radius-50">
                   <span className="span-icon">
-
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"
-                    // height={13}
-                    // width={13}
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 200 200"
+                      // height={13}
+                      // width={13}
                     >
                       <path d="M49.801.986c-1.08 1.768-1.865 5.055-2.363 9.89-.475 4.612-.531 4.832-1.957 7.815-2.936 6.14-4.737 12.829-5.473 20.333-.435 4.435-.203 12.494.482 16.724l.505 3.119-.977 1.113c-2.246 2.558-3.826 7.704-3.47 11.303.634 6.409 3.768 14.59 7.476 19.514 1.526 2.025 4.157 4.456 6.009 5.55.51.301.927.723.927.937 0 .732 1.74 5.415 2.968 7.988 1.438 3.012 4.169 7.25 6.382 9.906l1.57 1.882v8.792l-.986.741c-1.574 1.183-4.947 2.758-8.872 4.143-12.48 4.403-18.58 7.824-24.603 13.797-4.866 4.827-7.7 9.379-9.636 15.475-1.53 4.823-1.857 7.37-1.848 14.409.005 3.587.103 6.76.217 7.052.198.504 4.045.531 74.848.531 70.802 0 74.65-.027 74.85-.531.116-.292.21-3.534.208-7.204-.003-5.812-.093-7.084-.697-9.858-2.714-12.468-9.844-21.546-21.888-27.869-3.969-2.083-6.06-2.984-12.814-5.518-5.13-1.925-7.979-3.245-9.553-4.427l-.986-.741v-8.82l1.331-1.565c2.13-2.504 5.204-7.226 6.577-10.104 1.295-2.712 3.012-7.342 3.012-8.119 0-.237.47-.722 1.045-1.077.575-.356 2.001-1.669 3.167-2.918 2.558-2.739 4.793-7.04 6.705-12.905 3.657-11.218 3.166-17.635-1.688-22.072l-1.73-1.581.691-5.797c1.329-11.162.332-19.037-3.333-26.324-4.059-8.07-11.786-14.402-21.575-17.679-3.563-1.193-7.401-1.933-15.283-2.948-7.7-.99-15.843-2.321-20.324-3.321C76.221.066 74.878.013 63.194.007L50.403 0l-.602.986m19.163 13.858a240.886 240.886 0 0 0 28.103 5.018c6.1.72 9.25 1.315 12.285 2.322 3.915 1.299 6.332 2.751 8.973 5.394 2.439 2.439 3.781 4.762 4.713 8.159.733 2.675.866 8.391.295 12.721-1.209 9.174-1.186 13.717.085 16.59.684 1.547 2.53 3.67 3.732 4.291 1.121.58 1.099 1.077-.238 5.307-1.213 3.837-2.457 6.743-3.334 7.79-.335.4-1.78 1.115-3.453 1.71l-2.877 1.023-.67 3.544c-1.503 7.955-3.653 12.168-9.745 19.104l-2.822 3.212.092 9.475.092 9.474 1.14 2.388c.862 1.805 1.676 2.918 3.337 4.562 3.788 3.75 7.32 5.685 17.211 9.431 7.069 2.677 10.021 4.072 13.525 6.388 5.595 3.7 9.361 9.437 10.293 15.679l.215 1.441H32.096l.218-1.58c.394-2.867 1.975-6.86 3.752-9.477 1.196-1.761 4.473-4.803 6.958-6.459 2.989-1.992 7.131-3.877 14.022-6.381 6.236-2.265 8.952-3.545 12.35-5.818 4.246-2.84 6.76-5.872 8.01-9.661.482-1.459.551-2.787.551-10.584v-8.915l-2.806-3.194c-6.075-6.915-8.227-11.137-9.729-19.085l-.67-3.544-2.821-1.008c-1.552-.554-3.272-1.35-3.821-1.769-1.901-1.45-3.812-5.147-4.976-9.629l-.579-2.229 1.749-1.684c3.01-2.9 3.613-6.287 2.402-13.492-1.226-7.293-1.089-15.195.374-21.536.784-3.398 1.094-4.234 3.316-8.949 1.68-3.564 2.675-6.865 2.696-8.948.013-1.216.313-2.275.645-2.275.148 0 2.5.537 5.227 1.194" />
                     </svg>
@@ -1297,10 +1358,11 @@ export function SideBarComponent(props) {
               <li>
                 <NavLink to="/consumable-master" className="border-radius-50">
                   <span className="span-icon">
-                    <svg viewBox="0 0 106.47681 131.57696"
+                    <svg
+                      viewBox="0 0 106.47681 131.57696"
                       xmlns="http://www.w3.org/2000/svg"
-                    // height={14}
-                    // width={14}
+                      // height={14}
+                      // width={14}
                     >
                       <path d="M43.041 1.262c-7.545.67-15.059 3.296-21.292 7.442C10.514 16.175 3.236 27.857 1.502 41.203c-.337 2.59-.051 3.612 1.185 4.242 1.314.671 3.091.583 3.978-.196.628-.551.899-1.36 1.168-3.49.835-6.61 3.513-13.11 7.692-18.671 1.407-1.872 4.292-4.878 6.247-6.511 5.402-4.51 12.118-7.544 19.196-8.674 2.162-.345 7.901-.476 10.143-.232 5.658.617 10.637 2.206 15.264 4.87 7.042 4.054 11.894 9.058 15.711 16.201 1.301 2.434 1.968 3.214 3.252 3.802 1.708.782 3.599.642 5.162-.38.967-.632 1.551-1.362 2.036-2.542l.36-.874.004-10.541c.003-9.165-.028-10.616-.239-11.121-.363-.867-.825-1.272-1.765-1.545-1.539-.448-3.025-.028-3.853 1.09-.322.433-.329.601-.371 8.655-.028 5.197-.099 8.214-.196 8.214-.084 0-.153-.064-.153-.143 0-.078-.598-1.033-1.33-2.122C78.11 10.992 66.804 3.724 54.677 1.744c-3.72-.608-8.152-.791-11.636-.482m-3.796 25.537c-7.924.092-7.785.08-9.704.884-2.632 1.102-5.117 3.632-6.213 6.325-.857 2.105-.846 1.922-.846 15.185 0 11.151.025 12.397.271 13.353 1.111 4.319 4.382 7.59 8.701 8.701.963.248 2.316.271 15.546.271 16.268 0 15.422.056 17.938-1.172a11.798 11.798 0 0 0 5.408-5.408c1.215-2.489 1.172-1.917 1.171-15.901l-.001-12.455-.439-1.41c-.872-2.798-2.463-4.911-4.993-6.631-.983-.668-2.794-1.377-4.044-1.584-1.229-.203-12.303-.28-22.795-.158m4.653 11.78c.046 5.426.053 5.533.402 6.093.414.666 1.139 1.053 2.213 1.18 1.659.197 3.115-.563 3.46-1.805.092-.334.159-2.748.159-5.792l.001-5.22 5.445.05 5.444.05.976.451c1.134.524 2.246 1.624 2.756 2.727l.341.739v24.126l-.411.862c-.527 1.103-1.55 2.128-2.644 2.646l-.862.409H32.822l-.862-.406c-1.099-.519-2.13-1.55-2.649-2.649l-.406-.862V49.115c0-12.032.001-12.065.339-12.796.694-1.503 2.284-2.797 3.792-3.088.399-.076 2.996-.147 5.771-.157l5.045-.017.046 5.522m44.146 9.876c-.943.499-1.225 1.138-1.589 3.598-.892 6.036-2.534 10.697-5.506 15.627-1.99 3.301-5.709 7.543-8.788 10.026a39.817 39.817 0 0 1-20.884 8.626c-2.338.245-7.743.117-10.074-.239C30.362 84.44 20.421 78.102 14.36 68.98c-.56-.844-1.525-2.487-2.142-3.65-1.257-2.368-2.009-3.256-3.288-3.885-.743-.365-1.056-.423-2.272-.423-1.227 0-1.525.057-2.303.438-1.113.547-2.183 1.712-2.662 2.898l-.361.894v21.15l.352.715c.419.85 1.175 1.332 2.332 1.485.984.131 2.358-.232 2.826-.746.768-.843.752-.662.835-9.257l.078-8.115 1.274 1.934c6.916 10.496 18.229 17.829 30.608 19.841 7.602 1.235 14.779.673 22.09-1.73 15.177-4.988 26.82-17.871 30.294-33.521.786-3.539 1.056-6.237.716-7.139-.576-1.524-3.066-2.274-4.693-1.414" />
                     </svg>
@@ -1316,7 +1378,9 @@ export function SideBarComponent(props) {
               </li>
             </ul>
           </li>
-          <Divider sx={{ marginLeft: '5%', marginRight: '5%', marginBlock: 1 }} />
+          <Divider
+            sx={{ marginLeft: "5%", marginRight: "5%", marginBlock: 1 }}
+          />
           <li className="has-subnav sub-li">
             <a
               className="has-arrow border-radius-50"
@@ -1324,9 +1388,11 @@ export function SideBarComponent(props) {
               aria-expanded="false"
             >
               <span className="span-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 90 90"
-                // height={13}
-                // width={13}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 90 90"
+                  // height={13}
+                  // width={13}
                 >
                   <path d="M37.801.799c-.92.745-2.167 2.224-2.63 3.119-.487.942-.886 2.487-1.01 3.909-.221 2.546-.661 3.09-3.405 4.211-2.522 1.03-3.404.917-5.219-.672-3.099-2.71-7.434-3.186-11.171-1.227-1.526.801-3.426 2.701-4.227 4.227-1.961 3.741-1.488 8.031 1.233 11.171 1.583 1.827 1.694 2.701.666 5.219-1.121 2.744-1.665 3.184-4.211 3.405-1.422.124-2.967.523-3.909 1.01-.913.472-2.384 1.721-3.127 2.655L0 38.819v10.722l.791.993c.743.934 2.214 2.183 3.127 2.655.942.487 2.487.886 3.909 1.01 2.546.221 3.09.661 4.211 3.405 1.03 2.522.917 3.404-.672 5.219-2.71 3.099-3.186 7.434-1.227 11.171.801 1.526 2.701 3.426 4.227 4.227 3.741 1.961 8.031 1.488 11.171-1.233 1.827-1.583 2.701-1.694 5.219-.666 2.748 1.123 3.184 1.663 3.407 4.226.079.913.291 1.991.523 2.658 1.003 2.883 3.549 5.273 6.596 6.193 1.313.396 4.483.396 5.796 0 3.047-.92 5.593-3.31 6.596-6.193.232-.667.444-1.745.523-2.658.223-2.563.659-3.103 3.407-4.226 2.518-1.028 3.392-.917 5.219.666 3.14 2.721 7.43 3.194 11.171 1.233 1.526-.801 3.426-2.701 4.227-4.227 1.961-3.741 1.488-8.031-1.233-11.171-1.583-1.827-1.694-2.701-.666-5.219 1.121-2.744 1.665-3.184 4.211-3.405 1.616-.141 3.108-.561 4.162-1.173a10.399 10.399 0 0 0 4.704-5.954c.396-1.305.396-4.477 0-5.79-.92-3.047-3.31-5.593-6.193-6.596-.667-.232-1.745-.444-2.658-.523-2.563-.223-3.103-.659-4.226-3.407-1.03-2.522-.917-3.404.672-5.219 2.71-3.099 3.186-7.434 1.227-11.171-.801-1.526-2.701-3.426-4.227-4.227-3.741-1.961-8.031-1.488-11.171 1.233-1.827 1.583-2.701 1.694-5.219.666-2.744-1.121-3.184-1.665-3.405-4.211-.124-1.422-.523-2.967-1.01-3.909-.472-.913-1.721-2.384-2.655-3.127L49.541 0l-5.383.006-5.383.006-.974.787m8.117 4.732c1.029.539 1.659 1.562 1.78 2.889.181 1.996.42 2.94 1.103 4.359.734 1.522 1.895 2.886 3.212 3.773.916.617 4.66 2.205 5.872 2.491 2.842.67 6.202-.191 8.542-2.189 1.401-1.197 1.857-1.392 3.072-1.315.788.051 1.133.161 1.659.531 1.072.753 1.588 1.62 1.663 2.791.077 1.215-.118 1.671-1.315 3.072-1.998 2.34-2.859 5.7-2.189 8.542.286 1.212 1.874 4.956 2.491 5.872 1.721 2.555 4.399 3.977 8.132 4.315 2.051.187 3.25 1.484 3.25 3.518s-1.199 3.331-3.25 3.518c-1.996.181-2.94.42-4.359 1.103-1.522.734-2.886 1.895-3.773 3.212-.617.916-2.205 4.66-2.491 5.872-.67 2.842.191 6.202 2.189 8.542 1.197 1.401 1.392 1.857 1.315 3.072-.075 1.171-.591 2.038-1.663 2.791-.526.37-.871.48-1.659.531-1.215.077-1.671-.118-3.072-1.315-2.34-1.998-5.7-2.859-8.542-2.189-1.212.286-4.956 1.874-5.872 2.491-2.555 1.721-3.977 4.399-4.315 8.132-.187 2.051-1.484 3.25-3.518 3.25s-3.331-1.199-3.518-3.25c-.181-1.996-.42-2.94-1.103-4.359-.734-1.522-1.895-2.886-3.212-3.773-.916-.617-4.66-2.205-5.872-2.491-2.842-.67-6.202.191-8.542 2.189-1.401 1.197-1.857 1.392-3.072 1.315-.788-.051-1.133-.161-1.659-.531-1.072-.753-1.588-1.62-1.663-2.791-.077-1.211.118-1.669 1.298-3.057 2.016-2.371 2.877-5.711 2.206-8.557-.286-1.212-1.874-4.956-2.491-5.872-1.721-2.555-4.399-3.977-8.132-4.315-1.331-.121-2.347-.75-2.9-1.795-.319-.601-.366-.881-.322-1.906.045-1.04.116-1.293.527-1.879.634-.902 1.463-1.345 2.73-1.459 1.956-.177 2.911-.42 4.324-1.1 1.522-.734 2.886-1.895 3.773-3.212.617-.916 2.205-4.66 2.491-5.872.67-2.842-.191-6.202-2.189-8.542-1.197-1.401-1.392-1.857-1.315-3.072.075-1.171.591-2.038 1.663-2.791.526-.37.871-.48 1.659-.531 1.215-.077 1.671.118 3.072 1.315 2.34 1.998 5.7 2.859 8.542 2.189 1.212-.286 4.956-1.874 5.872-2.491 1.665-1.121 3.134-3.107 3.825-5.17.14-.417.327-1.467.416-2.332.182-1.775.502-2.561 1.284-3.158.751-.573 1.169-.701 2.323-.712.788-.008 1.196.076 1.723.351m-5.669 16.727c-1.166.124-3.363.613-4.294.957-.733.27-5.788 2.365-5.868 2.431-.039.033 3.216 3.353 7.235 7.378 4.24 4.247 7.318 7.449 7.335 7.631.068.733-.074.971-1.378 2.311-1.385 1.425-2.138 1.918-2.654 1.74-.156-.053-3.576-3.38-7.601-7.394-4.025-4.013-7.345-7.264-7.378-7.225-.062.075-2.132 5.064-2.435 5.868-.36.958-.81 3.183-.974 4.818-.458 4.556.942 9.628 3.75 13.59 1.01 1.424 3.301 3.674 4.856 4.766 2.58 1.815 5.676 3.11 8.68 3.634 2.055.359 5.283.223 7.399-.311l1.566-.395 2.585 2.561c1.422 1.409 2.811 2.674 3.087 2.811 1.404.702 3.433-.262 4.262-2.024.685-1.457.335-2.248-2.11-4.765-1.009-1.039-1.769-1.89-1.688-1.89.24 0 2.931-2.579 3.582-3.432l.6-.787 1.862 1.808c2.392 2.323 3.237 2.728 4.546 2.182 1.318-.551 2.466-2.03 2.466-3.178 0-.375-.113-.908-.251-1.183-.137-.276-1.421-1.681-2.853-3.121l-2.602-2.62.267-1.297c.529-2.564.658-4.384.454-6.362-.508-4.924-2.243-8.796-5.508-12.29-2.579-2.759-5.971-4.743-9.705-5.675-2.55-.637-4.753-.8-7.233-.537m6.032 6.961c4.588 1.329 8.011 4.75 9.44 9.431.379 1.242.421 1.619.421 3.807 0 2.188-.042 2.564-.421 3.806-1.227 4.022-3.938 7.128-7.829 8.972-2.558 1.211-5.843 1.546-8.466.863-4.599-1.197-8.477-4.747-9.985-9.142-.613-1.787-1.01-4.499-.658-4.499.063 0 1.808 1.684 3.878 3.743 2.683 2.668 3.989 3.856 4.547 4.134 2.41 1.203 5.232 1.201 7.509-.005 1.066-.565 5.047-4.546 5.612-5.612 1.206-2.279 1.208-5.108.003-7.509-.278-.554-1.521-1.922-4.252-4.68l-3.858-3.897 1.351.097c.743.054 1.962.274 2.708.491" />
                 </svg>
@@ -1343,12 +1409,23 @@ export function SideBarComponent(props) {
               <li>
                 <NavLink to="/warranty-master" className="border-radius-50">
                   <span className="span-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 256 256" >
-                      <defs>
-                      </defs>
-                      <g transform="translate(1.4065934065934016 1.4065934065934016) scale(2.81 2.81)" >
-                        <path d="M 45 89.998 c -0.959 0 -1.918 -0.151 -2.831 -0.455 C 22.605 83.045 9.963 67.486 9.963 49.905 V 18.856 c 0 -3.162 2.252 -5.866 5.354 -6.43 l 0 0 c 9.925 -1.806 18.571 -5.528 25.698 -11.063 c 2.348 -1.823 5.623 -1.822 7.968 0 c 7.128 5.535 15.774 9.257 25.699 11.063 c 3.102 0.564 5.354 3.268 5.354 6.43 v 31.049 c 0 17.581 -12.642 33.14 -32.206 39.638 C 46.918 89.847 45.959 89.998 45 89.998 z M 45 6 c -0.108 0 -0.216 0.034 -0.304 0.103 C 36.799 12.236 27.276 16.35 16.392 18.33 c 0 0 0 0 -0.001 0 c -0.248 0.045 -0.428 0.267 -0.428 0.526 v 31.049 c 0 14.951 11.029 28.274 28.098 33.944 c 0.606 0.201 1.273 0.201 1.878 0 c 17.069 -5.669 28.097 -18.993 28.097 -33.944 V 18.856 c 0 -0.26 -0.18 -0.481 -0.427 -0.526 c -10.885 -1.98 -20.408 -6.094 -28.306 -12.227 C 45.215 6.035 45.108 6 45 6 z M 15.855 15.378 h 0.01 H 15.855 z" transform=" matrix(1 0 0 1 0 0) " stroke-linecap="round" />
-                        <path d="M 40.545 59.304 c -0.919 0 -1.787 -0.421 -2.356 -1.143 L 29.28 46.857 c -1.026 -1.302 -0.802 -3.188 0.499 -4.213 c 1.301 -1.026 3.187 -0.802 4.213 0.499 l 6.553 8.314 l 15.461 -19.618 c 1.025 -1.301 2.911 -1.524 4.214 -0.499 c 1.301 1.025 1.524 2.912 0.499 4.213 L 42.901 58.161 C 42.333 58.883 41.464 59.304 40.545 59.304 z" transform=" matrix(1 0 0 1 0 0) " stroke-linecap="round" />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      version="1.1"
+                      viewBox="0 0 256 256"
+                    >
+                      <defs></defs>
+                      <g transform="translate(1.4065934065934016 1.4065934065934016) scale(2.81 2.81)">
+                        <path
+                          d="M 45 89.998 c -0.959 0 -1.918 -0.151 -2.831 -0.455 C 22.605 83.045 9.963 67.486 9.963 49.905 V 18.856 c 0 -3.162 2.252 -5.866 5.354 -6.43 l 0 0 c 9.925 -1.806 18.571 -5.528 25.698 -11.063 c 2.348 -1.823 5.623 -1.822 7.968 0 c 7.128 5.535 15.774 9.257 25.699 11.063 c 3.102 0.564 5.354 3.268 5.354 6.43 v 31.049 c 0 17.581 -12.642 33.14 -32.206 39.638 C 46.918 89.847 45.959 89.998 45 89.998 z M 45 6 c -0.108 0 -0.216 0.034 -0.304 0.103 C 36.799 12.236 27.276 16.35 16.392 18.33 c 0 0 0 0 -0.001 0 c -0.248 0.045 -0.428 0.267 -0.428 0.526 v 31.049 c 0 14.951 11.029 28.274 28.098 33.944 c 0.606 0.201 1.273 0.201 1.878 0 c 17.069 -5.669 28.097 -18.993 28.097 -33.944 V 18.856 c 0 -0.26 -0.18 -0.481 -0.427 -0.526 c -10.885 -1.98 -20.408 -6.094 -28.306 -12.227 C 45.215 6.035 45.108 6 45 6 z M 15.855 15.378 h 0.01 H 15.855 z"
+                          transform=" matrix(1 0 0 1 0 0) "
+                          stroke-linecap="round"
+                        />
+                        <path
+                          d="M 40.545 59.304 c -0.919 0 -1.787 -0.421 -2.356 -1.143 L 29.28 46.857 c -1.026 -1.302 -0.802 -3.188 0.499 -4.213 c 1.301 -1.026 3.187 -0.802 4.213 0.499 l 6.553 8.314 l 15.461 -19.618 c 1.025 -1.301 2.911 -1.524 4.214 -0.499 c 1.301 1.025 1.524 2.912 0.499 4.213 L 42.901 58.161 C 42.333 58.883 41.464 59.304 40.545 59.304 z"
+                          transform=" matrix(1 0 0 1 0 0) "
+                          stroke-linecap="round"
+                        />
                       </g>
                     </svg>
                   </span>
@@ -1364,8 +1441,12 @@ export function SideBarComponent(props) {
               <li>
                 <NavLink to="/claim-master" className="border-radius-50">
                   <span className="span-icon">
-                    <svg viewBox="0 0 315 308" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <g >
+                    <svg
+                      viewBox="0 0 315 308"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <g>
                         <path d="M235.693 307.021H5.5C2.79167 307.021 0.59375 304.828 0.59375 302.119V5.04655C0.59375 2.34342 2.79167 0.145508 5.5 0.145508H193.349C194.839 0.145508 196.172 0.812174 197.073 1.85384L239.151 43.8955L239.161 43.8903C240.12 44.8434 240.599 46.0986 240.599 47.3486V144.781C240.599 146.161 240.026 147.411 239.104 148.302L206.411 180.937L195.411 209.807L224.37 198.791L232.224 190.948C234.141 189.036 237.245 189.036 239.161 190.948C240.12 191.906 240.599 193.156 240.599 194.411V302.119C240.599 304.828 238.401 307.021 235.693 307.021ZM10.4062 297.224H230.786V206.234L230.667 206.354C230.172 206.875 229.562 207.291 228.849 207.562V207.557L188.891 222.76C187.755 223.25 186.443 223.312 185.198 222.843C182.667 221.88 181.396 219.052 182.359 216.521H182.365L197.547 176.687C197.776 175.979 198.177 175.312 198.74 174.744V174.75L230.786 142.755V49.3591L191.339 9.94238H10.4062V297.224Z" />
                       </g>
                       <g mask="url(#mask1_1682_7762)">
@@ -1393,21 +1474,21 @@ export function SideBarComponent(props) {
               <li>
                 <NavLink to="/warranty-return" className="border-radius-50">
                   <span className="span-icon">
-                    <svg viewBox="0 0 315 308" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <g >
-                        <path d="M235.693 307.021H5.5C2.79167 307.021 0.59375 304.828 0.59375 302.119V5.04655C0.59375 2.34342 2.79167 0.145508 5.5 0.145508H193.349C194.839 0.145508 196.172 0.812174 197.073 1.85384L239.151 43.8955L239.161 43.8903C240.12 44.8434 240.599 46.0986 240.599 47.3486V144.781C240.599 146.161 240.026 147.411 239.104 148.302L206.411 180.937L195.411 209.807L224.37 198.791L232.224 190.948C234.141 189.036 237.245 189.036 239.161 190.948C240.12 191.906 240.599 193.156 240.599 194.411V302.119C240.599 304.828 238.401 307.021 235.693 307.021ZM10.4062 297.224H230.786V206.234L230.667 206.354C230.172 206.875 229.562 207.291 228.849 207.562V207.557L188.891 222.76C187.755 223.25 186.443 223.312 185.198 222.843C182.667 221.88 181.396 219.052 182.359 216.521H182.365L197.547 176.687C197.776 175.979 198.177 175.312 198.74 174.744V174.75L230.786 142.755V49.3591L191.339 9.94238H10.4062V297.224Z" />
-                      </g>
-                      <g mask="url(#mask1_1682_7762)">
-                        <path d="M197.193 1.97396L239.005 43.75L239.01 43.7396C240.927 45.651 240.927 48.7552 239.01 50.6667C238.052 51.6198 236.797 52.099 235.542 52.099H193.469C190.76 52.099 188.562 49.9062 188.562 47.2031V5.16667C188.562 2.45833 190.76 0.265625 193.469 0.265625C194.958 0.265625 196.292 0.927082 197.193 1.97396ZM223.724 42.3021L198.375 16.974V42.3021H223.724Z" />
-                      </g>
-                      <path d="M63.7285 123.104C61.015 123.104 58.8223 125.297 58.8223 128.006C58.8223 130.709 61.015 132.901 63.7285 132.901H177.463C180.171 132.901 182.369 130.709 182.369 128.006C182.369 125.297 180.171 123.104 177.463 123.104H63.7285Z" />
-                      <path d="M63.7285 174.266C61.015 174.266 58.8223 176.458 58.8223 179.161C58.8223 181.87 61.015 184.062 63.7285 184.062H177.463C180.171 184.062 182.369 181.87 182.369 179.161C182.369 176.458 180.171 174.266 177.463 174.266H63.7285Z" />
-                      <path d="M63.7285 225.427C61.015 225.427 58.8223 227.619 58.8223 230.323C58.8223 233.026 61.015 235.224 63.7285 235.224H177.463C180.171 235.224 182.369 233.026 182.369 230.323C182.369 227.619 180.171 225.427 177.463 225.427H63.7285Z" />
-                      <path d="M288.344 92.3389L313.141 117.094C315.057 119.006 315.057 122.11 313.141 124.021L313.078 124.078L230.573 206.448V206.453C230.011 207.016 229.339 207.412 228.63 207.641L188.688 222.839L188.693 222.844C186.162 223.802 183.323 222.537 182.359 220.011C181.886 218.771 181.953 217.459 182.438 216.328L197.625 176.469C197.896 175.761 198.313 175.146 198.833 174.657L281.344 92.2816V92.2764C283.261 90.3649 286.37 90.3649 288.281 92.2764L288.344 92.3389ZM302.734 120.558L284.813 102.667L206.412 180.938L195.412 209.808L224.37 198.792L302.734 120.558Z" />
-                      <path d="M205.678 174.75C203.761 172.839 200.657 172.839 198.74 174.75C196.824 176.661 196.824 179.76 198.74 181.672L223.594 206.49C225.511 208.401 228.62 208.401 230.532 206.49C232.449 204.578 232.449 201.474 230.532 199.562L205.678 174.75Z" />
-                      <path d="M274.818 105.719C272.902 103.807 269.798 103.807 267.881 105.719C265.964 107.635 265.964 110.734 267.881 112.646L292.74 137.464C294.652 139.375 297.761 139.375 299.673 137.464C301.589 135.552 301.589 132.448 299.673 130.536L274.818 105.719Z" />
-                      <path d="M84.5781 100.833C96.3802 94.7601 105.688 86.3278 112.589 74.9632V42.8538C106.813 41.2653 101.26 35.7653 99.6562 29.9424H69.5C67.7708 36.2028 62.8333 41.1247 56.5625 42.8538V74.9632C63.4688 86.333 72.7708 94.7549 84.5781 100.833ZM87.099 110.479C85.7344 111.297 83.9948 111.432 82.4531 110.692L82.4635 110.677C67.5573 103.531 56.0156 93.307 47.6094 79.0518C47.0677 78.2653 46.75 77.3122 46.75 76.2861V38.6143C46.75 35.9111 48.9479 33.7184 51.6562 33.7184C56.4687 33.7184 60.3438 29.8486 60.3438 25.0413C60.3438 22.3382 62.5417 20.1455 65.25 20.1455H103.901C106.609 20.1455 108.807 22.3382 108.807 25.0413C108.807 29.8486 112.677 33.7184 117.495 33.7184C120.203 33.7184 122.401 35.9111 122.401 38.6143V76.2861C122.401 77.1247 122.188 77.9736 121.734 78.7549L121.724 78.7497C113.385 93.0101 101.932 103.286 87.099 110.479Z" />
-                      <path d="M74.9844 63.2607C73.0729 61.3493 69.9635 61.3493 68.0469 63.2607C66.1354 65.1774 66.1354 68.2764 68.0469 70.1878L76.0417 78.1722C77.9583 80.0837 81.0677 80.0837 82.9844 78.1722L83.0417 78.1097L101.104 60.0785C103.021 58.167 103.021 55.0628 101.104 53.1514C99.1875 51.2399 96.0833 51.2399 94.1667 53.1514L79.5104 67.7816L74.9844 63.2607Z" />
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 94 94"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M2 93.0099H16.32C17.15 93.0099 17.82 92.3399 17.82 91.5099V87.2899H19.6L48.44 93.2999C49.08 93.4299 49.72 93.4999 50.36 93.4999C51 93.4999 51.7 93.4299 52.37 93.2799L75.51 88.2299C77.22 87.8599 78.75 86.9799 79.94 85.6999L91.92 72.7699C93.04 71.5599 93.6 69.9899 93.49 68.3399C93.38 66.6899 92.62 65.2099 91.35 64.1599C89.02 62.2299 85.62 62.3599 83.44 64.4499L72.93 74.5799L59.21 75.9999L55.87 74.5999C63.26 74.9899 68.48 74.1299 70.68 72.0699C71.6 71.2099 72.03 70.1399 71.93 68.9799C71.71 66.4199 69.06 65.0599 65.75 64.1499C74.64 57.5299 81.89 47.0699 81.89 32.6699V10.8299C81.89 10.0299 81.26 9.36994 80.45 9.32994C61.09 8.49994 53.12 0.999941 53.04 0.929941C52.46 0.359941 51.53 0.359941 50.94 0.929941C50.86 1.00994 42.89 8.49994 23.53 9.32994C22.73 9.35994 22.09 10.0299 22.09 10.8299V32.6899C22.09 41.9599 25.09 49.5899 29.6 55.6199C24.92 57.5999 21.56 60.7799 20.36 62.0399H17.8V58.7699C17.8 57.9399 17.13 57.2699 16.3 57.2699H2C1.17 57.2699 0.5 57.9399 0.5 58.7699V91.5199C0.5 92.3499 1.17 93.0199 2 93.0199V93.0099ZM25.11 32.6899V12.2499C40.97 11.2899 49.25 6.07994 52 3.95994C54.75 6.07994 63.03 11.2899 78.89 12.2499V32.6799C78.89 47.1799 71.21 57.2799 61.87 63.2999C61.25 63.1799 60.62 63.0699 60.01 62.9599C58.38 62.6699 56.84 62.3999 55.9 62.0999C55.86 62.0899 55.83 62.0599 55.79 62.0499C65.51 57.8199 75.49 48.4299 75.49 33.6699V16.9899C75.49 16.1899 74.86 15.5299 74.05 15.4899C59.22 14.8599 53.1 9.21994 53.05 9.16994C52.47 8.60994 51.55 8.60994 50.97 9.16994C50.91 9.22994 44.8 14.8699 29.96 15.4999C29.16 15.5299 28.52 16.1899 28.52 16.9999V33.6899C28.52 42.2499 31.88 48.9999 36.59 53.9899C35.17 54.0599 33.81 54.2999 32.51 54.6399C28.05 48.9599 25.11 41.6699 25.11 32.6999V32.6899ZM52.86 59.9999C50.67 58.0699 47.71 55.4899 41.28 54.3299C36.25 50.1899 31.52 43.6499 31.52 33.6799V18.4099C43.3 17.6499 49.67 13.8899 52 12.1799C54.34 13.8999 60.7 17.6499 72.48 18.4099V33.6799C72.48 51.0299 58.13 58.0199 52.86 59.9999ZM17.82 65.0399H21.04C21.47 65.0399 21.89 64.8499 22.17 64.5199C22.25 64.4299 29.93 55.7499 39.58 57.0899C46.08 57.9999 48.77 60.3799 50.93 62.2899C52.19 63.3999 53.37 64.4499 55 64.9599C56.13 65.3099 57.68 65.5899 59.49 65.9099C62.51 66.4499 68.8 67.5599 68.95 69.2399C68.95 69.3499 68.98 69.5599 68.64 69.8799C66.72 71.6699 58.96 72.5499 45.93 70.4899C45.18 70.3699 44.46 70.8299 44.25 71.5599C44.04 72.2899 44.41 73.0599 45.12 73.3499L58.42 78.9099C58.65 79.0099 58.91 79.0399 59.15 79.0199L73.77 77.4999C74.1 77.4699 74.42 77.3199 74.66 77.0899L85.54 66.6099C86.62 65.5699 88.3 65.5099 89.45 66.4599C90.08 66.9799 90.45 67.7199 90.51 68.5299C90.56 69.3399 90.29 70.1199 89.73 70.7199L77.75 83.6499C76.98 84.4799 75.99 85.0499 74.88 85.2899L51.74 90.3399C50.86 90.5299 49.96 90.5399 49.07 90.3499L20.08 84.2999C19.98 84.2799 19.88 84.2699 19.77 84.2699H17.84V65.0199L17.82 65.0399ZM3.5 60.2699H14.82V90.0199H3.5V60.2699Z"
+                        // fill="black"
+                      />
+                      <path
+                        d="M62.0783 23.0702C61.8083 22.7402 61.4083 22.5502 60.9783 22.5402C60.5583 22.5202 60.1383 22.6902 59.8483 23.0002L48.7983 34.5502L43.4583 29.3902C43.1483 29.0902 42.7283 28.9402 42.3083 28.9702C41.8783 29.0002 41.4883 29.2102 41.2283 29.5502L37.0483 35.0102C36.5483 35.6602 36.6683 36.5802 37.2983 37.0902L48.5483 46.0902C48.8183 46.3102 49.1583 46.4202 49.4883 46.4202C49.8183 46.4202 50.1383 46.3102 50.4083 46.1002L67.9283 32.4402C68.2483 32.1902 68.4583 31.8202 68.4983 31.4102C68.5383 31.0102 68.4183 30.6002 68.1583 30.2902L62.0883 23.0602L62.0783 23.0702ZM49.4983 43.0202L40.3183 35.6802L42.5783 32.7202L47.7983 37.7602C48.0883 38.0402 48.4583 38.1902 48.8683 38.1802C49.2683 38.1802 49.6483 38.0102 49.9183 37.7202L60.8483 26.3002L64.8483 31.0602L49.4883 43.0402L49.4983 43.0202Z"
+                        // fill="black"
+                      />
                     </svg>
                   </span>
                   <span className="nav-text">

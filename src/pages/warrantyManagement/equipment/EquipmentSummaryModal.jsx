@@ -38,7 +38,7 @@ export default function EquipmentSummaryModal(props) {
             style={{ backgroundColor: "#f3eafe" }}
           >
             <div>
-              <a href="#" className="btn bg-primary text-white">
+              <a href="#" className="btn bg-primary text-white py-1">
                 {serialNumber || "NA"}
               </a>
             </div>
@@ -47,12 +47,20 @@ export default function EquipmentSummaryModal(props) {
             </h5>
           </div>
           {/* <hr className="mt-0" /> */}
-          <h6 className=" font-weight-500 my-3 mx-0" style={{fontSize: "15px"}}>
+          <h6
+            className=" font-weight-500 my-3 mx-0"
+            style={{ fontSize: "14px" }}
+          >
             {equipmentRecord?.currentClient}-{equipmentRecord?.customer}
           </h6>
           <hr className="mt-0" />
           <Card>
-            <h6 className="mx-2 mb-0 font-weight-500 font-size-15" style={{fontSize: "15px"}}>Summary</h6>
+            <h6
+              className="mx-2 mb-0 font-weight-500 font-size-15"
+              style={{ fontSize: "15px" }}
+            >
+              Summary
+            </h6>
             <List dense={true}>
               <ListItem>
                 <div className="d-flex align-items-center cursor">
@@ -60,7 +68,7 @@ export default function EquipmentSummaryModal(props) {
                     <input type="checkbox" checked={true} />
                   </div>
                 </div>
-                <span className="font-weight-500">
+                <span className="font-weight-400">
                   Model {equipmentRecord?.model}
                 </span>
               </ListItem>
@@ -70,7 +78,17 @@ export default function EquipmentSummaryModal(props) {
                     <input type="checkbox" checked={true} />
                   </div>
                 </div>
-                <span className="font-weight-500">
+                <span className="font-weight-400">
+                  Equipment Id {equipmentRecord?.equipmentNumber}
+                </span>
+              </ListItem>
+              <ListItem>
+                <div className="d-flex align-items-center cursor">
+                  <div class="checkbox mr-2">
+                    <input type="checkbox" checked={true} />
+                  </div>
+                </div>
+                <span className="font-weight-400">
                   Installed On{" "}
                   {equipmentRecord?.installationDate && (
                     <Moment format="DD/MM/YYYY">
@@ -85,7 +103,7 @@ export default function EquipmentSummaryModal(props) {
                     <input type="checkbox" checked={true} />
                   </div>
                 </div>
-                <span className="font-weight-500">
+                <span className="font-weight-400">
                   Warranty Valid until{" "}
                   {equipmentRecord?.installationDate && (
                     <Moment format="DD/MM/YYYY">
@@ -100,15 +118,15 @@ export default function EquipmentSummaryModal(props) {
                     <input type="checkbox" checked={true} />
                   </div>
                 </div>
-                <span className="font-weight-500">
+                <span className="font-weight-400">
                   Family {equipmentRecord?.market}
                 </span>
               </ListItem>
             </List>
           </Card>
-          <div className="mt-2 mb-2">
+          <div className="mt-2 mb-3">
             <button
-              className="btn btn-border-primary mx-2"
+              className="btn btn-border-primary mx-2 py-1 mb-0"
               onClick={handleViewDetails}
             >
               View Details

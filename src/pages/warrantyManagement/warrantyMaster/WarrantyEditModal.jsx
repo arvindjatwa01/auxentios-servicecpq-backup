@@ -24,7 +24,7 @@ import { ReadOnlyField } from "pages/Common/ReadOnlyField";
 import { FONT_STYLE, FONT_STYLE_SELECT } from "pages/Common/constants";
 
 import { callGetApi, callPutApi } from "services/ApiCaller";
-import { WARRANTY_MASTER_URL } from "services/CONSTANTS";
+import { Get_Customer_Master_Details_By_Id_GET, WARRANTY_INSTALLER_MASTER_URL, WARRANTY_MASTER_URL } from "services/CONSTANTS";
 import { API_SUCCESS } from "services/ResponseCode";
 
 const WarrantyEditModal = ({ show, hideModal, recordId, handleSnack }) => {
@@ -44,7 +44,7 @@ const WarrantyEditModal = ({ show, hideModal, recordId, handleSnack }) => {
   useEffect(() => {
     if (recordId) {
       const rUrl = `${WARRANTY_MASTER_URL}/${recordId}`;
-      callGetApi(rUrl, (response) => {
+      callGetApi(null, rUrl, (response) => {
         if (response.status === API_SUCCESS) {
           //   const responseData = response.data;
           const { installerDetails, customerDetails, ...responseData } =
@@ -79,21 +79,69 @@ const WarrantyEditModal = ({ show, hideModal, recordId, handleSnack }) => {
             warrantyStatus: _warrantyStatus || "",
           });
 
-          // set installer record data
-          const _installerType = installerTypeOptions.find(
-            (obj) => obj.value === installerDetails.installerType
-          );
-          setInstallerRecord({
-            ...installerDetails,
-            installerType: _installerType || "",
-          });
-          setCustomerRecord({ ...customerDetails });
+          // get customer details
+          if (responseData.customerId) {
+            getCustomerDetails(responseData.customerId);
+          }
+
+          if (responseData.installerId) {
+            getInstallerDetails(responseData.installerId);
+          }
+
+          // // set installer record data
+          // const _installerType = installerTypeOptions.find(
+          //   (obj) => obj.value === installerDetails.installerType
+          // );
+          // setInstallerRecord({
+          //   ...installerDetails,
+          //   installerType: _installerType || "",
+          // });
+          // setCustomerRecord({ ...customerDetails });
         } else {
           handleSnack("error", "Something went wrong");
         }
       });
     }
   }, [recordId]);
+
+  // get customer details
+  const getCustomerDetails = (id) => {
+    const rUrl = `${Get_Customer_Master_Details_By_Id_GET}${id}`;
+    callGetApi(null, rUrl, (response) => {
+      if (response.status === API_SUCCESS) {
+        const responseData = response.data;
+        setCustomerRecord({
+          customerId: responseData.id,
+          customerName: responseData.fullName,
+          email: responseData.email,
+          address: responseData.addressDTO?.fullAddress,
+          city: responseData.addressDTO?.district,
+          state: responseData.addressDTO?.regionOrState,
+          country: responseData.addressDTO?.country,
+          zipCode: responseData.addressDTO?.zipCode,
+          phoneNumber: responseData?.phoneNumber,
+        });
+      }
+    });
+  };
+
+  // get warranty installer details
+  const getInstallerDetails = (installerId) => {
+    const rUrl = `${WARRANTY_INSTALLER_MASTER_URL}/${installerId}`;
+    callGetApi(null, rUrl, (response) => {
+      if (response.status === API_SUCCESS) {
+        const responseData = response.data;
+        // set installer record data
+        const _installerType = installerTypeOptions.find(
+          (obj) => obj.value === responseData.installerType
+        );
+        setInstallerRecord({
+          ...responseData,
+          installerType: _installerType || "",
+        });
+      }
+    });
+  };
 
   const handleCustomerFieldsChange = (e) => {
     const { name, value } = e.target;
@@ -120,7 +168,7 @@ const WarrantyEditModal = ({ show, hideModal, recordId, handleSnack }) => {
       customerDetails: { ...customerRecord },
     };
 
-    callPutApi(rUrl, rObj, (response) => {
+    callPutApi(null, rUrl, rObj, (response) => {
       if (response.status === API_SUCCESS) {
         handleSnack("success", "Warranty Details updated successfully.");
         hideModal();

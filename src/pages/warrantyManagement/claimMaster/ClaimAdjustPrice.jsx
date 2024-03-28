@@ -15,16 +15,29 @@ const priceTypeOptions = [
   { label: "Settled", value: "SETTLED" },
 ];
 
+const coverageTypeOptions = [
+  { label: "All Covered", value: "CT_04" },
+  { label: "Parts & Labour", value: "CT_01" },
+  { label: "Only Parts", value: "CT_02" },
+  { label: "Part & Labour & Misc.", value: "CT_03" },
+];
+
 const ClaimAdjustPrice = ({
   handleSnack,
   handleBack,
   claimValueId,
   setClaimValueId,
   claimOrderId,
+  relatedPartsRecords = [],
+  setCoverageTypeValue,
 }) => {
   const [claimValurRecordData, setClaimValurRecordData] = useState({
     ...claimValueRequestObj,
     claimOrderId: claimOrderId,
+    totalPartsClaimed: relatedPartsRecords
+      .reduce((total, item) => total + item.totalPrice, 0)
+      .toFixed(2),
+    coverageType: coverageTypeOptions[0],
   });
   const [editPriceData, setEditPriceData] = useState(false);
 
@@ -37,12 +50,21 @@ const ClaimAdjustPrice = ({
         (response) => {
           if (response.status === API_SUCCESS) {
             const responseData = response.data;
+
+            // type
             const _type = priceTypeOptions.find(
               (obj) => obj.value === responseData.type
             );
+
+            // coverage type
+            const _coverageType = coverageTypeOptions.find(
+              (obj) => obj.value === responseData.coverageType
+            );
+
             setClaimValurRecordData({
               ...responseData,
               type: _type || priceTypeOptions[0],
+              coverageType: _coverageType || coverageTypeOptions[0],
             });
           } else {
           }
@@ -61,8 +83,32 @@ const ClaimAdjustPrice = ({
     const rUrl = CLAIM_VALUE_MASTER_URL;
     const rObj = {
       ...claimValurRecordData,
+      coverageType:
+        claimValurRecordData.coverageType?.value ||
+        coverageTypeOptions[0]?.value ||
+        "",
       type:
         claimValurRecordData.type?.value || priceTypeOptions[0]?.value || "",
+      totalAmountClaimed: (claimValurRecordData.coverageType?.value === "CT_02"
+        ? parseFloat(claimValurRecordData.totalPartsClaimed || 0)
+        : claimValurRecordData.coverageType?.value === "CT_01"
+        ? parseFloat(claimValurRecordData.totalPartsClaimed || 0) +
+          parseFloat(claimValurRecordData.totalHoursClaimed || 0) +
+          parseFloat(claimValurRecordData.totalLaborAmountClaimed || 0)
+        : claimValurRecordData.coverageType?.value === "CT_03"
+        ? parseFloat(claimValurRecordData.totalPartsClaimed || 0) +
+          parseFloat(claimValurRecordData.totalHoursClaimed || 0) +
+          parseFloat(claimValurRecordData.totalLaborAmountClaimed || 0) +
+          parseFloat(claimValurRecordData.miscClaimed)
+        : claimValurRecordData.coverageType?.value === "CT_04"
+        ? parseFloat(claimValurRecordData.totalPartsClaimed || 0) +
+          parseFloat(claimValurRecordData.totalHoursClaimed || 0) +
+          parseFloat(claimValurRecordData.totalLaborAmountClaimed || 0) +
+          parseFloat(claimValurRecordData.miscClaimed || 0) +
+          parseFloat(claimValurRecordData.travelClaimed || 0) +
+          parseFloat(claimValurRecordData.vehicleKMClaimed || 0)
+        : 0
+      ).toFixed(2),
     };
     if (claimValueId) {
       callPutApi(null, `${rUrl}/${claimValueId}`, rObj, (response) => {
@@ -134,14 +180,72 @@ const ClaimAdjustPrice = ({
               <div className="col-md-3 col-sm-3">
                 <div className="form-group">
                   <label className="text-light-dark font-size-12 font-weight-500 text-uppercase">
+                    COVERAGE TYPE
+                  </label>
+                  <Select
+                    onChange={(e) => {
+                      setClaimValurRecordData({
+                        ...claimValurRecordData,
+                        coverageType: e,
+                      });
+                      setCoverageTypeValue(e);
+                    }}
+                    options={coverageTypeOptions}
+                    value={claimValurRecordData.coverageType}
+                    styles={FONT_STYLE_SELECT}
+                  />
+                </div>
+              </div>
+              <div className="col-md-3 col-sm-3">
+                <div className="form-group">
+                  <label className="text-light-dark font-size-12 font-weight-500 text-uppercase">
                     TOTAL AMOUNT CLAIMED
                   </label>
                   <input
-                    type="text"
+                    type="number"
                     className="form-control border-radius-10 text-primary"
-                    value={claimValurRecordData.totalAmountClaimed}
+                    // value={claimValurRecordData.totalAmountClaimed}
+                    value={(claimValurRecordData.coverageType?.value === "CT_02"
+                      ? parseFloat(claimValurRecordData.totalPartsClaimed || 0)
+                      : claimValurRecordData.coverageType?.value === "CT_01"
+                      ? parseFloat(
+                          claimValurRecordData.totalPartsClaimed || 0
+                        ) +
+                        parseFloat(
+                          claimValurRecordData.totalHoursClaimed || 0
+                        ) +
+                        parseFloat(
+                          claimValurRecordData.totalLaborAmountClaimed || 0
+                        )
+                      : claimValurRecordData.coverageType?.value === "CT_03"
+                      ? parseFloat(
+                          claimValurRecordData.totalPartsClaimed || 0
+                        ) +
+                        parseFloat(
+                          claimValurRecordData.totalHoursClaimed || 0
+                        ) +
+                        parseFloat(
+                          claimValurRecordData.totalLaborAmountClaimed || 0
+                        ) +
+                        parseFloat(claimValurRecordData.miscClaimed || 0)
+                      : claimValurRecordData.coverageType?.value === "CT_04"
+                      ? parseFloat(
+                          claimValurRecordData.totalPartsClaimed || 0
+                        ) +
+                        parseFloat(
+                          claimValurRecordData.totalHoursClaimed || 0
+                        ) +
+                        parseFloat(
+                          claimValurRecordData.totalLaborAmountClaimed || 0
+                        ) +
+                        parseFloat(claimValurRecordData.miscClaimed || 0) +
+                        parseFloat(claimValurRecordData.travelClaimed || 0) +
+                        parseFloat(claimValurRecordData.vehicleKMClaimed || 0)
+                      : 0
+                    ).toFixed(2)}
                     name={"totalAmountClaimed"}
                     onChange={handleInputFiledChange}
+                    disabled={true}
                   />
                 </div>
               </div>
@@ -151,11 +255,12 @@ const ClaimAdjustPrice = ({
                     TOTAL PARTS CLAIMED
                   </label>
                   <input
-                    type="text"
+                    type="number"
                     className="form-control border-radius-10 text-primary"
                     value={claimValurRecordData.totalPartsClaimed}
                     name={"totalPartsClaimed"}
                     onChange={handleInputFiledChange}
+                    disabled={true}
                   />
                 </div>
               </div>
@@ -165,7 +270,7 @@ const ClaimAdjustPrice = ({
                     TOTAL HOURS CLAIMED
                   </label>
                   <input
-                    type="text"
+                    type="number"
                     className="form-control border-radius-10 text-primary"
                     value={claimValurRecordData.totalHoursClaimed}
                     name={"totalHoursClaimed"}
@@ -179,7 +284,7 @@ const ClaimAdjustPrice = ({
                     TOTAL LABOUR AMOUNT CLAIMED
                   </label>
                   <input
-                    type="text"
+                    type="number"
                     className="form-control border-radius-10 text-primary"
                     value={claimValurRecordData.totalLaborAmountClaimed}
                     name={"totalLaborAmountClaimed"}
@@ -193,7 +298,7 @@ const ClaimAdjustPrice = ({
                     TRAVEL CLAIMED
                   </label>
                   <input
-                    type="text"
+                    type="number"
                     className="form-control border-radius-10 text-primary"
                     value={claimValurRecordData.travelClaimed}
                     name={"travelClaimed"}
@@ -207,7 +312,7 @@ const ClaimAdjustPrice = ({
                     MISC. CLAIMED
                   </label>
                   <input
-                    type="text"
+                    type="number"
                     className="form-control border-radius-10 text-primary"
                     value={claimValurRecordData.miscClaimed}
                     name={"miscClaimed"}
@@ -221,7 +326,7 @@ const ClaimAdjustPrice = ({
                     VEHICLE KM CLAIMED
                   </label>
                   <input
-                    type="text"
+                    type="number"
                     className="form-control border-radius-10 text-primary"
                     value={claimValurRecordData.vehicleKMClaimed}
                     name={"vehicleKMClaimed"}
@@ -236,6 +341,11 @@ const ClaimAdjustPrice = ({
             <ReadOnlyField
               label="TYPE"
               value={claimValurRecordData.type?.label}
+              className="col-md-3 col-sm-3"
+            />
+            <ReadOnlyField
+              label="COVERAGE TYPE"
+              value={claimValurRecordData.coverageType?.label}
               className="col-md-3 col-sm-3"
             />
             <ReadOnlyField
