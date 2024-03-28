@@ -2036,6 +2036,16 @@ const WarrantyOverviewModal = ({
   const viewClaimTabData = () => {
     return (
       <>
+        <div className="Add-new-segment-div p-3 border-radius-10 mb-4">
+          <div class="repairbtn-dropdown">
+            <button
+              className="btn bg-primary text-white ml-2 dropbtn"
+              onClick={handleClaimCreate}
+            >
+              Raise a Claim
+            </button>
+          </div>
+        </div>
         <div className="card border px-3 pt-4">
           <div className="d-flex justify-content-around ">
             <div
