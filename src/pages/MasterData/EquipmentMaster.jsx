@@ -1,7 +1,15 @@
 import React, { useEffect, useState } from "react";
 
 import Pagination from "@mui/material/Pagination";
-import { Box, Divider, Grid, Stack, Tab, TextField ,PaginationItem} from "@mui/material";
+import {
+  Box,
+  Divider,
+  Grid,
+  Stack,
+  Tab,
+  TextField,
+  PaginationItem,
+} from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
@@ -238,10 +246,15 @@ const EquipmentMaster = () => {
     }
   }, [showModal]);
 
+  useEffect(() => {
+    setSelectedEquipmentId(null);
+  }, [searchList]);
+
   //Pagination Code
 
   const [displayedPages, setDisplayedPages] = useState([1, 2, 3]);
   const totalPage = 7;
+
   useEffect(() => {
     const calculateDisplayedPages = () => {
       if (pageNo === 1) {
@@ -374,7 +387,7 @@ const EquipmentMaster = () => {
   const handleSignautreUploadModal = () => {
     setShowSignatureModal(!showSignatureModal);
     setShowService(!showService);
-  }
+  };
 
   // Contrect detauls columns
   const contractDetailsColumns = [
@@ -1483,7 +1496,7 @@ const EquipmentMaster = () => {
             <div className="col-lg-4 col-md-4 col-sm-6 col-12">
               <div className="d-block">
                 <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                  Manufacturer
+                  MANUFACTURER
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
                   {isEmpty(selectEquipmentDetails.maker)
@@ -1495,7 +1508,7 @@ const EquipmentMaster = () => {
             <div className="col-lg-4 col-md-4 col-sm-6 col-12">
               <div className="d-block">
                 <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                  Model
+                  MODEL
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
                   {isEmpty(selectEquipmentDetails.model)
@@ -1515,7 +1528,7 @@ const EquipmentMaster = () => {
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
               <div className="d-block">
                 <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                  Engine Model
+                  ENGINE MODEL
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500">
                   {/* {isEmpty(selectEquipmentDetails.engineModel)
@@ -1528,7 +1541,7 @@ const EquipmentMaster = () => {
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
               <div className="d-block">
                 <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                  Operating Weight
+                  OPERATUNG WEIGHT
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500">
                   {/* {isEmpty(selectEquipmentDetails.operator)
@@ -1540,7 +1553,7 @@ const EquipmentMaster = () => {
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                Net Flywheel Power
+                NET FLYWHEEL POWER
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
                 {isEmpty(selectEquipmentDetails.netFlywheelPower)
@@ -1550,12 +1563,12 @@ const EquipmentMaster = () => {
             </div>
           </div>
         </div>
-        <h5 className="font-weight-500 mt-4 ">Customer Details</h5>
+        <h5 className="font-weight-500 mt-4 ">CUSTOMER DETAILS</h5>
         <div className="bg-white p-3 border-radius-10 mt-3">
           <div className="row">
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                Customer Id
+                CUSTOMER ID
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
                 {/* {isEmpty(selectEquipmentDetails.customerId)
@@ -1569,7 +1582,7 @@ const EquipmentMaster = () => {
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                Customer Name
+                CUSTOMER NAME
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase ">
                 {isEmpty(selectEquipmentDetails.customer)
@@ -1580,7 +1593,7 @@ const EquipmentMaster = () => {
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                Contact Person
+                CONTACT PERSON
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
                 {isEmpty(selectEquipmentDetails.contact)
@@ -1591,7 +1604,7 @@ const EquipmentMaster = () => {
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                Customer Group
+                CUSTOMER GROUP
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase ">
                 {/* {isEmpty(selectEquipmentDetails.customerGroup)
@@ -1602,7 +1615,7 @@ const EquipmentMaster = () => {
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                Customer Segment
+                CUSTOMER SEGMENT
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase ">
                 {/* {isEmpty(selectEquipmentDetails.customerSegment)
@@ -1613,7 +1626,7 @@ const EquipmentMaster = () => {
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                Last Owner
+                LAST OWNER
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase ">
                 {/* {isEmpty(selectEquipmentDetails.owner)
@@ -1624,12 +1637,12 @@ const EquipmentMaster = () => {
             </div>
           </div>
         </div>
-        <h5 className="font-weight-500 mt-5 ">Site Details</h5>
+        <h5 className="font-weight-500 mt-5 ">SITE DETAILS</h5>
         <div className="bg-white p-3 border-radius-10 mt-3 mb-5">
           <div className="row">
             <div className="col-lg-6 col-md-6 col-sm-12 col-12 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                Fleet number
+                FLEET NUMBER
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase ">
                 {/* {isEmpty(selectEquipmentDetails.fleetNo)
@@ -1640,7 +1653,7 @@ const EquipmentMaster = () => {
             </div>
             <div className="col-lg-6 col-md-6 col-sm-12 col-12 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                Contact Address
+                CONTACT ADDRESS
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
                 Alwar, Rajsthan
@@ -1651,7 +1664,7 @@ const EquipmentMaster = () => {
             </div>
             <div className="col-lg-6 col-md-6 col-sm-12 col-12 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                Geo codes
+                GEO CODES
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
                 {/* {isEmpty(selectEquipmentDetails.geocode)
@@ -1662,7 +1675,7 @@ const EquipmentMaster = () => {
             </div>
             <div className="col-lg-6 col-md-6 col-sm-12 col-12 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                Primary Contact
+                PRIMARY CONTACT
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
                 {/* {isEmpty(selectEquipmentDetails.contact)
@@ -1673,7 +1686,7 @@ const EquipmentMaster = () => {
             </div>
             <div className="col-lg-6 col-md-6 col-sm-12 col-12 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                Moved In/Out
+                MOVED IN/OUT
               </p>
               <div className="equipment-switch">
                 <Switch
@@ -1687,7 +1700,7 @@ const EquipmentMaster = () => {
             </div>
             <div className="col-lg-6 col-md-6 col-sm-12 col-12 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                Previous Location
+                PREVIOUS LOCATION
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
                 {/* {isEmpty(selectEquipmentDetails.previousLocation)
@@ -1698,7 +1711,7 @@ const EquipmentMaster = () => {
             </div>
             <div className="col-lg-6 col-md-6 col-sm-12 col-12 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                New Location
+                NEW LOCATION
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
                 {/* {isEmpty(selectEquipmentDetails.newLocation)
@@ -1709,7 +1722,7 @@ const EquipmentMaster = () => {
             </div>
             <div className="col-lg-6 col-md-6 col-sm-12 col-12 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                Moved In Date
+                MOVED IN DATE
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
                 {/* {isEmpty(selectEquipmentDetails.movedInDate)
@@ -1720,7 +1733,7 @@ const EquipmentMaster = () => {
             </div>
           </div>
         </div>
-        <h5 className="font-weight-500 mt-4 ">ERP Details</h5>
+        <h5 className="font-weight-500 mt-4 ">ERP DETAILS</h5>
         <div className="bg-white p-3 border-radius-10 mt-3">
           <div className="row">
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
@@ -1733,7 +1746,7 @@ const EquipmentMaster = () => {
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                {/* ERP Description */}Title
+                {/* ERP Description */}TITLE
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
                 Excavator
@@ -1741,7 +1754,7 @@ const EquipmentMaster = () => {
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                Technical Asset Number
+                TECHNICAL ASSET NUMBER
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
                 NA
@@ -1749,7 +1762,7 @@ const EquipmentMaster = () => {
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                Fleet Number
+                FLEET NUMBER
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
                 D2L - RAJ - NORTH
@@ -1757,7 +1770,7 @@ const EquipmentMaster = () => {
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                Purchase Date
+                PURCHASE DATE
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
                 43160
@@ -1765,7 +1778,7 @@ const EquipmentMaster = () => {
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                Serial Number
+                SERIAL NUMBER
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
                 ZCT00981
@@ -1773,7 +1786,7 @@ const EquipmentMaster = () => {
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
               <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                Functional Location
+                FUNCTIONAL LOCATION
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
                 F001-32
@@ -1805,13 +1818,13 @@ const EquipmentMaster = () => {
   const viewWarratyData = () => {
     return (
       <>
-        <h5 className="font-weight-500 mt-5 ">Warranty Details</h5>
+        <h5 className="font-weight-500 mt-5 ">WARRANTY DETAILS</h5>
         <div className="bg-white p-3 border-radius-10 overflow-hidden">
           <div className="row align-items-end">
             <div className="col-lg-4 col-md-4 col-sm-6 col-12">
               <div className="d-block">
                 <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                  Warranty Type
+                  WARRANTY TYPE
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
                   {isEmpty(yearWarrantyData.warrantyType?.value)
@@ -1823,7 +1836,7 @@ const EquipmentMaster = () => {
             <div className="col-lg-4 col-md-4 col-sm-6 col-12">
               <div className="d-block">
                 <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                  Basis
+                  BASIS
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
                   {isEmpty(yearWarrantyData.basis)
@@ -1835,7 +1848,7 @@ const EquipmentMaster = () => {
             <div className="col-lg-4 col-md-4 col-sm-6 col-12">
               <div className="d-block">
                 <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                  Duration
+                  DURATION
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
                   {isEmpty(yearWarrantyData.basis)
@@ -1847,7 +1860,7 @@ const EquipmentMaster = () => {
             <div className="col-lg-4 col-md-4 col-sm-6 col-12">
               <div className="d-block">
                 <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                  Title
+                  TITLE
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
                   {isEmpty(yearWarrantyData.title)
@@ -1908,7 +1921,7 @@ const EquipmentMaster = () => {
                         <div className="col-lg-4 col-md-4 col-sm-6 col-12">
                           <div className="d-block">
                             <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                              Warranty Type
+                              WARRANTY TYPE
                             </p>
                             <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
                               {isEmpty(yearWarrantyData.warrantyType?.value)
@@ -1920,7 +1933,7 @@ const EquipmentMaster = () => {
                         <div className="col-lg-4 col-md-4 col-sm-6 col-12">
                           <div className="d-block">
                             <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                              Start Usage
+                              START USAGE
                             </p>
                             <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
                               {isEmpty(yearWarrantyData.warrantyStartUsage)
@@ -1932,7 +1945,7 @@ const EquipmentMaster = () => {
                         <div className="col-lg-4 col-md-4 col-sm-6 col-12">
                           <div className="d-block">
                             <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                              End Usage
+                              END USAGE
                             </p>
                             <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
                               {isEmpty(yearWarrantyData.warrantyEndUsage)
@@ -1944,7 +1957,7 @@ const EquipmentMaster = () => {
                         <div className="col-lg-4 col-md-4 col-sm-6 col-12">
                           <div className="d-block">
                             <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                              Start Date
+                              START DATE
                             </p>
                             <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
                               {isEmpty(yearWarrantyData.warrantyStartDate)
@@ -1959,7 +1972,7 @@ const EquipmentMaster = () => {
                         <div className="col-lg-4 col-md-4 col-sm-6 col-12">
                           <div className="d-block">
                             <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                              End Date
+                              END DATE
                             </p>
                             <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
                               {isEmpty(yearWarrantyData.warrantyEndDate)
@@ -1974,7 +1987,7 @@ const EquipmentMaster = () => {
                         <div className="col-lg-4 col-md-4 col-sm-6 col-12">
                           <div className="d-block">
                             <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                              Warranty Expense Account
+                              WARRANTY EXPENSE ACCOUNT
                             </p>
                             <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
                               {isEmpty(yearWarrantyData.warrantyExpAccount)
@@ -1986,7 +1999,7 @@ const EquipmentMaster = () => {
                         <div className="col-lg-4 col-md-4 col-sm-6 col-12">
                           <div className="d-block">
                             <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                              Amount
+                              AMOUNT
                             </p>
                             <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
                               {isEmpty(yearWarrantyData.amount)
@@ -2005,7 +2018,7 @@ const EquipmentMaster = () => {
                         <div className="col-lg-4 col-md-4 col-sm-6 col-12">
                           <div className="form-group">
                             <label className="text-light-dark font-size-14 font-weight-500">
-                              Warranty Type
+                              WARRANTY TYPE
                             </label>
                             <Select
                               className="text-primary"
@@ -2024,7 +2037,7 @@ const EquipmentMaster = () => {
                         <div className="col-lg-4 col-md-4 col-sm-6 col-12">
                           <div className="form-group">
                             <label className="text-light-dark font-size-14 font-weight-500">
-                              Start Usage
+                              START USAGE
                             </label>
                             <input
                               type="text"
@@ -2039,7 +2052,7 @@ const EquipmentMaster = () => {
                         <div className="col-lg-4 col-md-4 col-sm-6 col-12">
                           <div className="form-group">
                             <label className="text-light-dark font-size-14 font-weight-500">
-                              End Usage
+                              END USAGE
                             </label>
                             <input
                               type="text"
@@ -2054,7 +2067,7 @@ const EquipmentMaster = () => {
                         <div className="col-lg-4 col-md-4 col-sm-6 col-12">
                           <div className="form-group">
                             <label className="text-light-dark font-size-14 font-weight-500">
-                              Start Date
+                              START DATE
                             </label>
                             <div className="align-items-center date-box">
                               <LocalizationProvider
@@ -2090,7 +2103,7 @@ const EquipmentMaster = () => {
                         <div className="col-lg-4 col-md-4 col-sm-6 col-12">
                           <div className="form-group">
                             <label className="text-light-dark font-size-14 font-weight-500">
-                              End Date
+                              END DATE
                             </label>
                             <div className="align-items-center date-box">
                               <LocalizationProvider
@@ -2126,7 +2139,7 @@ const EquipmentMaster = () => {
                         <div className="col-lg-4 col-md-4 col-sm-6 col-12">
                           <div className="form-group">
                             <label className="text-light-dark font-size-14 font-weight-500">
-                              Warranty Expense Account
+                              WARRANTY EXPENSE ACCOUNT
                             </label>
                             <input
                               type="text"
@@ -2141,7 +2154,7 @@ const EquipmentMaster = () => {
                         <div className="col-lg-4 col-md-4 col-sm-6 col-12">
                           <div className="form-group">
                             <label className="text-light-dark font-size-14 font-weight-500">
-                              Amount
+                              AMOUNT
                             </label>
                             <input
                               type="text"
@@ -2189,7 +2202,7 @@ const EquipmentMaster = () => {
                   <div className="col-lg-4 col-md-4 col-sm-6 col-12">
                     <div className="d-block">
                       <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                        Warranty Type
+                        WARRANTY TYPE
                       </p>
                       <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
                         {isEmpty(selectEquipmentDetails.maker)
@@ -2201,7 +2214,7 @@ const EquipmentMaster = () => {
                   <div className="col-lg-4 col-md-4 col-sm-6 col-12">
                     <div className="d-block">
                       <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                        Start Usage
+                        START USAGE
                       </p>
                       <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
                         {isEmpty(selectEquipmentDetails.maker)
@@ -2213,7 +2226,7 @@ const EquipmentMaster = () => {
                   <div className="col-lg-4 col-md-4 col-sm-6 col-12">
                     <div className="d-block">
                       <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                        End Usage
+                        END USAGE
                       </p>
                       <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
                         {isEmpty(selectEquipmentDetails.maker)
@@ -2225,7 +2238,7 @@ const EquipmentMaster = () => {
                   <div className="col-lg-4 col-md-4 col-sm-6 col-12">
                     <div className="d-block">
                       <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                        Start Date
+                        START DATE
                       </p>
                       <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
                         {isEmpty(selectEquipmentDetails.maker)
@@ -2237,7 +2250,7 @@ const EquipmentMaster = () => {
                   <div className="col-lg-4 col-md-4 col-sm-6 col-12">
                     <div className="d-block">
                       <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                        End Date
+                        END DATE
                       </p>
                       <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
                         {isEmpty(selectEquipmentDetails.maker)
@@ -2249,7 +2262,7 @@ const EquipmentMaster = () => {
                   <div className="col-lg-4 col-md-4 col-sm-6 col-12">
                     <div className="d-block">
                       <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                        Warranty Expense Account
+                        WARRANTY EXPENSE ACCOUNT
                       </p>
                       <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
                         {isEmpty(selectEquipmentDetails.maker)
@@ -2261,7 +2274,7 @@ const EquipmentMaster = () => {
                   <div className="col-lg-4 col-md-4 col-sm-6 col-12">
                     <div className="d-block">
                       <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                        Amount
+                        AMOUNT
                       </p>
                       <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
                         {isEmpty(selectEquipmentDetails.maker)
@@ -2397,18 +2410,24 @@ const EquipmentMaster = () => {
                               {`${selectEquipmentDetails.description}`}
                             </h5>
                             <Stack spacing={2}>
-                            <Pagination
-                              count={totalPage}
-                              page={pageNo}
-                              onChange={handlePageChange}
-                              shape="rounded"
-                              renderItem={(item) => (
-                                <PaginationItem
-                                  {...item}
-                                  style={{ display: displayedPages.includes(item.page) ? 'block' : 'none' }}
-                                />
-                              )}
-                            />
+                              <Pagination
+                                count={totalPage}
+                                page={pageNo}
+                                onChange={handlePageChange}
+                                shape="rounded"
+                                renderItem={(item) => (
+                                  <PaginationItem
+                                    {...item}
+                                    style={{
+                                      display: displayedPages.includes(
+                                        item.page
+                                      )
+                                        ? "block"
+                                        : "none",
+                                    }}
+                                  />
+                                )}
+                              />
                               {/* <Pagination
                                 boundaryCount={0}
                                 siblingCount={0}
@@ -2461,7 +2480,7 @@ const EquipmentMaster = () => {
           hideModal={handleSignautreUploadModal}
         />
       )}
-       {showService && (
+      {showService && (
         <EquipmentServiceModal
           show={showService}
           hideModal={() => setShowService(false)}
@@ -2506,7 +2525,7 @@ const EquipmentMaster = () => {
         />
       )}
 
-      <EquipmentRecordModal 
+      <EquipmentRecordModal
         show={openEquipmentRecordModal}
         handleClose={() => setOpenEquipmentRecordModal(false)}
         handleSnack={handleSnack}

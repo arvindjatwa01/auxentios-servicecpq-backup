@@ -21,7 +21,7 @@ const EquipmentMasterSearchList = ({
                   }`}
                   onClick={() => handleViewDetails(equipment.id, equipment)}
                 >
-                  <div className="row position-relative">
+                  <div className="row position-relative align-items-center">
                     <div className="global-serach-arrow">
                       <ArrowForwardIosIcon className="text-primary font-size-20 mb-0 pb-0" />
                     </div>
