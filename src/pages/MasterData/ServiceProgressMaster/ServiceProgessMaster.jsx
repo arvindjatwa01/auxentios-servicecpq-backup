@@ -469,47 +469,58 @@ const ServiceProgessMaster = () => {
                 >
                   <TabList className="" onChange={changeTab}>
                     <Tab
-                      label="Dashboard"
+                      // label="Dashboard"
                       value={"deshboard"}
                       className="heading-tabs"
                     />
                     <Tab
-                      label="Track Order"
+                      // label="Track Order"
                       value={"trackOrder"}
                       className="heading-tabs"
                     />
                   </TabList>
                 </Box>
                 <TabPanel value="deshboard" sx={{ marginTop: 0 }}>
-                  <div className="d-flex justify-content-around ">
-                    <div className="card border px-2 py-1 cursor-pointer mt-2">
-                      <div className="card-body">
-                        <span className="">In Stock</span>
-                        <h3 className="mt-0 text-center">6</h3>
+                  {/* <div className="d-flex justify-content-between "> */}
+                  <div className="row justify-content-center">
+                    <div className="col-sm-2">
+                      <div className="card border px-2 py-1 cursor-pointer  ">
+                        <div className="card-body text-center">
+                          <span className="">In Stock</span>
+                          <h3 className="mt-0 text-center">6</h3>
+                        </div>
                       </div>
                     </div>
-                    <div className="card border px-2 py-1 cursor-pointer">
-                      <div className="card-body">
-                        <span className="">Cores Pending</span>
-                        <h3 className="mt-0 text-center">4</h3>
+                    <div className="col-sm-2">
+                      <div className="card border px-2 py-1 cursor-pointer">
+                        <div className="card-body">
+                          <span className="">Cores Pending</span>
+                          <h3 className="mt-0 text-center">4</h3>
+                        </div>
                       </div>
                     </div>
-                    <div className="card border px-2 py-1 cursor-pointer">
-                      <div className="card-body">
-                        <span className="">Received Cores</span>
-                        <h3 className="mt-0 text-center">2</h3>
+                    <div className="col-sm-2">
+                      <div className="card border px-2 py-1 cursor-pointer">
+                        <div className="card-body">
+                          <span className="">Received Cores</span>
+                          <h3 className="mt-0 text-center">2</h3>
+                        </div>
                       </div>
                     </div>
-                    <div className="card border px-2 py-1 cursor-pointer">
-                      <div className="card-body">
-                        <span className="">PEX in Refurbish</span>
-                        <h3 className="mt-0 text-center">1</h3>
+                    <div className="col-sm-2">
+                      <div className="card border px-2 py-1 cursor-pointer">
+                        <div className="card-body">
+                          <span className="">PEX in Refurbish</span>
+                          <h3 className="mt-0 text-center">1</h3>
+                        </div>
                       </div>
                     </div>
-                    <div className="card border px-2 py-1 cursor-pointer">
-                      <div className="card-body">
-                        <span className="">PEX Requests</span>
-                        <h3 className="mt-0 text-center">1</h3>
+                    <div className="col-sm-2">
+                      <div className="card border px-2 py-1 cursor-pointer">
+                        <div className="card-body">
+                          <span className="">PEX Requests</span>
+                          <h3 className="mt-0 text-center">1</h3>
+                        </div>
                       </div>
                     </div>
                   </div>

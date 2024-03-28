@@ -181,14 +181,15 @@ const Parts360 = () => {
   //pagination code
   const [displayedPages, setDisplayedPages] = useState([1, 2, 3]);
   const totalPage = 4;
+  // const[totalPage,setTotalPage]= useState(4);
   useEffect(() => {
     const calculateDisplayedPages = () => {
       if (pageNo === 1) {
         setDisplayedPages([1, 2, 3]);
       } else if (pageNo === totalPage) {
-        setDisplayedPages([totalPage - 2, totalPage - 1, totalPage]);
+        setDisplayedPages([totalPage - 2, totalPage - 1,totalPage ]);
       } else {
-        setDisplayedPages([pageNo - 1, pageNo, pageNo + 1]);
+        setDisplayedPages([pageNo - 1,pageNo, pageNo + 1]);
       }
     };
 
@@ -1075,9 +1076,10 @@ const Parts360 = () => {
                               onChange={handlePageChange}
                               shape="rounded"
                               renderItem={(item) => (
+                                displayedPages.includes(item.page) &&
                                 <PaginationItem
                                   {...item}
-                                  style={{ display: displayedPages.includes(item.page) ? 'block' : 'none' }}
+                                  // style={{ display: displayedPages.includes(item.page) ? 'block' : 'none' }}
                                 />
                               )}
                             />
