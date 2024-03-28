@@ -38,6 +38,7 @@ const ConsumableMaster = () => {
           const responseData = response.data;
           setSelectedConsumableId(id);
           setSelectedConsumableDetals(responseData);
+         
           setLoading(false);
         } else {
           setLoading(false);
@@ -57,7 +58,7 @@ const ConsumableMaster = () => {
           <div className="row align-items-end">
             <div className="col-lg-4 col-md-4 col-sm-6 col-12">
               <div className="d-block">
-                <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                <p className="text-light-60 font-size-12 m-0 font-weight-500 text-uppercase">
                   Consumable Number
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
@@ -69,7 +70,7 @@ const ConsumableMaster = () => {
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6 col-12">
               <div className="d-block">
-                <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                <p className="text-light-60 font-size-12 m-0 font-weight-500 text-uppercase">
                   Description
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500">
@@ -81,10 +82,10 @@ const ConsumableMaster = () => {
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6 col-12">
               <div className="d-block">
-                <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                <p className="text-light-60 font-size-12 m-0 font-weight-500 text-uppercase">
                   Stock/Non Stock
                 </p>
-                <p className="text-primary font-size-12 mt-1 font-weight-500">
+                <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase">
                   {isEmpty(selectedConsumableDetals.stockItem)
                     ? "Not Stockable"
                     : "Stockable"}
@@ -93,7 +94,7 @@ const ConsumableMaster = () => {
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
               <div className="d-block">
-                <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                <p className="text-light-60 font-size-12 m-0 font-weight-500 text-uppercase">
                   Unit Of Measure
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500">
@@ -105,7 +106,7 @@ const ConsumableMaster = () => {
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
               <div className="d-block">
-                <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                <p className="text-light-60 font-size-12 m-0 font-weight-500 text-uppercase">
                   Supplier
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500">
@@ -116,7 +117,7 @@ const ConsumableMaster = () => {
               </div>
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
-              <p className="text-light-60 font-size-12 m-0 font-weight-500">
+              <p className="text-light-60 font-size-12 m-0 font-weight-500 text-uppercase">
                 Availability
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
@@ -125,7 +126,7 @@ const ConsumableMaster = () => {
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
               <div className="d-block">
-                <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                <p className="text-light-60 font-size-12 m-0 font-weight-500 text-uppercase">
                   Total Available
                 </p>
                 <p className="text-primary font-size-12 mt-1 font-weight-500">
@@ -141,7 +142,7 @@ const ConsumableMaster = () => {
         <div className="bg-white p-3 border-radius-10 mt-3 mb-5">
           <div className="row">
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
-              <p className="text-light-60 font-size-12 m-0 font-weight-500">
+              <p className="text-light-60 font-size-12 m-0 font-weight-500 text-uppercase">
                 Material Group
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
@@ -151,7 +152,7 @@ const ConsumableMaster = () => {
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
-              <p className="text-light-60 font-size-12 m-0 font-weight-500">
+              <p className="text-light-60 font-size-12 m-0 font-weight-500 text-uppercase">
                 Material Number
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
@@ -161,7 +162,7 @@ const ConsumableMaster = () => {
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
-              <p className="text-light-60 font-size-12 m-0 font-weight-500">
+              <p className="text-light-60 font-size-12 m-0 font-weight-500 text-uppercase">
                 Stock Quantity
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
@@ -169,7 +170,7 @@ const ConsumableMaster = () => {
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
-              <p className="text-light-60 font-size-12 m-0 font-weight-500">
+              <p className="text-light-60 font-size-12 m-0 font-weight-500 text-uppercase">
                 Supplier
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
@@ -177,19 +178,26 @@ const ConsumableMaster = () => {
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
-              <p className="text-light-60 font-size-12 m-0 font-weight-500">
+              <p className="text-light-60 font-size-12 m-0 font-weight-500 text-uppercase">
                 Average Price
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
-                $ 4589.63
+                {/* $ 4589.63 */}
+                {isEmpty(selectedConsumableDetals.avgContractedPrice)
+                  ? "NA"
+                  : selectedConsumableDetals.avgContractedPrice}
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
-              <p className="text-light-60 font-size-12 m-0 font-weight-500">
+              <p className="text-light-60 font-size-12 m-0 font-weight-500 text-uppercase">
                 Average Cost
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
-                $ 4058.96
+                {/* $ 4058.96 */}
+                {isEmpty(selectedConsumableDetals.movingAvgCost)
+                  ? "NA"
+                  : selectedConsumableDetals.movingAvgCost}
+             
               </p>
             </div>
           </div>
@@ -206,7 +214,7 @@ const ConsumableMaster = () => {
         <div className="bg-white p-3 border-radius-10 mt-3 mb-5">
           <div className="row">
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
-              <p className="text-light-60 font-size-12 m-0 font-weight-500">
+              <p className="text-light-60 font-size-12 m-0 font-weight-500 text-uppercase">
                 List Price
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
@@ -214,23 +222,29 @@ const ConsumableMaster = () => {
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
-              <p className="text-light-60 font-size-12 m-0 font-weight-500">
+              <p className="text-light-60 font-size-12 m-0 font-weight-500 text-uppercase">
                 Cost Price
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
-                $ 865.45
+                {/* $ 865.45 */}
+                {isEmpty(selectedConsumableDetals.costPrice)
+                    ? "NA"
+                    : selectedConsumableDetals.costPrice}
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
-              <p className="text-light-60 font-size-12 m-0 font-weight-500">
+              <p className="text-light-60 font-size-12 m-0 font-weight-500 text-uppercase">
                 Supplier contracted price
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
-                $ 923.55
+                {/* $ 923.55 */}
+                {isEmpty(selectedConsumableDetals.contractedPrice)
+                    ? "NA"
+                    : selectedConsumableDetals.contractedPrice}
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
-              <p className="text-light-60 font-size-12 m-0 font-weight-500">
+              <p className="text-light-60 font-size-12 m-0 font-weight-500 text-uppercase">
                 Start date
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
@@ -238,7 +252,7 @@ const ConsumableMaster = () => {
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
-              <p className="text-light-60 font-size-12 m-0 font-weight-500">
+              <p className="text-light-60 font-size-12 m-0 font-weight-500 text-uppercase">
                 End Date
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
@@ -246,7 +260,7 @@ const ConsumableMaster = () => {
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
-              <p className="text-light-60 font-size-12 m-0 font-weight-500">
+              <p className="text-light-60 font-size-12 m-0 font-weight-500 text-uppercase">
                 Effective Date
               </p>
               <p className="text-primary font-size-12 mt-1 font-weight-500">
