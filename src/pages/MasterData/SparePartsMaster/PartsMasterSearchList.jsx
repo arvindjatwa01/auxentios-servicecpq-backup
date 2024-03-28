@@ -21,7 +21,7 @@ const PartsMasterSearchList = ({
                   }`}
                   onClick={() => handleViewDetails(equipment.id)}
                 >
-                  <div className="row position-relative">
+                  <div className="row position-relative align-items-center">
                     <div className="global-serach-arrow">
                       <ArrowForwardIosIcon className="text-primary font-size-20 mb-0 pb-0" />
                     </div>
@@ -46,7 +46,7 @@ const PartsMasterSearchList = ({
                           {equipment.model}
                         </h6>
                         <p className="font-size-12 text-light-60 font-weight-500 m-0">
-                          {equipment.modelGroupDescription}
+                          {equipment.manufacturer}
                         </p>
                       </div>
                     </div>
