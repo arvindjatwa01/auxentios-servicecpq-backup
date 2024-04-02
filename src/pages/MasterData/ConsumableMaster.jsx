@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 
 import Pagination from "@mui/material/Pagination";
 import { Stack } from "@mui/material";
@@ -24,6 +24,9 @@ const ConsumableMaster = () => {
   const handlePageChange = (event, value) => {
     setPageNo(value);
   };
+  useEffect(()=>{
+    setSelectedConsumableId(null);
+  },[searchList])
 
   // view search list details
   const handleViewSelectSearchRowDetails = (id) => {
