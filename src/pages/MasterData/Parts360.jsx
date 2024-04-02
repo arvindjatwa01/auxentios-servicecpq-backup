@@ -144,6 +144,7 @@ const Parts360 = () => {
       salesUnit: "PC",
       price: "0",
       id: 1
+
     },
   ]);
 
@@ -158,6 +159,7 @@ const Parts360 = () => {
       id: 1
     },
   ]);
+
 
   const [partsPriceDetails, setPartsPriceDetails] = useState({ ...partsPriceData });
   const [partsERPPriceDetails, setPartsERPPriceDetails] = useState([
@@ -243,9 +245,11 @@ const Parts360 = () => {
     setShowAlternateParts(!showAlternateParts);
   }
 
+
   const handleShowRefurbOptions = () => {
     setShowRefurbOptions(!showRefurbOption);
   }
+
 
   //updatedreplpacedItemColumns
   const replacedItemColumns = [
@@ -1003,6 +1007,8 @@ const Parts360 = () => {
             <Switch {...label} checked={showReplacedBy} onChange={handleShowReplaceBy} size="small" />
           </div> */}
           <Switch {...label} checked={showReplacedBy} onChange={handleShowReplaceBy} size="small" />
+
+        
         </div>
 
         {showReplacedBy && <div className="bg-white p-3 border-radius-10 mt-3 overflow-hidden">
@@ -1033,6 +1039,7 @@ const Parts360 = () => {
             <Switch {...label} checked={showAlternateParts} onChange={handleShowAlternateParts} size="small" />
           </div> */}
             <Switch {...label} checked={showAlternateParts} onChange={handleShowAlternateParts} size="small" />
+
         </div>
        
        {showAlternateParts && <div className="bg-white p-3 border-radius-10 mt-3 overflow-hidden">
@@ -1063,6 +1070,7 @@ const Parts360 = () => {
             <Switch {...label} checked={showRefurbOption} onChange={handleShowRefurbOptions} size="small" />
           </div> */}
             <Switch {...label} checked={showRefurbOption} onChange={handleShowRefurbOptions} size="small" />
+
         </div>
        
 

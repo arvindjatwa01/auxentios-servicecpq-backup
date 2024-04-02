@@ -469,12 +469,12 @@ const ServiceProgessMaster = () => {
                 >
                   <TabList className="" onChange={changeTab}>
                     <Tab
-                      // label="Dashboard"
+                      label="DASHBOARD"
                       value={"deshboard"}
                       className="heading-tabs"
                     />
                     <Tab
-                      // label="Track Order"
+                      label="TRACK ORDER"
                       value={"trackOrder"}
                       className="heading-tabs"
                     />
@@ -493,15 +493,15 @@ const ServiceProgessMaster = () => {
                     </div>
                     <div className="col-sm-2">
                       <div className="card border px-2 py-1 cursor-pointer">
-                        <div className="card-body">
+                        <div className="card-body text-center">
                           <span className="">Cores Pending</span>
-                          <h3 className="mt-0 text-center">4</h3>
+                          <h3 className="mt-0  text-center">4</h3>
                         </div>
                       </div>
                     </div>
                     <div className="col-sm-2">
                       <div className="card border px-2 py-1 cursor-pointer">
-                        <div className="card-body">
+                        <div className="card-body text-center">
                           <span className="">Received Cores</span>
                           <h3 className="mt-0 text-center">2</h3>
                         </div>
@@ -509,7 +509,7 @@ const ServiceProgessMaster = () => {
                     </div>
                     <div className="col-sm-2">
                       <div className="card border px-2 py-1 cursor-pointer">
-                        <div className="card-body">
+                        <div className="card-body text-center">
                           <span className="">PEX in Refurbish</span>
                           <h3 className="mt-0 text-center">1</h3>
                         </div>
@@ -517,7 +517,7 @@ const ServiceProgessMaster = () => {
                     </div>
                     <div className="col-sm-2">
                       <div className="card border px-2 py-1 cursor-pointer">
-                        <div className="card-body">
+                        <div className="card-body text-center">
                           <span className="">PEX Requests</span>
                           <h3 className="mt-0 text-center">1</h3>
                         </div>
