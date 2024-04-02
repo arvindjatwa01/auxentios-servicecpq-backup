@@ -144,6 +144,7 @@ const Parts360 = () => {
       salesUnit: "PC",
       price: "0",
       id: 1
+
     },
   ]);
 
@@ -158,6 +159,7 @@ const Parts360 = () => {
       id: 1
     },
   ]);
+
 
   const [partsPriceDetails, setPartsPriceDetails] = useState({ ...partsPriceData });
   const [partsERPPriceDetails, setPartsERPPriceDetails] = useState([
@@ -243,9 +245,11 @@ const Parts360 = () => {
     setShowAlternateParts(!showAlternateParts);
   }
 
+
   const handleShowRefurbOptions = () => {
     setShowRefurbOptions(!showRefurbOption);
   }
+
 
   //updatedreplpacedItemColumns
   const replacedItemColumns = [
@@ -999,21 +1003,12 @@ const Parts360 = () => {
 
         <div className="d-flex align-items-center mt-4">
           <h6 className="m-0 mr-2 font-weight-600">Replaced By</h6>
-          <div className="equipment-switch">
+          {/* <div className="equipment-switch">
             <Switch {...label} checked={showReplacedBy} onChange={handleShowReplaceBy} size="small" />
-          </div>
-          {/* <FormGroup>
-            <FormControlLabel
-              style={{ alignItems: "start", marginLeft: 0 }}
-              control={
-                <Switch
-                  checked={showReplacedBy}
-                  onChange={handleShowReplaceBy}
-                  size="small"
-                />
-              }
-            />
-          </FormGroup> */}
+          </div> */}
+          <Switch {...label} checked={showReplacedBy} onChange={handleShowReplaceBy} size="small" />
+
+        
         </div>
 
         {showReplacedBy && <div className="bg-white p-3 border-radius-10 mt-3 overflow-hidden">
@@ -1040,10 +1035,11 @@ const Parts360 = () => {
 
         <div className="d-flex align-items-center mt-4">
           <h6 className="m-0 mr-2 font-weight-600">Alternate Parts</h6>
-          <div className="equipment-switch">
-            {/* <Switch {...label} defaultChecked size="small" /> */}
+          {/* <div className="equipment-switch">
             <Switch {...label} checked={showAlternateParts} onChange={handleShowAlternateParts} size="small" />
-          </div>
+          </div> */}
+            <Switch {...label} checked={showAlternateParts} onChange={handleShowAlternateParts} size="small" />
+
         </div>
        
        {showAlternateParts && <div className="bg-white p-3 border-radius-10 mt-3 overflow-hidden">
@@ -1070,9 +1066,11 @@ const Parts360 = () => {
 
         <div className="d-flex align-items-center mt-4">
           <h6 className="m-0 mr-2 font-weight-600">Reman or Refurb Option</h6>
-          <div className="equipment-switch">
+          {/* <div className="equipment-switch">
             <Switch {...label} checked={showRefurbOption} onChange={handleShowRefurbOptions} size="small" />
-          </div>
+          </div> */}
+            <Switch {...label} checked={showRefurbOption} onChange={handleShowRefurbOptions} size="small" />
+
         </div>
        
 
