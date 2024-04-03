@@ -282,7 +282,7 @@ const EquipmentMaster = () => {
   };
 
   const getWarratyDetails = () => {
-    const rUrl = `${warranty_Details_By_Id_Get}18`;
+    const rUrl = `${warranty_Details_By_Id_Get}${warrantyRecordId}`;
     callGetApi(null, rUrl, (response) => {
       if (response.status === API_SUCCESS) {
         const responseData = response.data;
@@ -1287,6 +1287,9 @@ const EquipmentMaster = () => {
             ...restEquipmentDetails
           } = responseData;
           setSelectedEquipmentId(id);
+
+          setWarrantyRecordId(restEquipmentDetails.warrantyId);
+
           // setContractRecordsList(contractRecords);
           setWarrantyDetailsList(warrantyRecords);
           // setServiceReportList(serviceRecords);
@@ -1821,6 +1824,26 @@ const EquipmentMaster = () => {
         <h5 className="font-weight-500 mt-5 ">WARRANTY DETAILS</h5>
         <div className="bg-white p-3 border-radius-10 overflow-hidden">
           <div className="row align-items-end">
+            <div className="col-lg-4 col-md-4 col-sm-6 col-12">
+              <div className="d-block">
+                <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                  WARRANTY ID
+                </p>
+                <p className="text-primary font-size-12 mt-1 font-weight-500 text-uppercase d-flex align-items-center ">
+                  {isEmpty(warrantyData.warrantyId) ? (
+                    "NA"
+                  ) : (
+                    <div
+                      className="d-flex align-items-center cursor"
+                      onClick={() => handleViewWarrantyOverview(warrantyData)}
+                    >
+                      {warrantyData.warrantyId}
+                      <VisibilityIcon className="ml-2" />
+                    </div>
+                  )}
+                </p>
+              </div>
+            </div>
             <div className="col-lg-4 col-md-4 col-sm-6 col-12">
               <div className="d-block">
                 <p className="text-light-60 font-size-12 m-0 font-weight-500">
@@ -2502,8 +2525,7 @@ const EquipmentMaster = () => {
         hideModal={() =>
           setShowWarrantyOverviewModal(!showWarrantyOverviewModal)
         }
-        recordId={12}
-        // recordId={warrantyRecordId}
+        recordId={warrantyRecordId}
         showClaimAddEditModal={showClaimAddEditModal}
         handleShowClaimAddEditModal={handleShowClaimAddEditModal}
         showClaimDetailsModal={showClaimDetailsModal}
