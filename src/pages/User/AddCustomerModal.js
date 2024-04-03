@@ -184,7 +184,7 @@ const AddCustomerModal = ({
       isApproved: true,
       roleName: record.contactType?.label || "TENANT_ADMIN",
       type: "TENANT_BUSINESS_USER",
-      customerId: parseInt(record.customerId),
+      customerId: record.customerId ? parseInt(record.customerId) : 0,
     };
     callPostApi(null, USER_SERVICE_ADD_USER(), rObj, (response) => {
       if (response.status === API_SUCCESS) {
