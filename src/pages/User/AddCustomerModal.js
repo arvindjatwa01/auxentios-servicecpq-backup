@@ -175,7 +175,7 @@ const AddCustomerModal = ({
     }
   };
 
-  const handleAddUpdateTenetUser = () => {
+  const handleAddUpdateTenetUser = (responseData) => {
     const rObj = {
       firstName: record.firstName,
       lastName: record.lastName,
@@ -184,7 +184,8 @@ const AddCustomerModal = ({
       isApproved: true,
       roleName: record.contactType?.label || "TENANT_ADMIN",
       type: "TENANT_BUSINESS_USER",
-      customerId: record.customerId ? parseInt(record.customerId) : 0,
+      customerId: responseData.id ? parseInt(responseData.id) : 0,
+      // customerId: record.customerId ? parseInt(record.customerId) : 0,
     };
     callPostApi(null, USER_SERVICE_ADD_USER(), rObj, (response) => {
       if (response.status === API_SUCCESS) {
