@@ -1,3 +1,4 @@
+import Cookies from "js-cookie";
 import SearchBox from "pages/Common/SearchBox";
 import { useEffect, useState } from "react";
 import { Modal } from "react-bootstrap";
@@ -65,6 +66,14 @@ const AddCustomerModal = ({
   handleSnack,
   roles,
 }) => {
+  var CookiesSetData = Cookies.get("loginTenantDtl");
+  var getCookiesJsonData;
+  if (CookiesSetData != undefined) {
+    getCookiesJsonData = JSON.parse(CookiesSetData);
+  }
+  const loginTenantId =
+    CookiesSetData != undefined ? getCookiesJsonData?.user_customerId : "";
+
   let fontColor = "#872ff7 !important";
   const customStyle = {
     control: (styles, { isDisabled }) => {
@@ -151,6 +160,7 @@ const AddCustomerModal = ({
 
   const handleSelectType = (e) => {
     let _contactType = "";
+    let _customerId = "";
     if (e.value === "P") {
       _contactType = {
         roleId: 1,
@@ -172,6 +182,7 @@ const AddCustomerModal = ({
         value: 1,
         label: "TENANT_ADMIN",
       };
+      _customerId = loginTenantId;
     } else if (e.value === "C") {
       _contactType = {
         roleId: 8,
@@ -188,11 +199,13 @@ const AddCustomerModal = ({
         value: 8,
         label: "End_Customer",
       };
+      _customerId = "";
     }
     setRecord({
       ...masterSelectObj,
       customerType: e,
       contactType: _contactType,
+      customerId: _customerId,
     });
     setIsCustomerSelect(false);
   };
@@ -251,7 +264,7 @@ const AddCustomerModal = ({
       fullName: record.firstName + " " + record.lastName,
       customerType: record.customerType?.value || "CUSTOMER",
       contactType: record.contactType?.label || "End_Customer",
-      addressDTO: addressRecord,
+      addressDTO: { ...addressRecord, addressLine1: addressRecord.fullAddress },
     };
 
     if (updateCust && customerId) {
@@ -270,17 +283,28 @@ const AddCustomerModal = ({
           }
         }
       );
-    } else if (noOptionsCust) {
-      callPostApi(null, DATA_SVC_CUSTOMER_MASTER_URL, rObj, (response) => {
-        if (response.status === API_SUCCESS) {
-          const responseData = response.data;
-          handleAddUpdateTenetUser(responseData);
-        } else {
-          handleSnack("info", response?.data?.message);
-        }
-      });
     } else {
-      handleAddUpdateTenetUser(record);
+      if (record.customerType?.value === "P" && !noOptionsCust) {
+        callPostApi(null, DATA_SVC_CUSTOMER_MASTER_URL, rObj, (response) => {
+          if (response.status === API_SUCCESS) {
+            const responseData = response.data;
+            handleAddUpdateTenetUser(responseData);
+          } else {
+            handleSnack("info", response?.data?.message);
+          }
+        });
+      } else if (record.customerType?.value === "C" && noOptionsCust) {
+        callPostApi(null, DATA_SVC_CUSTOMER_MASTER_URL, rObj, (response) => {
+          if (response.status === API_SUCCESS) {
+            const responseData = response.data;
+            handleAddUpdateTenetUser(responseData);
+          } else {
+            handleSnack("info", response?.data?.message);
+          }
+        });
+      } else {
+        handleAddUpdateTenetUser(record);
+      }
     }
   };
 
@@ -379,38 +403,42 @@ const AddCustomerModal = ({
                       : ""}{" "}
                     NUMBER
                   </label>
-                  <SearchBox
-                    value={record.customerId}
-                    onChange={(e) =>
-                      handleCustSearch("customerId", e.target.value)
-                    }
-                    type="customerId"
-                    result={searchCustResults}
-                    onSelect={handleCustSelect}
-                    noOptions={noOptionsCust}
-                    placeholder={`${
-                      record.customerType?.value === "P"
-                        ? "Partner Id"
-                        : record.customerType?.value === "C"
-                        ? "Customer Id"
-                        : ""
-                    }`}
-                    disabled={
-                      record.customerType === "" ||
-                      record.customerType?.value === "P"
-                    }
-                  />
-                  {/* <input
-                    type="number"
-                    name="customerId"
-                    value={record.customerId}
-                    onChange={handleInputValueChange}
-                    className="form-control border-radius-10 text-primary"
-                    disabled={
-                      record.customerType === "" ||
-                      record.customerType?.value === "P"
-                    }
-                  /> */}
+                  {record.customerType === "" ||
+                  record.customerType?.value === "P" ? (
+                    <input
+                      type="number"
+                      name="customerId"
+                      value={record.customerId}
+                      onChange={handleInputValueChange}
+                      className="form-control border-radius-10 text-primary"
+                      disabled={
+                        record.customerType === "" ||
+                        record.customerType?.value === "P"
+                      }
+                    />
+                  ) : (
+                    <SearchBox
+                      value={record.customerId}
+                      onChange={(e) =>
+                        handleCustSearch("customerId", e.target.value)
+                      }
+                      type="customerId"
+                      result={searchCustResults}
+                      onSelect={handleCustSelect}
+                      noOptions={noOptionsCust}
+                      placeholder={`${
+                        record.customerType?.value === "P"
+                          ? "Partner Id"
+                          : record.customerType?.value === "C"
+                          ? "Customer Id"
+                          : ""
+                      }`}
+                      disabled={
+                        record.customerType === "" ||
+                        record.customerType?.value === "P"
+                      }
+                    />
+                  )}
                 </div>
               </div>
               <div className="col-md-4 col-sm-4">

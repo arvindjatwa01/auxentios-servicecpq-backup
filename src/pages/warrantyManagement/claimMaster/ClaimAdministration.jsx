@@ -32,9 +32,9 @@ const DataGridContainer = (props) => (
     sx={{
       backgroundColor: "#ffffff",
       height: 500,
-      marginBlock: 2,
+      // marginBlock: 2,
       borderRadius: 5,
-      width: "95%",
+      width: "100%",
       display: "flex",
       justifyContent: "center",
       padding: 2,
