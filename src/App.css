@@ -4523,3 +4523,8 @@ input::-ms-clear {
   color: #ff4500d9 !important;
   border-color: #ee622f69 !important;
 }
+.req-replacement-dash-card {
+  background: #99a6ff1f !important;
+  color: #0013ff !important;
+  border-color: #3e30eb69 !important;
+}

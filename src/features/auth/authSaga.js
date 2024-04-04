@@ -37,7 +37,8 @@ function* handleLogin(payload) {
         access_token: res.data.accessToken ? `Bearer ${res.data.accessToken}` : '',
         user_roles: res.data.roles,
         user_planName: res.data.planName,
-        user_logIn_Status: true
+        user_logIn_Status: true,
+        user_customerId: res.data.customerId,
       }
       var setAbleCookiesData = JSON.stringify(cookiesData);
       Cookies.set('loginTenantDtl', setAbleCookiesData, { expires: 1 });
