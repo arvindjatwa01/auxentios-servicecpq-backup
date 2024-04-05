@@ -339,7 +339,7 @@ const WarrantyOverviewModal = ({
       },
       customerDetails: { ...customerRecord },
     };
-    callPutApi(rUrl, rObj, (response) => {
+    callPutApi(null, rUrl, rObj, (response) => {
       if (response.status === API_SUCCESS) {
         handleSnack(
           "success",
