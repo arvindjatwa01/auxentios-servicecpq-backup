@@ -16,7 +16,7 @@ export const claimTypeFilterOptions = [
 export const warrantySearchOptions = [
   { label: "Serial Number", value: "serialNumber" },
   { label: "Component Code", value: "componentCode" },
-  { label: "Equipment Number", value: "equipmentNumber" },
+  { label: "Equipment Id", value: "equipmentNumber" },
   { label: "Model Number", value: "ModelNo" },
 ];
 

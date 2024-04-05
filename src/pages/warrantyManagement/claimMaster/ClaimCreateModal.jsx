@@ -20,7 +20,13 @@ import { API_SUCCESS } from "services/ResponseCode";
 import { FONT_STYLE, FONT_STYLE_SELECT } from "pages/Common/constants";
 import { CLAIM_MASTER_URL } from "services/CONSTANTS";
 
-const ClaimCreateModal = ({ show, hideModal, warrantyRecord, handleSnack }) => {
+const ClaimCreateModal = ({
+  show,
+  hideModal,
+  warrantyRecord,
+  handleSnack,
+  equipmentData,
+}) => {
   const [claimRecord, setClaimRecord] = useState({
     ...claimRequestObj,
   });
@@ -173,7 +179,7 @@ const ClaimCreateModal = ({ show, hideModal, warrantyRecord, handleSnack }) => {
                       <input
                         type="text"
                         className="form-control border-radius-10 text-primary"
-                        // value={claimRecordData?.customerName}
+                        value={warrantyRecord?.warrantyId}
                         disabled
                         name="warrantyId"
                         placeholder="Warranty Id"
@@ -236,10 +242,12 @@ const ClaimCreateModal = ({ show, hideModal, warrantyRecord, handleSnack }) => {
                       <input
                         type="text"
                         className="form-control border-radius-10 text-primary"
-                        value={claimRecord.equipmentNumber}
+                        // value={claimRecord.equipmentNumber}
+                        value={equipmentData?.equipmentNumber}
                         name="equipmentNumber"
                         placeholder="Equipment Number"
-                        onChange={handleClaimInputFieldChange}
+                        // onChange={handleClaimInputFieldChange}
+                        disabled
                       />
                     </div>
                   </div>
@@ -251,10 +259,12 @@ const ClaimCreateModal = ({ show, hideModal, warrantyRecord, handleSnack }) => {
                       <input
                         type="text"
                         className="form-control border-radius-10 text-primary"
-                        value={claimRecord.serialNumber}
+                        value={equipmentData?.serialNumber}
+                        // value={claimRecord.serialNumber}
                         name="serialNumber"
                         placeholder="Serial Number"
-                        onChange={handleClaimInputFieldChange}
+                        // onChange={handleClaimInputFieldChange}
+                        disabled
                       />
                     </div>
                   </div>
@@ -266,10 +276,11 @@ const ClaimCreateModal = ({ show, hideModal, warrantyRecord, handleSnack }) => {
                       <input
                         type="text"
                         className="form-control border-radius-10 text-primary"
-                        value={claimRecord.modelNumber}
+                        // value={claimRecord.modelNumber}
+                        value={equipmentData?.modelNumber}
                         name="modelNumber"
                         placeholder="Model Number"
-                        disable
+                        disabled
                         //   onChange={handleClaimInputFieldChange}
                       />
                     </div>

@@ -17,6 +17,7 @@ import { callGetApi } from "services/ApiCaller";
 import { API_SUCCESS } from "services/ResponseCode";
 import {
   CLAIM_MASTER_URL,
+  CLAIM_ORDER_MASTER_URL,
   Claim_Pagination_List_GET,
   Warranty_Country_List_GET,
   Warranty_Evaluation_Questions_Get_GET,
@@ -133,7 +134,7 @@ const ClaimAdministration = () => {
 
   // get claim list
   const getClaimList = () => {
-    const rUrl = `${Claim_Pagination_List_GET}?pageNumber=${0}&pageSize=${10}`;
+    const rUrl = `${CLAIM_ORDER_MASTER_URL}?pageNumber=${0}&pageSize=${10}&sortColumn=createdAt&orderBY=DESC`;
     callGetApi(null, rUrl, (response) => {
       if (response.status === API_SUCCESS) {
         const responseData = response.data;
@@ -191,11 +192,23 @@ const ClaimAdministration = () => {
     const _claimOrderId = row["claimOrderId"];
     setClaimOrderId(_claimOrderId);
 
-    const claimType = row["claimType"];
-    const claimNumber = row["claimNumber"];
-    setClaimRecordDetail(row);
+    const _evaluationId = row["evaluationId"];
+    setEvaluationId(_evaluationId);
 
-    setOpenClaimDetailsModal(true);
+    const _assessmentId = row["assessmentId"];
+    setAssesstmentId(_assessmentId);
+
+    callGetApi(null, `${CLAIM_MASTER_URL}/${claimId}`, (response) => {
+      if(response.status === API_SUCCESS){
+        const responseData = response.data;
+        setClaimRecordDetail(responseData);
+      }
+    })
+    // const claimType = row["claimType"];
+    // const claimNumber = row["claimNumber"];
+    // setClaimRecordDetail(row);
+    setOpenClaimRequestModal(true);
+    // setOpenClaimDetailsModal(true);
   };
 
   // claim order/Request model show hide
@@ -219,7 +232,8 @@ const ClaimAdministration = () => {
 
   const claimColumn = [
     {
-      field: "claimNumber",
+      // field: "claimNumber",
+      field: "claimId",
       headerName: "Claim Number",
       flex: 1,
     },
@@ -227,6 +241,7 @@ const ClaimAdministration = () => {
       field: "claimStatus",
       headerName: "Claim Status",
       flex: 1,
+      renderCell: ({ row }) => <>REGISTERED</>,
     },
     {
       field: "claimType",
@@ -234,16 +249,22 @@ const ClaimAdministration = () => {
       flex: 1,
     },
     {
-      field: "createdOn",
-      headerName: "Claim Date",
+      field: "rmaNumber",
+      headerName: "RMA Number",
       flex: 1,
     },
     {
-      field: "replacement",
-      headerName: "Replacement",
+      field: "claimRequestDate",
+      // field: "createdOn",
+      headerName: "Claim Date",
       flex: 1,
-      renderCell: (params) => <div>{params.value ? "Yes" : "No"}</div>,
     },
+    // {
+    //   field: "replacement",
+    //   headerName: "Replacement",
+    //   flex: 1,
+    //   renderCell: (params) => <div>{params.value ? "Yes" : "No"}</div>,
+    // },
     {
       field: "action",
       type: "actions",
@@ -283,7 +304,7 @@ const ClaimAdministration = () => {
       <div>
         <div className="content-body bg-white" style={{ minHeight: "884px" }}>
           <div className="container-fluid mt-3">
-            <h4 className="font-weight-600 mb-0">Claim Administration</h4>
+            <h4 className="font-weight-600 mb-0 mt-4">Claim Administration</h4>
             <Grid
               container
               spacing={3}
@@ -298,13 +319,13 @@ const ClaimAdministration = () => {
                   <Grid item xs={6}>
                     <div
                       className="card border border-radius-10"
-                      style={{ height: "350px" }}
+                      style={{ height: "380px" }}
                     >
                       <div
                         className="d-flex justify-content-between align-items-center p-3 border-bottom bg-light-pink"
                         style={{ borderRadius: "10px 10px 0px 0px" }}
                       >
-                        <h6 className="mb-0">Recent Activity</h6>
+                        <span>Recent Activity</span>
                         {/* <MuiMenuComponent options={workFlowOptions} /> */}
                       </div>
                       <div className="px-3 py-1">
@@ -316,21 +337,21 @@ const ClaimAdministration = () => {
                               } py-2`}
                               key={claimRow?.claimId}
                             >
-                              <div className="mb-0">
+                              <div>
                                 <h6 className="mb-1 text-primary">
                                   Claim {claimRow?.claimNumber}
                                 </h6>
-                                <h6
-                                  className="cursor mb-0"
+                                <span
+                                  className="cursor"
                                   onClick={() =>
                                     handleOpenClaimDetailsModal(claimRow)
                                   }
                                 >
                                   <KeyboardArrowUpIcon />
                                   View Details
-                                </h6>
+                                </span>
                               </div>
-                              <h6>
+                              <span>
                                 <Moment format="HH:MM A">
                                   {claimRow.updatedAt}
                                 </Moment>
@@ -338,7 +359,7 @@ const ClaimAdministration = () => {
                                 <Moment format="DD MMM YY">
                                   {claimRow.updatedAt}
                                 </Moment>
-                              </h6>
+                              </span>
                             </div>
                           ))}
                       </div>
@@ -347,64 +368,36 @@ const ClaimAdministration = () => {
                   <Grid item xs={6}>
                     <div
                       className="card border border-radius-10"
-                      style={{ height: "350px" }}
+                      style={{ height: "380px" }}
                     >
                       <div
                         className="d-flex justify-content-between align-items-center p-3 border-bottom workflow-task"
                         style={{ borderRadius: "10px 10px 0px 0px" }}
                       >
-                        <h6 className="mb-0">Workflow Task</h6>
+                        <span>Workflow Task</span>
                         {/* <MuiMenuComponent options={workFlowOptions} /> */}
                       </div>
-                      <div className="px-3 py-0">
-                        <div className="d-flex justify-content-between align-items-center border-bottom py-3 mb-0">
+                      <div className="px-3 py-1">
+                        <div className="d-flex justify-content-between align-items-center border-bottom py-3">
                           <h6>
                             <span className="text-primary">77699</span> requires
                             your attention
                           </h6>
-                          <h6>view Details</h6>
-                        </div>
-                        <div className="d-flex justify-content-between align-items-center border-bottom py-3 mb-0">
-                          <h6>
-                            <span className="text-primary">77699</span> requires
-                            your attention
-                          </h6>
-                          <h6>view Details</h6>
-                        </div>
-                        <div className="d-flex justify-content-between align-items-center border-bottom py-3 mb-0">
-                          <h6>
-                            <span className="text-primary">77699</span> requires
-                            your attention
-                          </h6>
-                          <h6>view Details</h6>
-                        </div>
-                        <div className="d-flex justify-content-between align-items-center border-bottom py-3 mb-0">
-                          <h6 className="mb-0">
-                            <span className="text-primary">77699</span> requires
-                            your attention
-                          </h6>
-                          <h6 className="mb-0">view Details</h6>
-                        </div>
-                        <div className="d-flex justify-content-between align-items-center py-3 mb-0">
-                          <h6>
-                            <span className="text-primary">77699</span> requires
-                            your attention
-                          </h6>
-                          <h6>view Details</h6>
-                        </div>
-                        {/* <div className="d-flex justify-content-between align-items-center border-bottom py-3">
-                          <h6>
-                            <span className="text-primary">77699</span> requires
-                            your attention
-                          </h6>
-                          <h6>view Details</h6>
+                          <span>view Details</span>
                         </div>
                         <div className="d-flex justify-content-between align-items-center border-bottom py-3">
                           <h6>
                             <span className="text-primary">77699</span> requires
                             your attention
                           </h6>
-                          <h6>view Details</h6>
+                          <span>view Details</span>
+                        </div>
+                        <div className="d-flex justify-content-between align-items-center border-bottom py-3">
+                          <h6>
+                            <span className="text-primary">77699</span> requires
+                            your attention
+                          </h6>
+                          <span>view Details</span>
                         </div>
                         <div className="d-flex justify-content-between align-items-center border-bottom py-3">
                           <h6>
@@ -419,7 +412,7 @@ const ClaimAdministration = () => {
                             your attention
                           </h6>
                           <span>view Details</span>
-                        </div> */}
+                        </div>
                       </div>
                     </div>
                   </Grid>
@@ -428,10 +421,10 @@ const ClaimAdministration = () => {
               <Grid item xs={3}>
                 <div className="card border px-3 py-2 warranty-req-dash-card mb-4">
                   <div
-                    className="d-flex justify-content-between align-items-baseline cursor py-2"
+                    className="d-flex justify-content-between align-items-baseline cursor"
                     onClick={() => setOpenWarrantyRequestModal(true)}
                   >
-                    <h6 className=" mb-0">Warranty Request</h6>
+                    <span className=" mb-0">Warranty Request</span>
                     <span>
                       <ArrowForwardIosIcon />
                     </span>
@@ -439,10 +432,10 @@ const ClaimAdministration = () => {
                 </div>
                 <div className="card border px-3 py-2 claim-req-dash-card mb-4">
                   <div
-                    className="d-flex justify-content-between align-items-center cursor py-2"
+                    className="d-flex justify-content-between align-items-center cursor"
                     onClick={() => setOpenClaimRequestModal(true)}
                   >
-                    <h6 className=" mb-0">Claim Request</h6>
+                    <span className=" mb-0">Claim Request</span>
                     <span className="font-weight-500">
                       <ArrowForwardIosIcon />
                     </span>

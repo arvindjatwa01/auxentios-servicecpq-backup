@@ -24,6 +24,7 @@ import { isEmpty } from "pages/Common/textUtilities";
 import {
   Recent_Warranty_List_GET,
   Search_By_Fields_Warranty_List_GET,
+  WARRANTY_MASTER_URL,
   Warranty_Country_List_GET,
 } from "services/CONSTANTS";
 import { callGetApi } from "services/ApiCaller";
@@ -48,6 +49,9 @@ const WarrantyAdministration = () => {
   const [openPartCreateModal, setOpenPartCreateModal] = useState(false);
   const [openFileUploadModal, setOpenFileUploadModal] = useState(false);
 
+  const [openWarrantyRequestModal, setOpenWarrantyRequestModal] =
+    useState(false);
+
   const [searchWarranty, setSearchWarranty] = useState([
     {
       id: 0,
@@ -58,6 +62,11 @@ const WarrantyAdministration = () => {
       dropdownOptions: [],
     },
   ]);
+  const [equWarrantyId, setEquWarrantyId] = useState(null);
+  const [equWarrantyData, setEquWarrantyData] = useState({
+    modelNumber: "",
+    serialNumber: "",
+  });
 
   // Snack Bar State
   const [severity, setSeverity] = useState("");
@@ -104,7 +113,7 @@ const WarrantyAdministration = () => {
   }, []);
 
   // get the recent warranty List without any Filter applied
-  const getRecentWarrantyList = () => {
+  const getRecentWarrantyList = async () => {
     setLoading(true);
     const rUrl = Recent_Warranty_List_GET;
     callGetApi(
@@ -128,7 +137,7 @@ const WarrantyAdministration = () => {
     );
   };
 
-  // get model number and serial number using equipment number
+  //
   const handleGetEquipmentData = async (responseData) => {
     const recordArr = [];
     for (let row of responseData) {
@@ -182,6 +191,11 @@ const WarrantyAdministration = () => {
     };
     _searchWarranty[i] = updateObj;
     setSearchWarranty(_searchWarranty);
+    setEquWarrantyId(null);
+    setEquWarrantyData({
+      modelNumber: "",
+      serialNumber: "",
+    });
   };
 
   //add more Search fields
@@ -204,7 +218,7 @@ const WarrantyAdministration = () => {
     setSearchWarranty([]);
   };
 
-  const handleWarrantyInputSearch = (e, id) => {
+  const handleWarrantyInputSearch = async (e, id) => {
     try {
       const { value } = e.target;
       let _searchWarranty = [...searchWarranty];
@@ -212,29 +226,47 @@ const WarrantyAdministration = () => {
       let dropdownResult = [];
       if (!isEmpty(obj.fieldName.value)) {
         if (value.length !== 0) {
-          const rUrl = `${Search_By_Fields_Warranty_List_GET}field_name=${obj.fieldName.value}&field_value=${value}`;
-          callGetApi(
-            null,
-            rUrl,
-            (response) => {
-              if (response.status === API_SUCCESS) {
-                const responseData = response.data;
-                if (responseData.length === 0) {
-                  handleSnack(
-                    "info",
-                    INPUT_SEARCH_NO_RESULT_FOUND_ERROR_MESSAGE
-                  );
-                }
-                obj.dropdownOptions = responseData;
-                _searchWarranty[id] = obj;
-                setSearchWarranty([..._searchWarranty]);
-                $(`.scrollbar-${id}`).css("display", "block");
-              } else {
-                handleSnack("info", INPUT_SEARCH_API_ERROR_MESSAGE);
-              }
-            },
-            (error) => {}
-          );
+          let searchString =
+            (obj.fieldName.value === "serialNumber"
+              ? "makerSerialNumber"
+              : obj.fieldName.value) +
+            "~" +
+            e.target.value;
+
+          await equipmentSearch(searchString)
+            .then((res) => {
+              obj.dropdownOptions = res;
+              _searchWarranty[id] = obj;
+              setSearchWarranty([..._searchWarranty]);
+              $(`.scrollbar-${id}`).css("display", "block");
+            })
+            .catch((err) => {
+              handleSnack("error", INPUT_SEARCH_API_ERROR_MESSAGE);
+            });
+          // const rUrl = SEARCH_EQUIPMENT(searchString);
+          // // const rUrl = `${Search_By_Fields_Warranty_List_GET}field_name=${obj.fieldName.value}&field_value=${value}`;
+          // await callGetApi(
+          //   null,
+          //   rUrl,
+          //   (response) => {
+          //     if (response.status === API_SUCCESS) {
+          //       const responseData = response.data;
+          //       // if (responseData.length === 0) {
+          //       //   handleSnack(
+          //       //     "info",
+          //       //     INPUT_SEARCH_NO_RESULT_FOUND_ERROR_MESSAGE
+          //       //   );
+          //       // }
+          //       obj.dropdownOptions = responseData;
+          //       _searchWarranty[id] = obj;
+          //       setSearchWarranty([..._searchWarranty]);
+          //       $(`.scrollbar-${id}`).css("display", "block");
+          //     } else {
+          //       handleSnack("info", INPUT_SEARCH_API_ERROR_MESSAGE);
+          //     }
+          //   },
+          //   (error) => {}
+          // );
         } else {
           obj.dropdownOptions = [];
           obj.inputSearch = "";
@@ -244,6 +276,11 @@ const WarrantyAdministration = () => {
       } else {
         handleSnack("info", INPUT_SEARCH_ERROR_MESSAGE);
       }
+      setEquWarrantyId(null);
+      setEquWarrantyData({
+        modelNumber: "",
+        serialNumber: "",
+      });
       obj.inputSearch = value;
     } catch (error) {
       return;
@@ -252,10 +289,26 @@ const WarrantyAdministration = () => {
 
   const handleSelectDropdownItem = (currentItem, id) => {
     console.log("currentItem :: ", currentItem);
+
+    setEquWarrantyId(currentItem.warrantyId);
+    setEquWarrantyData({
+      modelNumber: currentItem.model,
+      serialNumber: currentItem.makerSerialNumber,
+    });
     let _searchWarranty = [...searchWarranty];
     let obj = _searchWarranty[id];
-    obj.inputSearch = currentItem[obj.fieldName?.value];
-    obj.selectedOption = currentItem[obj.fieldName?.value];
+    obj.inputSearch =
+      currentItem[
+        obj.fieldName?.value === "serialNumber"
+          ? "makerSerialNumber"
+          : obj.fieldName?.value
+      ];
+    obj.selectedOption =
+      currentItem[
+        obj.fieldName?.value === "serialNumber"
+          ? "makerSerialNumber"
+          : obj.fieldName?.value
+      ];
     _searchWarranty[id] = obj;
     setSearchWarranty([..._searchWarranty]);
     $(`.scrollbar-${id}`).css("display", "none");
@@ -269,29 +322,41 @@ const WarrantyAdministration = () => {
       ) {
         handleSnack("info", FILL_DATA_PROPERLY_ERROR_MESSAGE);
       } else {
-        const rUrl = `${Search_By_Fields_Warranty_List_GET}field_name=${searchWarranty[0].fieldName.value}&field_value=${searchWarranty[0].inputSearch}`;
-        callGetApi(
-          null,
-          rUrl,
-          (response) => {
-            if (response.status === API_SUCCESS) {
-              const responseData = response.data;
-              if (responseData.length === 0) {
-                handleSnack("info", INPUT_SEARCH_NO_RESULT_FOUND_ERROR_MESSAGE);
-                return;
-              }
-              if (responseData.length !== 0) {
-                handleGetEquipmentData(responseData);
+        if(equWarrantyId){
+          const rUrl = `${WARRANTY_MASTER_URL}/${equWarrantyId}`;
+          // const rUrl = `${Search_By_Fields_Warranty_List_GET}field_name=${searchWarranty[0].fieldName.value}&field_value=${searchWarranty[0].inputSearch}`;
+          callGetApi(
+            null,
+            rUrl,
+            (response) => {
+              if (response.status === API_SUCCESS) {
+                const responseData = response.data;
+                if (responseData.length === 0) {
+                  handleSnack("info", INPUT_SEARCH_NO_RESULT_FOUND_ERROR_MESSAGE);
+                  return;
+                }
+                setWarrantyRecord([
+                  {
+                    ...responseData,
+                    modelNumber: equWarrantyData.modelNumber,
+                    serialNumber: equWarrantyData.serialNumber,
+                  },
+                ]);
+                // if (responseData.length !== 0) {
+                // handleGetEquipmentData(responseData);
+                // } else {
+                //   setWarrantyRecord([]);
+                // }
+                // setWarrantyRecord(responseData);
               } else {
-                setWarrantyRecord([]);
+                handleSnack("info", INPUT_SEARCH_API_ERROR_MESSAGE);
               }
-              // setWarrantyRecord(responseData);
-            } else {
-              handleSnack("info", INPUT_SEARCH_API_ERROR_MESSAGE);
-            }
-          },
-          (error) => {}
-        );
+            },
+            (error) => {}
+          );
+        }else{
+          handleSnack("info", INPUT_SEARCH_NO_RESULT_FOUND_ERROR_MESSAGE);
+        }
       }
     } catch (error) {}
   };
@@ -325,12 +390,12 @@ const WarrantyAdministration = () => {
       headerName: "Component Code",
       flex: 1,
       renderCell: (params) => <div>NA</div>,
+      // renderCell: (params) => <div></div>,
     },
     {
       field: "basis",
       headerName: "Basis",
       flex: 1,
-      // renderCell: (params) => <div>TIME</div>,
       renderCell: ({ row }) => (
         <div>
           {row.yearlyWarranties ? row["yearlyWarranties"][0]["basis"] : "TIME"}
@@ -349,7 +414,7 @@ const WarrantyAdministration = () => {
       // renderCell: (params) => <div>12/11/2023</div>,
       renderCell: ({ row }) => (
         <div>
-          {row.yearlyWarranties
+          {row?.yearlyWarranties
             ? row["yearlyWarranties"][0]["warrantyStartDate"]
             : "NA"}
         </div>
@@ -435,7 +500,12 @@ const WarrantyAdministration = () => {
                 onClick={() => handleOpenWarrantyOverview(params)}
               >
                 <Tooltip title="Overview">
-                  <VisibilityIcon />
+                  {/* <VisibilityIcon /> */}
+                  <img
+                    className="text-primary"
+                    src="../../assets/images/claimReport.png"
+                    style={{ width: "17px", height: "17px" }}
+                  />
                 </Tooltip>
 
                 {/* 
@@ -503,6 +573,12 @@ const WarrantyAdministration = () => {
     setOpenFileUploadModal(!openFileUploadModal);
   };
 
+  //
+  const handleRaiseClaimRequest = () => {
+    setShowOverviewModal(!showOverviewModal);
+    setOpenClaimRequestModal(!openClaimRequestModal);
+  };
+
   return (
     <>
       <CustomizedSnackbar
@@ -513,144 +589,175 @@ const WarrantyAdministration = () => {
       />
       <div className="content-body" style={{ minHeight: "884px" }}>
         <div className="container-fluid">
-          <h5 className="font-weight-600 mb-0 mt-4">Warranty Administration</h5>
+          <div className="d-flex justify-content-between align-items-baseline mt-3 mb-3">
+            <h5 className="font-weight-600 mb-0 ">Warranty Administration</h5>
+          </div>
 
           <div className="card border mt-4 px-4">
             <div className="bg-primary px-3 mt-2 mb-2 border-radius-10 ">
-              <div className="d-block height-66 d-md-flex justify-content-between align-items-center">
-                <div className="mx-2">
-                  <div className="d-flex align-items-center bg-primary w-100">
-                    <div className="d-flex mr-2" style={{ whiteSpace: "pre" }}>
-                      <h5 className="mr-2 mb-0 text-white">
-                        <span>Search</span>
-                      </h5>
-                      <p className="ml-4 mb-0">
-                        <a className="ml-3 cursor text-white cursor">
-                          <EditOutlinedIcon />
-                        </a>
-                        <a href={undefined} className="ml-3 cursor text-white">
-                          <ShareOutlinedIcon />
-                        </a>
-                      </p>
-                    </div>
-                    <div className="d-flex justify-content-between align-items-center w-100 mr-4">
-                      <div className="row align-items-center m-0">
-                        {searchWarranty.map((obj, i) => (
-                          <div
-                            className={`customselect ${
-                              i < searchWarranty.length - 1 ? "p-2" : ""
-                            } border-white d-flex align-items-center mr-3 my-2 border-radius-10`}
-                          >
-                            {i > 0 && (
-                              <Select
-                                isClearable={true}
-                                defaultValue={{ label: "AND", value: "AND" }}
-                                options={[
-                                  { label: "AND", value: "AND", id: i },
-                                  { label: "OR", value: "OR", id: i },
-                                ]}
-                                placeholder="AND/OR"
-                                onChange={(e) => handleSelectOperator(e, i)}
-                                value={obj.operator}
-                              />
-                            )}
-                            <div>
-                              <Select
-                                options={warrantySearchOptions}
-                                onChange={(e) => handleSelectFieldName(e, i)}
-                                value={obj.fieldName}
-                                // isOptionDisabled={(option) =>
-                                //   handleCheckDisableOptions(option)
-                                // }
-                              />
-                            </div>
-                            <div className="customselectsearch">
-                              <input
-                                className="custom-input-sleact pr-1"
-                                type="text"
-                                placeholder="Search string"
-                                id={"inputSearch-" + i}
-                                value={obj.inputSearch}
-                                autoComplete="off"
-                                onChange={(e) =>
-                                  handleWarrantyInputSearch(e, i)
-                                }
-                              />
-                              {
-                                <ul
-                                  className={`list-group customselectsearch-list scrollbar scrollbar-${i} style`}
-                                  id="style"
-                                >
-                                  {obj.inputSearch.length !== 0 &&
-                                    obj.dropdownOptions.length === 0 && (
-                                      <li className="list-group-item">
-                                        No Result found
-                                      </li>
-                                    )}
-                                  {obj.dropdownOptions.map((currentItem, j) => (
-                                    <li
-                                      className="list-group-item"
-                                      key={j}
-                                      onClick={() =>
-                                        handleSelectDropdownItem(currentItem, i)
-                                      }
-                                    >
-                                      {currentItem[obj.fieldName?.value]}
-                                    </li>
-                                  ))}
-                                </ul>
-                              }
-                            </div>
-                            {searchWarranty.length - 1 === i && (
-                              <a
-                                className="btn bg-primary text-white border-radius-10 cursor"
-                                onClick={handleSearchWarranty}
-                              >
-                                <SearchIcon />
-                                <span className="ml-1">Search</span>
-                              </a>
-                            )}
-                          </div>
-                        ))}
-                        <div onClick={(e) => addMoreSearchParameters(e)}>
+              <div className="row align-items-center">
+                <div className="col-12 mx-2">
+                  <div className="d-flex align-items-center w-100">
+                    <div className="d-flex align-items-center bg-primary w-100">
+                      <div
+                        className="d-flex mr-2"
+                        style={{ whiteSpace: "pre" }}
+                      >
+                        <h5 className="mr-2 mb-0 text-white">
+                          <span>Search</span>
+                        </h5>
+                        <p className="ml-4 mb-0">
+                          <a className="ml-3 cursor text-white cursor">
+                            <EditOutlinedIcon />
+                          </a>
                           <a
-                            className="btn-sm text-white border mr-2 cursor"
-                            style={{ border: "1px solid #872FF7" }}
+                            href={undefined}
+                            className="ml-3 cursor text-white"
                           >
-                            +
+                            <ShareOutlinedIcon />
                           </a>
-                        </div>
-                        <div onClick={removeSearchCritria}>
-                          <a className="btn-sm border cursor">
-                            <svg
-                              data-name="Layer 41"
-                              id="Layer_41"
-                              fill="white"
-                              viewBox="0 0 50 50"
-                              xmlns="http://www.w3.org/2000/svg"
+                        </p>
+                      </div>
+                      <div className="d-flex justify-content-between align-items-center w-100 mr-4">
+                        <div className="row align-items-center m-0">
+                          {searchWarranty.map((obj, i) => (
+                            <div
+                              className={`customselectPortfolio d-flex align-items-center mr-3 my-2 border-radius-6`}
+                              style={{ position: "relative", zIndex: 20 - i }}
+                              key={"query" + i}
+                              // className={`customselect ${
+                              //   i < searchWarranty.length - 1 ? "p-2" : ""
+                              // } border-white d-flex align-items-center mr-3 my-2 border-radius-10`}
                             >
-                              <title />
-                              <path
-                                className="cls-1"
-                                d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
-                              />
-                              <path
-                                className="cls-1"
-                                d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
-                              />
-                              <path
-                                className="cls-1"
-                                d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
-                              />
-                            </svg>
-                          </a>
+                              {i > 0 && (
+                                <Select
+                                  isClearable={true}
+                                  defaultValue={{ label: "AND", value: "AND" }}
+                                  options={[
+                                    { label: "AND", value: "AND", id: i },
+                                    { label: "OR", value: "OR", id: i },
+                                  ]}
+                                  placeholder="AND/OR"
+                                  onChange={(e) => handleSelectOperator(e, i)}
+                                  value={obj.operator}
+                                />
+                              )}
+                              <div>
+                                <Select
+                                  options={warrantySearchOptions}
+                                  onChange={(e) => handleSelectFieldName(e, i)}
+                                  value={obj.fieldName}
+                                  // isOptionDisabled={(option) =>
+                                  //   handleCheckDisableOptions(option)
+                                  // }
+                                />
+                              </div>
+                              <div className="customselectsearch customize">
+                                <input
+                                  className="custom-input-sleact pr-1"
+                                  type="text"
+                                  placeholder="Search string"
+                                  id={"inputSearch-" + i}
+                                  value={obj.inputSearch}
+                                  autoComplete="off"
+                                  onChange={(e) =>
+                                    handleWarrantyInputSearch(e, i)
+                                  }
+                                />
+                                {searchWarranty.length - 1 === i && (
+                                  <div
+                                    className="btn bg-primary text-white cursor"
+                                    onClick={handleSearchWarranty}
+                                  >
+                                    <span className="mr-2">
+                                      <SearchIcon />
+                                    </span>
+                                    SEARCH
+                                  </div>
+                                )}
+                                {
+                                  <ul
+                                    className={`list-group customselectsearch-list scrollbar scrollbar-${i} style`}
+                                    id="style"
+                                  >
+                                    {obj.inputSearch.length !== 0 &&
+                                      obj.dropdownOptions.length === 0 && (
+                                        <li className="list-group-item">
+                                          No Result found
+                                        </li>
+                                      )}
+                                    {obj.dropdownOptions.map(
+                                      (currentItem, j) => (
+                                        <li
+                                          className="list-group-item"
+                                          key={j}
+                                          onClick={() =>
+                                            handleSelectDropdownItem(
+                                              currentItem,
+                                              i
+                                            )
+                                          }
+                                        >
+                                          {
+                                            currentItem[
+                                              obj.fieldName?.value ===
+                                              "serialNumber"
+                                                ? "makerSerialNumber"
+                                                : obj.fieldName?.value
+                                            ]
+                                          }
+                                          {/* {currentItem[obj.fieldName?.value]} */}
+                                        </li>
+                                      )
+                                    )}
+                                  </ul>
+                                }
+                              </div>
+                            </div>
+                          ))}
+                          <div onClick={(e) => addMoreSearchParameters(e)}>
+                            <a
+                              className="btn-sm text-white border mr-2 cursor"
+                              style={{ border: "1px solid #872FF7" }}
+                            >
+                              +
+                            </a>
+                          </div>
+                          <div onClick={removeSearchCritria}>
+                            <a className="btn-sm border cursor">
+                              <svg
+                                data-name="Layer 41"
+                                id="Layer_41"
+                                fill="white"
+                                viewBox="0 0 50 50"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <title />
+                                <path
+                                  className="cls-1"
+                                  d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
+                                />
+                                <path
+                                  className="cls-1"
+                                  d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
+                                />
+                                <path
+                                  className="cls-1"
+                                  d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
+                                />
+                              </svg>
+                            </a>
+                          </div>
                         </div>
                       </div>
                     </div>
+                    {/* <div
+                      className="btn bg-white text-dark font-weight-500 mx-2"
+                      onClick={() => setOpenWarrantyRequestModal(true)}
+                    >
+                      Warranty Request
+                    </div> */}
                   </div>
-                </div>
-                <div>
-                  <div className="text-center pl-3 py-3" />
                 </div>
               </div>
             </div>
@@ -719,6 +826,15 @@ const WarrantyAdministration = () => {
           handleShowPartCreateModal={handleShowPartCreateModal}
           openFileUploadModal={openFileUploadModal}
           handleShowFileUploadModal={handleShowFileUploadModal}
+          handleRaiseClaimRequest={handleRaiseClaimRequest}
+        />
+      )}
+
+      {openWarrantyRequestModal && (
+        <WarrantyRequestCreateModal
+          show={openWarrantyRequestModal}
+          hideModal={() => setOpenWarrantyRequestModal(false)}
+          handleSnack={handleSnack}
         />
       )}
     </>
