@@ -167,7 +167,7 @@ const AddCustomerModal = ({
     let _contactType = "";
     let _customerId = "";
     if (e.value === "P") {
-      _contactType = {label: "Parter Admin", value: "TENANT_ADMIN"},
+      _contactType = {label: "Parter Admin", value: "TENANT_ADMIN"};
       // _contactType = {
       //   roleId: 1,
       //   roleName: "TENANT_ADMIN",
