@@ -2710,9 +2710,8 @@ const ServiceProgressIssueComponent = (props) => {
                 style={{ whiteSpace: "pre" }}
               >
                 <h5 className="mr-2 mb-0 text-black">
-                  <span>Issue Items</span>
+                  <span>ISSUE ITEMS</span>
                 </h5>
-                <span>Version {selectedVersion.value}</span>
               </div>
               <SearchComponent
                 querySearchSelector={querySearchSelector}

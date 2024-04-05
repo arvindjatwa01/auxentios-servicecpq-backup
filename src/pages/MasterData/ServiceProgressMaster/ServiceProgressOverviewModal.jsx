@@ -20,6 +20,8 @@ import ServiceProgressIssueComponent from "./ServiceProgressIssueComponent";
 import { ReadOnlyField } from "pages/Common/ReadOnlyField";
 import { GRID_STYLE } from "pages/Common/constants";
 import { FONT_STYLE } from "pages/Repair/CONSTANTS";
+import ServiceTabDetails from "./ServiceTabDetails";
+import EquipmentSearchComponent from "../EquipmentSearchComponent";
 
 const itemDetailsObj = {
   componentId: "123",
@@ -357,6 +359,7 @@ const ServiceProgressOverviewModal = ({
                       name="componentId"
                       placeholder="Component Id"
                       onChange={() => { }}
+                      value={isEmpty(itemDetails.componentId) ? "" : itemDetails.componentId}
                     />
                   </div>
                 </div>
@@ -370,6 +373,7 @@ const ServiceProgressOverviewModal = ({
                       className="form-control border-radius-10 text-primary"
                       name="description"
                       placeholder="Description"
+                      value={isEmpty(itemDetails.description) ? "" : itemDetails.description}
                       onChange={() => { }}
                     />
                   </div>
@@ -383,8 +387,9 @@ const ServiceProgressOverviewModal = ({
                       type="text"
                       className="form-control border-radius-10 text-primary"
                       name="type"
-                      placeholder="TYPE"
+                      placeholder="Type"
                       onChange={() => { }}
+                      value={isEmpty(itemDetails.type) ? "" : itemDetails.type}
                     />
                   </div>
                 </div>
@@ -428,6 +433,7 @@ const ServiceProgressOverviewModal = ({
                       name="status"
                       placeholder="Status"
                       onChange={() => { }}
+                      value={isEmpty(itemDetails.status) ? "" : itemDetails.status}
                     />
                   </div>
                 </div>
@@ -442,6 +448,7 @@ const ServiceProgressOverviewModal = ({
                       name="salePrice"
                       placeholder="Sale Price"
                       onChange={() => { }}
+                      value={isEmpty(itemDetails.salePrice) ? "" : itemDetails.salePrice}
                     />
                   </div>
                 </div>
@@ -456,6 +463,7 @@ const ServiceProgressOverviewModal = ({
                       name="location"
                       placeholder="Location"
                       onChange={() => { }}
+                      value={isEmpty(itemDetails.location) ? "" : itemDetails.location}
                     />
                   </div>
                 </div>
@@ -470,6 +478,7 @@ const ServiceProgressOverviewModal = ({
                       name="manufacturer"
                       placeholder="Manufacturer"
                       onChange={() => { }}
+                      value={isEmpty(itemDetails.manufacturer) ? "" : itemDetails.manufacturer}
                     />
                   </div>
                 </div>
@@ -484,6 +493,7 @@ const ServiceProgressOverviewModal = ({
                       name="modelNumber"
                       placeholder="Model Number"
                       onChange={() => { }}
+                      value={isEmpty(itemDetails.modelNumber) ? "" : itemDetails.modelNumber}
                     />
                   </div>
                 </div>
@@ -498,6 +508,7 @@ const ServiceProgressOverviewModal = ({
                       name="serialNumber"
                       placeholder="Serial Number"
                       onChange={() => { }}
+                      value={isEmpty(itemDetails.serialNumber) ? "" : itemDetails.serialNumber}
                     />
                   </div>
                 </div>
@@ -512,6 +523,7 @@ const ServiceProgressOverviewModal = ({
                       name="compid"
                       placeholder="Comp Id (Core)"
                       onChange={() => { }}
+                      value={isEmpty(itemDetails.coreId) ? "" : itemDetails.coreId}
                     />
                   </div>
                 </div>
@@ -523,6 +535,7 @@ const ServiceProgressOverviewModal = ({
                         control={
                           <Switch
                             onChange={(e) => { }}
+                            checked={!isEmpty(itemDetails.returnable)}
                           />
                         }
                         labelPlacement="top"
@@ -546,6 +559,7 @@ const ServiceProgressOverviewModal = ({
                       name="valuation"
                       placeholder="Valuation"
                       onChange={() => { }}
+                      value={isEmpty(itemDetails.valuation) ? "" : itemDetails.valuation}
                     />
                   </div>
                 </div>
@@ -559,17 +573,17 @@ const ServiceProgressOverviewModal = ({
               <div className="row align-items-end px-2 py-2">
                 <ReadOnlyField
                   label="MATERIAL CODE"
-                  value={isEmpty(erpDetails.materialCode) ? "N/A" : `${erpDetails.materialCode} $`}
+                  value={isEmpty(erpDetails.materialCode) ? "N/A" : `${erpDetails.materialCode}`}
                   className="col-lg-3 col-md-3 col-sm-6 col-12"
                 />
                 <ReadOnlyField
                   label="MATERIAL DESCRIPTION"
-                  value={isEmpty(erpDetails.materialDescription) ? "N/A" : `${erpDetails.materialDescription} $`}
+                  value={isEmpty(erpDetails.materialDescription) ? "N/A" : `${erpDetails.materialDescription}`}
                   className="col-lg-3 col-md-3 col-sm-6 col-12"
                 />
                 <ReadOnlyField
                   label="MATERIAL GROUP"
-                  value={isEmpty(erpDetails.materialGroup) ? "N/A" : `${erpDetails.materialGroup} $`}
+                  value={isEmpty(erpDetails.materialGroup) ? "N/A" : `${erpDetails.materialGroup}`}
                   className="col-lg-3 col-md-3 col-sm-6 col-12"
                 />
                 <ReadOnlyField
@@ -584,22 +598,22 @@ const ServiceProgressOverviewModal = ({
                 />
                 <ReadOnlyField
                   label="AVAILABILITY STATUS"
-                  value={isEmpty(erpDetails.availablityStatus) ? "N/A" : `${erpDetails.availablityStatus} $`}
+                  value={isEmpty(erpDetails.availablityStatus) ? "N/A" : `${erpDetails.availablityStatus}`}
                   className="col-lg-3 col-md-3 col-sm-6 col-12"
                 />
                 <ReadOnlyField
                   label="STOCK QUANTITY"
-                  value={isEmpty(erpDetails.stockQuantity) ? "N/A" : `${erpDetails.stockQuantity} $`}
+                  value={isEmpty(erpDetails.stockQuantity) ? "N/A" : `${erpDetails.stockQuantity}`}
                   className="col-lg-3 col-md-3 col-sm-6 col-12"
                 />
                 <ReadOnlyField
                   label="STATUS"
-                  value={isEmpty(erpDetails.status) ? "N/A" : `${erpDetails.status} $`}
+                  value={isEmpty(erpDetails.status) ? "N/A" : `${erpDetails.status}`}
                   className="col-lg-3 col-md-3 col-sm-6 col-12"
                 />
                 <ReadOnlyField
                   label="PLANT / WAREHOUSE"
-                  value={isEmpty(erpDetails.warehouse) ? "N/A" : `${erpDetails.warehouse} $`}
+                  value={isEmpty(erpDetails.warehouse) ? "N/A" : `${erpDetails.warehouse}`}
                   className="col-lg-3 col-md-3 col-sm-6 col-12"
                 />
               </div>
@@ -617,6 +631,7 @@ const ServiceProgressOverviewModal = ({
                       name="materialCode"
                       placeholder="Material Code"
                       onChange={() => { }}
+                      value={isEmpty(erpDetails.materialCode) ? "" : erpDetails.materialCode}
                     />
                   </div>
                 </div>
@@ -631,6 +646,7 @@ const ServiceProgressOverviewModal = ({
                       name="materialDescription"
                       placeholder="Material Description"
                       onChange={() => { }}
+                      value={isEmpty(erpDetails.materialDescription) ? "" : erpDetails.materialDescription}
                     />
                   </div>
                 </div>
@@ -645,6 +661,7 @@ const ServiceProgressOverviewModal = ({
                       name="materialgroup"
                       placeholder="Material Group"
                       onChange={() => { }}
+                      value={isEmpty(erpDetails.materialGroup) ? "" : erpDetails.materialGroup}
                     />
                   </div>
                 </div>
@@ -659,6 +676,7 @@ const ServiceProgressOverviewModal = ({
                       name="averageCost"
                       placeholder="Average Cost"
                       onChange={() => { }}
+                      value={isEmpty(erpDetails.averageCost) ? "" : erpDetails.averageCost}
                     />
                   </div>
                 </div>
@@ -673,6 +691,7 @@ const ServiceProgressOverviewModal = ({
                       name="salePrice"
                       placeholder="SALE PRICE"
                       onChange={() => { }}
+                      value={isEmpty(erpDetails.salePrice) ? "" : erpDetails.salePrice}
                     />
                   </div>
                 </div>
@@ -687,6 +706,7 @@ const ServiceProgressOverviewModal = ({
                       name="availableStatus"
                       placeholder="Available Status"
                       onChange={() => { }}
+                      value={isEmpty(erpDetails.availablityStatus) ? "" : erpDetails.availablityStatus}
                     />
                   </div>
                 </div>
@@ -701,6 +721,7 @@ const ServiceProgressOverviewModal = ({
                       name="stockQuantity"
                       placeholder="Stock Quantity"
                       onChange={() => { }}
+                      value={isEmpty(erpDetails.stockQuantity) ? "" : erpDetails.stockQuantity}
                     />
                   </div>
                 </div>
@@ -715,6 +736,7 @@ const ServiceProgressOverviewModal = ({
                       name="status"
                       placeholder="Status"
                       onChange={() => { }}
+                      value={isEmpty(erpDetails.status) ? "" : erpDetails.status}
                     />
                   </div>
                 </div>
@@ -729,6 +751,7 @@ const ServiceProgressOverviewModal = ({
                       name="wareHouse"
                       placeholder="Plant / WareHouse"
                       onChange={() => { }}
+                      value={isEmpty(erpDetails.warehouse) ? "" : erpDetails.warehouse}
                     />
                   </div>
                 </div>
@@ -737,7 +760,7 @@ const ServiceProgressOverviewModal = ({
           }
         </div>
         <div className="d-flex justify-content-end mt-2">
-          {editable && <button className='btn btn-primary mx-2' onClick={handleEdit}>Save & Close</button>}
+          {editable && <button className='btn btn-primary mx-2' onClick={handleEdit}>Save</button>}
           {/* <button
             className="btn btn-primary"
             // id="details"
@@ -760,7 +783,7 @@ const ServiceProgressOverviewModal = ({
     const componentRows = addAutoIncrementIds(returnCoreParts);
     return (
       <>
-        <div className="d-flex justify-content-between align-items-center">
+        {/* <div className="d-flex justify-content-between align-items-center">
           <h5 className="font-weight-bold fw-bold mb-0">
             Rent a New Equipment
           </h5>
@@ -868,92 +891,42 @@ const ServiceProgressOverviewModal = ({
               </div>
             </div>
           </div>
-        </div>
-        <h5 className="font-weight-bold fw-bold mb-1">Component</h5>
-        <div className="p-3 mt-3">
-          <div style={{ height: 170, width: '100%' }}>
-            <DataGrid sx={GRID_STYLE} rows={componentRows} columns={ComponentColumns} getRowId={(row) => row.id} pageSize={5} />
+        </div> */}
+        <ServiceTabDetails />
+        <div className="card border px-4 mt-4">
+          <div className="m-3">
+            <div className="d-flex align-items-center w-100">
+              <h5 className="font-weight-bold fw-bold mb-1">
+                REPLACEMENT
+              </h5>
+              <div className="ml-3">
+                <EquipmentSearchComponent searchPlaceholder={"Replacement"}/>
+              </div>
+            </div>
+            <div className="p-3 mt-3">
+              <div style={{ height: 170, width: '100%' }}>
+                <DataGrid sx={GRID_STYLE} rows={componentRows} columns={ComponentColumns} getRowId={(row) => row.id} pageSize={5} />
+              </div>
+            </div>
           </div>
         </div>
-        {/* <table className="table table-bordered">
-          <thead>
-            <tr>
-              <th scope="col">Id</th>
-              <th scope="col">Item Code</th>
-              <th scope="col">Item Description</th>
-              <th scope="col">Serial Number</th>
-              <th scope="col">Sales Unit</th>
-              <th scope="col">Quantity</th>
-              <th scope="col">Cateogry</th>
-              <th scope="col">Net Value</th>
-              <th scope="col">Item Status</th>
-              <th scope="col">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {returnCoreParts.length !== 0 &&
-              returnCoreParts.map((row, i) => (
-                <tr key={i}>
-                  <th scope="row">{(i = +1)}</th>
-                  <td>{row.itemCode}</td>
-                  <td>{row.itemDescription}</td>
-                  <td>{row.serialNumber}</td>
-                  <td>{row.salesUnit}</td>
-                  <td>{row.quantity}</td>
-                  <td>{row.category}</td>
-                  <td>{row.netValue}</td>
-                  <td>{row.itemStatus}</td>
-                  <td>
-                    <span className="cursor" title="Edit">
-                      <img className="m-1 cusror" src={penIcon} alt="Edit" />
-                    </span>
-                    <span className="cursor" title="Delete">
-                      <DeleteIcon />
-                    </span>
-                  </td>
-                </tr>
-              ))}
-          </tbody>
-        </table> */}
-        <h5 className="font-weight-bold fw-bold mt-3">
-          Active Components For Selected Customer
-        </h5>
-        <div className="p-3 mt-3">
-          <div style={{ height: 220, width: '100%' }}>
-            <DataGrid sx={GRID_STYLE} rows={tableTwoData} columns={activeComponentColumns} getRowId={(row) => row.itemNumber} pageSize={5} />
+        <div className="card border px-4 mt-4">
+          <div className="m-3">
+            <div className="d-flex align-items-center w-100">
+              <h5 className="font-weight-bold fw-bold mt-3">
+                RETURNED
+              </h5>
+              <div className="ml-3">
+                <EquipmentSearchComponent searchPlaceholder={"Returned"} />
+              </div>
+            </div>
+            <div className="p-3 mt-3">
+              <div style={{ height: 220, width: '100%' }}>
+                <DataGrid sx={GRID_STYLE} rows={tableTwoData} columns={activeComponentColumns} getRowId={(row) => row.itemNumber} pageSize={5} />
+              </div>
+            </div>
           </div>
         </div>
-        {/* <table className="table table-bordered">
-          <thead>
-            <tr>
-              <th scope="col">Item Number</th>
-              <th scope="col">Item Description</th>
-              <th scope="col">Category</th>
-              <th scope="col">Date of Issue</th>
-              <th scope="col">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {tableTwoData.length !== 0 &&
-              tableTwoData.map((row, i) => (
-                <tr key={i}>
-                  <th scope="row">{row.itemNumber}</th>
-                  <td>{row.itemDescription}</td>
-                  <td>{row.category}</td>
-                  <td>{row.dateOfIssue}</td>
-                  <td>{row.status}</td>
-                  <td>
-                    <button
-                      className="btn btn-primary"
-                      onClick={handleRetrunProcessModal}
-                    >
-                      Return Process
-                    </button>
-                  </td>
-                </tr>
-              ))}
-          </tbody>
-        </table> */}
       </>
     );
   };
