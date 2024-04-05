@@ -58,6 +58,11 @@ const customerTypeOption = [
   { label: "Customer", value: "C" },
 ];
 
+const rolesOption = [
+  {label: "Parter Admin", value: "TENANT_ADMIN"},
+  {label: "End Customer", value: "End_Customer"}
+]
+
 const AddCustomerModal = ({
   openAddCustomer,
   handleAddCustomerClose,
@@ -130,7 +135,7 @@ const AddCustomerModal = ({
           const _customerType = customerTypeOption.find(
             (obj) => obj.value === responseData.customerType
           );
-          const _contactType = roles.find(
+          const _contactType = rolesOption.find(
             (obj) => obj.value === responseData.contactType
           );
 
@@ -162,43 +167,45 @@ const AddCustomerModal = ({
     let _contactType = "";
     let _customerId = "";
     if (e.value === "P") {
-      _contactType = {
-        roleId: 1,
-        roleName: "TENANT_ADMIN",
-        roleDispName: "TENANT_ADMIN",
-        roleDesc: "Role for Tenant admin user",
-        privileges: [
-          {
-            privilegeId: 16,
-            privilegeName: "TENANT_END_CUSTOMER",
-            privilegeDesc: "Privilege for Tenant end customer",
-          },
-          {
-            privilegeId: 3,
-            privilegeName: "TENANT_ADMIN",
-            privilegeDesc: "Privilege for Tenant admin user",
-          },
-        ],
-        value: 1,
-        label: "TENANT_ADMIN",
-      };
+      _contactType = {label: "Parter Admin", value: "TENANT_ADMIN"},
+      // _contactType = {
+      //   roleId: 1,
+      //   roleName: "TENANT_ADMIN",
+      //   roleDispName: "TENANT_ADMIN",
+      //   roleDesc: "Role for Tenant admin user",
+      //   privileges: [
+      //     {
+      //       privilegeId: 16,
+      //       privilegeName: "TENANT_END_CUSTOMER",
+      //       privilegeDesc: "Privilege for Tenant end customer",
+      //     },
+      //     {
+      //       privilegeId: 3,
+      //       privilegeName: "TENANT_ADMIN",
+      //       privilegeDesc: "Privilege for Tenant admin user",
+      //     },
+      //   ],
+      //   value: 1,
+      //   label: "TENANT_ADMIN",
+      // };
       _customerId = loginTenantId;
     } else if (e.value === "C") {
-      _contactType = {
-        roleId: 8,
-        roleName: "End_Customer",
-        roleDispName: "End_Customer",
-        roleDesc: "Tenant_End_Customer",
-        privileges: [
-          {
-            privilegeId: 16,
-            privilegeName: "TENANT_END_CUSTOMER",
-            privilegeDesc: "Privilege for Tenant end customer",
-          },
-        ],
-        value: 8,
-        label: "End_Customer",
-      };
+      _contactType = {label: "End Customer", value: "End_Customer"};
+      // _contactType = {
+      //   roleId: 8,
+      //   roleName: "End_Customer",
+      //   roleDispName: "End_Customer",
+      //   roleDesc: "Tenant_End_Customer",
+      //   privileges: [
+      //     {
+      //       privilegeId: 16,
+      //       privilegeName: "TENANT_END_CUSTOMER",
+      //       privilegeDesc: "Privilege for Tenant end customer",
+      //     },
+      //   ],
+      //   value: 8,
+      //   label: "End_Customer",
+      // };
       _customerId = "";
     }
     setRecord({
@@ -496,9 +503,9 @@ const AddCustomerModal = ({
                       })
                     }
                     styles={customStyle}
-                    getOptionLabel={(option) => `${option.label}`}
+                    // getOptionLabel={(option) => `${option.label}`}
                     value={record.contactType}
-                    options={roles}
+                    options={rolesOption}
                     isDisabled
                   />
                   <div className="css-w8dmq8">*Mandatory</div>
