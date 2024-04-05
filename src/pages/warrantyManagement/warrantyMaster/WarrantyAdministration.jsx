@@ -34,6 +34,7 @@ import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import WarrantyEditModal from "./WarrantyEditModal";
 import WarrantyOverviewModal from "./WarrantyOverviewModal";
 import { equipmentSearch } from "services/searchServices";
+import WarrantyRequestCreateModal from "../claimMaster/WarrantyRequestCreateModal";
 
 const WarrantyAdministration = () => {
   const [loading, setLoading] = useState(false);
