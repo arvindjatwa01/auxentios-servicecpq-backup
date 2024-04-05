@@ -344,95 +344,104 @@ const ServiceMaster = () => {
     setLabormasterpagination(value);
   };
 
+
   const priceLaborColumns = [
     {
-      name: <div>Charge Code</div>,
-      selector: (row) => row.chargeCode,
-      wrap: true,
-      sortable: false,
+      field: "chargeCode",
+      headerName: "charge Code",
+      flex: 1,
     },
     {
-      name: <div>Labor Code</div>,
-      selector: (row) => row.labourCode,
-      wrap: true,
-      sortable: false,
+      field: "labourCode",
+      headerName: "Labor Code",
+      flex: 1,
     },
     {
-      name: <div>Labor Type</div>,
-      selector: (row) => row?.labourType,
-      wrap: true,
-      sortable: false,
+      field: "labourType",
+      headerName: "Labor Type",
+      flex: 1,
     },
     {
-      name: <div>Service Type</div>,
-      selector: (row) => row?.serviceType,
-      wrap: true,
-      sortable: false,
+      field: "serviceType",
+      headerName: "Service Type",
+      flex: 1,
     },
     {
-      name: <div>Unit Of Measure</div>,
-      selector: (row) => row?.unitOfMeasure,
-      wrap: true,
-      sortable: false,
+      field: "unitOfMeasure",
+      headerName: "Unit Of Measure",
+      flex: 1,
     },
     {
-      name: <div>Unit Price</div>,
-      selector: (row) => row?.unitPrice,
-      wrap: true,
-      sortable: false,
+      field: "unitPrice",
+      headerName: "Unit Price",
+      flex: 1,
     },
     {
-      name: <div>Currency</div>,
-      selector: (row) => row?.currency,
-      wrap: true,
-      sortable: false,
+      field: "currency",
+      headerName: "Currency",
+      flex: 1,
     },
     {
-      name: <div>Start Date</div>,
-      selector: (row) => row?.startDate,
-      wrap: true,
-      sortable: false,
+      field: "startDate",
+      headerName: "Start Date",
+      flex: 1,
     },
     {
-      name: <div>End Date</div>,
-      selector: (row) => row?.endDate,
-      wrap: true,
-      sortable: false,
+      field: "endDate",
+      headerName: "End Date",
+      flex: 1,
     },
     {
-      name: <div>Effective From</div>,
-      selector: (row) => row?.effectiveFrom,
-      wrap: true,
-      sortable: false,
+      field: "effectiveFrom",
+      headerName: "Effective From",
+      flex: 1,
     },
     {
-      name: <div>Last Updated</div>,
-      selector: (row) => row?.lastUpdated,
-      wrap: true,
-      sortable: false,
+      field: "lastUpdated",
+      headerName: "Last Updated",
+      flex: 1,
     },
     {
-      name: <div>Actions</div>,
-      wrap: true,
-      sortable: false,
-      cell: (row) => (
-        <div
-          className="d-flex justify-content-center align-items-center row-svg-div"
-          style={{ minWidth: "180px !important" }}
-        >
-          <EditOutlinedIcon
-            className="mr-1"
-            onClick={() =>
-              handleShowReportDetails(
-                "Price Details",
-                LABOUR_AND_SERVICE_PRICE_DETAILS,
-                row
-              )
+      field: "action",
+      type: "actions",
+      headerName: "Actions",
+      flex: 1,
+      cellClassName: "actions",
+      getActions: (params) => {
+        return [
+          <GridActionsCellItem
+            icon={
+              <div
+                className="cursor"
+                onClick={() => handleShowReportDetails("Price Details",
+                  LABOUR_AND_SERVICE_PRICE_DETAILS,
+                  params.row)}
+              >
+                <Tooltip title="Edit">
+                  <EditOutlinedIcon />
+                </Tooltip>
+              </div>
             }
-          />
-          <DeleteOutlineOutlinedIcon />
-        </div>
-      ),
+            label="Edit"
+            className="textPrimary"
+            color="inherit"
+          />,
+          <GridActionsCellItem
+            icon={
+              <div
+                className=" cursor"
+              >
+                <Tooltip title="Delete">
+                  <DeleteOutlineOutlinedIcon />
+                </Tooltip>
+              </div>
+            }
+            label="Edit"
+            className="textPrimary"
+            color="inherit"
+          />,
+        ];
+      },
     },
   ];
 
@@ -764,12 +773,15 @@ const ServiceMaster = () => {
     return (
       <>
         <h6 className="font-weight-500 pl-2 mt-5">Price</h6>
-        <WithoutSearchDataTable
-          columns={priceLaborColumns}
-          data={labourPriceDetails}
-          title="Price Details"
-          showAddBtn={true}
-        />
+        <div className="bg-white p-3 border-radius-10 mt-3 overflow-hidden">
+          <div className="d-flex align-items-center justify-content-between mb-3">
+            <h6 className="font-weight-600 mb-0 mr-3">Price Details</h6>
+            <a className="btn cursor bg-primary text-white">Add New</a>
+          </div>
+          <div style={{ height: 280, width: '100%' }}>
+            <DataGrid sx={GRID_STYLE} rows={labourPriceDetails} columns={priceLaborColumns} getRowId={(row) => row.chargeCode} pageSize={5} />
+          </div>
+        </div>
         <h6 className="font-weight-500 pl-2 mt-5">ERP Price</h6>
         <div className="bg-white p-3 border-radius-10 mt-3 overflow-hidden">
           <div className="d-flex align-items-center justify-content-between mb-3">

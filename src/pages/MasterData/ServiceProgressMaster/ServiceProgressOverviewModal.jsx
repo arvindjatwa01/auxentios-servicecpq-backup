@@ -1,14 +1,26 @@
 import React, { useState } from "react";
-
-import { Box, Tab } from "@mui/material";
-import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { Modal } from "react-bootstrap";
+
+import { Box, Switch, Tab, TextField, Tooltip } from "@mui/material";
+import { TabContext, TabList, TabPanel } from "@mui/lab";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
+import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import { LocalizationProvider, MobileDatePicker } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import FormGroup from "@mui/material/FormGroup";
+import { FormControlLabel } from "@material-ui/core";
+
+
 import { isEmpty } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/textUtilities";
 import { getFormatDateTime } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/dateUtilities";
 import penIcon from "../../../assets/images/pen.png";
 import ServiceProgressIssueComponent from "./ServiceProgressIssueComponent";
+import { ReadOnlyField } from "pages/Common/ReadOnlyField";
+import { GRID_STYLE } from "pages/Common/constants";
+import { FONT_STYLE } from "pages/Repair/CONSTANTS";
 
-import DeleteIcon from "@mui/icons-material/Delete";
 const itemDetailsObj = {
   componentId: "123",
   description: "abcd",
@@ -77,6 +89,102 @@ const tableTwoData = [
   },
 ];
 
+
+const ComponentColumns = [
+  {
+    field: "id",
+    headerName: "Id",
+    flex: 1,
+  },
+  {
+    field: "itemCode",
+    headerName: "Item Code",
+    flex: 1,
+  },
+  {
+    field: "itemDescription",
+    headerName: "Item Description",
+    flex: 1,
+  },
+  {
+    field: "serialNumber",
+    headerName: "Serial Number",
+    flex: 1,
+  },
+  {
+    field: "salesUnit",
+    headerName: "Sales Unit",
+    flex: 1,
+  },
+  {
+    field: "quantity",
+    headerName: "Quantity",
+    flex: 1,
+  },
+  {
+    field: "category",
+    headerName: "Cateogry",
+    flex: 1,
+  },
+  {
+    field: "netValue",
+    headerName: "Net Value",
+    flex: 1,
+  },
+  {
+    field: "itemStatus",
+    headerName: "Item Status",
+    flex: 1,
+  },
+  {
+    field: "action",
+    type: "actions",
+    headerName: "Actions",
+    flex: 1,
+    cellClassName: "actions",
+    getActions: (params) => {
+      return [
+        <GridActionsCellItem
+          icon={
+            <div
+              className="cursor"
+            >
+              <Tooltip title="Edit">
+                <EditOutlinedIcon />
+              </Tooltip>
+            </div>
+          }
+          label="Edit"
+          className="textPrimary"
+          color="inherit"
+        />,
+        <GridActionsCellItem
+          icon={
+            <div
+              className=" cursor"
+            >
+              <Tooltip title="Delete">
+                <DeleteOutlineOutlinedIcon />
+              </Tooltip>
+            </div>
+          }
+          label="Edit"
+          className="textPrimary"
+          color="inherit"
+        />,
+      ];
+    },
+  },
+]
+
+
+const addAutoIncrementIds = (rows) => {
+  return rows.map((row, index) => ({
+    id: index + 1, // Auto-incrementing ID starting from 1
+    ...row,
+  }));
+};
+
 const ServiceProgressOverviewModal = ({
   show,
   hideModal,
@@ -89,280 +197,554 @@ const ServiceProgressOverviewModal = ({
   const [returnTabDetails, setReturnTabDetails] = useState({
     ...returnDetailsObj,
   });
+  const activeComponentColumns = [
+    {
+      field: "itemNumber",
+      headerName: "Item Number",
+      flex: 1,
+    },
+    {
+      field: "itemDescription",
+      headerName: "Item Description",
+      flex: 1,
+    },
+    {
+      field: "category",
+      headerName: "Category",
+      flex: 1,
+    },
+    {
+      field: "dateOfIssue",
+      headerName: "Date of Issue",
+      flex: 1,
+    },
+    {
+      field: "status",
+      headerName: "Status",
+      flex: 1,
+    },
+    {
+      field: "action",
+      type: "actions",
+      headerName: "Actions",
+      flex: 1,
+      cellClassName: "actions",
+      getActions: (params) => {
+        return [
+          <GridActionsCellItem
+            icon={
+              <div
+                className="cursor"
+              >
+                <button
+                  className="btn btn-primary"
+                  onClick={handleRetrunProcessModal}
+                >
+                  Return Process
+                </button>
+              </div>
+            }
+            label="Edit"
+            className="textPrimary"
+            color="inherit"
+          />
+        ];
+      },
+    },
+  ]
+
+  const [editable, setEditable] = useState(false);
+  const handleEdit = () => {
+    setEditable(!editable);
+  }
 
   // view item details tab view
   const viewItemDetails = () => {
     return (
       <>
         <div className="d-flex justify-content-between align-items-center">
-          <h5 className="font-weight-bold fw-bold mb-0">Item Details</h5>
+          <h5 className="font-weight-bold fw-bold mb-0">ITEM DETAILS</h5>
           <div>
             <button
               className="border-primary text-primary rounded-pill cursor px-3 py-1"
-              //   onClick={handleEdit}
+              onClick={handleEdit}
             >
               <img className="m-1" src={penIcon} alt="Edit" /> Edit
             </button>
           </div>
         </div>
         <div className="card border px-2 py-3 mt-2">
-          <div className="row align-items-end px-2 py-2">
-            <div className="col-lg-3 col-md-3 col-sm-6 col-12">
-              <div className="form-group">
-                <p className="text-light-dark font-size-12 font-weight-500 mb-1">
-                  Component Id
-                </p>
-                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                  {isEmpty(itemDetails.componentId)
-                    ? "NA"
-                    : itemDetails.componentId}
-                </h6>
+          {!editable ?
+            <>
+              <div className="row align-items-end px-2 py-2">
+                <ReadOnlyField
+                  label="COMPONENT ID"
+                  value={isEmpty(itemDetails.componentId) ? "N/A" : itemDetails.componentId}
+                  className="col-lg-3 col-md-3 col-sm-6 col-12"
+                />
+                <ReadOnlyField
+                  label="DESCRIPTION"
+                  value={isEmpty(itemDetails.description) ? "N/A" : itemDetails.description}
+                  className="col-lg-3 col-md-3 col-sm-6 col-12"
+                />
+                <ReadOnlyField
+                  label="TYPE"
+                  value={isEmpty(itemDetails.type) ? "N/A" : itemDetails.type}
+                  className="col-lg-3 col-md-3 col-sm-6 col-12"
+                />
+                <ReadOnlyField
+                  label="AVAILABLE DATE"
+                  value={isEmpty(itemDetails.availableDate) ? "N/A" : getFormatDateTime(itemDetails.availableDate, false)}
+                  className="col-lg-3 col-md-3 col-sm-6 col-12"
+                />
+                <ReadOnlyField
+                  label="STATUS"
+                  value={isEmpty(itemDetails.status?.label) ? "N/A" : itemDetails.status?.label}
+                  className="col-lg-3 col-md-3 col-sm-6 col-12"
+                />
+                <ReadOnlyField
+                  label="SALE PRICE"
+                  value={isEmpty(itemDetails.salePrice) ? "N/A" : itemDetails.salePrice}
+                  className="col-lg-3 col-md-3 col-sm-6 col-12"
+                />
+                <ReadOnlyField
+                  label="LOCATION"
+                  value={isEmpty(itemDetails.location) ? "N/A" : itemDetails.location}
+                  className="col-lg-3 col-md-3 col-sm-6 col-12"
+                />
+                <ReadOnlyField
+                  label="MANUFACTURER"
+                  value={isEmpty(itemDetails.manufacturer) ? "N/A" : itemDetails.manufacturer}
+                  className="col-lg-3 col-md-3 col-sm-6 col-12"
+                />
+                <ReadOnlyField
+                  label="MODEL NUMBER"
+                  value={isEmpty(itemDetails.modelNumber) ? "N/A" : itemDetails.modelNumber}
+                  className="col-lg-3 col-md-3 col-sm-6 col-12"
+                />
+                <ReadOnlyField
+                  label="SERIAL NUMBER"
+                  value={isEmpty(itemDetails.serialNumber) ? "N/A" : itemDetails.serialNumber}
+                  className="col-lg-3 col-md-3 col-sm-6 col-12"
+                />
+                <ReadOnlyField
+                  label="COMP ID (CORE)"
+                  value={isEmpty(itemDetails.coreId) ? "N/A" : itemDetails.coreId}
+                  className="col-lg-3 col-md-3 col-sm-6 col-12"
+                />
+                <ReadOnlyField
+                  label="RETURNABLE"
+                  value={itemDetails.returnable ? "Yes" : "No"}
+                  className="col-lg-3 col-md-3 col-sm-6 col-12"
+                />
+                <ReadOnlyField
+                  label="VALUATION"
+                  value={isEmpty(itemDetails.valuation) ? "N/A" : `${itemDetails.valuation} $`}
+                  className="col-lg-3 col-md-3 col-sm-6 col-12"
+                />
               </div>
-            </div>
-            <div className="col-lg-3 col-md-3 col-sm-6 col-12">
-              <div className="form-group">
-                <p className="text-light-dark font-size-12 font-weight-500 mb-1">
-                  Description
-                </p>
-                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                  {isEmpty(itemDetails.description)
-                    ? "NA"
-                    : itemDetails.description}
-                </h6>
+            </> :
+            <>
+              <div className="row input-fields px-2 py-2 align-items-end">
+                <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-14 font-weight-500">
+                      COMPONENT ID
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control border-radius-10 text-primary"
+                      name="componentId"
+                      placeholder="Component Id"
+                      onChange={() => { }}
+                    />
+                  </div>
+                </div>
+                <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-14 font-weight-500">
+                      DESCRIPTION
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control border-radius-10 text-primary"
+                      name="description"
+                      placeholder="Description"
+                      onChange={() => { }}
+                    />
+                  </div>
+                </div>
+                <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-14 font-weight-500">
+                      TYPE
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control border-radius-10 text-primary"
+                      name="type"
+                      placeholder="TYPE"
+                      onChange={() => { }}
+                    />
+                  </div>
+                </div>
+                <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-14 font-weight-500">
+                      AVAILABLE DATE
+                    </label>
+                    <div className="align-items-center date-box">
+                      <LocalizationProvider dateAdapter={AdapterDateFns}>
+                        <MobileDatePicker
+                          inputFormat="dd/MM/yyyy"
+                          className="form-controldate border-radius-10"
+                          // maxDate={new Date()}
+                          closeOnSelect
+                          value={new Date()}
+                          //onChange={() => { }}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              variant="standard"
+                              inputProps={{
+                                ...params.inputProps,
+                                style: FONT_STYLE,
+                              }}
+                            />
+                          )}
+                        />
+                      </LocalizationProvider>
+                    </div>
+                  </div>
+                </div>
+                <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-14 font-weight-500">
+                      STATUS
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control border-radius-10 text-primary"
+                      name="status"
+                      placeholder="Status"
+                      onChange={() => { }}
+                    />
+                  </div>
+                </div>
+                <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-14 font-weight-500">
+                      SALE PRICE
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control border-radius-10 text-primary"
+                      name="salePrice"
+                      placeholder="Sale Price"
+                      onChange={() => { }}
+                    />
+                  </div>
+                </div>
+                <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-14 font-weight-500">
+                      LOCATION
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control border-radius-10 text-primary"
+                      name="location"
+                      placeholder="Location"
+                      onChange={() => { }}
+                    />
+                  </div>
+                </div>
+                <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-14 font-weight-500">
+                      MANUFACTURER
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control border-radius-10 text-primary"
+                      name="manufacturer"
+                      placeholder="Manufacturer"
+                      onChange={() => { }}
+                    />
+                  </div>
+                </div>
+                <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-14 font-weight-500">
+                      MODEL NUMBER
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control border-radius-10 text-primary"
+                      name="modelNumber"
+                      placeholder="Model Number"
+                      onChange={() => { }}
+                    />
+                  </div>
+                </div>
+                <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-14 font-weight-500">
+                      SERIAL NUMBER
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control border-radius-10 text-primary"
+                      name="serialNumber"
+                      placeholder="Serial Number"
+                      onChange={() => { }}
+                    />
+                  </div>
+                </div>
+                <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-14 font-weight-500">
+                      COMP ID (CORE)
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control border-radius-10 text-primary"
+                      name="compid"
+                      placeholder="Comp Id (Core)"
+                      onChange={() => { }}
+                    />
+                  </div>
+                </div>
+                <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+                  <div className="form-group">
+                    <FormGroup>
+                      <FormControlLabel
+                        style={{ alignItems: "start", marginLeft: 0 }}
+                        control={
+                          <Switch
+                            onChange={(e) => { }}
+                          />
+                        }
+                        labelPlacement="top"
+                        label={
+                          <span className="text-light-dark font-size-14 font-weight-500">
+                            RETURNABLE
+                          </span>
+                        }
+                      />
+                    </FormGroup>
+                  </div>
+                </div>
+                <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-14 font-weight-500">
+                      VALUATION
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control border-radius-10 text-primary"
+                      name="valuation"
+                      placeholder="Valuation"
+                      onChange={() => { }}
+                    />
+                  </div>
+                </div>
               </div>
-            </div>
-            <div className="col-lg-3 col-md-3 col-sm-6 col-12">
-              <div className="form-group">
-                <p className="text-light-dark font-size-12 font-weight-500 mb-1">
-                  Type
-                </p>
-                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                  {isEmpty(itemDetails.type) ? "NA" : itemDetails.type}
-                </h6>
-              </div>
-            </div>
-            <div className="col-lg-3 col-md-3 col-sm-6 col-12">
-              <div className="form-group">
-                <p className="text-light-dark font-size-12 font-weight-500 mb-1">
-                  Available Date
-                </p>
-                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                  {isEmpty(itemDetails.availableDate)
-                    ? "NA"
-                    : getFormatDateTime(itemDetails.availableDate, false)}
-                </h6>
-              </div>
-            </div>
-            <div className="col-lg-3 col-md-3 col-sm-6 col-12">
-              <div className="form-group">
-                <p className="text-light-dark font-size-12 font-weight-500 mb-1">
-                  Status
-                </p>
-                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                  {isEmpty(itemDetails.status?.label)
-                    ? "NA"
-                    : itemDetails.status?.label}
-                </h6>
-              </div>
-            </div>
-            <div className="col-lg-3 col-md-3 col-sm-6 col-12">
-              <div className="form-group">
-                <p className="text-light-dark font-size-12 font-weight-500 mb-1">
-                  Sale Price
-                </p>
-                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                  {isEmpty(itemDetails.salePrice)
-                    ? "NA"
-                    : itemDetails.salePrice}
-                </h6>
-              </div>
-            </div>
-            <div className="col-lg-3 col-md-3 col-sm-6 col-12">
-              <div className="form-group">
-                <p className="text-light-dark font-size-12 font-weight-500 mb-1">
-                  Location
-                </p>
-                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                  {isEmpty(itemDetails.location) ? "NA" : itemDetails.location}
-                </h6>
-              </div>
-            </div>
-            <div className="col-lg-3 col-md-3 col-sm-6 col-12">
-              <div className="form-group">
-                <p className="text-light-dark font-size-12 font-weight-500 mb-1">
-                  Manufacturer
-                </p>
-                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                  {isEmpty(itemDetails.manufacturer)
-                    ? "NA"
-                    : itemDetails.manufacturer}
-                </h6>
-              </div>
-            </div>
-            <div className="col-lg-3 col-md-3 col-sm-6 col-12">
-              <div className="form-group">
-                <p className="text-light-dark font-size-12 font-weight-500 mb-1">
-                  Model Number
-                </p>
-                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                  {isEmpty(itemDetails.modelNumber)
-                    ? "NA"
-                    : itemDetails.modelNumber}
-                </h6>
-              </div>
-            </div>
-            <div className="col-lg-3 col-md-3 col-sm-6 col-12">
-              <div className="form-group">
-                <p className="text-light-dark font-size-12 font-weight-500 mb-1">
-                  Serial Number
-                </p>
-                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                  {isEmpty(itemDetails.serialNumber)
-                    ? "NA"
-                    : itemDetails.serialNumber}
-                </h6>
-              </div>
-            </div>
-            <div className="col-lg-3 col-md-3 col-sm-6 col-12">
-              <div className="form-group">
-                <p className="text-light-dark font-size-12 font-weight-500 mb-1">
-                  Comp ID (Core)
-                </p>
-                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                  {isEmpty(itemDetails.coreId) ? "NA" : itemDetails.coreId}
-                </h6>
-              </div>
-            </div>
-            <div className="col-lg-3 col-md-3 col-sm-6 col-12">
-              <div className="form-group">
-                <p className="text-light-dark font-size-12 font-weight-500 mb-1">
-                  Returnable
-                </p>
-                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                  {itemDetails.returnable ? "Yes" : "No"}
-                </h6>
-              </div>
-            </div>
-            <div className="col-lg-3 col-md-3 col-sm-6 col-12">
-              <div className="form-group">
-                <p className="text-light-dark font-size-12 font-weight-500 mb-1">
-                  Valuation
-                </p>
-                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                  {isEmpty(itemDetails.valuation)
-                    ? "NA"
-                    : `${itemDetails.valuation} $`}
-                </h6>
-              </div>
-            </div>
-          </div>
+            </>}
         </div>
-        <h5 className="font-weight-bold fw-bold mb-0">ERP Details</h5>
+        <h5 className="font-weight-bold fw-bold mb-0">ERP DETAILS</h5>
         <div className="card border px-2 py-3 mt-2">
-          <div className="row align-items-end px-2 py-2">
-            <div className="col-lg-3 col-md-3 col-sm-6 col-12">
-              <div className="form-group">
-                <p className="text-light-dark font-size-12 font-weight-500 mb-1">
-                  Material Code
-                </p>
-                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                  {isEmpty(erpDetails.materialCode)
-                    ? "NA"
-                    : erpDetails.materialCode}
-                </h6>
+          {!editable ?
+            <>
+              <div className="row align-items-end px-2 py-2">
+                <ReadOnlyField
+                  label="MATERIAL CODE"
+                  value={isEmpty(erpDetails.materialCode) ? "N/A" : `${erpDetails.materialCode} $`}
+                  className="col-lg-3 col-md-3 col-sm-6 col-12"
+                />
+                <ReadOnlyField
+                  label="MATERIAL DESCRIPTION"
+                  value={isEmpty(erpDetails.materialDescription) ? "N/A" : `${erpDetails.materialDescription} $`}
+                  className="col-lg-3 col-md-3 col-sm-6 col-12"
+                />
+                <ReadOnlyField
+                  label="MATERIAL GROUP"
+                  value={isEmpty(erpDetails.materialGroup) ? "N/A" : `${erpDetails.materialGroup} $`}
+                  className="col-lg-3 col-md-3 col-sm-6 col-12"
+                />
+                <ReadOnlyField
+                  label="AVERAGE COST"
+                  value={isEmpty(erpDetails.averageCost) ? "N/A" : `${erpDetails.averageCost} $`}
+                  className="col-lg-3 col-md-3 col-sm-6 col-12"
+                />
+                <ReadOnlyField
+                  label="SALE PRICE"
+                  value={isEmpty(erpDetails.salePrice) ? "N/A" : `${erpDetails.salePrice} $`}
+                  className="col-lg-3 col-md-3 col-sm-6 col-12"
+                />
+                <ReadOnlyField
+                  label="AVAILABILITY STATUS"
+                  value={isEmpty(erpDetails.availablityStatus) ? "N/A" : `${erpDetails.availablityStatus} $`}
+                  className="col-lg-3 col-md-3 col-sm-6 col-12"
+                />
+                <ReadOnlyField
+                  label="STOCK QUANTITY"
+                  value={isEmpty(erpDetails.stockQuantity) ? "N/A" : `${erpDetails.stockQuantity} $`}
+                  className="col-lg-3 col-md-3 col-sm-6 col-12"
+                />
+                <ReadOnlyField
+                  label="STATUS"
+                  value={isEmpty(erpDetails.status) ? "N/A" : `${erpDetails.status} $`}
+                  className="col-lg-3 col-md-3 col-sm-6 col-12"
+                />
+                <ReadOnlyField
+                  label="PLANT / WAREHOUSE"
+                  value={isEmpty(erpDetails.warehouse) ? "N/A" : `${erpDetails.warehouse} $`}
+                  className="col-lg-3 col-md-3 col-sm-6 col-12"
+                />
               </div>
-            </div>
-            <div className="col-lg-3 col-md-3 col-sm-6 col-12">
-              <div className="form-group">
-                <p className="text-light-dark font-size-12 font-weight-500 mb-1">
-                  Material Description
-                </p>
-                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                  {isEmpty(erpDetails.materialDescription)
-                    ? "NA"
-                    : erpDetails.materialDescription}
-                </h6>
+            </> :
+            <>
+              <div className="row input-fields px-2 py-2 align-items-end">
+                <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-14 font-weight-500">
+                      MATERIAL CODE
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control border-radius-10 text-primary"
+                      name="materialCode"
+                      placeholder="Material Code"
+                      onChange={() => { }}
+                    />
+                  </div>
+                </div>
+                <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-14 font-weight-500">
+                      MATERIAL DESCRIPTION
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control border-radius-10 text-primary"
+                      name="materialDescription"
+                      placeholder="Material Description"
+                      onChange={() => { }}
+                    />
+                  </div>
+                </div>
+                <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-14 font-weight-500">
+                      MATERIAL GROUP
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control border-radius-10 text-primary"
+                      name="materialgroup"
+                      placeholder="Material Group"
+                      onChange={() => { }}
+                    />
+                  </div>
+                </div>
+                <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-14 font-weight-500">
+                      AVERAGE COST
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control border-radius-10 text-primary"
+                      name="averageCost"
+                      placeholder="Average Cost"
+                      onChange={() => { }}
+                    />
+                  </div>
+                </div>
+                <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-14 font-weight-500">
+                      SALE PRICE
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control border-radius-10 text-primary"
+                      name="salePrice"
+                      placeholder="SALE PRICE"
+                      onChange={() => { }}
+                    />
+                  </div>
+                </div>
+                <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-14 font-weight-500">
+                      AVAILABLE STATUS
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control border-radius-10 text-primary"
+                      name="availableStatus"
+                      placeholder="Available Status"
+                      onChange={() => { }}
+                    />
+                  </div>
+                </div>
+                <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-14 font-weight-500">
+                      STOCK QUANTITY
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control border-radius-10 text-primary"
+                      name="stockQuantity"
+                      placeholder="Stock Quantity"
+                      onChange={() => { }}
+                    />
+                  </div>
+                </div>
+                <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-14 font-weight-500">
+                      STATUS
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control border-radius-10 text-primary"
+                      name="status"
+                      placeholder="Status"
+                      onChange={() => { }}
+                    />
+                  </div>
+                </div>
+                <div className="col-lg-3 col-md-3 col-sm-6 col-12">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-14 font-weight-500">
+                      PLANT / WAREHOUSE
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control border-radius-10 text-primary"
+                      name="wareHouse"
+                      placeholder="Plant / WareHouse"
+                      onChange={() => { }}
+                    />
+                  </div>
+                </div>
               </div>
-            </div>
-            <div className="col-lg-3 col-md-3 col-sm-6 col-12">
-              <div className="form-group">
-                <p className="text-light-dark font-size-12 font-weight-500 mb-1">
-                  Material Group
-                </p>
-                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                  {isEmpty(erpDetails.materialGroup)
-                    ? "NA"
-                    : erpDetails.materialGroup}
-                </h6>
-              </div>
-            </div>
-            <div className="col-lg-3 col-md-3 col-sm-6 col-12">
-              <div className="form-group">
-                <p className="text-light-dark font-size-12 font-weight-500 mb-1">
-                  Average Cost
-                </p>
-                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                  {isEmpty(erpDetails.averageCost)
-                    ? "NA"
-                    : erpDetails.averageCost}
-                </h6>
-              </div>
-            </div>
-            <div className="col-lg-3 col-md-3 col-sm-6 col-12">
-              <div className="form-group">
-                <p className="text-light-dark font-size-12 font-weight-500 mb-1">
-                  Sale Price
-                </p>
-                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                  {isEmpty(erpDetails.salePrice) ? "NA" : erpDetails.salePrice}
-                </h6>
-              </div>
-            </div>
-            <div className="col-lg-3 col-md-3 col-sm-6 col-12">
-              <div className="form-group">
-                <p className="text-light-dark font-size-12 font-weight-500 mb-1">
-                  Availability Status
-                </p>
-                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                  {isEmpty(erpDetails.availablityStatus)
-                    ? "NA"
-                    : erpDetails.availablityStatus}
-                </h6>
-              </div>
-            </div>
-            <div className="col-lg-3 col-md-3 col-sm-6 col-12">
-              <div className="form-group">
-                <p className="text-light-dark font-size-12 font-weight-500 mb-1">
-                  Stock Quantity
-                </p>
-                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                  {isEmpty(erpDetails.stockQuantity)
-                    ? "NA"
-                    : erpDetails.stockQuantity}
-                </h6>
-              </div>
-            </div>
-            <div className="col-lg-3 col-md-3 col-sm-6 col-12">
-              <div className="form-group">
-                <p className="text-light-dark font-size-12 font-weight-500 mb-1">
-                  Status
-                </p>
-                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                  {isEmpty(erpDetails.status) ? "NA" : erpDetails.status}
-                </h6>
-              </div>
-            </div>
-            <div className="col-lg-3 col-md-3 col-sm-6 col-12">
-              <div className="form-group">
-                <p className="text-light-dark font-size-12 font-weight-500 mb-1">
-                  Plant / Warehouse
-                </p>
-                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                  {isEmpty(erpDetails.warehouse) ? "NA" : erpDetails.warehouse}
-                </h6>
-              </div>
-            </div>
-          </div>
+            </>
+          }
+        </div>
+        <div className="d-flex justify-content-end mt-2">
+          {editable && <button className='btn btn-primary mx-2' onClick={handleEdit}>Save & Close</button>}
+          {/* <button
+            className="btn btn-primary"
+            // id="details"
+            onClick={handleEdit}
+          >
+            {editable ? "Save & Close" : "Close"}
+          </button> */}
         </div>
       </>
     );
@@ -375,6 +757,7 @@ const ServiceProgressOverviewModal = ({
 
   // view return tab view
   const viewReturnTabView = () => {
+    const componentRows = addAutoIncrementIds(returnCoreParts);
     return (
       <>
         <div className="d-flex justify-content-between align-items-center">
@@ -487,7 +870,12 @@ const ServiceProgressOverviewModal = ({
           </div>
         </div>
         <h5 className="font-weight-bold fw-bold mb-1">Component</h5>
-        <table className="table table-bordered">
+        <div className="p-3 mt-3">
+          <div style={{ height: 170, width: '100%' }}>
+            <DataGrid sx={GRID_STYLE} rows={componentRows} columns={ComponentColumns} getRowId={(row) => row.id} pageSize={5} />
+          </div>
+        </div>
+        {/* <table className="table table-bordered">
           <thead>
             <tr>
               <th scope="col">Id</th>
@@ -526,11 +914,16 @@ const ServiceProgressOverviewModal = ({
                 </tr>
               ))}
           </tbody>
-        </table>
-        <h5 className="font-weight-bold fw-bold mb-1">
-          Active components for selected customer
+        </table> */}
+        <h5 className="font-weight-bold fw-bold mt-3">
+          Active Components For Selected Customer
         </h5>
-        <table className="table table-bordered">
+        <div className="p-3 mt-3">
+          <div style={{ height: 220, width: '100%' }}>
+            <DataGrid sx={GRID_STYLE} rows={tableTwoData} columns={activeComponentColumns} getRowId={(row) => row.itemNumber} pageSize={5} />
+          </div>
+        </div>
+        {/* <table className="table table-bordered">
           <thead>
             <tr>
               <th scope="col">Item Number</th>
@@ -560,7 +953,7 @@ const ServiceProgressOverviewModal = ({
                 </tr>
               ))}
           </tbody>
-        </table>
+        </table> */}
       </>
     );
   };
@@ -577,9 +970,9 @@ const ServiceProgressOverviewModal = ({
                 onChange={(e, tabValue) => setActiveTab(tabValue)}
                 centered
               >
-                <Tab label={`Item Details`} value="itemDetails" />
-                <Tab label={`Issue`} value="issue" />
-                <Tab label={`Return`} value="return" />
+                <Tab label={`ITEM DETAILS`} value="itemDetails" />
+                <Tab label={`ISSUE`} value="issue" />
+                <Tab label={`RETURN`} value="return" />
               </TabList>
             </Box>
             <TabPanel value={activeTab}>
