@@ -51,6 +51,8 @@ import {
   partsAnalysisOption,
   payerOptions,
   questionsOptions,
+  rmaResonOptions,
+  rmaTypeOptions,
   salesOfficeOptions,
   underWarrantyOptions,
   validityOptions,
@@ -64,10 +66,14 @@ import {
   Claim_Details_By_Id_Get,
   Claim_Order_Create_POST,
   Claim_Order_Update_PUT,
+  DATA_SVC_EQUIPMENT,
   EVALUATION_PARTS_MASTER_URL,
+  SEARCH_CUSTOMER,
+  WARRANTY_MASTER_URL,
   Warranty_Assessment_Create_POST,
   Warranty_Evaluation_Create_POST,
   Warranty_Question_Answer_Create_POST,
+  YEARLY_WARRANTY_MASTER_URL,
 } from "services/CONSTANTS";
 import { API_SUCCESS } from "services/ResponseCode";
 import ClaimPartCreateModal from "./ClaimPartCreateModal";
@@ -78,6 +84,7 @@ import ClaimSettlement from "./ClaimSettlement";
 import ClaimAddNotes from "./ClaimAddNotes";
 import SearchComponent from "../../components/SearchComponent";
 import EvaluationPartReport from "./EvaluationPartReport";
+import ValidateClaimModal from "./ValidateClaimModal";
 
 const ClaimRequestModal = ({
   show,
@@ -101,6 +108,10 @@ const ClaimRequestModal = ({
   const [requestTab, setRequestTab] = useState("returnDetails");
   const [returnDetailsTab, setReturnDetailsTab] = useState("general");
 
+  const [showValidateWarnMsg, setShowValidateWarnMsg] = useState(false);
+  const [openValidateClaimErrModal, setOpenValidateClaimErrModal] =
+    useState(false);
+
   const [reportTypeCausal, setReportTypeCausal] = useState(false);
 
   const [partsFailedRecord, setPartsFailedRecord] = useState([]);
@@ -122,6 +133,12 @@ const ClaimRequestModal = ({
     assesstViewOnly: false,
     evaluViewOnly: false,
     claimViewOnly: false,
+  });
+
+  const [claimOrderData, setClaimOrderData] = useState({
+    rmaNumber: "",
+    rmaReason: "",
+    rmaType: "",
   });
 
   const [generalData, setGeneralData] = useState({
@@ -160,6 +177,10 @@ const ClaimRequestModal = ({
     fleetNo: "",
   });
 
+  const [warrantyData, setWarrantyData] = useState({
+    warrantyTitle: "",
+  });
+  const [warrantyEndDate, setWarrantyEndDate] = useState(new Date());
   const [noOptionsModel, setNoOptionsModel] = useState(false);
   const [noOptionsSerial, setNoOptionsSerial] = useState(false);
   const [searchModelResults, setSearchModelResults] = useState([]);
@@ -201,6 +222,22 @@ const ClaimRequestModal = ({
 
           setActiveClaim(true);
           setClaimNumber(responseData.claimNumber);
+
+          // rma type value set
+          const _rmaType = rmaTypeOptions.find(
+            (obj) => obj.value === responseData.rmaType
+          );
+
+          // rma type value set
+          const _rmaReason = rmaResonOptions.find(
+            (obj) => obj.value === responseData.rmaReason
+          );
+
+          setClaimOrderData({
+            rmaType: _rmaType || "",
+            rmaReason: _rmaReason || "",
+            rmaNumber: responseData.rmaNumber,
+          });
 
           // claim status
           const _claimStatus = claimStatusOptions.find(
@@ -288,10 +325,82 @@ const ClaimRequestModal = ({
             getEvaluationDetails(responseData.evaluationId);
             setEvaluationId(responseData.evaluationId);
           }
+
+          if (responseData.warrantyId) {
+            getWarrantyDetails(responseData.warrantyId);
+          }
         }
       });
     }
   }, [claimRecordDetail]);
+
+  // get warranty details
+  const getWarrantyDetails = (warrantyId) => {
+    const rUrl = `${WARRANTY_MASTER_URL}/${warrantyId}`;
+    callGetApi(null, rUrl, (response) => {
+      if (response.status === API_SUCCESS) {
+        const responseData = response.data;
+        setWarrantyData({
+          ...warrantyData,
+          warrantyTitle: responseData.warrantyTitle,
+        });
+
+        if (responseData.yearlyWarrantyIds.length !== 0) {
+          getyearlyWarrantyDetails(responseData.yearlyWarrantyIds[0]);
+        }
+        if (!claimOrderId) {
+          getCustomerDetails(responseData.customerId);
+          getEquipmentDetails(responseData.equipmentId);
+        }
+      }
+    });
+  };
+
+  const getyearlyWarrantyDetails = (yearlyWarrantyId) => {
+    const rUrl = `${YEARLY_WARRANTY_MASTER_URL}/${yearlyWarrantyId}`;
+    callGetApi(null, rUrl, (response) => {
+      if (response.status === API_SUCCESS) {
+        const responseData = response.data;
+
+        setWarrantyEndDate(responseData.warrantyEndDate);
+      }
+    });
+  };
+
+  // get customer details
+  const getCustomerDetails = (customerId) => {
+    const rUrl = SEARCH_CUSTOMER(`customerId:${customerId}`);
+    // const rUrl = `${DATA_SVC_CUSTOMER}${customerId}`;
+    callGetApi(null, rUrl, (response) => {
+      if (response.status === API_SUCCESS) {
+        const responseData = response.data;
+
+        setCustomerData({
+          customerID: responseData[0].customerId,
+          customerName: responseData[0].fullName,
+          contactEmail: responseData[0].email,
+          contactPhone: responseData[0]?.contactNumber,
+        });
+      }
+    });
+  };
+
+  const getEquipmentDetails = (equipmentId) => {
+    const rUrl = `${DATA_SVC_EQUIPMENT()}/${equipmentId}`;
+    callGetApi(null, rUrl, (response) => {
+      if (response.status === API_SUCCESS) {
+        const responseData = response.data;
+
+        setMachineData({
+          make: responseData.market,
+          model: responseData.model,
+          serialNo: responseData.equipmentNumber,
+          smu: responseData?.sensorId,
+          fleetNo: responseData?.stockNumber,
+        });
+      }
+    });
+  };
 
   // get assessment details
   const getAssessmentDetails = (assessmentId) => {
@@ -413,8 +522,6 @@ const ClaimRequestModal = ({
         // show = true;
       }
       setViewOnlyTab({ ...viewOnlyTab, [viewOnlyTabName]: false });
-
-      console.log("viewOnlyTab :::: ", viewOnlyTab);
     }
   };
 
@@ -479,7 +586,6 @@ const ClaimRequestModal = ({
       customerName: currentItem.fullName,
       contactEmail: currentItem.email,
     });
-    console.log(currentItem);
     setSearchCustResults([]);
   };
 
@@ -589,9 +695,9 @@ const ClaimRequestModal = ({
   };
 
   // Individual claim record Select & date field value change
-  const handleClaimRecordSelectDataChange = (e) => {
-    const { name, value } = e.target;
-    setClaimRecordData({ ...claimRecordData, [name]: value });
+  const handleClaimRecordSelectDataChange = (e, keyName) => {
+    // const { name, value } = e.;
+    setClaimRecordData({ ...claimRecordData, [keyName]: e });
   };
 
   // go to evaluation return scrren data
@@ -630,6 +736,9 @@ const ClaimRequestModal = ({
       description: generalData.description,
       claimNumber: claimRecordDetail?.claimNumber || "",
       reference: generalData.reference || "",
+      rmaType: claimOrderData.rmaType?.value || "",
+      rmaReason: claimOrderData.rmaReason?.value || "",
+      rmaNumber: claimOrderData.rmaNumber || "",
     };
     if (claimOrderId) {
       callPutApi(
@@ -710,7 +819,6 @@ const ClaimRequestModal = ({
       callPutApi(null, `${rUrl}/${claimRecordId}`, rObj, (response) => {
         if (response.status === API_SUCCESS) {
           const responseData = response.data;
-          console.log("created ", responseData);
         }
       });
     }
@@ -723,6 +831,7 @@ const ClaimRequestModal = ({
       machineUnderWarranty:
         assesstementData.machineUnderWarranty?.value || "EMPTY",
       assessmentType: assesstementData.assessmentType?.value || "EMPTY",
+      warrantyEndDate: warrantyEndDate,
     };
 
     if (assesstmentId) {
@@ -796,7 +905,7 @@ const ClaimRequestModal = ({
     };
     callPostApi(null, rUrl, rObj, (response) => {
       if (response.status === API_SUCCESS) {
-        console.log("Success questions1");
+        console.log("Success questions2");
       }
     });
   };
@@ -811,7 +920,7 @@ const ClaimRequestModal = ({
     };
     callPostApi(null, rUrl, rObj, (response) => {
       if (response.status === API_SUCCESS) {
-        console.log("Success questions1");
+        console.log("Success questions3");
       }
     });
   };
@@ -826,7 +935,7 @@ const ClaimRequestModal = ({
     };
     callPostApi(null, rUrl, rObj, (response) => {
       if (response.status === API_SUCCESS) {
-        console.log("Success questions1");
+        console.log("Success questions4");
       }
     });
   };
@@ -841,7 +950,7 @@ const ClaimRequestModal = ({
     };
     callPostApi(null, rUrl, rObj, (response) => {
       if (response.status === API_SUCCESS) {
-        console.log("Success questions1");
+        console.log("Success questions5");
       }
     });
   };
@@ -856,7 +965,7 @@ const ClaimRequestModal = ({
     };
     callPostApi(null, rUrl, rObj, (response) => {
       if (response.status === API_SUCCESS) {
-        console.log("Success questions1");
+        console.log("Success questions6");
       }
     });
   };
@@ -876,6 +985,7 @@ const ClaimRequestModal = ({
     const rUrl = `${Warranty_Evaluation_Create_POST}`;
     const evalatuinonRObj = {
       ...evaluatedByData,
+      claimId: claimRecordId,
     };
 
     if (evaluationId) {
@@ -969,9 +1079,24 @@ const ClaimRequestModal = ({
     },
   ];
 
+  const handleCreateERPOrder = () => {
+    if (claimOrderId) {
+      handleSnack(
+        "success",
+        `${claimOrderId} has been transmitted to your ERP system`
+      );
+      // handleSnack(
+      //   "success",
+      //   `Claim Request ${claimOrderId} has been submited successfully.`
+      // );
+    } else {
+      handleSnack("info", `Create claim order first.`);
+    }
+  };
+
   return (
     <>
-      {show && (
+      {!openValidateClaimErrModal && show && (
         <Modal show={show} onHide={hideModal} size="xl">
           <Modal.Body>
             <div className="card border my-2 px-3">
@@ -1138,7 +1263,8 @@ const ClaimRequestModal = ({
                                     <div className="col-md-6 col-sm-6">
                                       <div className="form-group">
                                         <label className="text-light-dark font-size-12 font-weight-500">
-                                          WARRANTY REQUEST ID
+                                          {/* WARRANTY REQUEST ID */}
+                                          CLAIM REQUEST ID
                                         </label>
                                         <input
                                           type="text"
@@ -1284,7 +1410,8 @@ const ClaimRequestModal = ({
                                     className="col-md-4 col-sm-4"
                                   />
                                   <ReadOnlyField
-                                    label="WARRANTY REQUEST ID"
+                                    label="CLAIM REQUEST ID"
+                                    // label="WARRANTY REQUEST ID"
                                     // value={generalData.estimationNo}
                                     value={claimOrderId}
                                     className="col-md-4 col-sm-4"
@@ -1819,10 +1946,12 @@ const ClaimRequestModal = ({
                                   <input
                                     type="text"
                                     className="form-control border-radius-10 text-primary"
-                                    value={assesstementData?.warrantyTitle}
+                                    // value={assesstementData?.warrantyTitle}
+                                    value={warrantyData?.warrantyTitle}
                                     name="warrantyTitle"
                                     placeholder="Warranty Title"
                                     onChange={handleAssesstementDataChange}
+                                    disabled
                                   />
                                 </div>
                               </div>
@@ -1940,13 +2069,21 @@ const ClaimRequestModal = ({
                                         className="form-controldate border-radius-10"
                                         // maxDate={new Date()}
                                         closeOnSelect
-                                        value={assesstementData.warrantyEndDate}
-                                        onChange={(e) =>
+                                        value={warrantyEndDate}
+                                        onChange={(e) => {
+                                          setWarrantyEndDate(e);
                                           handleAssesstementSelectDataChange(
                                             e,
                                             "warrantyEndDate"
-                                          )
-                                        }
+                                          );
+                                        }}
+                                        // value={assesstementData.warrantyEndDate}
+                                        // onChange={(e) =>
+                                        // handleAssesstementSelectDataChange(
+                                        //   e,
+                                        //   "warrantyEndDate"
+                                        // )
+                                        // }
                                         renderInput={(params) => (
                                           <TextField
                                             {...params}
@@ -2151,7 +2288,8 @@ const ClaimRequestModal = ({
                               />
                               <ReadOnlyField
                                 label="WARRANTY TITLE"
-                                value={assesstementData?.warrantyTitle}
+                                value={warrantyData?.warrantyTitle}
+                                // value={assesstementData?.warrantyTitle}
                                 className="col-md-4 col-sm-4"
                               />
                               <ReadOnlyField
@@ -2347,7 +2485,7 @@ const ClaimRequestModal = ({
                                         onChange={(e) =>
                                           handleEvaluationDeatilsSelectDataChange(
                                             e,
-                                            `question1`
+                                            `question3`
                                           )
                                         }
                                         value={evaluationDetailsData.question3}
@@ -2369,7 +2507,7 @@ const ClaimRequestModal = ({
                                         onChange={(e) =>
                                           handleEvaluationDeatilsSelectDataChange(
                                             e,
-                                            `question1`
+                                            `question4`
                                           )
                                         }
                                         value={evaluationDetailsData.question4}
@@ -2823,7 +2961,8 @@ const ClaimRequestModal = ({
                               <div className="col-lg-3 col-md-3 col-sm-6 col-12">
                                 <div className="form-group">
                                   <label className="text-light-dark font-size-12 font-weight-500">
-                                    WARRANTY REQUEST ID
+                                    CLAIM REQUEST ID
+                                    {/* WARRANTY REQUEST ID */}
                                   </label>
                                   <input
                                     type="text"
@@ -3066,6 +3205,64 @@ const ClaimRequestModal = ({
                                   />
                                 </div>
                               </div>
+                              <div className="col-lg-3 col-md-3 col-sm-3 col-12">
+                                <div className="form-group">
+                                  <label className="text-light-dark font-size-12 font-weight-500">
+                                    RMA TYPE
+                                  </label>
+                                  <Select
+                                    className="text-primary"
+                                    options={rmaTypeOptions}
+                                    onChange={(e) =>
+                                      setClaimOrderData({
+                                        ...claimOrderData,
+                                        rmaType: e,
+                                      })
+                                    }
+                                    value={claimOrderData.rmaType}
+                                    styles={FONT_STYLE_SELECT}
+                                  />
+                                </div>
+                              </div>
+                              <div className="col-lg-3 col-md-3 col-sm-3 col-12">
+                                <div className="form-group">
+                                  <label className="text-light-dark font-size-12 font-weight-500">
+                                    RMA REASON
+                                  </label>
+                                  <Select
+                                    className="text-primary"
+                                    options={rmaResonOptions}
+                                    onChange={(e) =>
+                                      setClaimOrderData({
+                                        ...claimOrderData,
+                                        rmaReason: e,
+                                      })
+                                    }
+                                    value={claimOrderData.rmaReason}
+                                    styles={FONT_STYLE_SELECT}
+                                  />
+                                </div>
+                              </div>
+                              <div className="col-lg-3 col-md-3 col-sm-3 col-12">
+                                <div className="form-group">
+                                  <label className="text-light-dark font-size-12 font-weight-500">
+                                    RMA NUMBER
+                                  </label>
+                                  <input
+                                    type="text"
+                                    className="form-control border-radius-10 text-primary"
+                                    name="rmaNumber"
+                                    placeholder="RMA Number"
+                                    value={claimOrderData.rmaNumber}
+                                    onChange={(e) =>
+                                      setClaimOrderData({
+                                        ...claimOrderData,
+                                        rmaNumber: e.target.value,
+                                      })
+                                    }
+                                  />
+                                </div>
+                              </div>
                             </div>
                           </div>
                           <div className="card border px-3 py-2 mb-3">
@@ -3265,7 +3462,8 @@ const ClaimRequestModal = ({
                                 className="col-md-3 col-sm-3"
                               />
                               <ReadOnlyField
-                                label="WARRANTY REQUEST ID"
+                                label="CLAIM REQUEST ID"
+                                // label="WARRANTY REQUEST ID"
                                 value={claimRecordData.claimOrderId}
                                 className="col-md-3 col-sm-3"
                               />
@@ -3342,6 +3540,21 @@ const ClaimRequestModal = ({
                               <ReadOnlyField
                                 label="CLAIM APPROVER"
                                 value={claimRecordData.claimApprover}
+                                className="col-md-3 col-sm-3"
+                              />
+                              <ReadOnlyField
+                                label="RMA TYPE"
+                                value={claimOrderData.rmaType?.label}
+                                className="col-md-3 col-sm-3"
+                              />
+                              <ReadOnlyField
+                                label="RMA REASON"
+                                value={claimOrderData.rmaReason?.label}
+                                className="col-md-3 col-sm-3"
+                              />
+                              <ReadOnlyField
+                                label="RMA NUMBER"
+                                value={claimOrderData.claimNumber}
                                 className="col-md-3 col-sm-3"
                               />
                             </div>
@@ -3433,19 +3646,29 @@ const ClaimRequestModal = ({
                           </div>
                         </div>
                       </div> */}
-                      <div className="Add-new-segment-div p-3 border-radius-10 mt-4">
+                      {showValidateWarnMsg && (
+                        <span
+                          className="mb-0 font-size-14 cursor"
+                          style={{ color: "#ef9429" }}
+                          onClick={() => setOpenValidateClaimErrModal(true)}
+                        >
+                          Validated with 1 Warning!
+                        </span>
+                      )}
+                      <div className="Add-new-segment-div p-3 border-radius-10 mt-2">
                         <div class="repairbtn-dropdown">
                           <button
                             className="btn bg-primary text-white ml-2 dropbtn"
                             // onClick={handleShowWarrantyCoverage}
+                            onClick={() => setShowValidateWarnMsg(true)}
                           >
                             Validate Claim
                           </button>
                           <button
                             className="btn bg-primary text-white ml-2 dropbtn"
-                            // onClick={handleShowWarrantyCoverage}
+                            onClick={handleCreateERPOrder}
                           >
-                            Create ERP Order
+                            Create ERP Order
                           </button>
                         </div>
                       </div>
@@ -3521,6 +3744,14 @@ const ClaimRequestModal = ({
           setNewPartRecord={
             reportTypeCausal ? setPartsCausalRecord : setPartsFailedRecord
           }
+        />
+      )}
+
+      {openValidateClaimErrModal && (
+        <ValidateClaimModal
+          show={openValidateClaimErrModal}
+          hideModal={() => setOpenValidateClaimErrModal(false)}
+          handleSnack={handleSnack}
         />
       )}
     </>

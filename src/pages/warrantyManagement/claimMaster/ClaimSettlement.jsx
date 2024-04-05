@@ -401,6 +401,7 @@ const ClaimSettlement = ({
           handleSnack={handleSnack}
           dataRows={addPayerData}
           quoteId={quoteIdIs}
+          claimOrderId={claimOrderId}
         />
       </div>
       <div className="row mb-2 mx-0" style={{ justifyContent: "right" }}>

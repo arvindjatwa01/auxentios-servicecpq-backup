@@ -1,3 +1,5 @@
+import Cookies from "js-cookie";
+import SearchBox from "pages/Common/SearchBox";
 import { useEffect, useState } from "react";
 import { Modal } from "react-bootstrap";
 import { default as Select, default as SelectFilter } from "react-select";
@@ -8,6 +10,7 @@ import {
   USER_SERVICE_TENANT_MASTER_URL,
 } from "services/CONSTANTS";
 import { API_SUCCESS } from "services/ResponseCode";
+import { customerSearch } from "services/searchServices";
 
 const masterSelectObj = {
   id: 0,
@@ -55,6 +58,11 @@ const customerTypeOption = [
   { label: "Customer", value: "C" },
 ];
 
+const rolesOption = [
+  {label: "Partner Admin", value: "TENANT_ADMIN"},
+  {label: "End Customer", value: "End_Customer"}
+]
+
 const AddCustomerModal = ({
   openAddCustomer,
   handleAddCustomerClose,
@@ -63,6 +71,14 @@ const AddCustomerModal = ({
   handleSnack,
   roles,
 }) => {
+  var CookiesSetData = Cookies.get("loginTenantDtl");
+  var getCookiesJsonData;
+  if (CookiesSetData != undefined) {
+    getCookiesJsonData = JSON.parse(CookiesSetData);
+  }
+  const loginTenantId =
+    CookiesSetData != undefined ? getCookiesJsonData?.user_customerId : "";
+
   let fontColor = "#872ff7 !important";
   const customStyle = {
     control: (styles, { isDisabled }) => {
@@ -98,10 +114,18 @@ const AddCustomerModal = ({
     country: "",
   });
 
+  const [searchCustResults, setSearchCustResults] = useState([]);
+  const [noOptionsCust, setNoOptionsCust] = useState(false);
+  const [isCustomerSelect, setIsCustomerSelect] = useState(false);
+  const [isAddressDTO, setIsAddressDTO] = useState(false);
+
+  const [updateCust, setUpdateCust] = useState(false);
+
   const [addressRecord, setAddressRecord] = useState({ ...addressDTOObj });
 
   useEffect(() => {
     if (customerId) {
+      setUpdateCust(true);
       const rUrl = `${DATA_SVC_CUSTOMER_MASTER_URL}/${customerId}`;
       console.log("Custom rURl ::: ", rUrl);
       callGetApi(null, rUrl, (response) => {
@@ -111,7 +135,7 @@ const AddCustomerModal = ({
           const _customerType = customerTypeOption.find(
             (obj) => obj.value === responseData.customerType
           );
-          const _contactType = roles.find(
+          const _contactType = rolesOption.find(
             (obj) => obj.value === responseData.contactType
           );
 
@@ -139,15 +163,118 @@ const AddCustomerModal = ({
     setAddressRecord({ ...addressRecord, [name]: value });
   };
 
+  const handleSelectType = (e) => {
+    let _contactType = "";
+    let _customerId = "";
+    if (e.value === "P") {
+      _contactType = {label: "Partner Admin", value: "TENANT_ADMIN"};
+      // _contactType = {
+      //   roleId: 1,
+      //   roleName: "TENANT_ADMIN",
+      //   roleDispName: "TENANT_ADMIN",
+      //   roleDesc: "Role for Tenant admin user",
+      //   privileges: [
+      //     {
+      //       privilegeId: 16,
+      //       privilegeName: "TENANT_END_CUSTOMER",
+      //       privilegeDesc: "Privilege for Tenant end customer",
+      //     },
+      //     {
+      //       privilegeId: 3,
+      //       privilegeName: "TENANT_ADMIN",
+      //       privilegeDesc: "Privilege for Tenant admin user",
+      //     },
+      //   ],
+      //   value: 1,
+      //   label: "TENANT_ADMIN",
+      // };
+      _customerId = loginTenantId;
+    } else if (e.value === "C") {
+      _contactType = {label: "End Customer", value: "End_Customer"};
+      // _contactType = {
+      //   roleId: 8,
+      //   roleName: "End_Customer",
+      //   roleDispName: "End_Customer",
+      //   roleDesc: "Tenant_End_Customer",
+      //   privileges: [
+      //     {
+      //       privilegeId: 16,
+      //       privilegeName: "TENANT_END_CUSTOMER",
+      //       privilegeDesc: "Privilege for Tenant end customer",
+      //     },
+      //   ],
+      //   value: 8,
+      //   label: "End_Customer",
+      // };
+      _customerId = "";
+    }
+    setRecord({
+      ...masterSelectObj,
+      customerType: e,
+      contactType: _contactType,
+      customerId: _customerId,
+    });
+    setIsCustomerSelect(false);
+  };
+
+  // Search Customer with customer ID
+  const handleCustSearch = async (searchCustfieldName, searchText) => {
+    setSearchCustResults([]);
+    setIsCustomerSelect(false);
+    setIsAddressDTO(false);
+    record.customerId = searchText;
+    if (searchText) {
+      await customerSearch(searchCustfieldName + "~" + searchText)
+        .then((result) => {
+          if (result && result.length > 0) {
+            setSearchCustResults(result);
+            setNoOptionsCust(false);
+          } else {
+            setNoOptionsCust(true);
+          }
+        })
+        .catch((e) => {
+          handleSnack("error", "Error occurred while searching the customer!");
+        });
+    }
+  };
+
+  // Select the customer from search result
+  const handleCustSelect = (type, currentItem) => {
+    setRecord({
+      ...record,
+      id: currentItem.id,
+      customerId: currentItem.customerId,
+      firstName: currentItem.firstName,
+      lastName: currentItem.lastName,
+      // customerName: currentItem.fullName,
+      email: currentItem.email,
+      primaryContact: currentItem.primaryContact,
+      // address: currentItem.addressDTO?.fullAddress,
+      // city: currentItem.addressDTO?.district,
+      // state: currentItem.addressDTO?.regionOrState,
+      // zipCode: currentItem.addressDTO?.zipCode,
+      // addressId: currentItem.addressDTO?.id,
+    });
+    setIsAddressDTO(false);
+    if (currentItem["addressDTO"]) {
+      setIsAddressDTO(true);
+      setAddressRecord(currentItem.addressDTO);
+    }
+    setIsCustomerSelect(true);
+    setSearchCustResults([]);
+  };
+
   const handleAddUpdateCustomer = () => {
     const rObj = {
       ...record,
       fullName: record.firstName + " " + record.lastName,
       customerType: record.customerType?.value || "CUSTOMER",
-      contactType: record.contactType?.label || "End_Customer",
-      addressDTO: addressRecord,
+      contactType: record.contactType?.value || "End_Customer",
+      addressDTO: { ...addressRecord, addressLine1: addressRecord.fullAddress },
     };
-    if (customerId) {
+
+    if (updateCust && customerId) {
       callPutApi(
         null,
         `${DATA_SVC_CUSTOMER_MASTER_URL}/${customerId}`,
@@ -155,7 +282,7 @@ const AddCustomerModal = ({
         (response) => {
           if (response.status === API_SUCCESS) {
             const responseData = response.data;
-            handleSnack("success", "Custome Details updated succefully.");
+            handleSnack("success", "Customer Details updated succefully.");
             handleAddCustomerClose();
             // handleAddUpdateTenetUser(responseData);
           } else {
@@ -164,32 +291,46 @@ const AddCustomerModal = ({
         }
       );
     } else {
-      callPostApi(null, DATA_SVC_CUSTOMER_MASTER_URL, rObj, (response) => {
-        if (response.status === API_SUCCESS) {
-          const responseData = response.data;
-          handleAddUpdateTenetUser(responseData);
-        } else {
-          handleSnack("info", response?.data?.message);
-        }
-      });
+      if (record.customerType?.value === "P" && !noOptionsCust) {
+        callPostApi(null, DATA_SVC_CUSTOMER_MASTER_URL, rObj, (response) => {
+          if (response.status === API_SUCCESS) {
+            const responseData = response.data;
+            handleAddUpdateTenetUser(responseData);
+          } else {
+            handleSnack("info", response?.data?.message);
+          }
+        });
+      } else if (record.customerType?.value === "C" && noOptionsCust) {
+        callPostApi(null, DATA_SVC_CUSTOMER_MASTER_URL, rObj, (response) => {
+          if (response.status === API_SUCCESS) {
+            const responseData = response.data;
+            handleAddUpdateTenetUser(responseData);
+          } else {
+            handleSnack("info", response?.data?.message);
+          }
+        });
+      } else {
+        handleAddUpdateTenetUser(record);
+      }
     }
   };
 
-  const handleAddUpdateTenetUser = () => {
+  const handleAddUpdateTenetUser = (responseData) => {
     const rObj = {
       firstName: record.firstName,
       lastName: record.lastName,
       email: record.email || "",
       password: "test123",
       isApproved: true,
-      roleName: record.contactType?.label || "TENANT_ADMIN",
+      roleName: record.contactType?.value || "TENANT_ADMIN",
       type: "TENANT_BUSINESS_USER",
-      customerId: parseInt(record.customerId),
+      customerId: responseData.id ? parseInt(responseData.id) : 0,
+      // customerId: record.customerId ? parseInt(record.customerId) : 0,
     };
     callPostApi(null, USER_SERVICE_ADD_USER(), rObj, (response) => {
       if (response.status === API_SUCCESS) {
         const responseData = response.data;
-        if (record.customerType?.value === "CUSTOMER") {
+        if (record.customerType?.value === "C") {
           handleCreateTenent(responseData);
         } else {
           handleSnack(
@@ -220,7 +361,7 @@ const AddCustomerModal = ({
       if (response.status === API_SUCCESS) {
         handleSnack(
           "success",
-          `Customer ${parseInt(record.customerId)} created successfully.`
+          `Customer ${parseInt(record.customerId)} authorized successfully.`
         );
         handleAddCustomerClose();
       } else {
@@ -250,13 +391,7 @@ const AddCustomerModal = ({
                     TYPE
                   </label>
                   <Select
-                    onChange={(e) =>
-                      setRecord({
-                        ...record,
-                        customerType: e,
-                        customerId: "",
-                      })
-                    }
+                    onChange={handleSelectType}
                     styles={customStyle}
                     getOptionLabel={(option) => `${option.label}`}
                     value={record.customerType}
@@ -268,7 +403,60 @@ const AddCustomerModal = ({
               <div className="col-md-4 col-sm-4">
                 <div class="form-group w-100">
                   <label className="text-light-dark font-size-12 font-weight-500">
-                    PARTNER/CUSTOMER FIRST NAME
+                    {record.customerType?.value === "P"
+                      ? "PARTNER"
+                      : record.customerType?.value === "C"
+                      ? "CUSTOMER"
+                      : ""}{" "}
+                    NUMBER
+                  </label>
+                  {record.customerType === "" ||
+                  record.customerType?.value === "P" ? (
+                    <input
+                      type="number"
+                      name="customerId"
+                      value={record.customerId}
+                      onChange={handleInputValueChange}
+                      className="form-control border-radius-10 text-primary"
+                      disabled={
+                        record.customerType === "" ||
+                        record.customerType?.value === "P"
+                      }
+                    />
+                  ) : (
+                    <SearchBox
+                      value={record.customerId}
+                      onChange={(e) =>
+                        handleCustSearch("customerId", e.target.value)
+                      }
+                      type="customerId"
+                      result={searchCustResults}
+                      onSelect={handleCustSelect}
+                      noOptions={noOptionsCust}
+                      placeholder={`${
+                        record.customerType?.value === "P"
+                          ? "Partner Id"
+                          : record.customerType?.value === "C"
+                          ? "Customer Id"
+                          : ""
+                      }`}
+                      disabled={
+                        record.customerType === "" ||
+                        record.customerType?.value === "P"
+                      }
+                    />
+                  )}
+                </div>
+              </div>
+              <div className="col-md-4 col-sm-4">
+                <div class="form-group w-100">
+                  <label className="text-light-dark font-size-12 font-weight-500">
+                    {record.customerType?.value === "P"
+                      ? "PARTNER"
+                      : record.customerType?.value === "C"
+                      ? "CUSTOMER"
+                      : ""}{" "}
+                    FIRST NAME
                   </label>
                   <input
                     type="text"
@@ -276,6 +464,7 @@ const AddCustomerModal = ({
                     value={record.firstName}
                     className="form-control border-radius-10 text-primary"
                     onChange={handleInputValueChange}
+                    disabled={isCustomerSelect}
                   />
                   <div className="css-w8dmq8">*Mandatory</div>
                 </div>
@@ -283,7 +472,12 @@ const AddCustomerModal = ({
               <div className="col-md-4 col-sm-4">
                 <div class="form-group w-100">
                   <label className="text-light-dark font-size-12 font-weight-500">
-                    PARTNER/CUSTOMER LAST NAME
+                    {record.customerType?.value === "P"
+                      ? "PARTNER"
+                      : record.customerType?.value === "C"
+                      ? "CUSTOMER"
+                      : ""}{" "}
+                    LAST NAME
                   </label>
                   <input
                     type="text"
@@ -291,26 +485,9 @@ const AddCustomerModal = ({
                     value={record.lastName}
                     className="form-control border-radius-10 text-primary"
                     onChange={handleInputValueChange}
+                    disabled={isCustomerSelect}
                   />
                   <div className="css-w8dmq8">*Mandatory</div>
-                </div>
-              </div>
-              <div className="col-md-4 col-sm-4">
-                <div class="form-group w-100">
-                  <label className="text-light-dark font-size-12 font-weight-500">
-                    PARTNER/CUSTOMER NUMBER
-                  </label>
-                  <input
-                    type="number"
-                    name="customerId"
-                    value={record.customerId}
-                    onChange={handleInputValueChange}
-                    className="form-control border-radius-10 text-primary"
-                    disabled={
-                      record.customerType === "" ||
-                      record.customerType?.value === "P"
-                    }
-                  />
                 </div>
               </div>
               <div className="col-md-4 col-sm-4">
@@ -326,9 +503,10 @@ const AddCustomerModal = ({
                       })
                     }
                     styles={customStyle}
-                    getOptionLabel={(option) => `${option.label}`}
+                    // getOptionLabel={(option) => `${option.label}`}
                     value={record.contactType}
-                    options={roles}
+                    options={rolesOption}
+                    isDisabled
                   />
                   <div className="css-w8dmq8">*Mandatory</div>
                 </div>
@@ -344,6 +522,7 @@ const AddCustomerModal = ({
                     onChange={handleInputValueChange}
                     value={record.email}
                     className="form-control border-radius-10 text-primary font-size-14"
+                    disabled={isCustomerSelect}
                   />
                   <div className="css-w8dmq8">*Mandatory</div>
                 </div>
@@ -359,6 +538,7 @@ const AddCustomerModal = ({
                     value={record.primaryContact}
                     onChange={handleInputValueChange}
                     className="form-control border-radius-10 text-primary"
+                    disabled={isCustomerSelect}
                   />
                 </div>
               </div>
@@ -377,6 +557,7 @@ const AddCustomerModal = ({
                     value={addressRecord.fullAddress}
                     onChange={handleAddressInputValueChange}
                     className="form-control border-radius-10 text-primary"
+                    disabled={isAddressDTO}
                   />
                 </div>
               </div>
@@ -391,6 +572,7 @@ const AddCustomerModal = ({
                     value={addressRecord.district}
                     onChange={handleAddressInputValueChange}
                     className="form-control border-radius-10 text-primary"
+                    disabled={isAddressDTO}
                   />
                 </div>
               </div>
@@ -405,6 +587,7 @@ const AddCustomerModal = ({
                     value={addressRecord.regionOrState}
                     onChange={handleAddressInputValueChange}
                     className="form-control border-radius-10 text-primary"
+                    disabled={isAddressDTO}
                   />
                 </div>
               </div>
@@ -419,6 +602,7 @@ const AddCustomerModal = ({
                     value={addressRecord.country}
                     onChange={handleAddressInputValueChange}
                     className="form-control border-radius-10 text-primary"
+                    disabled={isAddressDTO}
                   />
                 </div>
               </div>
