@@ -402,8 +402,8 @@ const ServiceProgressIssueComponent = (props) => {
       estViewOnly: result.preparedBy ? true : false,
       priceViewOnly:
         result.priceMethod !== "EMPTY" &&
-        result.priceMethod !== null &&
-        result.priceMethod !== ""
+          result.priceMethod !== null &&
+          result.priceMethod !== ""
           ? true
           : false,
     });
@@ -473,8 +473,8 @@ const ServiceProgressIssueComponent = (props) => {
       validity:
         result.validityDays && result.validityDays !== "EMPTY"
           ? validityOptions.find(
-              (element) => element.value === result.validityDays
-            )
+            (element) => element.value === result.validityDays
+          )
           : { label: "", value: "" },
       version: result.versionNumber ? result.versionNumber : "",
     });
@@ -488,8 +488,8 @@ const ServiceProgressIssueComponent = (props) => {
       revisedOn: result.revisedOn ? result.revisedOn : new Date(),
       salesOffice: result.salesOffice
         ? salesOfficeOptions.find(
-            (element) => element.value === result.salesOffice
-          )
+          (element) => element.value === result.salesOffice
+        )
         : { label: "", value: "" },
     });
   };
@@ -1400,8 +1400,8 @@ const ServiceProgressIssueComponent = (props) => {
             newRow.totalPrice =
               newRow.usagePercentage > 0
                 ? parseFloat(
-                    newRow.extendedPrice * 0.01 * newRow.usagePercentage
-                  ).toFixed(2)
+                  newRow.extendedPrice * 0.01 * newRow.usagePercentage
+                ).toFixed(2)
                 : parseFloat(newRow.extendedPrice).toFixed(2);
             if (index === -1) {
               // console.log("add");
@@ -1513,11 +1513,11 @@ const ServiceProgressIssueComponent = (props) => {
       <ModalShare
         shareOpen={shareOpen}
         handleCloseShare={() => setShareOpen(false)}
-        // handleCreateVersion={createVersion}
-        // description={versionDescription}
-        // setDescription={setVersionDescription}
+      // handleCreateVersion={createVersion}
+      // description={versionDescription}
+      // setDescription={setVersionDescription}
       />
-      <div className="d-flex align-items-center justify-content-between mt-2">
+      {/* <div className="d-flex align-items-center justify-content-between mt-2">
         <div className="d-flex justify-content-center align-items-center">
           <h5 className="font-weight-600 mb-0">Issue</h5>
           <div className="d-flex justify-content-center align-items-center">
@@ -1529,7 +1529,7 @@ const ServiceProgressIssueComponent = (props) => {
                 value={selectedVersion}
               />
 
-              {/* <span>Version {value3}</span> */}
+              <span>Version {value3}</span> commented earlier
             </div>
             <div className="ml-3">
               <Select
@@ -1540,7 +1540,7 @@ const ServiceProgressIssueComponent = (props) => {
                 value={selBuilderStatus}
               />
             </div>
-            {/* <Rating value={rating} readOnly size="small" sx={{ ml: 2 }} /> */}
+            <Rating value={rating} readOnly size="small" sx={{ ml: 2 }} /> commented earlier
           </div>
         </div>
         <div className="d-flex">
@@ -1636,7 +1636,7 @@ const ServiceProgressIssueComponent = (props) => {
             <a href="#" className="ml-3 font-size-14" title="Upload">
               <img src={uploadIcon}></img>
             </a>
-            {/* <a href="#" className="ml-3 font-size-14"><img src={cpqIcon}></img></a> */}
+            <a href="#" className="ml-3 font-size-14"><img src={cpqIcon}></img></a> commented earlier
             <a href="#" className="ml-3 font-size-14" title="Delete">
               <img src={deleteIcon}></img>
             </a>
@@ -1656,10 +1656,10 @@ const ServiceProgressIssueComponent = (props) => {
             </DropdownButton>
           </div>
         </div>
-      </div>
+      </div> */}
 
-      <div className="card p-4 mt-5">
-        <h5 className="d-flex align-items-center mb-0 bg-primary p-2 border-radius-10">
+      <div className="card border p-4 ">
+        {/* <h5 className="d-flex align-items-center mb-0 bg-primary p-2 border-radius-10">
           <div className="" style={{ display: "contents" }}>
             <span className="mr-3 ml-2 text-white" style={{ fontSize: 18 }}>
               Issue Header
@@ -1669,12 +1669,12 @@ const ServiceProgressIssueComponent = (props) => {
                 <EditIcon
                   onClick={() =>
                     selBuilderStatus?.value === "DRAFT" ||
-                    selBuilderStatus?.value === "REVISED"
+                      selBuilderStatus?.value === "REVISED"
                       ? makeHeaderEditable()
                       : handleSnack(
-                          "info",
-                          "Set revised status to modify active partlists"
-                        )
+                        "info",
+                        "Set revised status to modify active partlists"
+                      )
                   }
                 />
               </Tooltip>
@@ -1684,26 +1684,27 @@ const ServiceProgressIssueComponent = (props) => {
                 <ReplayIcon onClick={() => handleResetData("RESET")} />
               </Tooltip>
             </div>
-            {/* <div className="btn-sm cursor text-white">
-                    <Tooltip title="Back">
-                      <ArrowBackIcon onClick={() => recentList()} />
-                    </Tooltip>
-                  </div> */}
+            below were commented earlier
+            <div className="btn-sm cursor text-white">
+              <Tooltip title="Back">
+                <ArrowBackIcon onClick={() => recentList()} />
+              </Tooltip>
+            </div>
 
-            {/* <div className="btn-sm cursor text-white">
-                    <Tooltip title="Share">
-                      <ShareOutlinedIcon />
-                    </Tooltip>
-                  </div>
-  
-                  <div className="btn-sm cursor text-white">
-                    <Tooltip title="Share">
-                      <ReviewAddIcon />
-                    </Tooltip>
-                  </div> */}
+            <div className="btn-sm cursor text-white">
+              <Tooltip title="Share">
+                <ShareOutlinedIcon />
+              </Tooltip>
+            </div>
+
+            <div className="btn-sm cursor text-white">
+              <Tooltip title="Share">
+                <ReviewAddIcon />
+              </Tooltip>
+            </div>
           </div>
-        </h5>
-        <Box className="mt-4" sx={{ width: "100%", typography: "body1" }}>
+        </h5> */}
+        <Box className="" sx={{ width: "100%", typography: "body1" }}>
           {headerLoading ? (
             <LoadingProgress />
           ) : (
@@ -1840,7 +1841,7 @@ const ServiceProgressIssueComponent = (props) => {
                       </button>
                       <button
                         type="button"
-                        className="btn btn-light bg-primary text-white"
+                        className="btn btn-light bg-primary text-white ml-1"
                         disabled={
                           !(
                             customerData.source &&
@@ -2040,7 +2041,7 @@ const ServiceProgressIssueComponent = (props) => {
                       </button>
                       <button
                         type="button"
-                        className="btn btn-light bg-primary text-white"
+                        className="btn btn-light bg-primary text-white ml-1"
                         disabled={
                           !(machineData.model && machineData.serialNo) ||
                           noOptionsModel ||
@@ -2245,7 +2246,7 @@ const ServiceProgressIssueComponent = (props) => {
                       </button>
                       <button
                         type="button"
-                        className="btn btn-light bg-primary text-white"
+                        className="btn btn-light bg-primary text-white ml-1"
                         onClick={updateEstData}
                         disabled={
                           !(
@@ -2442,7 +2443,7 @@ const ServiceProgressIssueComponent = (props) => {
                       </button>
                       <button
                         type="button"
-                        className="btn btn-light bg-primary text-white"
+                        className="btn btn-light bg-primary text-white ml-1"
                         onClick={updateGeneralData}
                         disabled={
                           !(
@@ -2560,12 +2561,12 @@ const ServiceProgressIssueComponent = (props) => {
                             disabled
                             className="form-control border-radius-10 text-primary"
                             value={pricingData.adjustedPrice}
-                            // onChange={(e) =>
-                            //   setPricingData({
-                            //     ...pricingData,
-                            //     adjustedPrice: e.target.value,
-                            //   })
-                            // }
+                          // onChange={(e) =>
+                          //   setPricingData({
+                          //     ...pricingData,
+                          //     adjustedPrice: e.target.value,
+                          //   })
+                          // }
                           />
                         </div>
                       </div>
@@ -2729,24 +2730,24 @@ const ServiceProgressIssueComponent = (props) => {
           </div>
           {(selBuilderStatus?.value === "DRAFT" ||
             selBuilderStatus?.value === "REVISED") && (
-            <div className="col-4">
-              <div className="text-right pl-3 py-3">
-                <button
-                  onClick={handleUploadClick}
-                  style={{ cursor: "pointer" }}
-                  className="btn bg-primary text-white mx-2"
-                >
-                  Upload
-                </button>
-                {/* <button
+              <div className="col-4">
+                <div className="text-right pl-3 py-3">
+                  <button
+                    onClick={handleUploadClick}
+                    style={{ cursor: "pointer" }}
+                    className="btn bg-primary text-white mx-2"
+                  >
+                    Upload
+                  </button>
+                  {/* <button
                       onClick={() => setAddPartOpen(true)}
                       className="btn bg-primary text-white "
                     >
                       + Add Part
                     </button> */}
+                </div>
               </div>
-            </div>
-          )}
+            )}
         </div>
 
         <DataGrid
@@ -2788,14 +2789,14 @@ const ServiceProgressIssueComponent = (props) => {
         <div className=" my-3 text-right">
           {(selBuilderStatus?.value === "DRAFT" ||
             selBuilderStatus?.value === "REVISED") && (
-            <button
-              className="btn text-white bg-primary"
-              onClick={() => setConfirmationOpen(true)}
-              disabled={bulkUpdateProgress}
-            >
-              Save
-            </button>
-          )}
+              <button
+                className="btn text-white bg-primary"
+                onClick={() => setConfirmationOpen(true)}
+                disabled={bulkUpdateProgress}
+              >
+                Save
+              </button>
+            )}
         </div>
       </div>
       {/* Open Modal to add individual spare part to the part list */}
