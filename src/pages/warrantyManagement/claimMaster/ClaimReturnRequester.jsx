@@ -155,8 +155,10 @@ const ClaimReturnRequester = ({
   countryOptions = [],
   partsRecords = [],
   disposenNeed = true,
-  warrantyReturnId,
-  setWarrantyReturnId,
+  shipmentHeaderId,
+  setShipmentHeaderId,
+  // warrantyReturnId,
+  // setWarrantyReturnId,
   requestCreation = true,
   setRequestCreation = null,
   shipmentReportRecords = [],
@@ -211,16 +213,24 @@ const ClaimReturnRequester = ({
 
   const [partsHeaderId, setPartsHeaderId] = useState(null);
   const [shippingInfoId, setShippingInfoId] = useState(null);
-  const [shipmentHeaderId, setShipmentHeaderId] = useState(null);
+  const [warrantyReturnId, setWarrantyReturnId] = useState(null);
+  
+  // const [shipmentHeaderId, setShipmentHeaderId] = useState(null);
 
   const [shipmentRowModesModal, setShipmentRowModesModal] = useState({});
 
   useEffect(() => {
-    if (!requestCreation && warrantyReturnId) {
-      const rUrl = `${WARRANTY_RETURN_MASTER_URL}/${warrantyReturnId}`;
+    if (!requestCreation && shipmentHeaderId) {
+      const rUrl = `${SHIPMENT_HEADER_MASTER_URL}/${shipmentHeaderId}`;
+      // const rUrl = `${WARRANTY_RETURN_MASTER_URL}/${warrantyReturnId}`;
       callGetApi(null, rUrl, (response) => {
         if (response.status === API_SUCCESS) {
           const responseData = response.data;
+
+          // setShipmentHeaderId(responseData.shipmentHeaderId);
+          if (responseData.warrantyReturnId) {
+            getWarrantyReturnDetails(responseData.warrantyReturnId);
+          }
 
           setViewOnlyTab({
             returnReqViewOnly: true,
@@ -229,75 +239,171 @@ const ClaimReturnRequester = ({
             reportViewOnly: false,
           });
 
-          // set  return type
-          const _reasonForReturnType = reasonForReturns.find(
-            (obj) => obj.value === responseData.reasonForReturnType
+          // return type value set
+          const _returnType = shipmentRetunTypeOptions.find(
+            (obj) => obj.value === responseData.returnType
           );
 
-          // set region
-          const _region = countryOptions.find(
-            (obj) => obj.value === responseData.region
+          // rma type value set
+          const _rmaType = rmaTypeOptions.find(
+            (obj) => obj.value === responseData.rmaType
           );
 
-          // set QEC assigned
-          const _qecAssigned = qecAssignedOptions.find(
-            (obj) => obj.value === responseData.qecAssigned
+          // rma type value set
+          const _rmaReason = rmaResonOptions.find(
+            (obj) => obj.value === responseData.rmaReason
           );
-
-          // set request type
-          const _requestType = requestTypeOptions.find(
-            (obj) => obj.value === responseData.requestType
-          );
-
-          // set Claim Transaction type
-          const _claimTransactionType = transactionTypeOptions.find(
-            (obj) => obj.value === responseData.claimTransactionType
-          );
-
-          setReturnData({
+          setShipmentData({
             ...responseData,
-            reasonForReturnType: _reasonForReturnType || "",
-            region: _region || "",
-            qecAssigned: _qecAssigned || "",
-            requestType: _requestType || "",
-            claimTransactionType: _claimTransactionType || "",
+            returnType: _returnType || "",
+            rmaType: _rmaType || "",
+            rmaReason: _rmaReason || "",
           });
+          shipmentHeaderId(responseData.shipmentHeaderId);
 
-          if (responseData.shippingInfoModel) {
-            const { shippingInfoModel } = responseData;
-            setShippingData(shippingInfoModel);
-            setShippingInfoId(shippingInfoModel.shippingInfoId);
-          }
+          // // set  return type
+          // const _reasonForReturnType = reasonForReturns.find(
+          //   (obj) => obj.value === responseData.reasonForReturnType
+          // );
 
-          if (responseData.shipmentHeaderModel) {
-            const { shipmentHeaderModel } = responseData;
+          // // set region
+          // const _region = countryOptions.find(
+          //   (obj) => obj.value === responseData.region
+          // );
 
-            // return type value set
-            const _returnType = shipmentRetunTypeOptions.find(
-              (obj) => obj.value === shipmentHeaderModel.returnType
-            );
+          // // set QEC assigned
+          // const _qecAssigned = qecAssignedOptions.find(
+          //   (obj) => obj.value === responseData.qecAssigned
+          // );
 
-            // rma type value set
-            const _rmaType = rmaTypeOptions.find(
-              (obj) => obj.value === shipmentHeaderModel.rmaType
-            );
+          // // set request type
+          // const _requestType = requestTypeOptions.find(
+          //   (obj) => obj.value === responseData.requestType
+          // );
 
-            // rma type value set
-            const _rmaReason = rmaResonOptions.find(
-              (obj) => obj.value === shipmentHeaderModel.rmaReason
-            );
-            setShipmentData({
-              ...shipmentHeaderModel,
-              returnType: _returnType || "",
-              rmaType: _rmaType || "",
-              rmaReason: _rmaReason || "",
-            });
-            shipmentHeaderId(shipmentHeaderModel.shipmentHeaderId);
-          }
+          // // set Claim Transaction type
+          // const _claimTransactionType = transactionTypeOptions.find(
+          //   (obj) => obj.value === responseData.claimTransactionType
+          // );
+
+          // setReturnData({
+          //   ...responseData,
+          //   reasonForReturnType: _reasonForReturnType || "",
+          //   region: _region || "",
+          //   qecAssigned: _qecAssigned || "",
+          //   requestType: _requestType || "",
+          //   claimTransactionType: _claimTransactionType || "",
+          // });
+
+          // if (responseData.shippingInfoModel) {
+          //   const { shippingInfoModel } = responseData;
+          //   setShippingData(shippingInfoModel);
+          //   setShippingInfoId(shippingInfoModel.shippingInfoId);
+          // }
+
+          // if (responseData.shipmentHeaderModel) {
+          //   const { shipmentHeaderModel } = responseData;
+
+          //   // return type value set
+          //   const _returnType = shipmentRetunTypeOptions.find(
+          //     (obj) => obj.value === shipmentHeaderModel.returnType
+          //   );
+
+          //   // rma type value set
+          //   const _rmaType = rmaTypeOptions.find(
+          //     (obj) => obj.value === shipmentHeaderModel.rmaType
+          //   );
+
+          //   // rma type value set
+          //   const _rmaReason = rmaResonOptions.find(
+          //     (obj) => obj.value === shipmentHeaderModel.rmaReason
+          //   );
+          //   setShipmentData({
+          //     ...shipmentHeaderModel,
+          //     returnType: _returnType || "",
+          //     rmaType: _rmaType || "",
+          //     rmaReason: _rmaReason || "",
+          //   });
+          //   shipmentHeaderId(shipmentHeaderModel.shipmentHeaderId);
+          // }
         }
       });
     }
   }, [warrantyReturnId, requestCreation]);
+
+  // get warranty return details
+  const getWarrantyReturnDetails = (warrantyReturnId) => {
+    const rUrl = `${WARRANTY_RETURN_MASTER_URL}/${warrantyReturnId}`;
+    callGetApi(null, rUrl, (response) => {
+      if (response.status === API_SUCCESS) {
+        const responseData = response.data;
+
+        // set  return type
+        const _reasonForReturnType = reasonForReturns.find(
+          (obj) => obj.value === responseData.reasonForReturnType
+        );
+
+        // set region
+        const _region = countryOptions.find(
+          (obj) => obj.value === responseData.region
+        );
+
+        // set QEC assigned
+        const _qecAssigned = qecAssignedOptions.find(
+          (obj) => obj.value === responseData.qecAssigned
+        );
+
+        // set request type
+        const _requestType = requestTypeOptions.find(
+          (obj) => obj.value === responseData.requestType
+        );
+
+        // set Claim Transaction type
+        const _claimTransactionType = transactionTypeOptions.find(
+          (obj) => obj.value === responseData.claimTransactionType
+        );
+
+        if (responseData.partsHeaderId) {
+          getPartsHeaderDetails(responseData.partsHeaderId);
+        }
+
+        if (responseData.shippingInfoId) {
+          getShippinInfoDetails(responseData.shippingInfoId);
+        }
+
+        setReturnData({
+          ...responseData,
+          reasonForReturnType: _reasonForReturnType || "",
+          region: _region || "",
+          qecAssigned: _qecAssigned || "",
+          requestType: _requestType || "",
+          claimTransactionType: _claimTransactionType || "",
+        });
+      }
+    });
+  };
+
+  // get parts header details
+  const getPartsHeaderDetails = (partsHeaderId) => {
+    const rUrl = `${PARTS_HEADER_MASTER_URL}/${partsHeaderId}`;
+    callGetApi(null, rUrl, (response) => {
+      if (response.status === API_SUCCESS) {
+        const responseData = response.data;
+        setPartsHeaderData({ ...responseData });
+      }
+    });
+  };
+
+  // get shipping info details
+  const getShippinInfoDetails = (shippingInfoId) => {
+    const rUrl = `${SHIPPING_INFO_MASTER_URL}/${shippingInfoId}`;
+    callGetApi(null, rUrl, (response) => {
+      if (response.status === API_SUCCESS) {
+        const responseData = response.data;
+        setShippingData({ ...responseData });
+      }
+    });
+  };
 
   // return Input text change
   const handleReturnInputChange = (e) => {
@@ -2110,23 +2216,23 @@ const ClaimReturnRequester = ({
               </div>
             </div>
           </div>
+          <DataGrid
+            sx={GRID_STYLE}
+            getRowId={(row) => row.shipmentPartId}
+            rows={shipmentTableData}
+            autoHeight
+            columns={shipmentColumns}
+            editMode="row"
+            rowModesModel={shipmentRowModesModal}
+            onRowModesModelChange={handleShipmentRowModesModelChange}
+            onRowEditStart={handleShipmentRowEditStart}
+            onRowEditStop={handleShipmentRowEditStop}
+            experimentalFeatures={{ newEditingApi: true }}
+            onProcessRowUpdateError={(error) => console.log(error)}
+            processRowUpdate={processShipmentRowUpdate}
+            pageSizeOptions={[5, 10, 50, 100]}
+          />
         </div>
-        <DataGrid
-          sx={GRID_STYLE}
-          getRowId={(row) => row.shipmentPartId}
-          rows={shipmentTableData}
-          autoHeight
-          columns={shipmentColumns}
-          editMode="row"
-          rowModesModel={shipmentRowModesModal}
-          onRowModesModelChange={handleShipmentRowModesModelChange}
-          onRowEditStart={handleShipmentRowEditStart}
-          onRowEditStop={handleShipmentRowEditStop}
-          experimentalFeatures={{ newEditingApi: true }}
-          onProcessRowUpdateError={(error) => console.log(error)}
-          processRowUpdate={processShipmentRowUpdate}
-          pageSizeOptions={[5, 10, 50, 100]}
-        />
         <div className="row mt-2 mb-2" style={{ justifyContent: "right" }}>
           <button
             className="btn btn-primary mx-3"

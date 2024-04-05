@@ -22,6 +22,14 @@ const coverageTypeOptions = [
   { label: "Part & Labour & Misc.", value: "CT_03" },
 ];
 
+const currencyOption = [
+  { label: "GBP", value: "GBP" },
+  { label: "AUD", value: "AUD" },
+  { label: "EUR", value: "EUR" },
+  { label: "USD", value: "USD" },
+  { label: "INR", value: "INR" },
+];
+
 const ClaimAdjustPrice = ({
   handleSnack,
   handleBack,
@@ -35,11 +43,12 @@ const ClaimAdjustPrice = ({
     ...claimValueRequestObj,
     claimOrderId: claimOrderId,
     totalPartsClaimed: relatedPartsRecords
-      .reduce((total, item) => total + item.totalPrice, 0)
+      .reduce((total, item) => total + item.totalPrice * item.quantity, 0)
       .toFixed(2),
     coverageType: coverageTypeOptions[0],
   });
   const [editPriceData, setEditPriceData] = useState(false);
+  const [currency, setCurrency] = useState("");
 
   useEffect(() => {
     if (claimValueId) {
@@ -199,6 +208,19 @@ const ClaimAdjustPrice = ({
               <div className="col-md-3 col-sm-3">
                 <div className="form-group">
                   <label className="text-light-dark font-size-12 font-weight-500 text-uppercase">
+                    CURRENCY
+                  </label>
+                  <Select
+                    onChange={(e) => setCurrency(e)}
+                    options={currencyOption}
+                    value={currency}
+                    styles={FONT_STYLE_SELECT}
+                  />
+                </div>
+              </div>
+              <div className="col-md-3 col-sm-3">
+                <div className="form-group">
+                  <label className="text-light-dark font-size-12 font-weight-500 text-uppercase">
                     TOTAL AMOUNT CLAIMED
                   </label>
                   <input
@@ -346,6 +368,11 @@ const ClaimAdjustPrice = ({
             <ReadOnlyField
               label="COVERAGE TYPE"
               value={claimValurRecordData.coverageType?.label}
+              className="col-md-3 col-sm-3"
+            />
+            <ReadOnlyField
+              label="CURRENCY"
+              value={currency?.label}
               className="col-md-3 col-sm-3"
             />
             <ReadOnlyField

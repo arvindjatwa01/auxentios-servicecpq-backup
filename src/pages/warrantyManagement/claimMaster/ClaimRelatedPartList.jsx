@@ -267,6 +267,17 @@ const ClaimRelatedPartList = ({
       },
     },
     {
+      field: "unitPrice",
+      headerName: "Unit Price",
+      flex: 1,
+    },
+    {
+      field: "totalPrice",
+      headerName: "Total Price",
+      flex: 1,
+      renderCell: ({ row }) => <>{row.unitPrice * row.quantity}</>,
+    },
+    {
       field: "actions",
       type: "actions",
       headerName: "Actions",
@@ -379,7 +390,7 @@ const ClaimRelatedPartList = ({
           <ArrowBackIcon /> Back
         </button>
       </div>
-      <div className="card border px-3">
+      {/* <div className="card border px-3">
         <div className="row mt-2 input-fields">
           <div className="col-md-4 col-sm-4">
             <div className="form-group mt-3">
@@ -451,8 +462,8 @@ const ClaimRelatedPartList = ({
             </div>
           </div>
         </div>
-      </div>
-      <div className="card border mt-4 px-3 pb-3 mb-2">
+      </div> */}
+      <div className="card border px-3 pb-3 mb-2">
         <div className="row align-items-center">
           <div className="col-8">
             <div className="d-flex align-items-center w-100">
