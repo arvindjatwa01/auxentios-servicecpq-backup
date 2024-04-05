@@ -59,7 +59,7 @@ const customerTypeOption = [
 ];
 
 const rolesOption = [
-  {label: "Parter Admin", value: "TENANT_ADMIN"},
+  {label: "Partner Admin", value: "TENANT_ADMIN"},
   {label: "End Customer", value: "End_Customer"}
 ]
 
@@ -167,7 +167,7 @@ const AddCustomerModal = ({
     let _contactType = "";
     let _customerId = "";
     if (e.value === "P") {
-      _contactType = {label: "Parter Admin", value: "TENANT_ADMIN"};
+      _contactType = {label: "Partner Admin", value: "TENANT_ADMIN"};
       // _contactType = {
       //   roleId: 1,
       //   roleName: "TENANT_ADMIN",
@@ -270,7 +270,7 @@ const AddCustomerModal = ({
       ...record,
       fullName: record.firstName + " " + record.lastName,
       customerType: record.customerType?.value || "CUSTOMER",
-      contactType: record.contactType?.label || "End_Customer",
+      contactType: record.contactType?.value || "End_Customer",
       addressDTO: { ...addressRecord, addressLine1: addressRecord.fullAddress },
     };
 
@@ -322,7 +322,7 @@ const AddCustomerModal = ({
       email: record.email || "",
       password: "test123",
       isApproved: true,
-      roleName: record.contactType?.label || "TENANT_ADMIN",
+      roleName: record.contactType?.value || "TENANT_ADMIN",
       type: "TENANT_BUSINESS_USER",
       customerId: responseData.id ? parseInt(responseData.id) : 0,
       // customerId: record.customerId ? parseInt(record.customerId) : 0,
