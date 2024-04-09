@@ -24,6 +24,8 @@ import ReturnAnalysisModal from "./ReturnAnalysisModal";
 import ReturnReceivedModal from "./ReturnReceivedModal";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import ReplacementModal from "./ReplacementModal";
+import QuickCreateModal from "../QuickCreateModal";
+import WarrantyRequestModal from "./WarrantyRequestModal";
 
 const returnTypeOptions = ["Intra Company", "With in Company"];
 
@@ -532,6 +534,9 @@ const WarrantyReturnMaster = () => {
           handleSnack={handleSnack}
         />
       )}
+
+      {/* <QuickCreateModal /> */}
+      {/* <WarrantyRequestModal /> */}
     </>
   );
 };

@@ -150,6 +150,14 @@ export const rmaResonOptions = [
   { label: "Replacement", value: "REPLACEMENT" },
 ];
 
+export const claimRequestTypeOptions = [
+  { label: "PWA- Pre Warranty Authorized", value: "PWA" },
+  { label: "Standard", value: "STANDARD" },
+  { label: "Extended", value: "EXTENDED" },
+  { label: "Goodwill", value: "GOODWILL" },
+  { label: "Late Claim", value: "LATE_CLAIM" },
+];
+
 export const failedPartsRecord = [
   {
     index: Math.floor(Math.random() * 900) + 10000,
