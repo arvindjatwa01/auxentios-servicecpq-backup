@@ -207,8 +207,8 @@ const ClaimAdministration = () => {
     // const claimType = row["claimType"];
     // const claimNumber = row["claimNumber"];
     // setClaimRecordDetail(row);
-    setOpenClaimRequestModal(true);
-    // setOpenClaimDetailsModal(true);
+    // setOpenClaimRequestModal(true);
+    setOpenClaimDetailsModal(true);
   };
 
   // claim order/Request model show hide
