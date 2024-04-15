@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
 import Pagination from "@mui/material/Pagination";
 import { Stack } from "@mui/material";
@@ -24,9 +24,9 @@ const ConsumableMaster = () => {
   const handlePageChange = (event, value) => {
     setPageNo(value);
   };
-  useEffect(()=>{
+  useEffect(() => {
     setSelectedConsumableId(null);
-  },[searchList])
+  }, [searchList]);
 
   // view search list details
   const handleViewSelectSearchRowDetails = (id) => {
@@ -34,14 +34,13 @@ const ConsumableMaster = () => {
     setPageNo(1);
     const rUrl = Get_Consumable_Master_Details_By_Id_GET + id;
     callGetApi(
-      null,
       rUrl,
       (response) => {
         if (response.status === API_SUCCESS) {
           const responseData = response.data;
           setSelectedConsumableId(id);
           setSelectedConsumableDetals(responseData);
-         
+
           setLoading(false);
         } else {
           setLoading(false);
@@ -200,7 +199,6 @@ const ConsumableMaster = () => {
                 {isEmpty(selectedConsumableDetals.movingAvgCost)
                   ? "NA"
                   : selectedConsumableDetals.movingAvgCost}
-             
               </p>
             </div>
           </div>
@@ -231,8 +229,8 @@ const ConsumableMaster = () => {
               <p className="text-primary font-size-12 mt-1 font-weight-500">
                 {/* $ 865.45 */}
                 {isEmpty(selectedConsumableDetals.costPrice)
-                    ? "NA"
-                    : selectedConsumableDetals.costPrice}
+                  ? "NA"
+                  : selectedConsumableDetals.costPrice}
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
@@ -242,8 +240,8 @@ const ConsumableMaster = () => {
               <p className="text-primary font-size-12 mt-1 font-weight-500">
                 {/* $ 923.55 */}
                 {isEmpty(selectedConsumableDetals.contractedPrice)
-                    ? "NA"
-                    : selectedConsumableDetals.contractedPrice}
+                  ? "NA"
+                  : selectedConsumableDetals.contractedPrice}
               </p>
             </div>
             <div className="col-lg-4 col-md-6 col-sm-6 mt-3">

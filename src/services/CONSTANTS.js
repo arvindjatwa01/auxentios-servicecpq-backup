@@ -166,8 +166,11 @@ export const SOLUTION_PORTFOLIO_ITEM_PRICE_HIERARCHY_SEARCH =
 // Custom Portfolio Item
 export const CREATE_CUSTOM_PORTFOLIO_ITEM = () =>
   SOLUTION_BUILDER_URI + "item/custom";
+export const CUSTOM_PORTFOLIO_ITEM_PRICE_MASTER_URL =
+  SOLUTION_BUILDER_URI + "item/custom/price";
 export const DELETE_CUSTOM_PORTFOLIO_ITEM =
   SOLUTION_BUILDER_URI + "item/custom/price/";
+
 export const GET_CUSTOM_PORTFOLIO_ITEM_PRICE_DATA =
   SOLUTION_BUILDER_URI + "item/custom/price/";
 export const GET_CUSTOM_PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE =
@@ -646,23 +649,25 @@ export const Warranty_Cost_Coverage_Create_POST =
   Warranty_Cost_Coverage_Master_Url;
 
 //service MAster
-const Service_serach_external_work=DATA_SERVICE_URI+'external-work/'
-export const service_search_uri=Service_serach_external_work
-const  External_Work_Price_Controller=PRICE_CONTROLLER_URI+'external-work-price/'
-export const External_PRICE=External_Work_Price_Controller
+const Service_serach_external_work = DATA_SERVICE_URI + "external-work/";
+export const service_search_uri = Service_serach_external_work;
+const External_Work_Price_Controller =
+  PRICE_CONTROLLER_URI + "external-work-price/";
+export const External_PRICE = External_Work_Price_Controller;
 
 export const CLAIM_MASTER_URL = WARRANTY_URI + "claim";
 export const WARRANTY_MASTER_URL = WARRANTY_URI + "warranty";
 export const WARRANTY_INSTALLER_MASTER_URL = WARRANTY_URI + "installer";
 export const CLAIM_VALUE_MASTER_URL = WARRANTY_URI + "claim_value";
-export const RELATED_HOURS_EXPENSES_MASTER_URL = WARRANTY_URI + "related_hours_expenses";
+export const RELATED_HOURS_EXPENSES_MASTER_URL =
+  WARRANTY_URI + "related_hours_expenses";
 export const SETTLEMENT_VALUE_MASTER_URL = WARRANTY_URI + "settlement_value";
 export const RELATED_PARTS_MASTER_URL = WARRANTY_URI + "relatedParts";
 export const EVALUATION_PARTS_MASTER_URL = WARRANTY_URI + "evaluation/parts";
 export const WARRANTY_EQUIPMENT_MASTER_URL = WARRANTY_URI + "equipment";
-export const WARRANTY_RETURN_MASTER_URL = WARRANTY_URI + "warrantyReturn"; 
-export const SHIPMENT_PARTS_MASTER_URL = WARRANTY_URI + "shipment/parts"
-export const PARTS_HEADER_MASTER_URL = WARRANTY_URI + "partsHeader"
+export const WARRANTY_RETURN_MASTER_URL = WARRANTY_URI + "warrantyReturn";
+export const SHIPMENT_PARTS_MASTER_URL = WARRANTY_URI + "shipment/parts";
+export const PARTS_HEADER_MASTER_URL = WARRANTY_URI + "partsHeader";
 export const SHIPPING_INFO_MASTER_URL = WARRANTY_URI + "shippingInfo";
 export const SHIPMENT_HEADER_MASTER_URL = WARRANTY_URI + "shipmentHeader";
 export const CLAIM_ORDER_MASTER_URL = WARRANTY_URI + "claimOrder";

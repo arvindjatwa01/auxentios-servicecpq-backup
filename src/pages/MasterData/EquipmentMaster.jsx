@@ -283,7 +283,7 @@ const EquipmentMaster = () => {
 
   const getWarratyDetails = () => {
     const rUrl = `${warranty_Details_By_Id_Get}${warrantyRecordId}`;
-    callGetApi(null, rUrl, (response) => {
+    callGetApi(rUrl, (response) => {
       if (response.status === API_SUCCESS) {
         const responseData = response.data;
         const _warrantyType = warrantyTypeOptions.find(
@@ -314,7 +314,7 @@ const EquipmentMaster = () => {
 
   const getWarrantyYearDetails = (yearId) => {
     const rUrl = `${Warranty_Yearly_GetById_GET}/${yearId}`;
-    callGetApi(null, rUrl, (response) => {
+    callGetApi(rUrl, (response) => {
       if (response.status === API_SUCCESS) {
         const responseData = response.data;
         const _warrantyType = warrantyTypeOptions.find(
@@ -1258,7 +1258,6 @@ const EquipmentMaster = () => {
 
     const warrantyReqUrl = `${Search_By_Fields_Warranty_List_GET}field_name=equipmentNumber&field_value=${equipmentRow.equipmentNumber}`;
     callGetApi(
-      null,
       warrantyReqUrl,
       (response) => {
         if (response.status === API_SUCCESS) {
@@ -1271,7 +1270,6 @@ const EquipmentMaster = () => {
 
     const rUrl = Get_Equipment_Datails_By_Id_GET + id;
     callGetApi(
-      null,
       rUrl,
       (response) => {
         if (response.status === API_SUCCESS) {

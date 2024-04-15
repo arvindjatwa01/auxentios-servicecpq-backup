@@ -13,8 +13,14 @@ import { callGetApi } from "services/ApiCaller";
 import { errorMessage } from "../utilities/toastMessage";
 
 const InclusionExclusionModal = ({
-  show, hideModal, showOptionalServicesModal, handleOptionalServiceModal, checkedService,
-  setCheckedService, selectedService, setSelectedService,
+  show,
+  hideModal,
+  showOptionalServicesModal,
+  handleOptionalServiceModal,
+  checkedService,
+  setCheckedService,
+  selectedService,
+  setSelectedService,
 }) => {
   const [sparePartsSwitch, setSparePartsSwitch] = useState({
     withParts: false,
@@ -124,7 +130,7 @@ const InclusionExclusionModal = ({
             .map((service) => `item_id=${service.itemId}`)
             .join("&");
 
-        callGetApi(null, rUrl, (response) => {
+        callGetApi(rUrl, (response) => {
           if (response.status === API_SUCCESS) {
             console.log("link portfolio to item response ===== . ", response);
           }

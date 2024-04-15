@@ -461,7 +461,7 @@ export const Users = (props) => {
 
   const fetchCustomers = async () => {
     const rUrl = `${DATA_SVC_CUSTOMER_MASTER_URL}/?pageSize=${50}&sortColumn=updatedAt&orderBY=DESC`;
-    callGetApi(null, rUrl, (response) => {
+    callGetApi(rUrl, (response) => {
       if (response.status === API_SUCCESS) {
         const responseData = response.data;
         setCustomerData(responseData);

@@ -46,7 +46,7 @@ const handleFailure = (error, failedCallBack) => {
   }
 };
 
-export const callGetApi = (loading, url, successCallBack, failureCallBack) => {
+export const callGetApi = (url, successCallBack, failureCallBack) => {
   axios
     .get(url, { headers: getHeaders() })
     .then((res) => handleSuccess(res, successCallBack))

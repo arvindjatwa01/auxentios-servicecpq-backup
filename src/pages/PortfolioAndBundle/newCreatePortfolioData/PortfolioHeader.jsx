@@ -320,7 +320,6 @@ const PortfolioHeader = (props) => {
       }
       const rUrl = CONVERT_PORTFOLIO_TO_QUOTE + portfolioRecordId;
       callGetApi(
-        null,
         rUrl,
         (response) => {
           if (response.status === API_SUCCESS) {

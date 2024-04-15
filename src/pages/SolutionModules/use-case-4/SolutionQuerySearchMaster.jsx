@@ -99,7 +99,6 @@ const SolutionnQuerySearchMaster = (props) => {
         }
         rUrl = rUrl + `${obj.selectFamily.value}/${value}`;
         callGetApi(
-          null,
           rUrl,
           (response) => {
             if (response.status === API_SUCCESS) {
@@ -215,7 +214,6 @@ const SolutionnQuerySearchMaster = (props) => {
 
       rUrl = rUrl + searchStr;
       callGetApi(
-        null,
         rUrl,
         (response) => {
           if (response.status === API_SUCCESS) {

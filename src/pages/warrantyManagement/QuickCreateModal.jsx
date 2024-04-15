@@ -1,14 +1,77 @@
-import React from "react";
+import React, { useState } from "react";
 
 import { Modal } from "react-bootstrap";
 import Select from "react-select";
 
 import { FONT_STYLE_SELECT } from "pages/Common/constants";
 import { claimRequestTypeOptions } from "./warrantyManagementConstants";
+import { customerSearch } from "services/searchServices";
+import SearchBox from "pages/Common/SearchBox";
 
-const QuickCreateModal = ({ show, hideModal, handleSnack }) => {
+const QuickCreateModal = ({
+  show,
+  hideModal,
+  handleSnack,
+  setPwaNumber,
+  setWarrantyRequestType,
+  openWarrantyDetailsModal,
+}) => {
+  const [recordData, setRecordData] = useState({
+    requesterDetails: "",
+    requestType: "",
+    customerId: "",
+    reference: "",
+  });
+
+  const [searchCustResults, setSearchCustResults] = useState([]);
+  const [noOptionsCust, setNoOptionsCust] = useState(false);
+
+  // input field text change
+  const handleInputTextChange = (e) => {
+    const { name, value } = e.target;
+    setRecordData({ ...recordData, [name]: value });
+  };
+
+  // Search Customer with customer ID
+  const handleCustSearch = async (searchCustfieldName, searchText) => {
+    setSearchCustResults([]);
+    recordData.customerId = searchText;
+    if (searchText) {
+      await customerSearch(searchCustfieldName + "~" + searchText)
+        .then((result) => {
+          if (result && result.length > 0) {
+            setSearchCustResults(result);
+            setNoOptionsCust(false);
+          } else {
+            setNoOptionsCust(true);
+          }
+        })
+        .catch((e) => {
+          handleSnack("error", "Error occurred while searching the customer!");
+        });
+    }
+  };
+
+  // Select the customer from search result
+  const handleCustSelect = (type, currentItem) => {
+    setRecordData({
+      ...recordData,
+      customerId: currentItem.customerId,
+      // customerName: currentItem.fullName,
+      // contactEmail: currentItem.email,
+    });
+    setSearchCustResults([]);
+  };
+
+  //
+  const handleCreateWarranty = () => {
+    const pwaNumber = `AC${Math.floor(Math.random() * 90000) + 100000}`;
+    setPwaNumber(pwaNumber);
+    openWarrantyDetailsModal();
+  };
+
   return (
-    <Modal show={true} onHide={hideModal} size="md">
+    <Modal show={show} onHide={hideModal} size="md">
       <Modal.Header className="d-block mb-0 pb-0">
         <Modal.Title className="h5">Quick Create</Modal.Title>
         <p>
@@ -27,10 +90,10 @@ const QuickCreateModal = ({ show, hideModal, handleSnack }) => {
               <input
                 type="text"
                 className="form-control border-radius-10 text-primary"
-                name="partnerDetails"
-                placeholder="Partner Details"
-                //   value={recordData.serialNumber}
-                //   onChange={handleInputFieldsChange}
+                name="requesterDetails"
+                placeholder="Requester Details"
+                value={recordData.requesterDetails}
+                onChange={handleInputTextChange}
               />
             </div>
           </div>
@@ -40,14 +103,15 @@ const QuickCreateModal = ({ show, hideModal, handleSnack }) => {
                 WARRANTY REQUEST TYPE
               </label>
               <Select
-                // onChange={(e) =>
-                //   setRecordData({
-                //     ...recordData,
-                //     requestType: e,
-                //   })
-                // }
+                onChange={(e) => {
+                  setRecordData({
+                    ...recordData,
+                    requestType: e,
+                  });
+                  setWarrantyRequestType(e);
+                }}
                 options={claimRequestTypeOptions}
-                // value={recordData.requestType}
+                value={recordData.requestType}
                 styles={FONT_STYLE_SELECT}
               />
               <div className="css-w8dmq8">
@@ -61,14 +125,22 @@ const QuickCreateModal = ({ show, hideModal, handleSnack }) => {
               <label className="text-light-dark font-size-12 font-weight-500">
                 CUSTOMER ID
               </label>
-              <input
+              <SearchBox
+                value={recordData.customerId}
+                onChange={(e) => handleCustSearch("customerId", e.target.value)}
+                type="customerId"
+                result={searchCustResults}
+                onSelect={handleCustSelect}
+                noOptions={noOptionsCust}
+              />
+              {/* <input
                 type="text"
                 className="form-control border-radius-10 text-primary"
                 name="customerNumber"
                 placeholder="Enter Customer Number"
                 //   value={recordData.serialNumber}
                 //   onChange={handleInputFieldsChange}
-              />
+              /> */}
             </div>
           </div>
           <div className="col-lg-12 col-md-12 col-sm-12 col-12">
@@ -81,18 +153,20 @@ const QuickCreateModal = ({ show, hideModal, handleSnack }) => {
                 className="form-control border-radius-10 text-primary"
                 name="reference"
                 placeholder="if customer is not available in our database"
-                //   value={recordData.serialNumber}
-                //   onChange={handleInputFieldsChange}
+                value={recordData.reference}
+                onChange={handleInputTextChange}
               />
             </div>
           </div>
         </div>
       </Modal.Body>
       <Modal.Footer>
-        <button className="btn btn-border-primary w-100">Cancel</button>
+        <button className="btn btn-border-primary w-100" onClick={hideModal}>
+          Cancel
+        </button>
         <button
           className="btn btn-primary w-100"
-          // onClick={handleCreateClaimRecord}
+          onClick={handleCreateWarranty}
         >
           Create
         </button>

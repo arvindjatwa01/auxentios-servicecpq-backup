@@ -116,7 +116,6 @@ const CustomItemPriceCalculator = (props) => {
     setLoading(true);
     const itemReqUrl = `${CREATE_CUSTOM_PORTFOLIO_ITEM()}/${itemId}`;
     callGetApi(
-      null,
       itemReqUrl,
       (response) => {
         if (response.status === API_SUCCESS) {
@@ -189,7 +188,6 @@ const CustomItemPriceCalculator = (props) => {
   // get Bundle|Service|Portfolio Item Price details
   const handleGetItemPriceDetails = (rUrl, _usageType, _currency) => {
     callGetApi(
-      null,
       rUrl,
       (response) => {
         if (response.status === API_SUCCESS) {

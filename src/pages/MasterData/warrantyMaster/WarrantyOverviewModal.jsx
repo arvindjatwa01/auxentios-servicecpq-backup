@@ -44,7 +44,7 @@ const WarrantyOverviewModal = ({
   handleSnack,
   setClaimData,
   setClaimRecordDataId,
-  handleOpenClaimReturnProcess
+  handleOpenClaimReturnProcess,
 }) => {
   const [activeTab, setActiveTab] = useState("overview");
   const [editTabsContent, setEditTabsContent] = useState({
@@ -87,7 +87,6 @@ const WarrantyOverviewModal = ({
     try {
       const rUrl = `${warranty_Details_By_Id_Get}${recordId}`;
       callGetApi(
-        null,
         rUrl,
         (response) => {
           if (response.status === API_SUCCESS) {
@@ -147,7 +146,7 @@ const WarrantyOverviewModal = ({
   const getClaimListRecords = useCallback(() => {
     if (recordId && recordId !== null) {
       const rUrl = `${Claim_Pagination_List_GET}?pageNumber=${0}&pageSize=${25}`;
-      callGetApi(null, rUrl, (response) => {
+      callGetApi(rUrl, (response) => {
         if (response.status === API_SUCCESS) {
           const responseData = response.data;
           setClaimRecords(responseData);
@@ -159,7 +158,7 @@ const WarrantyOverviewModal = ({
   // get filter claim  records data
   const handleGetFilterClaimRecords = (filterName) => {
     let rUrl = `${Search_By_Field_Claim_List_GET}field_name=claimStatus&field_value=${filterName}`;
-    callGetApi(null, rUrl, (response) => {
+    callGetApi(rUrl, (response) => {
       if (response.status === API_SUCCESS) {
         const responseData = response.data;
         setClaimRecords(responseData);

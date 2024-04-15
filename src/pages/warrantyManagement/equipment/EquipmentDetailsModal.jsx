@@ -15,9 +15,9 @@ import Moment from "react-moment";
 import { Modal } from "react-bootstrap";
 import Select from "react-select";
 
-import SearchBox from "../../common/SearchBox";
-import { FONT_STYLE, FONT_STYLE_SELECT } from "../../common/constants";
-import { ReadOnlyField } from "../../common/ReadOnlyField";
+import SearchBox from "pages/Common/SearchBox";
+import { FONT_STYLE, FONT_STYLE_SELECT } from "pages/Common/constants";
+import { ReadOnlyField } from "pages/Common/ReadOnlyField";
 import { machineSearch } from "../../../services/searchServices";
 import { warrantyTypeOptions } from "../warrantyManagementConstants";
 import { Get_Equipment_Datails_By_Id_GET } from "../../../services/CONSTANTS";
@@ -108,7 +108,6 @@ const EquipmentDetailsModal = ({
     if (recordId) {
       const rUrl = `${Get_Equipment_Datails_By_Id_GET}${recordId}`;
       callGetApi(
-        null,
         rUrl,
         (response) => {
           if (response.status === API_SUCCESS) {

@@ -1,6 +1,8 @@
-import { Card, Divider, List, ListItem, ListItemText } from "@mui/material";
-import { Modal } from "react-bootstrap";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
+
+import { Card, Divider, List, ListItem, ListItemText } from "@mui/material";
+
+import { Modal } from "react-bootstrap";
 
 export default function ProductSummary(props) {
   const { show, handleClose, portfolio, addItem } = props;

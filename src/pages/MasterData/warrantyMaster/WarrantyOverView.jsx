@@ -70,7 +70,6 @@ const WarrantyOverView = ({
     if (recordId && recordId !== null) {
       const rUrl = `${warranty_Details_By_Id_Get}${recordId}`;
       callGetApi(
-        null,
         rUrl,
         (response) => {
           if (response.status === API_SUCCESS) {

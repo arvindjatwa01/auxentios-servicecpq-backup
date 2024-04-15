@@ -4,13 +4,19 @@ import SellOutlinedIcon from "@mui/icons-material/SellOutlined";
 import FormatListBulletedOutlinedIcon from "@mui/icons-material/FormatListBulletedOutlined";
 import AccessAlarmOutlinedIcon from "@mui/icons-material/AccessAlarmOutlined";
 
-import { CREATE_CUSTOM_PORTFOLIO_ITEM, SEARCH_COMPONENT_CODE, SEARCH_MACHINE, } from "services/CONSTANTS";
+import {
+  CREATE_CUSTOM_PORTFOLIO_ITEM,
+  SEARCH_COMPONENT_CODE,
+  SEARCH_MACHINE,
+} from "services/CONSTANTS";
 import { callGetApi } from "services/ApiCaller";
 import { API_SUCCESS } from "services/ResponseCode";
 
 import {
-  SEARCH_FLAG_COMPONENT_CODE_SEARCH, SEARCH_FLAG_MODEL_SEARCH,
-  defaultCustomItemBodyModel, defaultCustomItemHeaderModel,
+  SEARCH_FLAG_COMPONENT_CODE_SEARCH,
+  SEARCH_FLAG_MODEL_SEARCH,
+  defaultCustomItemBodyModel,
+  defaultCustomItemHeaderModel,
 } from "pages/Common/PortfolioAndSolutionConstants";
 import SearchInputBox from "../useCase4Common/SearchInputBox";
 import { isEmpty } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/textUtilities";
@@ -18,21 +24,35 @@ import { errorMessage } from "pages/PortfolioAndBundle/newCreatePortfolioData/ut
 
 const ComponentCodeAddEdit = (props) => {
   const {
-    itemType, isPortfolioItem, portfolioId, itemId, isEditable = false,
-    handelSaveComponentCodeData, buttonClassName = "", } = props;
+    itemType,
+    isPortfolioItem,
+    portfolioId,
+    itemId,
+    isEditable = false,
+    handelSaveComponentCodeData,
+    buttonClassName = "",
+  } = props;
 
   const [itemRequestObj, setItemRequestObj] = useState({
     customItemId: 0,
     itemName: "",
   });
-  const [customItemHeaderModelObj, setCustomItemHeaderModelObj] = useState({ ...defaultCustomItemHeaderModel, });
+  const [customItemHeaderModelObj, setCustomItemHeaderModelObj] = useState({
+    ...defaultCustomItemHeaderModel,
+  });
 
-  const [customItemBodyModelObj, setCustomItemBodyModelObj] = useState({ ...defaultCustomItemBodyModel, });
+  const [customItemBodyModelObj, setCustomItemBodyModelObj] = useState({
+    ...defaultCustomItemBodyModel,
+  });
   const [componentDataEdit, setComponentDataEdit] = useState(isEditable);
 
-  const [componentCodeSearchResult, setComponentCodeSearchResult] = useState([]);
-  const [componentCodeSearchNoOptions, setComponentCodeSearchNoOptions] = useState(false);
-  const [componentCodeSearchLoading, setComponentCodeSearchLoading] = useState(false);
+  const [componentCodeSearchResult, setComponentCodeSearchResult] = useState(
+    []
+  );
+  const [componentCodeSearchNoOptions, setComponentCodeSearchNoOptions] =
+    useState(false);
+  const [componentCodeSearchLoading, setComponentCodeSearchLoading] =
+    useState(false);
   const [modelSearchResult, setModelSearchResult] = useState([]);
   const [modelSearchNoOptions, setModelSearchNoOptions] = useState(false);
   const [modelSearchLoading, setModelSearchLoading] = useState(false);
@@ -43,7 +63,7 @@ const ComponentCodeAddEdit = (props) => {
   useEffect(() => {
     if (!isEmpty(itemId)) {
       const rUrl = `${CREATE_CUSTOM_PORTFOLIO_ITEM()}/${itemId}`;
-      callGetApi(null, rUrl, (response) => {
+      callGetApi(rUrl, (response) => {
         if (response.status === API_SUCCESS) {
           const {
             customItemId,
@@ -75,7 +95,6 @@ const ComponentCodeAddEdit = (props) => {
       setComponentCodeSearchLoading(true);
       const rUrl = SEARCH_COMPONENT_CODE(`componentCode~${value}`);
       callGetApi(
-        null,
         rUrl,
         (response) => {
           if (response.status === API_SUCCESS) {
@@ -122,7 +141,6 @@ const ComponentCodeAddEdit = (props) => {
       setModelSearchLoading(true);
       const rUrl = SEARCH_MACHINE(`model~${value}`);
       callGetApi(
-        null,
         rUrl,
         (response) => {
           if (response.status === API_SUCCESS) {
@@ -175,7 +193,6 @@ const ComponentCodeAddEdit = (props) => {
       }
       const rUrl = SEARCH_MACHINE(`${searchParametes}equipmentNumber~${value}`);
       callGetApi(
-        null,
         rUrl,
         (response) => {
           if (response.status === API_SUCCESS) {
@@ -259,7 +276,7 @@ const ComponentCodeAddEdit = (props) => {
     return true;
   };
 
-  // save component code changes 
+  // save component code changes
   const handleSaveChanges = () => {
     try {
       if (!componentDataEdit && !checkComponetDataValidation()) {
@@ -403,7 +420,7 @@ const ComponentCodeAddEdit = (props) => {
                   placeholder="Optional"
                   disabled
                   value={customItemHeaderModelObj.componentDescription}
-                // onChange={handleComponentChange}
+                  // onChange={handleComponentChange}
                 />
               </div>
             </div>
@@ -420,7 +437,7 @@ const ComponentCodeAddEdit = (props) => {
                   name="itemHeaderMake"
                   disabled
                   value={customItemHeaderModelObj.itemHeaderMake}
-                // onChange={handleMachineDataChange}
+                  // onChange={handleMachineDataChange}
                 />
               </div>
             </div>
@@ -644,7 +661,7 @@ const ComponentCodeAddEdit = (props) => {
           type="button"
           className="btn text-white bg-primary cursor"
           onClick={handleSaveChanges}
-        // onClick={handleSaveBundleServiceComponentData}
+          // onClick={handleSaveBundleServiceComponentData}
         >
           {componentDataEdit ? "Next" : "Save and Continue"}
         </button>

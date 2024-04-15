@@ -38,7 +38,7 @@ const LocalCaseWorkListAdUpdate = ({
   const [record, setRecord] = useState(recordObj);
   useEffect(() => {
     if (recordId) {
-      callGetApi(null, `${LOCAL_CASES_WORKLIST}/${recordId}`, (response) => {
+      callGetApi(`${LOCAL_CASES_WORKLIST}/${recordId}`, (response) => {
         if (response.status === API_SUCCESS) {
           const responseData = response.data;
 

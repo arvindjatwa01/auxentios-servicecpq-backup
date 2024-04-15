@@ -300,7 +300,7 @@ const ClaimRequestProcess = ({
   useEffect(() => {
     if (claimRecordId) {
       const rUrl = `${Claim_Details_By_Id_Get}${claimRecordId}`;
-      callGetApi(null, rUrl, (response) => {
+      callGetApi(rUrl, (response) => {
         if (response.status === API_SUCCESS) {
           const responseData = response.data;
 

@@ -55,7 +55,6 @@ const WarrantyDetails = ({ show, hideModal, recordId, handleSnack }) => {
     if (recordId) {
       const rUrl = `${warranty_Details_By_Id_Get}${recordId}`;
       callGetApi(
-        null,
         rUrl,
         (response) => {
           if (response.status === API_SUCCESS) {

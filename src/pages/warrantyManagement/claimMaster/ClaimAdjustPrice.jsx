@@ -54,7 +54,6 @@ const ClaimAdjustPrice = ({
     if (claimValueId) {
       setEditPriceData(true);
       callGetApi(
-        null,
         `${CLAIM_VALUE_MASTER_URL}/${claimValueId}`,
         (response) => {
           if (response.status === API_SUCCESS) {

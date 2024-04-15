@@ -371,7 +371,7 @@ const ClaimMaster = () => {
   // evaluation questions list
   const getEvaluationQuestions = () => {
     const rUrl = `${Warranty_Evaluation_Questions_Get_GET}pageNumber=${1}&pageSize=${10}`;
-    callGetApi(null, rUrl, (response) => {
+    callGetApi(rUrl, (response) => {
       if (response.status === API_SUCCESS) {
         const responseData = response.data;
         const options = [];
@@ -393,7 +393,7 @@ const ClaimMaster = () => {
   // country key value list
   const getCountryKeyValueList = () => {
     const rUrl = `${Warranty_Country_List_GET}?pageNumber=${0}&pageSize=${10}`;
-    callGetApi(null, rUrl, (response) => {
+    callGetApi(rUrl, (response) => {
       if (response.status === API_SUCCESS) {
         const responseData = response.data;
         const options = [];
@@ -410,7 +410,6 @@ const ClaimMaster = () => {
   const getRecentWarrantyList = () => {
     const rUrl = Recent_Warranty_List_GET;
     callGetApi(
-      null,
       rUrl,
       (response) => {
         if (response.status === API_SUCCESS) {
@@ -428,7 +427,6 @@ const ClaimMaster = () => {
   const getFilterWarrantyList = () => {
     const rUrl = `${Search_By_Fields_Warranty_List_GET}field_name=${"warrantyStatus"}&field_value=${warrantyStatus}`;
     callGetApi(
-      null,
       rUrl,
       (response) => {
         if (response.status === API_SUCCESS) {
@@ -443,7 +441,7 @@ const ClaimMaster = () => {
 
   const getClaimList = () => {
     const rUrl = `${Claim_Pagination_List_GET}?pageNumber=${0}&pageSize=${10}`;
-    callGetApi(null, rUrl, (response) => {
+    callGetApi(rUrl, (response) => {
       if (response.status === API_SUCCESS) {
         const responseData = response.data;
         setClaimRecordData(responseData);
@@ -455,7 +453,7 @@ const ClaimMaster = () => {
     let rUrl = `${Search_By_Field_Claim_List_GET}field_name=${
       isEmpty(claimStatus) ? "claimType" : "claimStatus"
     }&field_value=${isEmpty(claimStatus) ? claimType : claimStatus}`;
-    callGetApi(null, rUrl, (response) => {
+    callGetApi(rUrl, (response) => {
       if (response.status === API_SUCCESS) {
         const responseData = response.data;
         setClaimRecordData(responseData);

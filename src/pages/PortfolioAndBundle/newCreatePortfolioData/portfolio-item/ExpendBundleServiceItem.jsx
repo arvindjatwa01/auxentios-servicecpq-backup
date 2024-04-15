@@ -2,7 +2,10 @@ import React, { useState, useEffect } from "react";
 
 import Select from "react-select";
 
-import { CREATE_PORTFOLIO_ITEM, PORTFOLIO_ITEM_PRICE_BY_ITEM_ID, } from "services/CONSTANTS";
+import {
+  CREATE_PORTFOLIO_ITEM,
+  PORTFOLIO_ITEM_PRICE_BY_ITEM_ID,
+} from "services/CONSTANTS";
 import { callGetApi, callPostApi, callPutApi } from "services/ApiCaller";
 import { API_SUCCESS } from "services/ResponseCode";
 
@@ -10,11 +13,24 @@ import { updateItemPriceSjRkId } from "./SJRKIdUpdate";
 import { isEmpty, isEmptySelect } from "../utilities/textUtilities";
 import { errorMessage, successMessage } from "../utilities/toastMessage";
 import LoadingProgress from "pages/Repair/components/Loader";
-import { defaultItemBodyObj, defaultItemHeaderObj, defaultItemPriceObj, } from "pages/Common/PortfolioAndSolutionConstants";
+import {
+  defaultItemBodyObj,
+  defaultItemHeaderObj,
+  defaultItemPriceObj,
+} from "pages/Common/PortfolioAndSolutionConstants";
 
 const ExpendBundleServiceItem = (props) => {
-  const { bundleServiceRowData, frequencyKeyValuePairs, unitKeyValuePairs, priceMethodKeyValuePair, priceTypeKeyValuePair,
-    existBundleServiceItems, bundleServiceItemsList, portfolioRecordId, portfolioItemId, handleUpdateItem,
+  const {
+    bundleServiceRowData,
+    frequencyKeyValuePairs,
+    unitKeyValuePairs,
+    priceMethodKeyValuePair,
+    priceTypeKeyValuePair,
+    existBundleServiceItems,
+    bundleServiceItemsList,
+    portfolioRecordId,
+    portfolioItemId,
+    handleUpdateItem,
   } = props;
 
   const [bundleServiceItemObj, setBundleServiceItemObj] = useState({
@@ -56,7 +72,6 @@ const ExpendBundleServiceItem = (props) => {
     }
     const rUrl = CREATE_PORTFOLIO_ITEM() + "/" + bundleServiceRowData.itemId;
     callGetApi(
-      null,
       rUrl,
       (response) => {
         if (response.status === API_SUCCESS) {
@@ -73,7 +88,9 @@ const ExpendBundleServiceItem = (props) => {
           }
 
           const _portfolioItemIds = [...itemHeaderModel["portfolioItemIds"]];
-          const removeDuplicatePortfolioItemIds = Array.from([...new Set(_portfolioItemIds)]);
+          const removeDuplicatePortfolioItemIds = Array.from([
+            ...new Set(_portfolioItemIds),
+          ]);
           itemHeaderModel["portfolioItemIds"] = removeDuplicatePortfolioItemIds;
           setBundleServiceItemHeader({ ...itemHeaderModel });
           setBundleServiceItemBody({ ...itemBodyModel });
@@ -99,7 +116,6 @@ const ExpendBundleServiceItem = (props) => {
     setLoading(true);
     const rUrl = PORTFOLIO_ITEM_PRICE_BY_ITEM_ID() + "/" + itemPriceId;
     callGetApi(
-      null,
       rUrl,
       (response) => {
         if (response.status === API_SUCCESS) {
@@ -266,8 +282,8 @@ const ExpendBundleServiceItem = (props) => {
             bundleServicePriceObj.usageUnit?.value === "YEAR"
               ? "MONTH"
               : bundleServicePriceObj.usageUnit?.value ||
-              bundleServicePriceObj.usageUnit ||
-              "MONTH",
+                bundleServicePriceObj.usageUnit ||
+                "MONTH",
           year:
             bundleServicePriceObj?.year?.value || bundleServicePriceObj?.year,
           additionalPriceType:
@@ -572,7 +588,9 @@ const ExpendBundleServiceItem = (props) => {
                       </p>
                       <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                         {bundleServicePriceObj.priceType?.value !==
-                          "USAGE_BASED" ? bundleServicePriceObj.calculatedPrice : "NA"}
+                        "USAGE_BASED"
+                          ? bundleServicePriceObj.calculatedPrice
+                          : "NA"}
                         {/* {isEmpty(bundleServicePriceObj.calculatedPrice)
                           ? "NA"
                           : bundleServicePriceObj.priceType?.value !==
@@ -606,8 +624,8 @@ const ExpendBundleServiceItem = (props) => {
                           ? "NA"
                           : bundleServicePriceObj.priceType?.value !==
                             "USAGE_BASED"
-                            ? "NA"
-                            : bundleServicePriceObj.calculatedPrice}
+                          ? "NA"
+                          : bundleServicePriceObj.calculatedPrice}
                       </h6>
                     </div>
                   </div>
@@ -827,8 +845,8 @@ const ExpendBundleServiceItem = (props) => {
                           {bundleServicePriceObj.usageUnit == ""
                             ? "select unit"
                             : bundleServicePriceObj.usageUnit?.value === "YEAR"
-                              ? "Month"
-                              : bundleServicePriceObj.usageUnit.label}
+                            ? "Month"
+                            : bundleServicePriceObj.usageUnit.label}
                         </span>
                       </div>
                       <div className="css-w8dmq8">*Mandatory</div>
@@ -872,7 +890,7 @@ const ExpendBundleServiceItem = (props) => {
                           disabled
                           value={
                             bundleServicePriceObj.priceType?.value !==
-                              "USAGE_BASED"
+                            "USAGE_BASED"
                               ? bundleServicePriceObj.calculatedPrice
                               : null
                           }
@@ -924,7 +942,7 @@ const ExpendBundleServiceItem = (props) => {
                           disabled
                           value={
                             bundleServicePriceObj.priceType?.value !==
-                              "USAGE_BASED"
+                            "USAGE_BASED"
                               ? null
                               : bundleServicePriceObj.calculatedPrice
                           }

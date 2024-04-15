@@ -25,7 +25,7 @@ const ClaimEditModal = ({ show, hideModal, recordId, handleSnack }) => {
   useEffect(() => {
     if (recordId) {
       const rUrl = `${Claim_Details_By_Id_Get}${recordId}`;
-      callGetApi(null, rUrl, (response) => {
+      callGetApi(rUrl, (response) => {
         if (response.status === API_SUCCESS) {
           const responseData = response.data;
 

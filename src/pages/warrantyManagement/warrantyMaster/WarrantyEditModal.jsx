@@ -24,7 +24,11 @@ import { ReadOnlyField } from "pages/Common/ReadOnlyField";
 import { FONT_STYLE, FONT_STYLE_SELECT } from "pages/Common/constants";
 
 import { callGetApi, callPutApi } from "services/ApiCaller";
-import { Get_Customer_Master_Details_By_Id_GET, WARRANTY_INSTALLER_MASTER_URL, WARRANTY_MASTER_URL } from "services/CONSTANTS";
+import {
+  Get_Customer_Master_Details_By_Id_GET,
+  WARRANTY_INSTALLER_MASTER_URL,
+  WARRANTY_MASTER_URL,
+} from "services/CONSTANTS";
 import { API_SUCCESS } from "services/ResponseCode";
 
 const WarrantyEditModal = ({ show, hideModal, recordId, handleSnack }) => {
@@ -44,7 +48,7 @@ const WarrantyEditModal = ({ show, hideModal, recordId, handleSnack }) => {
   useEffect(() => {
     if (recordId) {
       const rUrl = `${WARRANTY_MASTER_URL}/${recordId}`;
-      callGetApi(null, rUrl, (response) => {
+      callGetApi(rUrl, (response) => {
         if (response.status === API_SUCCESS) {
           //   const responseData = response.data;
           const { installerDetails, customerDetails, ...responseData } =
@@ -107,7 +111,7 @@ const WarrantyEditModal = ({ show, hideModal, recordId, handleSnack }) => {
   // get customer details
   const getCustomerDetails = (id) => {
     const rUrl = `${Get_Customer_Master_Details_By_Id_GET}${id}`;
-    callGetApi(null, rUrl, (response) => {
+    callGetApi(rUrl, (response) => {
       if (response.status === API_SUCCESS) {
         const responseData = response.data;
         setCustomerRecord({
@@ -128,7 +132,7 @@ const WarrantyEditModal = ({ show, hideModal, recordId, handleSnack }) => {
   // get warranty installer details
   const getInstallerDetails = (installerId) => {
     const rUrl = `${WARRANTY_INSTALLER_MASTER_URL}/${installerId}`;
-    callGetApi(null, rUrl, (response) => {
+    callGetApi(rUrl, (response) => {
       if (response.status === API_SUCCESS) {
         const responseData = response.data;
         // set installer record data

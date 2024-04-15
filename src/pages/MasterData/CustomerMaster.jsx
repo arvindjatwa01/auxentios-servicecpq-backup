@@ -33,7 +33,6 @@ useEffect(()=>{
     setPageNo(1);
     const rUrl = Get_Customer_Master_Details_By_Id_GET + id;
     callGetApi(
-      null,
       rUrl,
       (response) => {
         if (response.status === API_SUCCESS) {

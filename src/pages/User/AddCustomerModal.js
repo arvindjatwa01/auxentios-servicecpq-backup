@@ -59,9 +59,9 @@ const customerTypeOption = [
 ];
 
 const rolesOption = [
-  {label: "Partner Admin", value: "TENANT_ADMIN"},
-  {label: "End Customer", value: "End_Customer"}
-]
+  { label: "Partner Admin", value: "TENANT_ADMIN" },
+  { label: "End Customer", value: "End_Customer" },
+];
 
 const AddCustomerModal = ({
   openAddCustomer,
@@ -128,7 +128,7 @@ const AddCustomerModal = ({
       setUpdateCust(true);
       const rUrl = `${DATA_SVC_CUSTOMER_MASTER_URL}/${customerId}`;
       console.log("Custom rURl ::: ", rUrl);
-      callGetApi(null, rUrl, (response) => {
+      callGetApi(rUrl, (response) => {
         if (response.status === API_SUCCESS) {
           const responseData = response.data;
 
@@ -167,7 +167,7 @@ const AddCustomerModal = ({
     let _contactType = "";
     let _customerId = "";
     if (e.value === "P") {
-      _contactType = {label: "Partner Admin", value: "TENANT_ADMIN"};
+      _contactType = { label: "Partner Admin", value: "TENANT_ADMIN" };
       // _contactType = {
       //   roleId: 1,
       //   roleName: "TENANT_ADMIN",
@@ -190,7 +190,7 @@ const AddCustomerModal = ({
       // };
       _customerId = loginTenantId;
     } else if (e.value === "C") {
-      _contactType = {label: "End Customer", value: "End_Customer"};
+      _contactType = { label: "End Customer", value: "End_Customer" };
       // _contactType = {
       //   roleId: 8,
       //   roleName: "End_Customer",

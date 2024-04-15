@@ -6,19 +6,42 @@ import { useSelector } from "react-redux";
 import { callGetApi, callPostApi, callPutApi } from "services/ApiCaller";
 import {
   CREATE_CUSTOM_PORTFOLIO_ITEM,
+  CREATE_CUSTOM_PRICE,
   GET_CUSTOM_PORTFOLIO_ITEM_PRICE_DATA,
 } from "services/CONSTANTS";
 import { API_SUCCESS } from "services/ResponseCode";
 
 import LoadingProgress from "pages/Repair/components/Loader";
-import { isEmpty, isEmptySelect, } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/textUtilities";
-import { errorMessage, successMessage, } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/toastMessage";
+import {
+  isEmpty,
+  isEmptySelect,
+} from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/textUtilities";
+import {
+  errorMessage,
+  successMessage,
+} from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/toastMessage";
 import { updateCustomItemPricesSjRkId } from "pages/PortfolioAndBundle/newCreatePortfolioData/portfolio-item/SJRKIdUpdate";
-import { defaultCustomItemBodyModel, defaultCustomItemHeaderModel, defaultCustomItemPriceObj, } from "pages/Common/PortfolioAndSolutionConstants";
+import {
+  defaultCustomItemBodyModel,
+  defaultCustomItemHeaderModel,
+  defaultCustomItemPriceObj,
+} from "pages/Common/PortfolioAndSolutionConstants";
+import {
+  additionalPriceKeyValuePair,
+  discountTypeKeyValuePair,
+} from "../Use_Case_4_Constansts";
 
 const ExpendCustomBundleServiceItem = (props) => {
-  const { bundleServiceRowData, existBundleServiceItems, bundleServiceItemsList, } = props;
-  const { priceMethodKeyValuePair, priceTypeKeyValuePair, frequencyKeyValuePairs, unitKeyValuePairs,
+  const {
+    bundleServiceRowData,
+    existBundleServiceItems,
+    bundleServiceItemsList,
+  } = props;
+  const {
+    priceMethodKeyValuePair,
+    priceTypeKeyValuePair,
+    frequencyKeyValuePairs,
+    unitKeyValuePairs,
   } = useSelector((state) => state.commonAPIReducer);
 
   const [bundleServiceItemObj, setBundleServiceItemObj] = useState({
@@ -61,7 +84,6 @@ const ExpendCustomBundleServiceItem = (props) => {
     const rUrl =
       CREATE_CUSTOM_PORTFOLIO_ITEM() + "/" + bundleServiceRowData.itemId;
     callGetApi(
-      null,
       rUrl,
       (response) => {
         if (response.status === API_SUCCESS) {
@@ -102,7 +124,6 @@ const ExpendCustomBundleServiceItem = (props) => {
     setLoading(true);
     const rUrl = GET_CUSTOM_PORTFOLIO_ITEM_PRICE_DATA + "/" + itemPriceId;
     callGetApi(
-      null,
       rUrl,
       (response) => {
         if (response.status === API_SUCCESS) {
@@ -128,12 +149,24 @@ const ExpendCustomBundleServiceItem = (props) => {
             (obj) => obj.value === res.usageUnit
           );
 
+          // set additional price type key-value pair
+          let _additionalPriceType = additionalPriceKeyValuePair.find(
+            (obj) => obj.value === res.additionalPriceType
+          );
+
+          // set discount type key-value pair
+          let _discountType = discountTypeKeyValuePair.find(
+            (obj) => obj.value === res.discountType
+          );
+
           setBundleServicePriceObj({
             ...res,
             priceMethod: _priceMethod || "",
             priceType: _priceType || "",
             frequency: _frequency || "",
             usageUnit: _usageUnit || "",
+            additionalPriceType: _additionalPriceType || "",
+            discountType: _discountType || "",
           });
           setLoading(false);
         } else {
@@ -257,12 +290,24 @@ const ExpendCustomBundleServiceItem = (props) => {
             bundleServicePriceObj.usageUnit?.value === "YEAR"
               ? "MONTH"
               : bundleServicePriceObj.usageUnit?.value,
+          year:
+            bundleServicePriceObj.usageUnit?.value ||
+            bundleServicePriceObj.usageUnit ||
+            "YEAR",
+          additionalPriceType:
+            bundleServicePriceObj.additionalPriceType?.value ||
+            bundleServicePriceObj.additionalPriceType ||
+            "ABSOLUTE",
+          discountType:
+            bundleServicePriceObj.discountType?.value ||
+            bundleServicePriceObj.discountType ||
+            "PORTFOLIO_DISCOUNT",
         };
 
         if (isExist) {
           if (!isEmpty(bundleServicePriceObj.customItemPriceDataId)) {
             const priceUpdateReqUrl =
-              GET_CUSTOM_PORTFOLIO_ITEM_PRICE_DATA +
+              CREATE_CUSTOM_PRICE() +
               "/" +
               bundleServicePriceObj.customItemPriceDataId;
             callPutApi(
@@ -289,7 +334,7 @@ const ExpendCustomBundleServiceItem = (props) => {
             );
           }
         } else {
-          const priceCreateReqUrl = GET_CUSTOM_PORTFOLIO_ITEM_PRICE_DATA;
+          const priceCreateReqUrl = CREATE_CUSTOM_PRICE();
           callPostApi(
             null,
             priceCreateReqUrl,
@@ -304,8 +349,7 @@ const ExpendCustomBundleServiceItem = (props) => {
                   itemPriceDataId: res.customItemPriceDataId,
                 });
                 _bundleServiceItemBody.customItemPrices.push({
-                  customItemPriceDataId:
-                    bundleServiceItemObj.customItemPriceDataId,
+                  customItemPriceDataId: res.customItemPriceDataId,
                 });
                 resolve(true);
               } else {
@@ -341,15 +385,20 @@ const ExpendCustomBundleServiceItem = (props) => {
         customItemHeaderModel: { ...bundleServiceItemHeader },
         customItemBodyModel: { ..._bundleServiceItemBody },
       };
-      const itemReqUrl =
-        CREATE_CUSTOM_PORTFOLIO_ITEM() + "/" + bundleServiceItemObj.itemId;
-      callPutApi(null, itemReqUrl, itemRequestObj, (response) => {
-        if (response.status === API_SUCCESS) {
-          successMessage(
-            `${bundleServiceItemObj.itemName} Item updated successfully`
-          );
-        }
-      });
+
+      if (bundleServiceItemObj.customItemId) {
+        const itemReqUrl =
+          CREATE_CUSTOM_PORTFOLIO_ITEM() +
+          "/" +
+          bundleServiceItemObj.customItemId;
+        callPutApi(null, itemReqUrl, itemRequestObj, (response) => {
+          if (response.status === API_SUCCESS) {
+            successMessage(
+              `${bundleServiceItemObj.itemName} Item updated successfully`
+            );
+          }
+        });
+      }
     } catch (error) {
       return;
     }
@@ -524,8 +573,8 @@ const ExpendCustomBundleServiceItem = (props) => {
                           ? "NA"
                           : bundleServicePriceObj.priceType?.value !==
                             "USAGE_BASED"
-                            ? "NA"
-                            : bundleServicePriceObj.calculatedPrice}
+                          ? "NA"
+                          : bundleServicePriceObj.calculatedPrice}
                       </h6>
                     </div>
                   </div>
@@ -553,8 +602,8 @@ const ExpendCustomBundleServiceItem = (props) => {
                           ? "NA"
                           : bundleServicePriceObj.priceType?.value !==
                             "USAGE_BASED"
-                            ? "NA"
-                            : bundleServicePriceObj.calculatedPrice}
+                          ? "NA"
+                          : bundleServicePriceObj.calculatedPrice}
                       </h6>
                     </div>
                   </div>
@@ -774,8 +823,8 @@ const ExpendCustomBundleServiceItem = (props) => {
                           {bundleServicePriceObj.usageUnit == ""
                             ? "select unit"
                             : bundleServicePriceObj.usageUnit?.value === "YEAR"
-                              ? "Month"
-                              : bundleServicePriceObj.usageUnit.label}
+                            ? "Month"
+                            : bundleServicePriceObj.usageUnit.label}
                         </span>
                       </div>
                       <div className="css-w8dmq8">*Mandatory</div>
@@ -819,7 +868,7 @@ const ExpendCustomBundleServiceItem = (props) => {
                           disabled
                           value={
                             bundleServicePriceObj.priceType?.value !==
-                              "USAGE_BASED"
+                            "USAGE_BASED"
                               ? bundleServicePriceObj.calculatedPrice
                               : null
                           }
@@ -871,7 +920,7 @@ const ExpendCustomBundleServiceItem = (props) => {
                           disabled
                           value={
                             bundleServicePriceObj.priceType?.value !==
-                              "USAGE_BASED"
+                            "USAGE_BASED"
                               ? null
                               : bundleServicePriceObj.calculatedPrice
                           }

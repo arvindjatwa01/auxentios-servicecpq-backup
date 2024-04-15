@@ -732,7 +732,6 @@ const Parts360 = () => {
     setPageNo(1);
     const rUrl = Get_Spare_Parts_Datails_By_Id_GET + id;
     callGetApi(
-      null,
       rUrl,
       (response) => {
         if (response.status === API_SUCCESS) {

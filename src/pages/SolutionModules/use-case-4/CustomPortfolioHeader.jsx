@@ -380,7 +380,6 @@ const CustomPortfolioHeader = (props) => {
       }
       const rUrl = CONVERT_CUSTOM_PORTFOLIO_TO_QUOTE + customPortfolioId;
       callGetApi(
-        null,
         rUrl,
         (response) => {
           if (response.status === API_SUCCESS) {

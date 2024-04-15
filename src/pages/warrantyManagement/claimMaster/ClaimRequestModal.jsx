@@ -216,7 +216,7 @@ const ClaimRequestModal = ({
   useEffect(() => {
     if (claimOrderId) {
       const rUrl = `${Claim_Order_Update_PUT}/${claimOrderId}`;
-      callGetApi(null, rUrl, (response) => {
+      callGetApi(rUrl, (response) => {
         if (response.status === API_SUCCESS) {
           const responseData = response.data;
 
@@ -294,7 +294,7 @@ const ClaimRequestModal = ({
     }
     if (claimRecordId) {
       const rUrlClaim = `${CLAIM_MASTER_URL}/${claimRecordId}`;
-      callGetApi(null, rUrlClaim, (response) => {
+      callGetApi(rUrlClaim, (response) => {
         if (response.status === API_SUCCESS) {
           const responseData = response.data;
 
@@ -337,7 +337,7 @@ const ClaimRequestModal = ({
   // get warranty details
   const getWarrantyDetails = (warrantyId) => {
     const rUrl = `${WARRANTY_MASTER_URL}/${warrantyId}`;
-    callGetApi(null, rUrl, (response) => {
+    callGetApi(rUrl, (response) => {
       if (response.status === API_SUCCESS) {
         const responseData = response.data;
         setWarrantyData({
@@ -358,7 +358,7 @@ const ClaimRequestModal = ({
 
   const getyearlyWarrantyDetails = (yearlyWarrantyId) => {
     const rUrl = `${YEARLY_WARRANTY_MASTER_URL}/${yearlyWarrantyId}`;
-    callGetApi(null, rUrl, (response) => {
+    callGetApi(rUrl, (response) => {
       if (response.status === API_SUCCESS) {
         const responseData = response.data;
 
@@ -371,7 +371,7 @@ const ClaimRequestModal = ({
   const getCustomerDetails = (customerId) => {
     const rUrl = SEARCH_CUSTOMER(`customerId:${customerId}`);
     // const rUrl = `${DATA_SVC_CUSTOMER}${customerId}`;
-    callGetApi(null, rUrl, (response) => {
+    callGetApi(rUrl, (response) => {
       if (response.status === API_SUCCESS) {
         const responseData = response.data;
 
@@ -387,7 +387,7 @@ const ClaimRequestModal = ({
 
   const getEquipmentDetails = (equipmentId) => {
     const rUrl = `${DATA_SVC_EQUIPMENT()}/${equipmentId}`;
-    callGetApi(null, rUrl, (response) => {
+    callGetApi(rUrl, (response) => {
       if (response.status === API_SUCCESS) {
         const responseData = response.data;
 
@@ -405,7 +405,6 @@ const ClaimRequestModal = ({
   // get assessment details
   const getAssessmentDetails = (assessmentId) => {
     callGetApi(
-      null,
       `${Warranty_Assessment_Create_POST}/${assessmentId}`,
       (response) => {
         if (response.status === API_SUCCESS) {
@@ -434,7 +433,7 @@ const ClaimRequestModal = ({
   // get evaluation details
   const getEvaluationDetails = (id) => {
     const rUrl = `${Warranty_Evaluation_Create_POST}/${id}`;
-    callGetApi(null, rUrl, (response) => {
+    callGetApi(rUrl, (response) => {
       if (response.status === API_SUCCESS) {
         const responseData = response.data;
 
@@ -476,7 +475,6 @@ const ClaimRequestModal = ({
   const getEvalautionPartIdDatail = (id) => {
     return new Promise((resolve) => {
       callGetApi(
-        null,
         `${EVALUATION_PARTS_MASTER_URL}/${id}`,
         (response) => {
           if (response.status === API_SUCCESS) {

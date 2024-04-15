@@ -118,7 +118,6 @@ const WarrantyAdministration = () => {
     setLoading(true);
     const rUrl = Recent_Warranty_List_GET;
     callGetApi(
-      null,
       rUrl,
       (response) => {
         if (response.status === API_SUCCESS) {
@@ -158,7 +157,7 @@ const WarrantyAdministration = () => {
   // country key value list
   const getCountryKeyValueList = () => {
     const rUrl = `${Warranty_Country_List_GET}?pageNumber=${0}&pageSize=${10}`;
-    callGetApi(null, rUrl, (response) => {
+    callGetApi( rUrl, (response) => {
       if (response.status === API_SUCCESS) {
         const responseData = response.data;
         const options = [];
@@ -247,7 +246,6 @@ const WarrantyAdministration = () => {
           // const rUrl = SEARCH_EQUIPMENT(searchString);
           // // const rUrl = `${Search_By_Fields_Warranty_List_GET}field_name=${obj.fieldName.value}&field_value=${value}`;
           // await callGetApi(
-          //   null,
           //   rUrl,
           //   (response) => {
           //     if (response.status === API_SUCCESS) {
@@ -327,7 +325,6 @@ const WarrantyAdministration = () => {
           const rUrl = `${WARRANTY_MASTER_URL}/${equWarrantyId}`;
           // const rUrl = `${Search_By_Fields_Warranty_List_GET}field_name=${searchWarranty[0].fieldName.value}&field_value=${searchWarranty[0].inputSearch}`;
           callGetApi(
-            null,
             rUrl,
             (response) => {
               if (response.status === API_SUCCESS) {

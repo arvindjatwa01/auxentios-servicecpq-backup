@@ -62,7 +62,6 @@ const ClaimRelatedHoursAndExpenses = ({
     if (relatedHEId) {
       setViewOnly(true);
       callGetApi(
-        null,
         `${RELATED_HOURS_EXPENSES_MASTER_URL}/${relatedHEId}`,
         (response) => {
           if (response.status === API_SUCCESS) {

@@ -239,14 +239,14 @@ export const HomePage = () => {
 
   useEffect(() => {
     // get Today Task WorkList
-    callGetApi(null, TODAY_TASKS_WORKLIST, (response) => {
+    callGetApi(TODAY_TASKS_WORKLIST, (response) => {
       if (response.status === API_SUCCESS) {
         setTodayTasks(response.data);
       }
     });
 
     // get saved tasks
-    callGetApi(null, GEt_QUOTE_SAVED_TASK_GET, (response) => {
+    callGetApi(GEt_QUOTE_SAVED_TASK_GET, (response) => {
       if (response.status === API_SUCCESS) {
         const responseData = response.data;
         setSavedTasks(responseData);
@@ -254,7 +254,7 @@ export const HomePage = () => {
     });
 
     // get item to Review As Favorite
-    callGetApi(null, GET_QUOTE_FAVORITE_AS_REVIEW_ITEMS_GET, (response) => {
+    callGetApi(GET_QUOTE_FAVORITE_AS_REVIEW_ITEMS_GET, (response) => {
       if (response.status === API_SUCCESS) {
         const responseData = response.data;
         setItemsToReview(responseData);

@@ -26,6 +26,8 @@ import ClaimDetailsModal from "./ClaimDetailsModal";
 import ClaimRequestModal from "./ClaimRequestModal";
 import WarrantyRequestCreateModal from "./WarrantyRequestCreateModal";
 import ClaimReturnRequester from "./ClaimReturnRequester";
+import QuickCreateModal from "../QuickCreateModal";
+import WarrantyRequestModal from "../returnMaster/WarrantyRequestModal";
 
 const DataGridContainer = (props) => (
   <Box
@@ -83,6 +85,15 @@ const ClaimAdministration = () => {
   const [openWarrantyRequestModal, setOpenWarrantyRequestModal] =
     useState(false);
 
+  const [openQuickWarrantyCreateModal, setOpenQuickWarrantyCreateModal] =
+    useState(false);
+
+  const [showWarrantyRequestWithPwaModal, setShowWarrantyRequestWithPwaModal] =
+    useState(false);
+
+  const [pwaNumber, setPwaNumber] = useState(null);
+  const [warrantyRequestType, setWarrantyRequestType] = useState("");
+
   const [warrantyReturnId, setWarrantyReturnId] = useState(null);
 
   // Snack Bar State
@@ -124,7 +135,7 @@ const ClaimAdministration = () => {
   // get recent activities (claim)
   const getRecentClaimRecord = () => {
     const rUrl = `${CLAIM_MASTER_URL}?pageSize=${5}&sortColumn=updatedAt&orderBY=DESC`;
-    callGetApi(null, rUrl, (response) => {
+    callGetApi(rUrl, (response) => {
       if (response.status === API_SUCCESS) {
         const responseData = response.data;
         setRecentClaimRecords(responseData);
@@ -135,7 +146,7 @@ const ClaimAdministration = () => {
   // get claim list
   const getClaimList = () => {
     const rUrl = `${CLAIM_ORDER_MASTER_URL}?pageNumber=${0}&pageSize=${10}&sortColumn=createdAt&orderBY=DESC`;
-    callGetApi(null, rUrl, (response) => {
+    callGetApi(rUrl, (response) => {
       if (response.status === API_SUCCESS) {
         const responseData = response.data;
         setClaimRecordData(responseData);
@@ -146,7 +157,7 @@ const ClaimAdministration = () => {
   // evaluation questions list
   const getEvaluationQuestions = () => {
     const rUrl = `${Warranty_Evaluation_Questions_Get_GET}pageNumber=${1}&pageSize=${10}`;
-    // callGetApi(null, rUrl, (response) => {
+    // callGetApi( rUrl, (response) => {
     //   if (response.status === API_SUCCESS) {
     //     const responseData = response.data;
     //     const options = [];
@@ -168,7 +179,7 @@ const ClaimAdministration = () => {
   // country key value list
   const getCountryKeyValueList = () => {
     const rUrl = `${Warranty_Country_List_GET}?pageNumber=${0}&pageSize=${10}`;
-    callGetApi(null, rUrl, (response) => {
+    callGetApi(rUrl, (response) => {
       if (response.status === API_SUCCESS) {
         const responseData = response.data;
         const options = [];
@@ -198,12 +209,12 @@ const ClaimAdministration = () => {
     const _assessmentId = row["assessmentId"];
     setAssesstmentId(_assessmentId);
 
-    callGetApi(null, `${CLAIM_MASTER_URL}/${claimId}`, (response) => {
-      if(response.status === API_SUCCESS){
+    callGetApi(`${CLAIM_MASTER_URL}/${claimId}`, (response) => {
+      if (response.status === API_SUCCESS) {
         const responseData = response.data;
         setClaimRecordDetail(responseData);
       }
-    })
+    });
     // const claimType = row["claimType"];
     // const claimNumber = row["claimNumber"];
     // setClaimRecordDetail(row);
@@ -228,6 +239,18 @@ const ClaimAdministration = () => {
     setPartsRecords([row]);
     setOpenClaimRequestModal(false);
     setOpenReturnRequsterModal(true);
+  };
+
+  // open
+  const handleShowWarrantyReqDtlsModal = () => {
+    setOpenQuickWarrantyCreateModal(false);
+    setShowWarrantyRequestWithPwaModal(true);
+  };
+
+  const handleCloseWarrantyReqDtlModal = () => {
+    setPwaNumber(null);
+    setWarrantyRequestType("");
+    setShowWarrantyRequestWithPwaModal(false);
   };
 
   const claimColumn = [
@@ -422,7 +445,8 @@ const ClaimAdministration = () => {
                 <div className="card border px-3 py-2 warranty-req-dash-card mb-4">
                   <div
                     className="d-flex justify-content-between align-items-baseline cursor"
-                    onClick={() => setOpenWarrantyRequestModal(true)}
+                    onClick={() => setOpenQuickWarrantyCreateModal(true)}
+                    // onClick={() => setOpenWarrantyRequestModal(true)}
                   >
                     <span className=" mb-0">Warranty Request</span>
                     <span>
@@ -550,6 +574,26 @@ const ClaimAdministration = () => {
           partsRecords={partsRecords}
           warrantyReturnId={warrantyReturnId}
           setWarrantyReturnId={setWarrantyReturnId}
+        />
+      )}
+
+      {openQuickWarrantyCreateModal && (
+        <QuickCreateModal
+          show={openQuickWarrantyCreateModal}
+          hideModal={() => setOpenQuickWarrantyCreateModal(false)}
+          handleSnack={handleSnack}
+          setPwaNumber={setPwaNumber}
+          setWarrantyRequestType={setWarrantyRequestType}
+          openWarrantyDetailsModal={handleShowWarrantyReqDtlsModal}
+        />
+      )}
+      {showWarrantyRequestWithPwaModal && (
+        <WarrantyRequestModal
+          show={showWarrantyRequestWithPwaModal}
+          hideModal={handleCloseWarrantyReqDtlModal}
+          handleSnack={handleSnack}
+          pwaNumber={pwaNumber}
+          warrantyRequestType={warrantyRequestType}
         />
       )}
     </>

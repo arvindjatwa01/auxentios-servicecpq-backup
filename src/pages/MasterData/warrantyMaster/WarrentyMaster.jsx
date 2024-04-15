@@ -122,7 +122,6 @@ const WarrantyMaster = () => {
   const getRecentWarrantyList = () => {
     const rUrl = Recent_Warranty_List_GET;
     callGetApi(
-      null,
       rUrl,
       (response) => {
         if (response.status === API_SUCCESS) {
@@ -138,7 +137,7 @@ const WarrantyMaster = () => {
   // country key value list
   const getCountryKeyValueList = () => {
     const rUrl = `${Warranty_Country_List_GET}?pageNumber=${0}&pageSize=${10}`;
-    callGetApi(null, rUrl, (response) => {
+    callGetApi(rUrl, (response) => {
       if (response.status === API_SUCCESS) {
         const responseData = response.data;
         const options = [];
@@ -346,7 +345,7 @@ const WarrantyMaster = () => {
       field: "basis",
       headerName: "Basis",
       flex: 1,
-      renderCell: (params) => <div>TIME</div>
+      renderCell: (params) => <div>TIME</div>,
     },
     {
       field: "unit",
@@ -357,25 +356,25 @@ const WarrantyMaster = () => {
       field: "warrantyStartDate",
       headerName: "Start Date",
       flex: 1,
-      renderCell: (params) => <div>12/11/2023</div>
+      renderCell: (params) => <div>12/11/2023</div>,
     },
     {
       field: "warrantyEndDate",
       headerName: "End Date",
       flex: 1,
-      renderCell: (params) => <div>11/11/2023</div>
+      renderCell: (params) => <div>11/11/2023</div>,
     },
     {
       field: "warrantyStartUsage",
       headerName: "Start Usage",
       flex: 1,
-      renderCell: (params) => <div>NA</div>
+      renderCell: (params) => <div>NA</div>,
     },
     {
       field: "warrantyEndUsage",
       headerName: "End Usage",
       flex: 1,
-      renderCell: (params) => <div>NA</div>
+      renderCell: (params) => <div>NA</div>,
     },
     // {
     //   field: "warrantyStatus",
@@ -492,7 +491,6 @@ const WarrantyMaster = () => {
         if (value.length !== 0) {
           const rUrl = `${Search_By_Fields_Warranty_List_GET}field_name=${obj.fieldName.value}&field_value=${value}`;
           callGetApi(
-            null,
             rUrl,
             (response) => {
               if (response.status === API_SUCCESS) {
@@ -549,7 +547,6 @@ const WarrantyMaster = () => {
       } else {
         const rUrl = `${Search_By_Fields_Warranty_List_GET}field_name=${searchWarranty[0].fieldName.value}&field_value=${searchWarranty[0].inputSearch}`;
         callGetApi(
-          null,
           rUrl,
           (response) => {
             if (response.status === API_SUCCESS) {
