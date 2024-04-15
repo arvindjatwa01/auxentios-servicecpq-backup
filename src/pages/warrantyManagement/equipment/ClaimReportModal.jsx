@@ -53,7 +53,7 @@ const ClaimReportModal = ({
   useEffect(() => {
     if (warrantyRecordId) {
       const rUrl = `${WARRANTY_MASTER_URL}/${warrantyRecordId}`;
-      callGetApi(null, rUrl, (response) => {
+      callGetApi(rUrl, (response) => {
         if (response.status === API_SUCCESS) {
           const { installerDetails, customerDetails, ...restData } =
             response.data;
@@ -94,7 +94,6 @@ const ClaimReportModal = ({
       setLoading(true);
       const rUrl = `${CLAIM_MASTER_URL}/search-by-fields?field_name=serialNumber&field_value=${serialNumber}`;
       callGetApi(
-        null,
         rUrl,
         (response) => {
           if (response.status === API_SUCCESS) {

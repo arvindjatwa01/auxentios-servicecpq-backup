@@ -16,20 +16,33 @@ import Select from "react-select";
 import $ from "jquery";
 
 import { errorMessage } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/toastMessage";
-import { isEmpty, isEmptySelect, } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/textUtilities";
+import {
+  isEmpty,
+  isEmptySelect,
+} from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/textUtilities";
 import { useAppSelector } from "../../../../app/hooks";
 
 import { callGetApi, callPostApi, callPutApi } from "services/ApiCaller";
 import {
-  CREATE_CUSTOM_PORTFOLIO_ITEM, CREATE_CUSTOM_PRICE,
-  GET_CUSTOM_PORTFOLIO_ITEM_PRICE_DATA, GET_SEARCH_KIT_ID, GET_SEARCH_STANDARD_JOB_ID,
+  CREATE_CUSTOM_PORTFOLIO_ITEM,
+  CREATE_CUSTOM_PRICE,
+  GET_CUSTOM_PORTFOLIO_ITEM_PRICE_DATA,
+  GET_SEARCH_KIT_ID,
+  GET_SEARCH_STANDARD_JOB_ID,
 } from "services/CONSTANTS";
 import { API_SUCCESS } from "services/ResponseCode";
 
 import { STANDARD_JOB_DETAIL } from "navigation/CONSTANTS";
-import { usageTypeKeyValuePair, defaultCustomItemPriceObj, } from "pages/Common/PortfolioAndSolutionConstants";
 import {
-  selectUpdateTaskList, selectStrategyTaskOption, selectCategoryList, selectUpdateList, taskActions,
+  usageTypeKeyValuePair,
+  defaultCustomItemPriceObj,
+} from "pages/Common/PortfolioAndSolutionConstants";
+import {
+  selectUpdateTaskList,
+  selectStrategyTaskOption,
+  selectCategoryList,
+  selectUpdateList,
+  taskActions,
 } from "pages/PortfolioAndBundle/customerSegment/strategySlice";
 
 const itemRequestDefaultObj = {
@@ -65,18 +78,35 @@ const itemRequestDefaultObj = {
 };
 
 const CustomItemAddEdit = (props) => {
-  const { itemType, isEditable, isPortfolioItem, bundleServiceNeed, handleBundleServiceNeed,
-    componentDataTabShow, handleGetPortfolioItemsData,
-    itemId, portfolioId, hideItemAddUpdateModel = null, } = props;
+  const {
+    itemType,
+    isEditable,
+    isPortfolioItem,
+    bundleServiceNeed,
+    handleBundleServiceNeed,
+    componentDataTabShow,
+    handleGetPortfolioItemsData,
+    itemId,
+    portfolioId,
+    hideItemAddUpdateModel = null,
+  } = props;
 
-  const { frequencyKeyValuePairs, unitKeyValuePairs, } = useSelector((state) => state.commonAPIReducer);
+  const { frequencyKeyValuePairs, unitKeyValuePairs } = useSelector(
+    (state) => state.commonAPIReducer
+  );
 
   const dispatch = useDispatch();
   const history = useHistory();
 
-  const usageInKeyValuePair = useAppSelector(selectStrategyTaskOption(selectCategoryList));
-  const strategyTaskKeyValuePair = useAppSelector(selectStrategyTaskOption(selectUpdateList));
-  const taskTypeKeyValuePair = useAppSelector(selectStrategyTaskOption(selectUpdateTaskList));
+  const usageInKeyValuePair = useAppSelector(
+    selectStrategyTaskOption(selectCategoryList)
+  );
+  const strategyTaskKeyValuePair = useAppSelector(
+    selectStrategyTaskOption(selectUpdateList)
+  );
+  const taskTypeKeyValuePair = useAppSelector(
+    selectStrategyTaskOption(selectUpdateTaskList)
+  );
 
   const [itemActiveTab, setItemActiveTab] = useState("itemSummary");
   const [typeOfSearch, setTypeOfSearch] = useState(null);
@@ -90,11 +120,19 @@ const CustomItemAddEdit = (props) => {
   // const [itemRequestObj, setItemRequestObj] = useState({ ...defaultReqObj })
   const [customItemPriceDataId, setCustomItemPriceDataId] = useState(0);
 
-  const [itemRequestObj, setItemRequestObj] = useState({ ...itemRequestDefaultObj, });
-  const [itemPriceRequestObj, setItemPriceRequestObj] = useState({ ...defaultCustomItemPriceObj, });
-  const [yearsKeyValuePairs, seYearsKeyValuePairs] = useState([{ value: 1, label: 1 },]);
+  const [itemRequestObj, setItemRequestObj] = useState({
+    ...itemRequestDefaultObj,
+  });
+  const [itemPriceRequestObj, setItemPriceRequestObj] = useState({
+    ...defaultCustomItemPriceObj,
+  });
+  const [yearsKeyValuePairs, seYearsKeyValuePairs] = useState([
+    { value: 1, label: 1 },
+  ]);
 
-  const [searchedStandardJobIdList, setSearchedStandardJobIdList] = useState([]);
+  const [searchedStandardJobIdList, setSearchedStandardJobIdList] = useState(
+    []
+  );
   const [searchedRepairKitIdList, setSearchedRepairKitIdList] = useState([]);
   const [standardJobIdDetails, setStandardJobIdDetails] = useState({
     templateDBId: "",
@@ -123,7 +161,7 @@ const CustomItemAddEdit = (props) => {
   // get Select Bundle/Service Item Details
   const handleGetItemDetails = async (itemId) => {
     const itemDetailsReqUrl = `${CREATE_CUSTOM_PORTFOLIO_ITEM()}/${itemId}`;
-    callGetApi(null, itemDetailsReqUrl, (response) => {
+    callGetApi(itemDetailsReqUrl, (response) => {
       if (response.status === API_SUCCESS) {
         const {
           customItemId,
@@ -184,9 +222,9 @@ const CustomItemAddEdit = (props) => {
                 year: isEmpty(res.responseData.year)
                   ? ""
                   : {
-                    label: res.responseData.year,
-                    value: res.responseData.year,
-                  },
+                      label: res.responseData.year,
+                      value: res.responseData.year,
+                    },
                 frequency: _frequency || "",
                 usageUnit: _usageUnit || "",
               });
@@ -202,7 +240,6 @@ const CustomItemAddEdit = (props) => {
     return new Promise((resolve, reject) => {
       const itemPriceReqUrl = `${GET_CUSTOM_PORTFOLIO_ITEM_PRICE_DATA}/${priceId}`;
       callGetApi(
-        null,
         itemPriceReqUrl,
         (response) => {
           if (response.status === API_SUCCESS) {
@@ -296,7 +333,6 @@ const CustomItemAddEdit = (props) => {
       setSearchedStandardJobIdList([]);
     } else {
       callGetApi(
-        null,
         GET_SEARCH_STANDARD_JOB_ID + value,
         (response) => {
           if (response.status === API_SUCCESS) {
@@ -375,7 +411,6 @@ const CustomItemAddEdit = (props) => {
       setSearchedRepairKitIdList([]);
     } else {
       callGetApi(
-        null,
         `${GET_SEARCH_KIT_ID + value}`,
         (response) => {
           if (response.status === API_SUCCESS) {
@@ -511,7 +546,7 @@ const CustomItemAddEdit = (props) => {
         isEmpty(itemPriceRequestObj.endUsage) ||
         parseInt(itemPriceRequestObj.endUsage) < 0 ||
         parseInt(itemPriceRequestObj.startUsage) >
-        parseInt(itemPriceRequestObj.endUsage) ||
+          parseInt(itemPriceRequestObj.endUsage) ||
         isEmpty(itemPriceRequestObj.usageUnit) ||
         isEmpty(itemPriceRequestObj.recommendedValue)
       ) {
@@ -628,8 +663,8 @@ const CustomItemAddEdit = (props) => {
         customPortfolio: isEmpty(portfolioId)
           ? null
           : {
-            portfolioId: portfolioId,
-          },
+              portfolioId: portfolioId,
+            },
       };
       let itemPriceReqUrl = CREATE_CUSTOM_PRICE();
       if (!customItemPriceDataId || customItemPriceDataId === "") {
@@ -658,9 +693,9 @@ const CustomItemAddEdit = (props) => {
                 year: isEmpty(result.year)
                   ? ""
                   : {
-                    label: result.year,
-                    value: result.year,
-                  },
+                      label: result.year,
+                      value: result.year,
+                    },
 
                 frequency: _frequency || "",
                 usageUnit: _usageUnit || "",
@@ -672,9 +707,9 @@ const CustomItemAddEdit = (props) => {
                 year: isEmpty(result.year)
                   ? ""
                   : {
-                    label: result.year,
-                    value: result.year,
-                  },
+                      label: result.year,
+                      value: result.year,
+                    },
                 frequency: _frequency || "",
                 usageUnit: _usageUnit || "",
               });
@@ -686,9 +721,9 @@ const CustomItemAddEdit = (props) => {
                     year: isEmpty(result.year)
                       ? ""
                       : {
-                        label: result.year,
-                        value: result.year,
-                      },
+                          label: result.year,
+                          value: result.year,
+                        },
 
                     frequency: _frequency || "",
                     usageUnit: _usageUnit || "",
@@ -732,9 +767,9 @@ const CustomItemAddEdit = (props) => {
                 year: isEmpty(priceUpdateResult.year)
                   ? ""
                   : {
-                    label: priceUpdateResult.year,
-                    value: priceUpdateResult.year,
-                  },
+                      label: priceUpdateResult.year,
+                      value: priceUpdateResult.year,
+                    },
 
                 frequency: _frequency || "",
                 usageUnit: _usageUnit || "",
@@ -746,9 +781,9 @@ const CustomItemAddEdit = (props) => {
                 year: isEmpty(priceUpdateResult.year)
                   ? ""
                   : {
-                    label: priceUpdateResult.year,
-                    value: priceUpdateResult.year,
-                  },
+                      label: priceUpdateResult.year,
+                      value: priceUpdateResult.year,
+                    },
 
                 frequency: _frequency || "",
                 usageUnit: _usageUnit || "",
@@ -762,9 +797,9 @@ const CustomItemAddEdit = (props) => {
                     year: isEmpty(priceUpdateResult.year)
                       ? ""
                       : {
-                        label: priceUpdateResult.year,
-                        value: priceUpdateResult.year,
-                      },
+                          label: priceUpdateResult.year,
+                          value: priceUpdateResult.year,
+                        },
 
                     frequency: _frequency || "",
                     usageUnit: _usageUnit || "",
@@ -1294,8 +1329,8 @@ const CustomItemAddEdit = (props) => {
                             ? "Select unit"
                             : itemPriceRequestObj.usageUnit?.value.toLowerCase() ===
                               "year"
-                              ? "Month"
-                              : itemPriceRequestObj.usageUnit?.label}
+                            ? "Month"
+                            : itemPriceRequestObj.usageUnit?.label}
                         </span>
                       </div>
                       <div className="css-w8dmq8">*Mandatory</div>
@@ -1543,8 +1578,8 @@ const CustomItemAddEdit = (props) => {
                       style={{ display: "block" }}
                     >
                       {itemPriceRequestObj.standardJobId.length !== 0 &&
-                        itemPriceRequestObj.standardJobIdSearch &&
-                        searchedStandardJobIdList.length === 0 ? (
+                      itemPriceRequestObj.standardJobIdSearch &&
+                      searchedStandardJobIdList.length === 0 ? (
                         <li className="list-group-item">No Record Found</li>
                       ) : (
                         searchedStandardJobIdList.map((currentItem, i) => (
@@ -1602,9 +1637,9 @@ const CustomItemAddEdit = (props) => {
                     <Select
                       className="p-2"
                       placeholder="Add by"
-                    //   onChange={handleTypeOfSearchChange}
-                    // value={typeOfSearch}
-                    // options={columnSearchKeyValue}
+                      //   onChange={handleTypeOfSearchChange}
+                      // value={typeOfSearch}
+                      // options={columnSearchKeyValue}
                     />
                     {typeOfSearch !== null && (
                       <div className="customselect d-flex align-items-center border-radius-10 d-flex ml-3">
@@ -1613,9 +1648,9 @@ const CustomItemAddEdit = (props) => {
                         </span>
                         <Select
                           placeholder="Select"
-                        // onChange={handleTypeOfSearchColumnChange}
-                        // value={typeOfSearchColumn}
-                        // options={typeOfSearchColumnKeyValue}
+                          // onChange={handleTypeOfSearchColumnChange}
+                          // value={typeOfSearchColumn}
+                          // options={typeOfSearchColumnKeyValue}
                         />
                         {typeOfSearchColumn !== null && (
                           <input
@@ -1629,13 +1664,13 @@ const CustomItemAddEdit = (props) => {
                               fontWeight: "600",
                               paddingLeft: "10px",
                             }}
-                          // value={columnSearchText}
-                          // onChange={(e) => setColumnSearchText(e.target.value)}
+                            // value={columnSearchText}
+                            // onChange={(e) => setColumnSearchText(e.target.value)}
                           />
                         )}
                         <Link
                           className="btn bg-primary cursor text-white"
-                        // onClick={handleLandingPageQuerySearchClick}
+                          // onClick={handleLandingPageQuerySearchClick}
                         >
                           <SearchIcon />
                           <span className="ml-1">Search</span>
@@ -1659,7 +1694,7 @@ const CustomItemAddEdit = (props) => {
                       <li>
                         <a
                           className="cursor"
-                        // onClick={handleBundleItemSaveAndContinue}
+                          // onClick={handleBundleItemSaveAndContinue}
                         >
                           PM125
                         </a>
@@ -1667,7 +1702,7 @@ const CustomItemAddEdit = (props) => {
                       <li>
                         <a
                           className="cursor"
-                        // onClick={handleBundleItemSaveAndContinue}
+                          // onClick={handleBundleItemSaveAndContinue}
                         >
                           PM2
                         </a>
@@ -1675,16 +1710,16 @@ const CustomItemAddEdit = (props) => {
                       <li>
                         <a
                           className="lastOption text-violet cursor"
-                        // onClick={handleCreateNewServiceBundle}
+                          // onClick={handleCreateNewServiceBundle}
                         >
                           <span className="mr-2">+</span>Create New{" "}
                           {typeOfSearch.value === "bundle"
                             ? "Bundle"
                             : typeOfSearch.value === "service"
-                              ? "Service"
-                              : typeOfSearch.value === "portfolioItem"
-                                ? "Portfolio Item"
-                                : ""}
+                            ? "Service"
+                            : typeOfSearch.value === "portfolioItem"
+                            ? "Portfolio Item"
+                            : ""}
                         </a>
                       </li>
                     </ul>
@@ -1787,8 +1822,8 @@ const CustomItemAddEdit = (props) => {
                       style={{ display: "block" }}
                     >
                       {itemPriceRequestObj.repairKitId.length !== 0 &&
-                        itemPriceRequestObj.repairKitIdSearch &&
-                        searchedRepairKitIdList.length === 0 ? (
+                      itemPriceRequestObj.repairKitIdSearch &&
+                      searchedRepairKitIdList.length === 0 ? (
                         <li className="list-group-item">No Record Found</li>
                       ) : (
                         searchedRepairKitIdList.map((currentItem, i) => (
@@ -1841,9 +1876,9 @@ const CustomItemAddEdit = (props) => {
                     <Select
                       className="p-2"
                       placeholder="Add by"
-                    // onChange={handleTypeOfSearchChange}
-                    // value={typeOfSearch}
-                    // options={columnSearchKeyValue}
+                      // onChange={handleTypeOfSearchChange}
+                      // value={typeOfSearch}
+                      // options={columnSearchKeyValue}
                     />
                     {typeOfSearch === null && (
                       <div className="customselect d-flex align-items-center border-radius-10 d-flex ml-3">
@@ -1853,8 +1888,8 @@ const CustomItemAddEdit = (props) => {
                         </span>
                         <Select
                           value={typeOfSearchColumn}
-                        // onChange={handleTypeOfSearchColumnChange}
-                        // options={typeOfSearchColumnKeyValue}
+                          // onChange={handleTypeOfSearchColumnChange}
+                          // options={typeOfSearchColumnKeyValue}
                         />
                         {typeOfSearchColumn !== null && (
                           <input
@@ -1868,13 +1903,13 @@ const CustomItemAddEdit = (props) => {
                               fontWeight: "600",
                               paddingLeft: "10px",
                             }}
-                          // value={columnSearchText}
-                          // onChange={(e) => setColumnSearchText(e.target.value)}
+                            // value={columnSearchText}
+                            // onChange={(e) => setColumnSearchText(e.target.value)}
                           />
                         )}
                         <Link
                           className="btn bg-primary cursor text-white"
-                        // onClick={handleLandingPageQuerySearchClick}
+                          // onClick={handleLandingPageQuerySearchClick}
                         >
                           <SearchIcon />
                           <span className="ml-1">Search</span>
@@ -1898,7 +1933,7 @@ const CustomItemAddEdit = (props) => {
                       <li>
                         <a
                           className="cursor"
-                        // onClick={handleBundleItemSaveAndContinue}
+                          // onClick={handleBundleItemSaveAndContinue}
                         >
                           PM125
                         </a>
@@ -1906,7 +1941,7 @@ const CustomItemAddEdit = (props) => {
                       <li>
                         <a
                           className="cursor"
-                        // onClick={handleBundleItemSaveAndContinue}
+                          // onClick={handleBundleItemSaveAndContinue}
                         >
                           PM2
                         </a>
@@ -1921,10 +1956,10 @@ const CustomItemAddEdit = (props) => {
                             ? typeOfSearch.value == "bundle"
                               ? "Bundle"
                               : typeOfSearch.value == "service"
-                                ? "Service"
-                                : typeOfSearch.value == "portfolioItem"
-                                  ? "Portfolio Item"
-                                  : ""
+                              ? "Service"
+                              : typeOfSearch.value == "portfolioItem"
+                              ? "Portfolio Item"
+                              : ""
                             : ""}
                         </a>
                       </li>

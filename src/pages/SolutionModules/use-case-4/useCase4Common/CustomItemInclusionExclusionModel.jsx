@@ -123,7 +123,7 @@ const CustomItemInclusionExclusionModel = ({
             .map((service) => `item_id=${service.customItemId}`)
             .join("&");
 
-        callGetApi(null, rUrl, (response) => {
+        callGetApi(rUrl, (response) => {
           if (response.status === API_SUCCESS) {
             console.log("link portfolio to item response ===== . ", response);
           }

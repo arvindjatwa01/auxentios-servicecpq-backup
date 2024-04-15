@@ -214,7 +214,7 @@ const ClaimReturnRequester = ({
   const [partsHeaderId, setPartsHeaderId] = useState(null);
   const [shippingInfoId, setShippingInfoId] = useState(null);
   const [warrantyReturnId, setWarrantyReturnId] = useState(null);
-  
+
   // const [shipmentHeaderId, setShipmentHeaderId] = useState(null);
 
   const [shipmentRowModesModal, setShipmentRowModesModal] = useState({});
@@ -223,7 +223,7 @@ const ClaimReturnRequester = ({
     if (!requestCreation && shipmentHeaderId) {
       const rUrl = `${SHIPMENT_HEADER_MASTER_URL}/${shipmentHeaderId}`;
       // const rUrl = `${WARRANTY_RETURN_MASTER_URL}/${warrantyReturnId}`;
-      callGetApi(null, rUrl, (response) => {
+      callGetApi(rUrl, (response) => {
         if (response.status === API_SUCCESS) {
           const responseData = response.data;
 
@@ -334,7 +334,7 @@ const ClaimReturnRequester = ({
   // get warranty return details
   const getWarrantyReturnDetails = (warrantyReturnId) => {
     const rUrl = `${WARRANTY_RETURN_MASTER_URL}/${warrantyReturnId}`;
-    callGetApi(null, rUrl, (response) => {
+    callGetApi(rUrl, (response) => {
       if (response.status === API_SUCCESS) {
         const responseData = response.data;
 
@@ -386,7 +386,7 @@ const ClaimReturnRequester = ({
   // get parts header details
   const getPartsHeaderDetails = (partsHeaderId) => {
     const rUrl = `${PARTS_HEADER_MASTER_URL}/${partsHeaderId}`;
-    callGetApi(null, rUrl, (response) => {
+    callGetApi(rUrl, (response) => {
       if (response.status === API_SUCCESS) {
         const responseData = response.data;
         setPartsHeaderData({ ...responseData });
@@ -397,7 +397,7 @@ const ClaimReturnRequester = ({
   // get shipping info details
   const getShippinInfoDetails = (shippingInfoId) => {
     const rUrl = `${SHIPPING_INFO_MASTER_URL}/${shippingInfoId}`;
-    callGetApi(null, rUrl, (response) => {
+    callGetApi(rUrl, (response) => {
       if (response.status === API_SUCCESS) {
         const responseData = response.data;
         setShippingData({ ...responseData });

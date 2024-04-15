@@ -289,7 +289,6 @@ const ItemAddEdit = (props) => {
             setSearchedStandardJobIdList([]);
         } else {
             callGetApi(
-                null,
                 GET_SEARCH_STANDARD_JOB_ID + value,
                 (response) => {
                     if (response.status === API_SUCCESS) {
@@ -369,7 +368,6 @@ const ItemAddEdit = (props) => {
             setSearchedRepairKitIdList([]);
         } else {
             callGetApi(
-                null,
                 `${GET_SEARCH_KIT_ID + value}`,
                 (response) => {
                     if (response.status === API_SUCCESS) {

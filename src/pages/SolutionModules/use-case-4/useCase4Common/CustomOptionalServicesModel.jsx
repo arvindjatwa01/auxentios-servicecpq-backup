@@ -46,7 +46,6 @@ const CustomOptionalServicesModel = ({
         pageSize;
 
       callGetApi(
-        null,
         rUrl,
         (response) => {
           if (response.status === 200) {

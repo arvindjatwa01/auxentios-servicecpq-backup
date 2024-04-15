@@ -62,7 +62,13 @@ const questionTwoOptions = [
   { label: "Acidic Water", value: "ACIDIC_WATER", questionId: 2 },
 ];
 
-const ClaimDetailsModal = ({ show, hideModal, recordId, handleSnack, handleOpenClaimReturnProcess }) => {
+const ClaimDetailsModal = ({
+  show,
+  hideModal,
+  recordId,
+  handleSnack,
+  handleOpenClaimReturnProcess,
+}) => {
   const history = useHistory();
   const [activeStep, setActiveStep] = useState(0);
 
@@ -93,7 +99,7 @@ const ClaimDetailsModal = ({ show, hideModal, recordId, handleSnack, handleOpenC
   useEffect(() => {
     if (recordId) {
       const rUrl = `${Claim_Details_By_Id_Get}${recordId}`;
-      callGetApi(null, rUrl, (response) => {
+      callGetApi(rUrl, (response) => {
         if (response.status === API_SUCCESS) {
           const responseData = response.data;
 
@@ -122,7 +128,7 @@ const ClaimDetailsModal = ({ show, hideModal, recordId, handleSnack, handleOpenC
   useEffect(() => {
     if (recordId) {
       const rUrl = `${Claim_Questions_List_GET}?pageNumber=${0}&pageSize=${5}`;
-      callGetApi(null, rUrl, (response) => {
+      callGetApi(rUrl, (response) => {
         if (response.status === API_SUCCESS) {
           const responseData = response["data"].sort(
             (a, b) => a.questionNumber - b.questionNumber
@@ -167,7 +173,7 @@ const ClaimDetailsModal = ({ show, hideModal, recordId, handleSnack, handleOpenC
 
   const handleCheckClaimMarkable = () => {
     const rUrl = `${Claim_Question_Mark_Claimable_GET}?claim_id=${recordId}`;
-    callGetApi(null, rUrl, (response) => {
+    callGetApi(rUrl, (response) => {
       if (response.status === API_SUCCESS) {
         if (response.data === "ACCEPTED") {
           handleSnack("info", "It is claimable you can proceed further");
@@ -202,7 +208,7 @@ const ClaimDetailsModal = ({ show, hideModal, recordId, handleSnack, handleOpenC
 
   const handleConvetClaimToRepair = () => {
     const rUrl = `${Claim_Convert_To_Repair_GET}?claim_id=${recordId}`;
-    callGetApi(null, rUrl, (response) => {
+    callGetApi(rUrl, (response) => {
       if (response.status === API_SUCCESS) {
         const responseData = response.data;
         handleSnack("info", "New Order is created, redirecting in a minute.");
@@ -441,7 +447,7 @@ const ClaimDetailsModal = ({ show, hideModal, recordId, handleSnack, handleOpenC
                   {/* {isEmpty(claimRecord.claimApprover)
                     ? "NA"
                     : claimRecord.claimApprover} */}
-                    101211
+                  101211
                 </h6>
               </div>
             </div>

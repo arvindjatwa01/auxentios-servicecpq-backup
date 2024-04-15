@@ -98,7 +98,7 @@ const EquipmentSearchMaster = ({ falgType, searchFlag, setSearchList }) => {
             dropdownReqUrl = "";
           }
           if (dropdownReqUrl) {
-            callGetApi(null, dropdownReqUrl, (response) => {
+            callGetApi(dropdownReqUrl, (response) => {
               if (response.status === API_SUCCESS) {
                 const responseData = response.data;
                 if (responseData.length === 0) {
@@ -212,7 +212,7 @@ const EquipmentSearchMaster = ({ falgType, searchFlag, setSearchList }) => {
         }else {
           reqUrl = "";
         }
-        callGetApi(null, reqUrl, (response) => {
+        callGetApi(reqUrl, (response) => {
           if (response.status === API_SUCCESS) {
             setSearchList(response.data);
           }

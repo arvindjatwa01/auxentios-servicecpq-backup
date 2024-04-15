@@ -580,7 +580,6 @@ const ServiceMaster = () => {
     setServicePageNo(1);
     setLoading(true);
     callGetApi(
-      null,
       serviceReqUrl,
       (response) => {
         if (response.status === API_SUCCESS) {
@@ -597,7 +596,6 @@ const ServiceMaster = () => {
     );
     // console.log(serviceReqUrl);
     callGetApi(
-      null,
       searchpricedetailsurl,
       (response) => {
         if (response.status === API_SUCCESS) {

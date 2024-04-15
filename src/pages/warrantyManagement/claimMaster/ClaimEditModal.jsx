@@ -48,7 +48,7 @@ const ClaimEditModal = ({
   useEffect(() => {
     if (claimRecordId) {
       const rUrl = `${CLAIM_MASTER_URL}/${claimRecordId}`;
-      callGetApi(null, rUrl, (response) => {
+      callGetApi(rUrl, (response) => {
         if (response.status === API_SUCCESS) {
           const responseData = response.data;
           const _claimStatus = claimStatusOptions.find(

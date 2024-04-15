@@ -5,18 +5,19 @@ import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import Tab from "@mui/material/Tab";
 import TabPanel from "@mui/lab/TabPanel";
+import { TextField } from "@mui/material";
 
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { MobileDatePicker } from "@mui/x-date-pickers";
 
+import Select from "react-select";
 import { Modal } from "react-bootstrap";
-import SearchBox from "pages/Repair/components/SearchBox";
+
 import { machineSearch } from "services/searchServices";
 import { FONT_STYLE, FONT_STYLE_SELECT } from "pages/Repair/CONSTANTS";
-import { TextField } from "@mui/material";
-import { warrantyTypeOptions } from "pages/WarrantyMaster/CheckWarranty/claimWarrantyConstants";
-import Select from "react-select";
+import SearchBox from "pages/Repair/components/SearchBox";
+import { warrantyTypeOptions } from "pages/warrantyManagement/warrantyManagementConstants";
 
 const equipmentObj = {
   equipmentId: "",

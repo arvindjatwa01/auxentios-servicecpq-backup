@@ -124,7 +124,7 @@ const WarrantyReturnMaster = () => {
   //
   const getCountryKeyValueList = () => {
     const rUrl = `${Warranty_Country_List_GET}?pageNumber=${0}&pageSize=${10}`;
-    callGetApi(null, rUrl, (response) => {
+    callGetApi(rUrl, (response) => {
       if (response.status === API_SUCCESS) {
         const responseData = response.data;
         const options = [];
@@ -142,8 +142,8 @@ const WarrantyReturnMaster = () => {
   };
 
   const handleEditReturnData = (params) => {
-    setShowReturnRequesterModal(true)
-  }
+    setShowReturnRequesterModal(true);
+  };
 
   const columns = [
     {

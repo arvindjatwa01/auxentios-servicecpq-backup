@@ -89,7 +89,7 @@ const ClaimProcessModal = ({ show, hideModal, recordId, handleSnack }) => {
   useEffect(() => {
     if (recordId) {
       const rUrl = `${Claim_Details_By_Id_Get}${recordId}`;
-      callGetApi(null, rUrl, (response) => {
+      callGetApi(rUrl, (response) => {
         if (response.status === API_SUCCESS) {
           const responseData = response.data;
 
@@ -118,7 +118,7 @@ const ClaimProcessModal = ({ show, hideModal, recordId, handleSnack }) => {
   useEffect(() => {
     if (recordId) {
       const rUrl = `${Claim_Questions_List_GET}?pageNumber=${0}&pageSize=${5}`;
-      callGetApi(null, rUrl, (response) => {
+      callGetApi(rUrl, (response) => {
         if (response.status === API_SUCCESS) {
           const responseData = response["data"].sort(
             (a, b) => a.questionNumber - b.questionNumber
@@ -152,15 +152,15 @@ const ClaimProcessModal = ({ show, hideModal, recordId, handleSnack }) => {
     callPostApi(null, rUrl, reqObj, (response) => {
       if (response.status === API_SUCCESS) {
         setAccessQuestions({ ...accessQuestions, [keyName]: e });
-      }else{
-        handleSnack("info", "This Claim is alreday processed.")
+      } else {
+        handleSnack("info", "This Claim is alreday processed.");
       }
     });
   };
 
   const handleCheckClaimMarkable = () => {
     const rUrl = `${Claim_Question_Mark_Claimable_GET}?claim_id=${recordId}`;
-    callGetApi(null, rUrl, (response) => {
+    callGetApi(rUrl, (response) => {
       if (response.status === API_SUCCESS) {
         if (response.data === "ACCEPTED") {
           handleSnack("info", "It is claimable you can proceed further");
@@ -195,7 +195,7 @@ const ClaimProcessModal = ({ show, hideModal, recordId, handleSnack }) => {
 
   const handleConvetClaimToRepair = () => {
     const rUrl = `${Claim_Convert_To_Repair_GET}?claim_id=${recordId}`;
-    callGetApi(null, rUrl, (response) => {
+    callGetApi(rUrl, (response) => {
       if (response.status === API_SUCCESS) {
         const responseData = response.data;
         handleSnack("info", "New Order is created, redirecting in a minute.");

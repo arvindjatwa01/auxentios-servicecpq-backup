@@ -266,7 +266,6 @@ const CustomPortfolioAddUpdate = (props) => {
       setLoading(true);
       const rUrl = `${CUSTOM_PORTFOLIO_URL()}/${cutomPortfolioId}`;
       callGetApi(
-        null,
         rUrl,
         (response) => {
           if (response.status === API_SUCCESS) {
@@ -480,7 +479,7 @@ const CustomPortfolioAddUpdate = (props) => {
   // fetch the existing customer Details
   const handleFetchExistingCustomerDetails = async (customerId) => {
     const rUrl = SEARCH_CUSTOMER(`customerId~${customerId}`);
-    callGetApi(null, rUrl, (response) => {
+    callGetApi(rUrl, (response) => {
       if (response.status === API_SUCCESS) {
         const customerRes = response.data[0];
         setGeneralTabCustomerData({
@@ -517,7 +516,7 @@ const CustomPortfolioAddUpdate = (props) => {
       if (!isEmpty(portfolioId)) {
         rUrl = rUrl + "&portfolio_id=" + portfolioId;
       }
-      await callGetApi(null, rUrl, (response) => {
+      await callGetApi(rUrl, (response) => {
         if (response.status === API_SUCCESS) {
           const res = response.data;
           const _portfolioItems = [];
@@ -558,7 +557,7 @@ const CustomPortfolioAddUpdate = (props) => {
         _customPortfolioCoverageIds
           .map((data) => `coverageIds=${data.coverageId}`)
           .join("&");
-      callGetApi(null, rUrl, (response) => {
+      callGetApi(rUrl, (response) => {
         if (response.status === API_SUCCESS) {
           const res = response.data;
           setSelectedCustomCoverageData(res);
@@ -958,7 +957,6 @@ const CustomPortfolioAddUpdate = (props) => {
     if (!isEmpty(value) && value.length !== 0) {
       const rUrl = SEARCH_CUSTOMER(`customerId~${value}`);
       callGetApi(
-        null,
         rUrl,
         (response) => {
           if (response.status === API_SUCCESS) {

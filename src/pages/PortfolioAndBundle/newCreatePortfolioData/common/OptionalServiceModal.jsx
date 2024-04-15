@@ -14,8 +14,14 @@ import LoadingProgress from "pages/Repair/components/Loader";
 const pageSize = 6;
 
 const OptionalServiceModal = ({
-  showOptionalServicesModal, handleOptionalServiceModal, checkedService, setCheckedService,
-  selectedService, setSelectedService, showSelectedServicesModal, handleSelectedServiceModal,
+  showOptionalServicesModal,
+  handleOptionalServiceModal,
+  checkedService,
+  setCheckedService,
+  selectedService,
+  setSelectedService,
+  showSelectedServicesModal,
+  handleSelectedServiceModal,
 }) => {
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -41,7 +47,6 @@ const OptionalServiceModal = ({
         pageSize;
 
       callGetApi(
-        null,
         rUrl,
         (response) => {
           if (response.status === 200) {
@@ -100,20 +105,24 @@ const OptionalServiceModal = ({
     handleOptionalServiceModal();
   };
 
-  // remove Selected service 
+  // remove Selected service
   const handleRemoveService = (serviceObj) => {
     // remove from selected list
     const _selectedService = [...selectedService];
-    const serviceIndex = _selectedService.findIndex(obj => obj.itemId === serviceObj.itemId);
+    const serviceIndex = _selectedService.findIndex(
+      (obj) => obj.itemId === serviceObj.itemId
+    );
     _selectedService.splice(serviceIndex, 1);
     setSelectedService(_selectedService);
 
     // remove from checked list
     const _checkedService = [...checkedService];
-    const checkedServiceIndex = _checkedService.findIndex(obj => obj.itemId === serviceObj.itemId);
+    const checkedServiceIndex = _checkedService.findIndex(
+      (obj) => obj.itemId === serviceObj.itemId
+    );
     _checkedService.splice(checkedServiceIndex, 1);
     setCheckedService(_checkedService);
-  }
+  };
 
   // Add more services
   const handleAddMoreServices = () => {
@@ -178,9 +187,7 @@ const OptionalServiceModal = ({
                                   htmlFor={serviceObj.itemName + "-" + i}
                                 >
                                   <p className="mb-0 font-size-16 text-black">
-                                    <b>
-                                      {serviceObj.itemName}
-                                    </b>
+                                    <b>{serviceObj.itemName}</b>
                                   </p>
                                   <p className=" mt-1 mb-0 font-size-14">
                                     {serviceObj.itemHeaderDescription}

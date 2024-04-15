@@ -190,7 +190,6 @@ const ItemPriceCalculator = (props) => {
             .itemPriceDataId;
         const rUrl = PORTFOLIO_ITEM_PRICE_BY_ITEM_ID() + "/" + itemId;
         callGetApi(
-          null,
           rUrl,
           (response) => {
             if (response.status === API_SUCCESS) {

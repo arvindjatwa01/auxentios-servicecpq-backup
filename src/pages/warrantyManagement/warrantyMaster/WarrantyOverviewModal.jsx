@@ -122,7 +122,7 @@ const WarrantyOverviewModal = ({
   useEffect(() => {
     if (warrantyRecordId) {
       const rUrl = `${WARRANTY_MASTER_URL}/${warrantyRecordId}`;
-      callGetApi(null, rUrl, (response) => {
+      callGetApi(rUrl, (response) => {
         if (response.status === API_SUCCESS) {
           const { installerDetails, customerDetails, ...restData } =
             response.data;
@@ -180,7 +180,7 @@ const WarrantyOverviewModal = ({
 
   useEffect(() => {
     const rUrl = `${CLAIM_MASTER_URL}/search-by-fields?pageNumber=${0}&pageSize=${25}`;
-    callGetApi(null, rUrl, (response) => {
+    callGetApi(rUrl, (response) => {
       if (response.status === API_SUCCESS) {
         const responseData = response.data;
         setClaimRecord(responseData);
@@ -192,7 +192,7 @@ const WarrantyOverviewModal = ({
   const getEquipmentDetails = (id) => {
     const rUrl = `${WARRANTY_EQUIPMENT_MASTER_URL}/${id}`;
     // const rUrl = `${Get_Equipment_Datails_By_Id_GET}${id}`;
-    callGetApi(null, rUrl, (response) => {
+    callGetApi(rUrl, (response) => {
       if (response.status === API_SUCCESS) {
         const responseData = response.data;
         setEquipmentData({
@@ -208,7 +208,7 @@ const WarrantyOverviewModal = ({
   // get warranty installer details
   const getInstallerDetails = (installerId) => {
     const rUrl = `${WARRANTY_INSTALLER_MASTER_URL}/${installerId}`;
-    callGetApi(null, rUrl, (response) => {
+    callGetApi(rUrl, (response) => {
       if (response.status === API_SUCCESS) {
         const responseData = response.data;
         // set installer record data
@@ -226,7 +226,7 @@ const WarrantyOverviewModal = ({
   // get yearly warranty details
   const getYearlyWarrantyDetails = (yearId) => {
     const rUrl = `${Warranty_Yearly_GetById_GET}/${yearId}`;
-    callGetApi(null, rUrl, (response) => {
+    callGetApi(rUrl, (response) => {
       if (response.status === API_SUCCESS) {
         const responseData = response.data;
 
@@ -250,7 +250,7 @@ const WarrantyOverviewModal = ({
   // get customer details
   const getCustomerDetails = (id) => {
     const rUrl = `${Get_Customer_Master_Details_By_Id_GET}${id}`;
-    callGetApi(null, rUrl, (response) => {
+    callGetApi(rUrl, (response) => {
       if (response.status === API_SUCCESS) {
         const responseData = response.data;
         setCustomerRecord({

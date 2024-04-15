@@ -247,7 +247,6 @@ export const CreatePortfolio = (props) => {
       setLoading(true);
       const rUrl = PORTFOLIO_URL() + "/" + portfolioId;
       await callGetApi(
-        null,
         rUrl,
         (response) => {
           if (response.status === API_SUCCESS) {
@@ -482,7 +481,7 @@ export const CreatePortfolio = (props) => {
       if (!isEmpty(portfolioId)) {
         rUrl = rUrl + "&portfolio_id=" + portfolioId;
       }
-      await callGetApi(null, rUrl, (response) => {
+      await callGetApi(rUrl, (response) => {
         if (response.status === API_SUCCESS) {
           const res = response.data;
           const _portfolioItems = [];
@@ -522,7 +521,7 @@ export const CreatePortfolio = (props) => {
         _portfolioCoverageIds
           .map((data) => `coverageIds=${data.coverageId}`)
           .join("&");
-      callGetApi(null, rUrl, (response) => {
+      callGetApi(rUrl, (response) => {
         if (response.status === API_SUCCESS) {
           const res = response.data;
           setSelectedCoverageData(res);
@@ -539,7 +538,7 @@ export const CreatePortfolio = (props) => {
     let rUrl = CREATE_PORTFOLIO_ITEM() + "/services-details?";
     rUrl = rUrl + sortedServices.map((data) => `itemIds=${data}`).join("&");
     rUrl = rUrl + "&bundle_flag=SERVICE";
-    callGetApi(null, rUrl, (response) => {
+    callGetApi(rUrl, (response) => {
       if (response.status === API_SUCCESS) {
         const res = response.data;
         const _optionalServices = res.map((service) => {

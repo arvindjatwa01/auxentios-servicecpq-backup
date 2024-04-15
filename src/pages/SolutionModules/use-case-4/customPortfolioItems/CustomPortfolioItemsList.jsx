@@ -13,7 +13,8 @@ import DataTable from "react-data-table-component";
 import cpqIcon from "../../../../assets/icons/svg/CPQ.svg";
 
 import {
-  COPY_MASTER_TO_CUSTOM_PORTFOLIO, GET_CUSTOM_PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE,
+  COPY_MASTER_TO_CUSTOM_PORTFOLIO,
+  GET_CUSTOM_PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE,
 } from "services/CONSTANTS";
 import { callGetApi } from "services/ApiCaller";
 import { API_SUCCESS } from "services/ResponseCode";
@@ -26,21 +27,41 @@ import BundleServiceItemsModel from "../useCase4Common/BundleServiceItemsModel";
 import CustomItemInclusionExclusionModel from "../useCase4Common/CustomItemInclusionExclusionModel";
 import CustomBundleServiceComponentCodeUpdate from "../useCase4Common/CustomBundleServiceComponentCodeUpdate";
 import {
-  IS_PORTFOLIO, IS_SOLUTION, additionalPriceKeyValuePair, dataTableCustomStyle, defaultCustomItemBodyModel,
-  defaultCustomItemHeaderModel, discountTypeKeyValuePair, usageTypeKeyValuePair,
+  IS_PORTFOLIO,
+  IS_SOLUTION,
+  additionalPriceKeyValuePair,
+  dataTableCustomStyle,
+  defaultCustomItemBodyModel,
+  defaultCustomItemHeaderModel,
+  discountTypeKeyValuePair,
+  usageTypeKeyValuePair,
 } from "pages/Common/PortfolioAndSolutionConstants";
 
 const CustomPortfolioItemsList = (props) => {
   const {
-    customPortfolioId, customItemsTableList, setCustomItemsTableList, setCustomItemReviewTabItemList,
-    customItemReviewTabItemList, customItemIds, setCustomItemIds, handleUpdateSolutionHeader, showOptionalServicesModal,
-    handleOptionalServiceModal, checkedService, setCheckedService, selectedService, setSelectedService,
+    customPortfolioId,
+    customItemsTableList,
+    setCustomItemsTableList,
+    setCustomItemReviewTabItemList,
+    customItemReviewTabItemList,
+    customItemIds,
+    setCustomItemIds,
+    handleUpdateSolutionHeader,
+    showOptionalServicesModal,
+    handleOptionalServiceModal,
+    checkedService,
+    setCheckedService,
+    selectedService,
+    setSelectedService,
   } = props;
 
-  const [searchPortfolioSolutionItems, setSearchPortfolioSolutionItems] = useState([]);
-  const [selectedSearchSolutionItems, setSelectedSearchSolutionItems] = useState([]);
+  const [searchPortfolioSolutionItems, setSearchPortfolioSolutionItems] =
+    useState([]);
+  const [selectedSearchSolutionItems, setSelectedSearchSolutionItems] =
+    useState([]);
   const [showCustomItemModal, setShowCustomItemModal] = useState(false);
-  const [searchBySolutionOrPortlio, setSearchBySolutionOrPortlio] = useState("");
+  const [searchBySolutionOrPortlio, setSearchBySolutionOrPortlio] =
+    useState("");
   const [activeTab, setActiveTab] = useState(1);
   const [bundleServiceNeed, setBundleServiceNeed] = useState(true);
 
@@ -51,10 +72,16 @@ const CustomPortfolioItemsList = (props) => {
     itemName: "",
   });
 
-  const [customItemHeaderModelObj, setCustomItemHeaderModelObj] = useState({ ...defaultCustomItemHeaderModel, });
-  const [customItemBodyModelObj, setCustomItemBodyModelObj] = useState({ ...defaultCustomItemBodyModel, });
-  const [showInclusionExclusionModal, setShowInclusionExclusionModal] = useState(false);
-  const [inclusionExclusionItemId, setInclusionExclusionItemId] = useState(null);
+  const [customItemHeaderModelObj, setCustomItemHeaderModelObj] = useState({
+    ...defaultCustomItemHeaderModel,
+  });
+  const [customItemBodyModelObj, setCustomItemBodyModelObj] = useState({
+    ...defaultCustomItemBodyModel,
+  });
+  const [showInclusionExclusionModal, setShowInclusionExclusionModal] =
+    useState(false);
+  const [inclusionExclusionItemId, setInclusionExclusionItemId] =
+    useState(null);
 
   // Search Bundle || Servicec items state data
   const [searchBundleServiceItem, setSearchBundleServiceItem] = useState([]);
@@ -63,10 +90,18 @@ const CustomPortfolioItemsList = (props) => {
   const [existBundleServiceItems, setExistBundleServiceItems] = useState([]);
   const [reviewTabItemList, setReviewTabItemList] = useState([]);
   const [expendCustomItemRow, setExpendCustomItemRow] = useState(null);
-  const [expendeCustomItemBundleService, setExpendeCustomItemBundleService] = useState([]);
-  const [expendCustomItemBundleServiceRow, setExpendCustomItemBundleServiceRow,] = useState(null);
-  const [showBundleServiceSearchModal, setShowBundleServiceSearchModal] = useState(false);
-  const [showBundleServiceComponentDataModal, setShowBundleServiceComponentDataModal,] = useState(false);
+  const [expendeCustomItemBundleService, setExpendeCustomItemBundleService] =
+    useState([]);
+  const [
+    expendCustomItemBundleServiceRow,
+    setExpendCustomItemBundleServiceRow,
+  ] = useState(null);
+  const [showBundleServiceSearchModal, setShowBundleServiceSearchModal] =
+    useState(false);
+  const [
+    showBundleServiceComponentDataModal,
+    setShowBundleServiceComponentDataModal,
+  ] = useState(false);
 
   useEffect(() => {
     if (!showCustomItemModal) {
@@ -273,8 +308,8 @@ const CustomPortfolioItemsList = (props) => {
         !isEmpty(row?.standardJobId)
           ? row?.standardJobId
           : !isEmpty(row?.repairKitId)
-            ? row?.repairKitId
-            : "NA",
+          ? row?.repairKitId
+          : "NA",
       sortable: false,
       wrap: true,
     },
@@ -312,7 +347,7 @@ const CustomPortfolioItemsList = (props) => {
                   style={{ whiteSpace: "pre" }}
                   className="btn-sm cursor"
                   onClick={handleAddMoreBundleService}
-                // onClick={showAddBundleServiceItemPopup}
+                  // onClick={showAddBundleServiceItemPopup}
                 >
                   <span className="mr-2">
                     <AddIcon />
@@ -373,7 +408,11 @@ const CustomPortfolioItemsList = (props) => {
             </div>
             {!searchFlag && (
               <div className="border-left d-flex align-items-center">
-                <a style={{ whiteSpace: "pre" }} className="btn-sm cursor" onClick={handleUpdateBundleServiceComponentData}>
+                <a
+                  style={{ whiteSpace: "pre" }}
+                  className="btn-sm cursor"
+                  onClick={handleUpdateBundleServiceComponentData}
+                >
                   <span className="mr-2">
                     <AddIcon />
                   </span>
@@ -400,7 +439,6 @@ const CustomPortfolioItemsList = (props) => {
   const handleCopyMasterToPortfolio = async (rUrl) => {
     return new Promise((resolve, reject) => {
       callGetApi(
-        null,
         rUrl,
         (response) => {
           if (response.status === API_SUCCESS) {
@@ -418,9 +456,10 @@ const CustomPortfolioItemsList = (props) => {
 
   // get Select Portfolio item item price data
   const handleShowSelectPortfolioItemInTable = (rUrlEndPoint) => {
-    const rUrl = `${GET_CUSTOM_PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE + rUrlEndPoint
-      }`;
-    callGetApi(null, rUrl, (response) => {
+    const rUrl = `${
+      GET_CUSTOM_PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE + rUrlEndPoint
+    }`;
+    callGetApi(rUrl, (response) => {
       if (response.status === API_SUCCESS) {
         const res = response.data;
         const _customPortfolioItems = [];
@@ -588,7 +627,7 @@ const CustomPortfolioItemsList = (props) => {
   // update the Bundle|Service Item component data as reference to expended Bundle|Serivce
   const handleUpdateBundleServiceComponentData = () => {
     setShowBundleServiceComponentDataModal(true);
-  }
+  };
 
   // Hide Portfolio Item Tabs Model
   const hideItemAddUpdateModel = () => {
@@ -635,7 +674,7 @@ const CustomPortfolioItemsList = (props) => {
               style={{ whiteSpace: "pre" }}
               className="btn-sm cursor"
               onClick={handleShowItemCreateModal}
-            // onClick={handleNewBundleItem}
+              // onClick={handleNewBundleItem}
             >
               <span className="mr-2">
                 <AddIcon />
@@ -723,7 +762,7 @@ const CustomPortfolioItemsList = (props) => {
                             </Dropdown.Item>
                             <Dropdown.Item
                               className=""
-                            // onClick={(e) => handleServiceItemDelete(e, row)}
+                              // onClick={(e) => handleServiceItemDelete(e, row)}
                             >
                               <Tooltip title="Delete">
                                 <Link to="#" className="px-1">

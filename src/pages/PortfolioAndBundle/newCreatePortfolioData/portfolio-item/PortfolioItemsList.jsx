@@ -700,7 +700,6 @@ const PortfolioItemsList = (props) => {
   const handleGetBundleServiceItemData = async (bundleServiceItemId) => {
     const rUrl = CREATE_PORTFOLIO_ITEM() + "/" + bundleServiceItemId;
     await callGetApi(
-      null,
       rUrl,
       (response) => {
         if (response.status === API_SUCCESS) {
@@ -755,7 +754,6 @@ const PortfolioItemsList = (props) => {
     return new Promise((resolve, reject) => {
       const rUrl = `${LINK_ITEM_TO_PORTFOLIO + rUrlEndPath}`;
       callGetApi(
-        null,
         rUrl,
         (response) => {
           if (response.status === API_SUCCESS) {
@@ -903,7 +901,7 @@ const PortfolioItemsList = (props) => {
       );
       rUrl =
         rUrl + shortedItems.map((item) => `itemIds=${item.itemId}`).join("&");
-      await callGetApi(null, rUrl, (response) => {
+      await callGetApi(rUrl, (response) => {
         if (response.status === API_SUCCESS) {
           const res = response.data;
           const _reviewTabItems = [];

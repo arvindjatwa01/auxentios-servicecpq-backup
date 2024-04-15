@@ -45,7 +45,6 @@ const SolutionAnalytics = () => {
     setLoading(true);
     const rUrl = GET_RECENT_SOLUTION_PORTFOLIO_LIST + "/recent";
     callGetApi(
-      null,
       rUrl,
       (response) => {
         if (response.status === API_SUCCESS) {

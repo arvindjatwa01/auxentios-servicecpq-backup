@@ -24,8 +24,6 @@ import ReturnAnalysisModal from "./ReturnAnalysisModal";
 import ReturnReceivedModal from "./ReturnReceivedModal";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import ReplacementModal from "./ReplacementModal";
-import QuickCreateModal from "../QuickCreateModal";
-import WarrantyRequestModal from "./WarrantyRequestModal";
 
 const returnTypeOptions = ["Intra Company", "With in Company"];
 
@@ -154,7 +152,7 @@ const WarrantyReturnMaster = () => {
   // get recent activities (claim request)
   const getRecentWarrantyRequests = () => {
     const rUrl = `${WARRANTY_RETURN_MASTER_URL}?pageSize=${5}&sortColumn=updatedAt&orderBY=DESC`;
-    callGetApi(null, rUrl, (response) => {
+    callGetApi(rUrl, (response) => {
       if (response.status === API_SUCCESS) {
         const responseData = response.data;
         setRecentRequestRecords(responseData);
@@ -165,7 +163,7 @@ const WarrantyReturnMaster = () => {
   // get warranty reuqest records list
   const getWarrrantyRequestRecordList = () => {
     const rUrl = `${SHIPMENT_HEADER_MASTER_URL}?pageNumber=${0}&pageSize=${10}`;
-    callGetApi(null, rUrl, (response) => {
+    callGetApi(rUrl, (response) => {
       if (response.status === API_SUCCESS) {
         const responseData = response.data;
         setRequestRecords(responseData);
@@ -176,7 +174,7 @@ const WarrantyReturnMaster = () => {
   // get country list
   const getCountryKeyValueList = () => {
     const rUrl = `${Warranty_Country_List_GET}?pageNumber=${0}&pageSize=${10}`;
-    callGetApi(null, rUrl, (response) => {
+    callGetApi(rUrl, (response) => {
       if (response.status === API_SUCCESS) {
         const responseData = response.data;
         const options = [];
@@ -534,9 +532,6 @@ const WarrantyReturnMaster = () => {
           handleSnack={handleSnack}
         />
       )}
-
-      {/* <QuickCreateModal /> */}
-      {/* <WarrantyRequestModal /> */}
     </>
   );
 };

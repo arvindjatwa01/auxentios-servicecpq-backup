@@ -5,7 +5,7 @@ import FormatListBulletedOutlinedIcon from "@mui/icons-material/FormatListBullet
 import AccessAlarmOutlinedIcon from "@mui/icons-material/AccessAlarmOutlined";
 
 import {
-    SEARCH_FLAG_COMPONENT_CODE_SEARCH,
+  SEARCH_FLAG_COMPONENT_CODE_SEARCH,
   SEARCH_FLAG_MODEL_SEARCH,
   defaultItemBodyObj,
   defaultItemHeaderObj,
@@ -63,7 +63,7 @@ const PortfolioComponentCodeAddEdit = (props) => {
   useEffect(() => {
     if (!isEmpty(itemId)) {
       const rUrl = `${CREATE_PORTFOLIO_ITEM()}/${itemId}`;
-      callGetApi(null, rUrl, (response) => {
+      callGetApi(rUrl, (response) => {
         if (response.status === API_SUCCESS) {
           const { itemId, itemName, itemHeaderModel, itemBodyModel } =
             response.data;
@@ -91,7 +91,6 @@ const PortfolioComponentCodeAddEdit = (props) => {
       setComponentCodeSearchLoading(true);
       const rUrl = SEARCH_COMPONENT_CODE(`componentCode~${value}`);
       callGetApi(
-        null,
         rUrl,
         (response) => {
           if (response.status === API_SUCCESS) {
@@ -138,7 +137,6 @@ const PortfolioComponentCodeAddEdit = (props) => {
       setModelSearchLoading(true);
       const rUrl = SEARCH_MACHINE(`model~${value}`);
       callGetApi(
-        null,
         rUrl,
         (response) => {
           if (response.status === API_SUCCESS) {
@@ -191,7 +189,6 @@ const PortfolioComponentCodeAddEdit = (props) => {
       }
       const rUrl = SEARCH_MACHINE(`${searchParametes}equipmentNumber~${value}`);
       callGetApi(
-        null,
         rUrl,
         (response) => {
           if (response.status === API_SUCCESS) {

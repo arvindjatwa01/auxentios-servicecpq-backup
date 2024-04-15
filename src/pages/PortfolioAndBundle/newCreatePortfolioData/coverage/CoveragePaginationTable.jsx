@@ -132,7 +132,6 @@ const CoveragePaginationTable = (props) => {
     //   row[keyName]
     // }`;
     // callGetApi(
-    //   null,
     //   reqUrl,
     //   (response) => {
     //     if (response.status === API_SUCCESS) {

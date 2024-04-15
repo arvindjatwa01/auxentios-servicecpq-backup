@@ -17,12 +17,26 @@ import { useSelector } from "react-redux";
 
 const BundleServiceItemsModel = (props) => {
   const {
-    show, hideModal, customPortfolioId, customItemIds, setCustomItemIds, expendedCustomItemRow,
-    existingBundleService = [], bundleServiceItemsList = [], setBundleServiceItemsList = null,
-    handleUpdateSolutionHeader = null, setCustomItemsTableList = null, setCustomItemReviewTabItemList = null,
+    show,
+    hideModal,
+    customPortfolioId,
+    customItemIds,
+    setCustomItemIds,
+    expendedCustomItemRow,
+    existingBundleService = [],
+    bundleServiceItemsList = [],
+    setBundleServiceItemsList = null,
+    handleUpdateSolutionHeader = null,
+    setCustomItemsTableList = null,
+    setCustomItemReviewTabItemList = null,
   } = props;
 
-  const { priceMethodKeyValuePair, priceTypeKeyValuePair, frequencyKeyValuePairs, unitKeyValuePairs, } = useSelector((state) => state.commonAPIReducer);
+  const {
+    priceMethodKeyValuePair,
+    priceTypeKeyValuePair,
+    frequencyKeyValuePairs,
+    unitKeyValuePairs,
+  } = useSelector((state) => state.commonAPIReducer);
   const [searchBundleServiceItem, setSearchBundleServiceItem] = useState([]);
   const [selectedSearchedItems, setSelectedSearchedItems] = useState([]);
 
@@ -77,8 +91,8 @@ const BundleServiceItemsModel = (props) => {
         !isEmpty(row?.standardJobId)
           ? row?.standardJobId
           : !isEmpty(row?.repairKitId)
-            ? row?.repairKitId
-            : "NA",
+          ? row?.repairKitId
+          : "NA",
       sortable: false,
       wrap: true,
     },
@@ -123,7 +137,6 @@ const BundleServiceItemsModel = (props) => {
   const handleConvertLinkItemToPortfolio = async (rUrl) => {
     return new Promise((resolve, reject) => {
       callGetApi(
-        null,
         rUrl,
         (response) => {
           if (response.status === API_SUCCESS) {
@@ -162,9 +175,10 @@ const BundleServiceItemsModel = (props) => {
 
   // get the selected Bundle|service item Price data
   const handleGetBundleServiceItemPriceData = (reqUrlEndPath) => {
-    const rUrl = `${GET_CUSTOM_PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE + reqUrlEndPath
-      }`;
-    callGetApi(null, rUrl, (response) => {
+    const rUrl = `${
+      GET_CUSTOM_PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE + reqUrlEndPath
+    }`;
+    callGetApi(rUrl, (response) => {
       if (response.status === API_SUCCESS) {
         const res = response.data;
         const _bundleServiceItemsList = [...bundleServiceItemsList];
@@ -195,7 +209,7 @@ const BundleServiceItemsModel = (props) => {
         rUrl +
         customItemIds.map((item) => `itemIds=${item.customItemId}`).join("&");
 
-      await callGetApi(null, rUrl, (response) => {
+      await callGetApi(rUrl, (response) => {
         if (response.status === API_SUCCESS) {
           const res = response.data;
           const _portfolioItems = [];

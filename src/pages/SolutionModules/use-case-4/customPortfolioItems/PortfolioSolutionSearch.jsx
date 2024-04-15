@@ -22,13 +22,24 @@ import { callGetApi } from "services/ApiCaller";
 import { API_SUCCESS } from "services/ResponseCode";
 
 import { errorMessage } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/toastMessage";
-import { isEmpty, isEmptySelect, } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/textUtilities";
-import { IS_PORTFOLIO, IS_SOLUTION, PORTFOLIO_SEARCH_OPTIONS, } from "pages/Common/PortfolioAndSolutionConstants";
+import {
+  isEmpty,
+  isEmptySelect,
+} from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/textUtilities";
+import {
+  IS_PORTFOLIO,
+  IS_SOLUTION,
+  PORTFOLIO_SEARCH_OPTIONS,
+} from "pages/Common/PortfolioAndSolutionConstants";
 
 const PortfolioSolutionSearch = (props) => {
   const {
-    customPortfolioId, setCustomItemsTableList, setSearchPortfolioSolutionItems,
-    setSelectedSearchSolutionItems, setSearchBySolutionOrPortlio, } = props;
+    customPortfolioId,
+    setCustomItemsTableList,
+    setSearchPortfolioSolutionItems,
+    setSelectedSearchSolutionItems,
+    setSearchBySolutionOrPortlio,
+  } = props;
 
   const [searchSelector, setSearchSelector] = useState({
     id: 0,
@@ -116,8 +127,8 @@ const PortfolioSolutionSearch = (props) => {
             searchSelector.selectFamily.value === "model"
               ? "modelNo"
               : searchSelector.selectFamily.value === "prefix"
-                ? "serialNumberPrefix"
-                : searchSelector.selectFamily.value;
+              ? "serialNumberPrefix"
+              : searchSelector.selectFamily.value;
 
           handleSolutionCoverageSearch(
             `${selectedFamilyVal}/${e.target.value}`,
@@ -134,7 +145,6 @@ const PortfolioSolutionSearch = (props) => {
   const hanldeSearchPortfolio = (searchTextUrl, _searchSelector) => {
     const rUrl = `${PORTFOLIO_URL()}/${searchTextUrl}`;
     callGetApi(
-      null,
       rUrl,
       (response) => {
         if (response.status === API_SUCCESS) {
@@ -179,7 +189,6 @@ const PortfolioSolutionSearch = (props) => {
   const handlePortfolioCoverageSearch = (searchTextUrl, _searchSelector) => {
     const rUrl = `${GET_SEARCH_FAMILY_COVERAGE}?${searchTextUrl}`;
     callGetApi(
-      null,
       rUrl,
       (response) => {
         if (response.status === API_SUCCESS) {
@@ -227,7 +236,6 @@ const PortfolioSolutionSearch = (props) => {
   const handleSearchSolution = (searchTextUrl, _searchSelector) => {
     const rUrl = `${CUSTOM_PORTFOLIO_URL()}/${searchTextUrl}`;
     callGetApi(
-      null,
       rUrl,
       (response) => {
         if (response.status === API_SUCCESS) {
@@ -272,7 +280,6 @@ const PortfolioSolutionSearch = (props) => {
   const handleSolutionCoverageSearch = (searchTextUrl, _searchSelector) => {
     const rUrl = `${SOLUTION_COVERAGE_SEARCH_DROPDOWN}/${searchTextUrl}`;
     callGetApi(
-      null,
       rUrl,
       (response) => {
         if (response.status === API_SUCCESS) {
@@ -398,7 +405,6 @@ const PortfolioSolutionSearch = (props) => {
     const rUrl = `${PORTFOLIO_SEARCH_TABLE_DATA_LIST_URL + textUrl}`;
     return new Promise((resolve, reject) => {
       callGetApi(
-        null,
         rUrl,
         (response) => {
           if (response.status === API_SUCCESS) {
@@ -436,7 +442,6 @@ const PortfolioSolutionSearch = (props) => {
     const rUrl = `${CUSTOM_PORTFOLIO_SEARCH_TABLE_DATA_LIST_URL + textUrl}`;
     return new Promise((resolve, reject) => {
       callGetApi(
-        null,
         rUrl,
         (response) => {
           if (response.status === API_SUCCESS) {
@@ -521,7 +526,7 @@ const PortfolioSolutionSearch = (props) => {
 
   // search Portfolio Item Price Hierachy data
   const handlePortfolioItemPriceHierarchySearch = (rUrl) => {
-    callGetApi(null, rUrl, (response) => {
+    callGetApi(rUrl, (response) => {
       if (response.status === API_SUCCESS) {
         const result = response.data;
         if (result.itemRelations.length !== 0) {
@@ -564,7 +569,6 @@ const PortfolioSolutionSearch = (props) => {
   const handleGetPortfolioBundleServicePrice = (rUrl, portfolioId) => {
     const bundleServiceReqUrl = PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE + rUrl;
     callGetApi(
-      null,
       bundleServiceReqUrl,
       (response) => {
         if (response.status === API_SUCCESS) {
@@ -599,13 +603,13 @@ const PortfolioSolutionSearch = (props) => {
         } else {
         }
       },
-      (error) => { }
+      (error) => {}
     );
   };
 
   // search Solution (Custom Portfolio) Item Price Hierachy data
   const handleSolutionItemPriceHierarchySearch = (rUrl) => {
-    callGetApi(null, rUrl, (response) => {
+    callGetApi(rUrl, (response) => {
       if (response.status === API_SUCCESS) {
         const result = response.data;
         if (result.itemRelations.length !== 0) {
@@ -645,7 +649,6 @@ const PortfolioSolutionSearch = (props) => {
     const customBundleServiceReqUrl =
       GET_CUSTOM_PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE + rUrl;
     callGetApi(
-      null,
       customBundleServiceReqUrl,
       (response) => {
         if (response.status === API_SUCCESS) {
@@ -678,7 +681,7 @@ const PortfolioSolutionSearch = (props) => {
         } else {
         }
       },
-      (error) => { }
+      (error) => {}
     );
   };
 
@@ -722,13 +725,14 @@ const PortfolioSolutionSearch = (props) => {
           </div>
           <div
             className={`customselectsearch 
-            ${isEmpty(searchSelector.selectFamily)
+            ${
+              isEmpty(searchSelector.selectFamily)
                 ? "family-search"
                 : searchSelector.selectFamily?.value === "name" ||
                   searchSelector.selectFamily?.value === "description"
-                  ? "family-search"
-                  : "family-search-add"
-              }`}
+                ? "family-search"
+                : "family-search-add"
+            }`}
           >
             <input
               className="custom-input-sleact pr-1"
@@ -753,7 +757,7 @@ const PortfolioSolutionSearch = (props) => {
                       onClick={() => handleSearchDataSelect(currentItem)}
                     >
                       {searchSelector.selectFamily.value === "name" ||
-                        searchSelector.selectFamily.value === "description"
+                      searchSelector.selectFamily.value === "description"
                         ? currentItem.split("#")[1]
                         : currentItem}
                     </li>
@@ -788,7 +792,7 @@ const PortfolioSolutionSearch = (props) => {
             className="btn bg-primary text-white border-radius-10 cursor"
             style={{ zIndex: 0 }}
             onClick={handleSearch}
-          // onClick={showSearchPortfolioData}
+            // onClick={showSearchPortfolioData}
           >
             <SearchIcon />
             <span className="ml-1">Search</span>

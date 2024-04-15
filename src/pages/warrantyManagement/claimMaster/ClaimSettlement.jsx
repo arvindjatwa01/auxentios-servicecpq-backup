@@ -42,7 +42,6 @@ const ClaimSettlement = ({
     if (settlementValueId) {
       setViewOnly(true);
       callGetApi(
-        null,
         `${SETTLEMENT_VALUE_MASTER_URL}/${settlementValueId}`,
         (response) => {
           if (response.status === API_SUCCESS) {

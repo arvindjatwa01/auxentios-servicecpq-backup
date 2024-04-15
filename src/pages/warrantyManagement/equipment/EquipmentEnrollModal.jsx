@@ -161,7 +161,7 @@ const EquipmentEnrollModal = ({
         warrantyViewOnly: true,
       });
       const rUrl = DATA_SVC_EQUIPMENT() + "/" + equipmentRecord?.id;
-      callGetApi(null, rUrl, (response) => {
+      callGetApi(rUrl, (response) => {
         if (response.status === API_SUCCESS) {
           const responseData = response.data;
 
@@ -207,7 +207,7 @@ const EquipmentEnrollModal = ({
   // get warranty details
   const getWarrantyDetails = (warrantyId) => {
     const rUrl = `${WARRANTY_MASTER_URL}/${warrantyId}`;
-    callGetApi(null, rUrl, (response) => {
+    callGetApi(rUrl, (response) => {
       if (response.status === API_SUCCESS) {
         const responseData = response.data;
         setWarrantyRecord({ ...responseData });
@@ -221,7 +221,7 @@ const EquipmentEnrollModal = ({
   // get warranty installer details
   const getInstallerDetails = (installerId) => {
     const rUrl = `${WARRANTY_INSTALLER_MASTER_URL}/${installerId}`;
-    callGetApi(null, rUrl, (response) => {
+    callGetApi(rUrl, (response) => {
       if (response.status === API_SUCCESS) {
         const responseData = response.data;
         setInsatallerRecord({ ...responseData });
@@ -232,7 +232,7 @@ const EquipmentEnrollModal = ({
   // get yearly warranty details
   const getYearlyWarrantyDetails = (yearId) => {
     const rUrl = `${Warranty_Yearly_GetById_GET}/${yearId}`;
-    callGetApi(null, rUrl, (response) => {
+    callGetApi(rUrl, (response) => {
       if (response.status === API_SUCCESS) {
         const responseData = response.data;
 
