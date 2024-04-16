@@ -384,7 +384,7 @@ const WarrantyReturnMaster = () => {
                 </Grid>
               </Grid>
               <Grid item xs={3}>
-                <div className="card border px-3 py-2 warranty-req-dash-card mb-4">
+                <div className="card border px-3 py-3 warranty-req-dash-card mb-4">
                   <div
                     className="d-flex justify-content-between align-items-baseline cursor"
                     onClick={toggleReturnRequesterModal}
@@ -395,7 +395,7 @@ const WarrantyReturnMaster = () => {
                     </span>
                   </div>
                 </div>
-                <div className="card border px-3 py-2 claim-req-dash-card mb-4">
+                <div className="card border px-3 py-3 claim-req-dash-card mb-4">
                   <div
                     className="d-flex justify-content-between align-items-center cursor"
                     onClick={() => setOpenReturnReceivedModal(true)}
@@ -406,7 +406,7 @@ const WarrantyReturnMaster = () => {
                     </span>
                   </div>
                 </div>
-                <div className="card border px-3 py-2 req-anlysis-dash-card mb-4">
+                <div className="card border px-3 py-3 req-anlysis-dash-card mb-4">
                   <div
                     className="d-flex justify-content-between align-items-center cursor"
                     onClick={() => setOpenReturnAnalysisModal(true)}
@@ -417,7 +417,7 @@ const WarrantyReturnMaster = () => {
                     </span>
                   </div>
                 </div>
-                <div className="card border px-3 py-2 req-replacement-dash-card mb-4">
+                <div className="card border px-3 py-3 req-replacement-dash-card mb-4">
                   <div
                     className="d-flex justify-content-between align-items-center cursor"
                     onClick={() => setOpenReplacementModal(true)}
