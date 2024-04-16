@@ -442,7 +442,7 @@ const ClaimAdministration = () => {
                 </Grid>
               </Grid>
               <Grid item xs={3}>
-                <div className="card border px-3 py-2 warranty-req-dash-card mb-4">
+                <div className="card border px-3 py-3 warranty-req-dash-card mb-4">
                   <div
                     className="d-flex justify-content-between align-items-baseline cursor"
                     onClick={() => setOpenQuickWarrantyCreateModal(true)}
@@ -454,7 +454,7 @@ const ClaimAdministration = () => {
                     </span>
                   </div>
                 </div>
-                <div className="card border px-3 py-2 claim-req-dash-card mb-4">
+                <div className="card border px-3 py-3 claim-req-dash-card mb-4">
                   <div
                     className="d-flex justify-content-between align-items-center cursor"
                     onClick={() => setOpenClaimRequestModal(true)}
