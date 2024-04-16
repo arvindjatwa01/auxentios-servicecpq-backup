@@ -72,7 +72,7 @@ const QuickCreateModal = ({
   };
 
   return (
-    <Modal show={show} onHide={hideModal} size="md">
+    <Modal show={show} onHide={hideModal}>
       <Modal.Header className="d-block mb-0 pb-0">
         <Modal.Title className="h5">Quick Create</Modal.Title>
         <p>
