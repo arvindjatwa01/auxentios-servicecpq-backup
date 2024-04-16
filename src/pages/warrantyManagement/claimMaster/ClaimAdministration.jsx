@@ -348,7 +348,7 @@ const ClaimAdministration = () => {
                         className="d-flex justify-content-between align-items-center p-3 border-bottom bg-light-pink"
                         style={{ borderRadius: "10px 10px 0px 0px" }}
                       >
-                        <span>Recent Activity</span>
+                        <span className="font-size-14">Recent Activity</span>
                         {/* <MuiMenuComponent options={workFlowOptions} /> */}
                       </div>
                       <div className="px-3 py-1">
@@ -397,7 +397,7 @@ const ClaimAdministration = () => {
                         className="d-flex justify-content-between align-items-center p-3 border-bottom workflow-task"
                         style={{ borderRadius: "10px 10px 0px 0px" }}
                       >
-                        <span>Workflow Task</span>
+                        <span className="font-size-14">Workflow Task</span>
                         {/* <MuiMenuComponent options={workFlowOptions} /> */}
                       </div>
                       <div className="px-3 py-1">
@@ -448,7 +448,7 @@ const ClaimAdministration = () => {
                     onClick={() => setOpenQuickWarrantyCreateModal(true)}
                     // onClick={() => setOpenWarrantyRequestModal(true)}
                   >
-                    <span className=" mb-0">Warranty Request</span>
+                    <span className="mb-0 font-size-14">Warranty Request</span>
                     <span>
                       <ArrowForwardIosIcon />
                     </span>
@@ -459,7 +459,7 @@ const ClaimAdministration = () => {
                     className="d-flex justify-content-between align-items-center cursor"
                     onClick={() => setOpenClaimRequestModal(true)}
                   >
-                    <span className=" mb-0">Claim Request</span>
+                    <span className="mb-0 font-size-14">Claim Request</span>
                     <span className="font-weight-500">
                       <ArrowForwardIosIcon />
                     </span>

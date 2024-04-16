@@ -66,6 +66,7 @@ const QuickCreateModal = ({
   //
   const handleCreateWarranty = () => {
     const pwaNumber = `AC${Math.floor(Math.random() * 90000) + 100000}`;
+    handleSnack("success", `Authorization code ${pwaNumber} created successfully.`)
     setPwaNumber(pwaNumber);
     openWarrantyDetailsModal();
   };
