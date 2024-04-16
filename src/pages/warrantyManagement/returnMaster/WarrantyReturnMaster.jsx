@@ -289,7 +289,7 @@ const WarrantyReturnMaster = () => {
                         className="d-flex justify-content-between align-items-center p-3 border-bottom bg-light-pink"
                         style={{ borderRadius: "10px 10px 0px 0px" }}
                       >
-                        <span>Recent Activity</span>
+                        <span className="font-size-14">Recent Activity</span>
                         {/* <MuiMenuComponent options={workFlowOptions} /> */}
                       </div>
                       <div className="px-3 py-1">
@@ -339,7 +339,7 @@ const WarrantyReturnMaster = () => {
                         className="d-flex justify-content-between align-items-center p-3 border-bottom workflow-task"
                         style={{ borderRadius: "10px 10px 0px 0px" }}
                       >
-                        <span>Workflow Task</span>
+                        <span className="font-size-14">Workflow Task</span>
                         {/* <MuiMenuComponent options={workFlowOptions} /> */}
                       </div>
                       <div className="px-3 py-1">
@@ -389,7 +389,7 @@ const WarrantyReturnMaster = () => {
                     className="d-flex justify-content-between align-items-baseline cursor"
                     onClick={toggleReturnRequesterModal}
                   >
-                    <span className=" mb-0">Return Request</span>
+                    <span className="mb-0 font-size-14">Return Request</span>
                     <span>
                       <ArrowForwardIosIcon />
                     </span>
@@ -400,7 +400,7 @@ const WarrantyReturnMaster = () => {
                     className="d-flex justify-content-between align-items-center cursor"
                     onClick={() => setOpenReturnReceivedModal(true)}
                   >
-                    <span className=" mb-0">Return Received</span>
+                    <span className="mb-0 font-size-14">Return Received</span>
                     <span className="font-weight-500">
                       <ArrowForwardIosIcon />
                     </span>
@@ -411,7 +411,7 @@ const WarrantyReturnMaster = () => {
                     className="d-flex justify-content-between align-items-center cursor"
                     onClick={() => setOpenReturnAnalysisModal(true)}
                   >
-                    <span className=" mb-0">Return Analysis</span>
+                    <span className="mb-0 font-size-14">Return Analysis</span>
                     <span className="font-weight-500">
                       <ArrowForwardIosIcon />
                     </span>
@@ -422,7 +422,7 @@ const WarrantyReturnMaster = () => {
                     className="d-flex justify-content-between align-items-center cursor"
                     onClick={() => setOpenReplacementModal(true)}
                   >
-                    <span className=" mb-0">Replacement</span>
+                    <span className="mb-0 font-size-14">Replacement</span>
                     <span className="font-weight-500">
                       <ArrowForwardIosIcon />
                     </span>
