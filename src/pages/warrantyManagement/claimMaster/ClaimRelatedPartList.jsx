@@ -18,7 +18,7 @@ import SearchPartListModal from "./SearchPartListModal";
 import { callDeleteApi, callPutApi } from "services/ApiCaller";
 import { API_SUCCESS } from "services/ResponseCode";
 import { RELATED_PARTS_MASTER_URL } from "services/CONSTANTS";
-import SupplierClaimModal from "./SupplierClaimModal";
+import SupplierClaimSummaryModal from "./SupplierClaimSummaryModal";
 
 const ClaimRelatedPartList = ({
   handleBack,
@@ -530,7 +530,7 @@ const ClaimRelatedPartList = ({
         />
       )}
       {openClaimSuplierModal && (
-        <SupplierClaimModal
+        <SupplierClaimSummaryModal
           claimSupplierShow={openClaimSuplierModal}
           handleClaimSupplierClose={handleClaimSupplierClose}
           claimSupplierRecord={claimSupplierRecord}

@@ -1,7 +1,7 @@
 import { Modal } from "@mui/material";
 import React from "react";
 
-const SupplierClaimModal = ({
+const SupplierClaimSummaryModal = ({
   claimSupplierShow,
   handleClaimSupplierClose,
   claimSupplierRecord,
@@ -176,4 +176,4 @@ const SupplierClaimModal = ({
   );
 };
 
-export default SupplierClaimModal;
+export default SupplierClaimSummaryModal;
