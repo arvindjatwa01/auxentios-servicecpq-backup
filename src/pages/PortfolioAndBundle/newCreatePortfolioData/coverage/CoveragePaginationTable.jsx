@@ -35,6 +35,7 @@ import {
 import { API_SUCCESS } from "services/ResponseCode";
 import { callDeleteApi, callGetApi } from "services/ApiCaller";
 import LoadingProgress from "pages/Repair/components/Loader";
+import SearchBox from "pages/Common/SearchBox";
 
 const CoveragePaginationTable = (props) => {
   const {
@@ -71,6 +72,9 @@ const CoveragePaginationTable = (props) => {
     useState([]);
   const [showSerialNoSearchModal, setShowSerialNoSearchModal] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const [noOptionsSerial, setNoOptionsSerial] = useState(false);
+  const [searchSerialResults, setSearchSerialResults] = useState([]);
 
   // show hide coverage edit modal
   const handleCoverageEditModal = () => {
@@ -1031,8 +1035,9 @@ const CoveragePaginationTable = (props) => {
                 if (obj["coverageId"] !== row["coverageId"]) return obj;
                 // if (obj[keyName] !== row[keyName]) return obj;
               });
-              setCoverageIds((prev) =>
-                prev.filter((obj) => obj.coverageId !== row["coverageId"])
+              setCoverageIds(
+                (prev) =>
+                  prev.filter((obj) => obj.coverageId !== row["coverageId"])
                 // prev.filter((obj) => obj.coverageId !== row[keyName])
               );
               _tableData[selectedCoverageIndex] = selectedCoverage;
@@ -1048,6 +1053,80 @@ const CoveragePaginationTable = (props) => {
         );
       }
     } catch (error) {}
+  };
+
+  // Machine search based on model and serial number
+  const handleMachineSearch = async (
+    searchMachinefieldName,
+    searchText,
+    row,
+    i
+  ) => {
+    const _tableData = [...tableData];
+    let tempObj = _tableData[selectedCoverageIndex].coverageSubDetails[i];
+
+    tempObj = { ...tempObj, serialNumber: searchText };
+    _tableData[selectedCoverageIndex].coverageSubDetails[i] = tempObj;
+    setTableData(_tableData);
+
+    let searchQueryMachine = "";
+    // setSearchModelResults([]);
+    setSearchSerialResults([]);
+    if (searchMachinefieldName === "model") {
+      row.model = searchText;
+      searchQueryMachine = searchText
+        ? searchMachinefieldName + "~" + searchText
+        : "";
+    } else if (searchMachinefieldName === "serialNo") {
+      row.serialNo = searchText;
+      searchQueryMachine = searchText
+        ? tableData[selectedCoverageIndex]?.modelNo
+          ? `model:${tableData[selectedCoverageIndex]?.modelNo} AND equipmentNumber~` +
+            searchText
+          : "equipmentNumber~" + searchText
+        : "";
+    }
+    if (searchQueryMachine) {
+      await machineSearch(searchQueryMachine)
+        .then((result) => {
+          if (result) {
+            if (searchMachinefieldName === "model") {
+              // if (result && result.length > 0) {
+              //   setSearchModelResults(result);
+              //   setNoOptionsModel(false);
+              // } else {
+              //   setNoOptionsModel(true);
+              // }
+            } else if (searchMachinefieldName === "serialNo") {
+              if (result && result.length > 0) {
+                setSearchSerialResults(result);
+                setNoOptionsSerial(false);
+              } else {
+                setNoOptionsSerial(true);
+              }
+            }
+          }
+        })
+        .catch((e) => {
+          // handleSnack("error", "Error occurred while searching the machine!");
+        });
+    } else {
+      // searchMachinefieldName === "model"
+      //   ? setSearchModelResults([])
+      //   : setSearchSerialResults([]);
+      setSearchSerialResults([]);
+    }
+  };
+
+  // Select machine from the search result
+  const handleModelSelect = (type, currentItem, i, row) => {
+    const _tableData = [...tableData];
+    let tempObj = _tableData[selectedCoverageIndex].coverageSubDetails[i];
+
+    tempObj = { ...tempObj, serialNumber: currentItem.equipmentNumber };
+    _tableData[selectedCoverageIndex].coverageSubDetails[i] = tempObj;
+    setTableData(_tableData);
+    setSearchSerialResults([]);
   };
 
   // included serial no modal list columns
@@ -1078,8 +1157,45 @@ const CoveragePaginationTable = (props) => {
       format: (row) => row.noSeriese,
       cell: (row, i) => (
         <div>
+          <div className="customselectsearch">
+            <div className={`form-control-search pr-4`}>
+              <span class="fa fa-search fa-lg " />
+            </div>
+            <input
+              type="text"
+              className="form-control border-radius-10"
+              // placeholder="Search (Required)"
+              value={row.serialNumber}
+              autoComplete="off"
+              onChange={(e) =>
+                handleMachineSearch("serialNo", e.target.value, row, i)
+              }
+              placeholder={"Serial Number"}
+            />
+            {searchSerialResults && searchSerialResults.length > 0 && (
+              <ul
+                className={`list-group customselectsearch-list scrollbar-repair-autocomplete`}
+                id="style"
+              >
+                {searchSerialResults.map((currentItem, index) => (
+                  <li
+                    key={index}
+                    className="list-group-item"
+                    onClick={(e) =>
+                      handleModelSelect("equipmentNumber", currentItem, i, row)
+                    }
+                  >
+                    {currentItem["equipmentNumber"]}
+                  </li>
+                ))}
+              </ul>
+            )}
+            <span style={{ color: "red", fontSize: 12, height: 2 }}>
+              {noOptionsSerial ? "No Options Found!" : ""}
+            </span>
+          </div>
           {/* <span className="cursor" onClick={handleShowSerialNoSearchModal}>{row.serialNumber ? row.serialNumber : "Click to Add"}</span> */}
-          <Select
+          {/* <Select
             className="customselect"
             maxMenuHeight={80}
             onChange={(e) => handleSelectIncludedModelSerialNo(e, i, row)}
@@ -1096,7 +1212,7 @@ const CoveragePaginationTable = (props) => {
               }),
             }}
             // isOptionDisabled={(e) => handleDisableSerialNoChangesOptions(e,i,row)}
-          />
+          /> */}
         </div>
       ),
       minWidth: "100px",
@@ -1112,6 +1228,7 @@ const CoveragePaginationTable = (props) => {
         <div>
           <input
             type="text"
+            className="form-control border-radius-10"
             placeholder="location"
             name="location"
             value={row.location}

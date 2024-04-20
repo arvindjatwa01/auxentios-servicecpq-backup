@@ -13,13 +13,19 @@ import Select from "react-select";
 
 import { callGetApi, callPostApi, callPutApi } from "services/ApiCaller";
 import {
-  CREATE_CUSTOM_PORTFOLIO_ITEM, CREATE_CUSTOM_PRICE, GET_CUSTOM_PORTFOLIO_ITEM_PRICE_DATA,
+  CREATE_CUSTOM_PORTFOLIO_ITEM,
+  CREATE_CUSTOM_PRICE,
+  GET_CUSTOM_PORTFOLIO_ITEM_PRICE_DATA,
 } from "services/CONSTANTS";
 import { API_SUCCESS } from "services/ResponseCode";
 
 import {
-  defaultCustomItemHeaderModel, defaultCustomItemBodyModel, defaultCustomItemPriceObj,
-  additionalPriceKeyValuePair, discountTypeKeyValuePair, usageTypeKeyValuePair,
+  defaultCustomItemHeaderModel,
+  defaultCustomItemBodyModel,
+  defaultCustomItemPriceObj,
+  additionalPriceKeyValuePair,
+  discountTypeKeyValuePair,
+  usageTypeKeyValuePair,
 } from "pages/Common/PortfolioAndSolutionConstants";
 import { updateCustomItemPricesSjRkId } from "pages/PortfolioAndBundle/newCreatePortfolioData/portfolio-item/SJRKIdUpdate";
 import { getFormatDateTime } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/dateUtilities";
@@ -29,10 +35,16 @@ import LoadingProgress from "pages/Repair/components/Loader";
 import { useSelector } from "react-redux";
 
 const CustomItemPriceCalculator = (props) => {
-  const { itemId, isEditable, handleSavePriceChanges, } = props;
+  const { itemId, isEditable, handleSavePriceChanges } = props;
 
-  const { priceMethodKeyValuePair, priceTypeKeyValuePair, priceHeadTypeKeyValuePair, currencyKeyValuePair,
-    frequencyKeyValuePairs, unitKeyValuePairs, } = useSelector((state) => state.commonAPIReducer);
+  const {
+    priceMethodKeyValuePair,
+    priceTypeKeyValuePair,
+    priceHeadTypeKeyValuePair,
+    currencyKeyValuePair,
+    frequencyKeyValuePairs,
+    unitKeyValuePairs,
+  } = useSelector((state) => state.commonAPIReducer);
 
   const [itemPriceRecordObj, setItemPriceRecordObj] = useState({
     customItemPriceDataId: 0,
@@ -69,7 +81,9 @@ const CustomItemPriceCalculator = (props) => {
     calculatedPrice: 0,
   });
 
-  const [itemPriceRequestObj, setItemPriceRequestObj] = useState({ ...defaultCustomItemPriceObj, });
+  const [itemPriceRequestObj, setItemPriceRequestObj] = useState({
+    ...defaultCustomItemPriceObj,
+  });
   const [priceEscalationValues, setPriceEscalationValues] = useState({
     sparePartsEscalation: 0,
     labourEscalation: 0,
@@ -89,10 +103,16 @@ const CustomItemPriceCalculator = (props) => {
     itemName: "",
   });
 
-  const [itemHeaderModelObj, setItemHeaderModelObj] = useState({ ...defaultCustomItemHeaderModel, });
-  const [itemBodyModelObj, setItemBodyModelObj] = useState({ ...defaultCustomItemBodyModel, });
+  const [itemHeaderModelObj, setItemHeaderModelObj] = useState({
+    ...defaultCustomItemHeaderModel,
+  });
+  const [itemBodyModelObj, setItemBodyModelObj] = useState({
+    ...defaultCustomItemBodyModel,
+  });
 
-  const [yearsKeyValuePairs, seYearsKeyValuePairs] = useState([{ value: 1, label: 1 },]);
+  const [yearsKeyValuePairs, seYearsKeyValuePairs] = useState([
+    { value: 1, label: 1 },
+  ]);
   const [editItemPrice, setEditItemPrice] = useState(isEditable ? true : false);
   const [loading, setLoading] = useState(false);
 
@@ -136,9 +156,9 @@ const CustomItemPriceCalculator = (props) => {
           const _itemYear = isEmpty(customItemBodyModel.year)
             ? ""
             : {
-              label: customItemBodyModel.year,
-              customItemBodyModel: customItemBodyModel.year,
-            };
+                label: customItemBodyModel.year,
+                customItemBodyModel: customItemBodyModel.year,
+              };
 
           // set item request obj data
           setItemRequestObj({
@@ -163,10 +183,19 @@ const CustomItemPriceCalculator = (props) => {
           setItemBodyModelObj({ ..._itemBodyModelObj });
 
           if (customItemBodyModel.customItemPrices.length !== 0) {
-            const itemPriceId =
-              customItemBodyModel.customItemPrices[
-                customItemBodyModel.customItemPrices.length - 1
-              ].customItemPriceDataId;
+            // Use Array.reduce() to find the minimum itemId
+            const itemPriceId = customItemBodyModel.customItemPrices.reduce(
+              (minItemId, currentItem) => {
+                return currentItem.customItemPriceDataId < minItemId
+                  ? currentItem.customItemPriceDataId
+                  : minItemId;
+              },
+              customItemBodyModel.customItemPrices[0].customItemPriceDataId
+            );
+            // const itemPriceId =
+            //   customItemBodyModel.customItemPrices[
+            //     customItemBodyModel.customItemPrices.length - 1
+            //   ].customItemPriceDataId;
 
             const itemPriceReqUrl = `${GET_CUSTOM_PORTFOLIO_ITEM_PRICE_DATA}/${itemPriceId}`;
             handleGetItemPriceDetails(itemPriceReqUrl, _usageType, _currency);
@@ -550,7 +579,7 @@ const CustomItemPriceCalculator = (props) => {
               <span
                 className="mr-3 cursor"
                 onClick={() => setEditItemPrice(false)}
-              // onClick={() => setPortfolioItemPriceEditable(!portfolioItemPriceEditable)}
+                // onClick={() => setPortfolioItemPriceEditable(!portfolioItemPriceEditable)}
               >
                 <i className="fa fa-pencil font-size-12" aria-hidden="true"></i>
                 <span className="ml-2">Edit</span>
@@ -605,9 +634,9 @@ const CustomItemPriceCalculator = (props) => {
                         {isEmpty(itemPriceRequestObj.priceDate)
                           ? "NA"
                           : getFormatDateTime(
-                            itemPriceRequestObj.priceDate,
-                            false
-                          )}
+                              itemPriceRequestObj.priceDate,
+                              false
+                            )}
                       </h6>
                     </div>
                   </div>
@@ -650,19 +679,20 @@ const CustomItemPriceCalculator = (props) => {
                           ? "NA"
                           : itemPriceRequestObj.priceEscalation?.label}
                         {!isEmpty(itemPriceRequestObj.priceEscalation?.value) &&
-                          `(${itemPriceRequestObj.priceEscalation?.value ===
+                          `(${
+                            itemPriceRequestObj.priceEscalation?.value ===
                             "PARTS"
-                            ? priceEscalationValues.sparePartsEscalation
-                            : itemPriceRequestObj.priceEscalation?.value ===
-                              "LABOR"
+                              ? priceEscalationValues.sparePartsEscalation
+                              : itemPriceRequestObj.priceEscalation?.value ===
+                                "LABOR"
                               ? priceEscalationValues.labourEscalation
                               : itemPriceRequestObj.priceEscalation?.value ===
                                 "MISCELLANEOUS"
-                                ? priceEscalationValues.miscEscalation
-                                : itemPriceRequestObj.priceEscalation?.value ===
-                                  "SERVICE"
-                                  ? priceEscalationValues.serviceEscalation
-                                  : "NA"
+                              ? priceEscalationValues.miscEscalation
+                              : itemPriceRequestObj.priceEscalation?.value ===
+                                "SERVICE"
+                              ? priceEscalationValues.serviceEscalation
+                              : "NA"
                           })`}
                       </h6>
                     </div>
@@ -718,23 +748,24 @@ const CustomItemPriceCalculator = (props) => {
                         )
                           ? "NA"
                           : priceBrackdownValues.priceBrackdownselectValue
-                            ?.label}
+                              ?.label}
                         {!isEmpty(
                           priceBrackdownValues.priceBrackdownselectValue?.value
                         ) &&
-                          `(${priceBrackdownValues.priceBrackdownselectValue
-                            ?.value === "PARTS"
-                            ? priceBrackdownValues.sparePartsPriceBreakDownPercentage
-                            : priceBrackdownValues.priceBrackdownselectValue
-                              ?.value === "LABOR"
+                          `(${
+                            priceBrackdownValues.priceBrackdownselectValue
+                              ?.value === "PARTS"
+                              ? priceBrackdownValues.sparePartsPriceBreakDownPercentage
+                              : priceBrackdownValues.priceBrackdownselectValue
+                                  ?.value === "LABOR"
                               ? priceBrackdownValues.labourPriceBreakDownPercentage
                               : priceBrackdownValues.priceBrackdownselectValue
-                                ?.value === "MISCELLANEOUS"
-                                ? priceBrackdownValues.miscPriceBreakDownPercentage
-                                : priceBrackdownValues.priceBrackdownselectValue
+                                  ?.value === "MISCELLANEOUS"
+                              ? priceBrackdownValues.miscPriceBreakDownPercentage
+                              : priceBrackdownValues.priceBrackdownselectValue
                                   ?.value === "SERVICE"
-                                  ? priceBrackdownValues.servicePriceBreakDownPercentage
-                                  : "NA"
+                              ? priceBrackdownValues.servicePriceBreakDownPercentage
+                              : "NA"
                           })`}
                       </h6>
                     </div>
@@ -1009,18 +1040,18 @@ const CustomItemPriceCalculator = (props) => {
                           )}
                           value={
                             itemPriceRequestObj.priceEscalation?.value ===
-                              "PARTS"
+                            "PARTS"
                               ? priceEscalationValues.sparePartsEscalation
                               : itemPriceRequestObj.priceEscalation?.value ===
                                 "LABOR"
-                                ? priceEscalationValues.labourEscalation
-                                : itemPriceRequestObj.priceEscalation?.value ===
-                                  "MISCELLANEOUS"
-                                  ? priceEscalationValues.miscEscalation
-                                  : itemPriceRequestObj.priceEscalation?.value ===
-                                    "SERVICE"
-                                    ? priceEscalationValues.serviceEscalation
-                                    : 0
+                              ? priceEscalationValues.labourEscalation
+                              : itemPriceRequestObj.priceEscalation?.value ===
+                                "MISCELLANEOUS"
+                              ? priceEscalationValues.miscEscalation
+                              : itemPriceRequestObj.priceEscalation?.value ===
+                                "SERVICE"
+                              ? priceEscalationValues.serviceEscalation
+                              : 0
                           }
                           onChange={priceEscalationPriceInput}
                         />
@@ -1137,15 +1168,15 @@ const CustomItemPriceCalculator = (props) => {
                               ?.value === "PARTS"
                               ? priceBrackdownValues.sparePartsPriceBreakDownPercentage
                               : priceBrackdownValues.priceBrackdownselectValue
-                                ?.value === "LABOR"
-                                ? priceBrackdownValues.labourPriceBreakDownPercentage
-                                : priceBrackdownValues.priceBrackdownselectValue
+                                  ?.value === "LABOR"
+                              ? priceBrackdownValues.labourPriceBreakDownPercentage
+                              : priceBrackdownValues.priceBrackdownselectValue
                                   ?.value === "MISCELLANEOUS"
-                                  ? priceBrackdownValues.miscPriceBreakDownPercentage
-                                  : priceBrackdownValues.priceBrackdownselectValue
-                                    ?.value === "SERVICE"
-                                    ? priceBrackdownValues.servicePriceBreakDownPercentage
-                                    : 0
+                              ? priceBrackdownValues.miscPriceBreakDownPercentage
+                              : priceBrackdownValues.priceBrackdownselectValue
+                                  ?.value === "SERVICE"
+                              ? priceBrackdownValues.servicePriceBreakDownPercentage
+                              : 0
                           }
                           disabled={isEmpty(
                             priceBrackdownValues.priceBrackdownselectValue
@@ -1336,8 +1367,8 @@ const CustomItemPriceCalculator = (props) => {
                               ? "Select unit"
                               : (itemPriceRequestObj.usageUnit?.value).toLowerCase() ===
                                 "year"
-                                ? "Month"
-                                : itemPriceRequestObj.usageUnit?.label}
+                              ? "Month"
+                              : itemPriceRequestObj.usageUnit?.label}
                           </span>
                         </div>
                         <div className="css-w8dmq8">*Mandatory</div>
@@ -1510,7 +1541,7 @@ const CustomItemPriceCalculator = (props) => {
                 <a
                   className="btn text-white bg-primary cursor"
                   onClick={handleSaveItemPriceChanges}
-                // onClick={handleItemPriceCalculatorSave}
+                  // onClick={handleItemPriceCalculatorSave}
                 >
                   Next
                   {/* {portfolioItemPriceEditable ? "Next" : "Save & Next"} */}

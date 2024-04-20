@@ -4528,3 +4528,8 @@ input::-ms-clear {
   color: #0013ff !important;
   border-color: #3e30eb69 !important;
 }
+
+.text-black{
+  color: #000000 !important;
+  font-weight: 500;
+}

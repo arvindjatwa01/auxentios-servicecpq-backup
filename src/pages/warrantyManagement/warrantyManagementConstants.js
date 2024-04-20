@@ -158,6 +158,11 @@ export const claimRequestTypeOptions = [
   { label: "Late Claim", value: "LATE_CLAIM" },
 ];
 
+export const supplierVendorSearchOptions = [
+  { label: "customer Id", value: "customerId" },
+  { label: "customer Name", value: "fullName" },
+];
+
 export const failedPartsRecord = [
   {
     index: Math.floor(Math.random() * 900) + 10000,

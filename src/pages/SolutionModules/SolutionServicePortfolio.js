@@ -23,7 +23,15 @@ import Select from "react-select";
 import Cookies from "js-cookie";
 
 // import MuiMenuComponent from "../Operational/MuiMenuComponent";
-import { faCloudUploadAlt, faFileAlt, faFolderPlus, faPen, faPlus, faShareAlt, faUpload } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCloudUploadAlt,
+  faFileAlt,
+  faFolderPlus,
+  faPen,
+  faPlus,
+  faShareAlt,
+  faUpload,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import MenuItem from "@mui/material/MenuItem";
 import cpqIcon from "../../assets/icons/svg/CPQ.svg";
@@ -33,10 +41,7 @@ import editIcon from "../../assets/icons/svg/edit.svg";
 import folderaddIcon from "../../assets/icons/svg/folder-add.svg";
 import shareIcon from "../../assets/icons/svg/share.svg";
 import uploadIcon from "../../assets/icons/svg/upload.svg";
-import {
-  ERROR_MAX_VERSIONS,
-  FONT_STYLE_SELECT
-} from "../Repair/CONSTANTS";
+import { ERROR_MAX_VERSIONS, FONT_STYLE_SELECT } from "../Repair/CONSTANTS";
 // import SearchBox from "../ /components/SearchBox";
 import SearchBox from "pages/Repair/components/SearchBox";
 import { customerSearch, machineSearch } from "services/searchServices";
@@ -52,7 +57,11 @@ import QuoteSummary from "pages/Repair/components/QuoteSummary";
 import { useDispatch } from "react-redux";
 import SelectFilter from "react-select";
 import { toast } from "react-toastify";
-import { createQuoteVersion, fetchQuoteSummary, updateQuoteHeader } from "services/repairQuoteServices";
+import {
+  createQuoteVersion,
+  fetchQuoteSummary,
+  updateQuoteHeader,
+} from "services/repairQuoteServices";
 import searchstatusIcon from "../../assets/icons/svg/search-status.svg";
 import {
   deleteMasterQuote,
@@ -61,17 +70,22 @@ import {
   quotePayerCreation,
   searchSolutionQuotes,
   solutionQuoteCreation,
-  updateSolutionQuoteData
+  updateSolutionQuoteData,
 } from "../../services/index";
 import { QUOTE_STATUS_SELECT, QUOTE_VERSION_SELECT } from "./CONSTANTS";
 import NotesAddEdit from "./NotesAddEdit";
 import SolutionQuotePayerGridTable from "./SolutionQuotePayerGridTable";
 import SolutionQuotePriceEstimate from "./SolutionQuotePriceEstimate";
 import { useAppSelector } from "app/hooks";
-import { selectQuoteDropdownOption, selectQuoteStatusList } from "pages/Repair/dropdowns/quoteRepairSlice";
+import {
+  selectQuoteDropdownOption,
+  selectQuoteStatusList,
+} from "pages/Repair/dropdowns/quoteRepairSlice";
 import { FETCH_QUOTE_STATUS } from "services/CONSTANTS";
 import axios from "axios";
 import { getQuoteStatus } from "services/solutionQuoteServices";
+import QuoteDetailsModal from "./Quote/QuoteDetailsModal";
+import QuoteCoverageDetailsModal from "./Quote/QuoteCoverageDetailsModal";
 
 const customStyles = {
   rows: {
@@ -103,6 +117,11 @@ export function SolutionServicePortfolio(props) {
   const { state } = props.location;
   console.log("props are : ", props);
 
+  //Fetch Status List
+  const statusOptions = useAppSelector(
+    selectQuoteDropdownOption(selectQuoteStatusList)
+  );
+
   var CookiesSetData = Cookies.get("loginTenantDtl");
   var getCookiesJsonData;
   if (CookiesSetData != undefined) {
@@ -116,6 +135,10 @@ export function SolutionServicePortfolio(props) {
   const [age2, setAge2] = React.useState("5");
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open2 = Boolean(anchorEl);
+
+  const [openQuoteDetailModal, setOpenQuoteDetailModal] = useState(false);
+  const [openCoverageDtlModal, setOpenCoverageDtlModal] = useState(false);
+  const [coverageRecordId, setCoverageRecordId] = useState(null);
 
   const [searchModelResults, setSearchModelResults] = useState([]);
   const [searchSerialResults, setSearchSerialResults] = useState([]);
@@ -148,7 +171,8 @@ export function SolutionServicePortfolio(props) {
 
   const [payerListArray, setPayerListArray] = useState([]);
 
-  const [expendedSolutionSubComponent, setExpendedSolutionSubComponent] = useState(null);
+  const [expendedSolutionSubComponent, setExpendedSolutionSubComponent] =
+    useState(null);
   // Customer Tab Data
   const [customerData, setCustomerData] = useState({
     source: "User Generated",
@@ -344,16 +368,13 @@ export function SolutionServicePortfolio(props) {
 
   const [selQuoteStatus, setSelQuoteStatus] = useState("");
 
-  const [statusOptions, setStatusOptions] = useState([]);
+  // const [statusOptions, setStatusOptions] = useState([]);
   // const statusOptions = [
   //   { label: "Draft", value: "draft" },
   //   { label: "Active", value: "active" },
   //   { label: "Revised", value: "revised" },
   //   { label: "Archived", value: "archived" },
   // ];
-
-
-
 
   function getStyles(name, personName, theme) {
     return {
@@ -518,71 +539,71 @@ export function SolutionServicePortfolio(props) {
             revisedOn: estimateDetails.revisedOn,
             salesOffice:
               estimateDetails.salesOffice === "" ||
-                estimateDetails.salesOffice === null ||
-                estimateDetails.salesOffice === undefined
+              estimateDetails.salesOffice === null ||
+              estimateDetails.salesOffice === undefined
                 ? ""
                 : typeof estimateDetails.salesOffice === "object"
-                  ? estimateDetails.salesOffice?.value
-                  : estimateDetails.salesOffice,
+                ? estimateDetails.salesOffice?.value
+                : estimateDetails.salesOffice,
             quoteDate: generalDetails.quoteDate,
             description: generalDetails.description,
             reference: generalDetails.reference,
             validity:
               generalDetails.validity === "" ||
-                generalDetails.validity === null ||
-                generalDetails.validity === undefined
+              generalDetails.validity === null ||
+              generalDetails.validity === undefined
                 ? "EMPTY"
                 : typeof generalDetails.validity === "object"
-                  ? generalDetails.validity?.value
-                  : generalDetails.validity,
+                ? generalDetails.validity?.value
+                : generalDetails.validity,
             version:
               generalDetails.version === "" ||
-                generalDetails.version === null ||
-                generalDetails.version === undefined
+              generalDetails.version === null ||
+              generalDetails.version === undefined
                 ? "EMPTY"
                 : typeof generalDetails.version === "object"
-                  ? generalDetails.version?.value
-                  : generalDetails.version,
+                ? generalDetails.version?.value
+                : generalDetails.version,
             paymentTerms:
               quoteBillingData.paymentTerms === "" ||
-                quoteBillingData.paymentTerms === null ||
-                quoteBillingData.paymentTerms === undefined
+              quoteBillingData.paymentTerms === null ||
+              quoteBillingData.paymentTerms === undefined
                 ? "EMPTY"
                 : typeof quoteBillingData.paymentTerms === "object"
-                  ? quoteBillingData.paymentTerms?.value
-                  : quoteBillingData.paymentTerms,
+                ? quoteBillingData.paymentTerms?.value
+                : quoteBillingData.paymentTerms,
             billingFrequency:
               quoteBillingData.billingFrequency === "" ||
-                quoteBillingData.billingFrequency === null ||
-                quoteBillingData.billingFrequency === undefined
+              quoteBillingData.billingFrequency === null ||
+              quoteBillingData.billingFrequency === undefined
                 ? "EMPTY"
                 : typeof quoteBillingData.billingFrequency === "object"
-                  ? quoteBillingData.billingFrequency?.value
-                  : quoteBillingData.billingFrequency,
+                ? quoteBillingData.billingFrequency?.value
+                : quoteBillingData.billingFrequency,
             billingType:
               shippingBillingDetails.billingType === "" ||
-                shippingBillingDetails.billingType === null ||
-                shippingBillingDetails.billingType === undefined
+              shippingBillingDetails.billingType === null ||
+              shippingBillingDetails.billingType === undefined
                 ? "EMPTY"
                 : typeof shippingBillingDetails.billingType === "object"
-                  ? shippingBillingDetails.billingType?.value
-                  : shippingBillingDetails.billingType,
+                ? shippingBillingDetails.billingType?.value
+                : shippingBillingDetails.billingType,
             deliveryType:
               shippingBillingDetails.deliveryType === "" ||
-                shippingBillingDetails.deliveryType === null ||
-                shippingBillingDetails.deliveryType === undefined
+              shippingBillingDetails.deliveryType === null ||
+              shippingBillingDetails.deliveryType === undefined
                 ? "EMPTY"
                 : typeof shippingBillingDetails.deliveryType === "object"
-                  ? shippingBillingDetails.deliveryType?.value
-                  : shippingBillingDetails.deliveryType,
+                ? shippingBillingDetails.deliveryType?.value
+                : shippingBillingDetails.deliveryType,
             deliveryPriority:
               shippingBillingDetails.deliveryPriority === "" ||
-                shippingBillingDetails.deliveryPriority === null ||
-                shippingBillingDetails.deliveryPriority === undefined
+              shippingBillingDetails.deliveryPriority === null ||
+              shippingBillingDetails.deliveryPriority === undefined
                 ? "EMPTY"
                 : typeof shippingBillingDetails.deliveryPriority === "object"
-                  ? shippingBillingDetails.deliveryPriority?.value
-                  : shippingBillingDetails.deliveryPriority,
+                ? shippingBillingDetails.deliveryPriority?.value
+                : shippingBillingDetails.deliveryPriority,
             leadTime: shippingBillingDetails.leadTime,
             serviceRecipentAddress:
               shippingBillingDetails.serviceRecipentAddress,
@@ -590,12 +611,12 @@ export function SolutionServicePortfolio(props) {
             priceMethod: "LIST_PRICE",
             currency:
               quoteBillingData.currency === "" ||
-                quoteBillingData.currency === null ||
-                quoteBillingData.currency === undefined
+              quoteBillingData.currency === null ||
+              quoteBillingData.currency === undefined
                 ? "INR"
                 : typeof quoteBillingData.currency === "object"
-                  ? quoteBillingData.currency?.value
-                  : quoteBillingData.currency,
+                ? quoteBillingData.currency?.value
+                : quoteBillingData.currency,
             partsPrice: 0,
             servicePrice: 0,
             laborPrice: 0,
@@ -635,7 +656,7 @@ export function SolutionServicePortfolio(props) {
               progress: undefined,
             });
             setValue("machine");
-            setViewOnlyTab({ ...viewOnlyTab, machineViewOnly: true });
+            setViewOnlyTab({ ...viewOnlyTab, customerViewOnly: true });
           }
         } else {
           // let solutionQuoteObj = {
@@ -730,71 +751,71 @@ export function SolutionServicePortfolio(props) {
             revisedOn: estimateDetails.revisedOn,
             salesOffice:
               estimateDetails.salesOffice === "" ||
-                estimateDetails.salesOffice === null ||
-                estimateDetails.salesOffice === undefined
+              estimateDetails.salesOffice === null ||
+              estimateDetails.salesOffice === undefined
                 ? ""
                 : typeof estimateDetails.salesOffice === "object"
-                  ? estimateDetails.salesOffice?.value
-                  : estimateDetails.salesOffice,
+                ? estimateDetails.salesOffice?.value
+                : estimateDetails.salesOffice,
             quoteDate: generalDetails.quoteDate,
             description: generalDetails.description,
             reference: generalDetails.reference,
             validity:
               generalDetails.validity === "" ||
-                generalDetails.validity === null ||
-                generalDetails.validity === undefined
+              generalDetails.validity === null ||
+              generalDetails.validity === undefined
                 ? "EMPTY"
                 : typeof generalDetails.validity === "object"
-                  ? generalDetails.validity?.value
-                  : generalDetails.validity,
+                ? generalDetails.validity?.value
+                : generalDetails.validity,
             version:
               generalDetails.version === "" ||
-                generalDetails.version === null ||
-                generalDetails.version === undefined
+              generalDetails.version === null ||
+              generalDetails.version === undefined
                 ? "EMPTY"
                 : typeof generalDetails.version === "object"
-                  ? generalDetails.version?.value
-                  : generalDetails.version,
+                ? generalDetails.version?.value
+                : generalDetails.version,
             paymentTerms:
               quoteBillingData.paymentTerms === "" ||
-                quoteBillingData.paymentTerms === null ||
-                quoteBillingData.paymentTerms === undefined
+              quoteBillingData.paymentTerms === null ||
+              quoteBillingData.paymentTerms === undefined
                 ? "EMPTY"
                 : typeof quoteBillingData.paymentTerms === "object"
-                  ? quoteBillingData.paymentTerms?.value
-                  : quoteBillingData.paymentTerms,
+                ? quoteBillingData.paymentTerms?.value
+                : quoteBillingData.paymentTerms,
             billingFrequency:
               quoteBillingData.billingFrequency === "" ||
-                quoteBillingData.billingFrequency === null ||
-                quoteBillingData.billingFrequency === undefined
+              quoteBillingData.billingFrequency === null ||
+              quoteBillingData.billingFrequency === undefined
                 ? "EMPTY"
                 : typeof quoteBillingData.billingFrequency === "object"
-                  ? quoteBillingData.billingFrequency?.value
-                  : quoteBillingData.billingFrequency,
+                ? quoteBillingData.billingFrequency?.value
+                : quoteBillingData.billingFrequency,
             billingType:
               shippingBillingDetails.billingType === "" ||
-                shippingBillingDetails.billingType === null ||
-                shippingBillingDetails.billingType === undefined
+              shippingBillingDetails.billingType === null ||
+              shippingBillingDetails.billingType === undefined
                 ? "EMPTY"
                 : typeof shippingBillingDetails.billingType === "object"
-                  ? shippingBillingDetails.billingType?.value
-                  : shippingBillingDetails.billingType,
+                ? shippingBillingDetails.billingType?.value
+                : shippingBillingDetails.billingType,
             deliveryType:
               shippingBillingDetails.deliveryType === "" ||
-                shippingBillingDetails.deliveryType === null ||
-                shippingBillingDetails.deliveryType === undefined
+              shippingBillingDetails.deliveryType === null ||
+              shippingBillingDetails.deliveryType === undefined
                 ? "EMPTY"
                 : typeof shippingBillingDetails.deliveryType === "object"
-                  ? shippingBillingDetails.deliveryType?.value
-                  : shippingBillingDetails.deliveryType,
+                ? shippingBillingDetails.deliveryType?.value
+                : shippingBillingDetails.deliveryType,
             deliveryPriority:
               shippingBillingDetails.deliveryPriority === "" ||
-                shippingBillingDetails.deliveryPriority === null ||
-                shippingBillingDetails.deliveryPriority === undefined
+              shippingBillingDetails.deliveryPriority === null ||
+              shippingBillingDetails.deliveryPriority === undefined
                 ? "EMPTY"
                 : typeof shippingBillingDetails.deliveryPriority === "object"
-                  ? shippingBillingDetails.deliveryPriority?.value
-                  : shippingBillingDetails.deliveryPriority,
+                ? shippingBillingDetails.deliveryPriority?.value
+                : shippingBillingDetails.deliveryPriority,
             leadTime: shippingBillingDetails.leadTime,
             serviceRecipentAddress:
               shippingBillingDetails.serviceRecipentAddress,
@@ -802,12 +823,12 @@ export function SolutionServicePortfolio(props) {
             priceMethod: "LIST_PRICE",
             currency:
               quoteBillingData.currency === "" ||
-                quoteBillingData.currency === null ||
-                quoteBillingData.currency === undefined
+              quoteBillingData.currency === null ||
+              quoteBillingData.currency === undefined
                 ? "INR"
                 : typeof quoteBillingData.currency === "object"
-                  ? quoteBillingData.currency?.value
-                  : quoteBillingData.currency,
+                ? quoteBillingData.currency?.value
+                : quoteBillingData.currency,
             partsPrice: 0,
             servicePrice: 0,
             laborPrice: 0,
@@ -843,7 +864,7 @@ export function SolutionServicePortfolio(props) {
               progress: undefined,
             });
             setValue("machine");
-            setViewOnlyTab({ ...viewOnlyTab, customerViewOnly: true });
+            setViewOnlyTab({ ...viewOnlyTab, machineViewOnly: true });
             setQuoteIdIs(solutionRes.data.quoteId);
             setPortfolioId(solutionRes.data.portfolioId);
             //   setNameIsNotEditAble(true);
@@ -950,83 +971,83 @@ export function SolutionServicePortfolio(props) {
           revisedOn: estimateDetails.revisedOn,
           salesOffice:
             estimateDetails.salesOffice === "" ||
-              estimateDetails.salesOffice === null ||
-              estimateDetails.salesOffice === undefined
+            estimateDetails.salesOffice === null ||
+            estimateDetails.salesOffice === undefined
               ? ""
               : typeof estimateDetails.salesOffice === "object"
-                ? estimateDetails.salesOffice?.value
-                : estimateDetails.salesOffice,
+              ? estimateDetails.salesOffice?.value
+              : estimateDetails.salesOffice,
           quoteDate: generalDetails.quoteDate,
           description: generalDetails.description,
           reference: generalDetails.reference,
           validity:
             generalDetails.validity === "" ||
-              generalDetails.validity === null ||
-              generalDetails.validity === undefined
+            generalDetails.validity === null ||
+            generalDetails.validity === undefined
               ? "EMPTY"
               : typeof generalDetails.validity === "object"
-                ? generalDetails.validity?.value
-                : generalDetails.validity,
+              ? generalDetails.validity?.value
+              : generalDetails.validity,
           version:
             generalDetails.version === "" ||
-              generalDetails.version === null ||
-              generalDetails.version === undefined
+            generalDetails.version === null ||
+            generalDetails.version === undefined
               ? "EMPTY"
               : typeof generalDetails.version === "object"
-                ? generalDetails.version?.value
-                : generalDetails.version,
+              ? generalDetails.version?.value
+              : generalDetails.version,
           paymentTerms:
             quoteBillingData.paymentTerms === "" ||
-              quoteBillingData.paymentTerms === null ||
-              quoteBillingData.paymentTerms === undefined
+            quoteBillingData.paymentTerms === null ||
+            quoteBillingData.paymentTerms === undefined
               ? "EMPTY"
               : typeof quoteBillingData.paymentTerms === "object"
-                ? quoteBillingData.paymentTerms?.value
-                : quoteBillingData.paymentTerms,
+              ? quoteBillingData.paymentTerms?.value
+              : quoteBillingData.paymentTerms,
           billingFrequency:
             quoteBillingData.billingFrequency === "" ||
-              quoteBillingData.billingFrequency === null ||
-              quoteBillingData.billingFrequency === undefined
+            quoteBillingData.billingFrequency === null ||
+            quoteBillingData.billingFrequency === undefined
               ? "EMPTY"
               : typeof quoteBillingData.billingFrequency === "object"
-                ? quoteBillingData.billingFrequency?.value
-                : quoteBillingData.billingFrequency,
+              ? quoteBillingData.billingFrequency?.value
+              : quoteBillingData.billingFrequency,
           billingType:
             shippingBillingDetails.billingType === "" ||
-              shippingBillingDetails.billingType === null ||
-              shippingBillingDetails.billingType === undefined
+            shippingBillingDetails.billingType === null ||
+            shippingBillingDetails.billingType === undefined
               ? "EMPTY"
               : typeof shippingBillingDetails.billingType === "object"
-                ? shippingBillingDetails.billingType?.value
-                : shippingBillingDetails.billingType,
+              ? shippingBillingDetails.billingType?.value
+              : shippingBillingDetails.billingType,
           deliveryType:
             shippingBillingDetails.deliveryType === "" ||
-              shippingBillingDetails.deliveryType === null ||
-              shippingBillingDetails.deliveryType === undefined
+            shippingBillingDetails.deliveryType === null ||
+            shippingBillingDetails.deliveryType === undefined
               ? "EMPTY"
               : typeof shippingBillingDetails.deliveryType === "object"
-                ? shippingBillingDetails.deliveryType?.value
-                : shippingBillingDetails.deliveryType,
+              ? shippingBillingDetails.deliveryType?.value
+              : shippingBillingDetails.deliveryType,
           deliveryPriority:
             shippingBillingDetails.deliveryPriority === "" ||
-              shippingBillingDetails.deliveryPriority === null ||
-              shippingBillingDetails.deliveryPriority === undefined
+            shippingBillingDetails.deliveryPriority === null ||
+            shippingBillingDetails.deliveryPriority === undefined
               ? "EMPTY"
               : typeof shippingBillingDetails.deliveryPriority === "object"
-                ? shippingBillingDetails.deliveryPriority?.value
-                : shippingBillingDetails.deliveryPriority,
+              ? shippingBillingDetails.deliveryPriority?.value
+              : shippingBillingDetails.deliveryPriority,
           leadTime: shippingBillingDetails.leadTime,
           serviceRecipentAddress: shippingBillingDetails.serviceRecipentAddress,
           priceDate: quoteBillingData.priceDate,
           priceMethod: "LIST_PRICE",
           currency:
             quoteBillingData.currency === "" ||
-              quoteBillingData.currency === null ||
-              quoteBillingData.currency === undefined
+            quoteBillingData.currency === null ||
+            quoteBillingData.currency === undefined
               ? "INR"
               : typeof quoteBillingData.currency === "object"
-                ? quoteBillingData.currency?.value
-                : quoteBillingData.currency,
+              ? quoteBillingData.currency?.value
+              : quoteBillingData.currency,
           partsPrice: 0,
           servicePrice: 0,
           laborPrice: 0,
@@ -1174,83 +1195,83 @@ export function SolutionServicePortfolio(props) {
           revisedOn: estimateDetails.revisedOn,
           salesOffice:
             estimateDetails.salesOffice === "" ||
-              estimateDetails.salesOffice === null ||
-              estimateDetails.salesOffice === undefined
+            estimateDetails.salesOffice === null ||
+            estimateDetails.salesOffice === undefined
               ? ""
               : typeof estimateDetails.salesOffice === "object"
-                ? estimateDetails.salesOffice?.value
-                : estimateDetails.salesOffice,
+              ? estimateDetails.salesOffice?.value
+              : estimateDetails.salesOffice,
           quoteDate: generalDetails.quoteDate,
           description: generalDetails.description,
           reference: generalDetails.reference,
           validity:
             generalDetails.validity === "" ||
-              generalDetails.validity === null ||
-              generalDetails.validity === undefined
+            generalDetails.validity === null ||
+            generalDetails.validity === undefined
               ? "EMPTY"
               : typeof generalDetails.validity === "object"
-                ? generalDetails.validity?.value
-                : generalDetails.validity,
+              ? generalDetails.validity?.value
+              : generalDetails.validity,
           version:
             generalDetails.version === "" ||
-              generalDetails.version === null ||
-              generalDetails.version === undefined
+            generalDetails.version === null ||
+            generalDetails.version === undefined
               ? "EMPTY"
               : typeof generalDetails.version === "object"
-                ? generalDetails.version?.value
-                : generalDetails.version,
+              ? generalDetails.version?.value
+              : generalDetails.version,
           paymentTerms:
             quoteBillingData.paymentTerms === "" ||
-              quoteBillingData.paymentTerms === null ||
-              quoteBillingData.paymentTerms === undefined
+            quoteBillingData.paymentTerms === null ||
+            quoteBillingData.paymentTerms === undefined
               ? "EMPTY"
               : typeof quoteBillingData.paymentTerms === "object"
-                ? quoteBillingData.paymentTerms?.value
-                : quoteBillingData.paymentTerms,
+              ? quoteBillingData.paymentTerms?.value
+              : quoteBillingData.paymentTerms,
           billingFrequency:
             quoteBillingData.billingFrequency === "" ||
-              quoteBillingData.billingFrequency === null ||
-              quoteBillingData.billingFrequency === undefined
+            quoteBillingData.billingFrequency === null ||
+            quoteBillingData.billingFrequency === undefined
               ? "EMPTY"
               : typeof quoteBillingData.billingFrequency === "object"
-                ? quoteBillingData.billingFrequency?.value
-                : quoteBillingData.billingFrequency,
+              ? quoteBillingData.billingFrequency?.value
+              : quoteBillingData.billingFrequency,
           billingType:
             shippingBillingDetails.billingType === "" ||
-              shippingBillingDetails.billingType === null ||
-              shippingBillingDetails.billingType === undefined
+            shippingBillingDetails.billingType === null ||
+            shippingBillingDetails.billingType === undefined
               ? "EMPTY"
               : typeof shippingBillingDetails.billingType === "object"
-                ? shippingBillingDetails.billingType?.value
-                : shippingBillingDetails.billingType,
+              ? shippingBillingDetails.billingType?.value
+              : shippingBillingDetails.billingType,
           deliveryType:
             shippingBillingDetails.deliveryType === "" ||
-              shippingBillingDetails.deliveryType === null ||
-              shippingBillingDetails.deliveryType === undefined
+            shippingBillingDetails.deliveryType === null ||
+            shippingBillingDetails.deliveryType === undefined
               ? "EMPTY"
               : typeof shippingBillingDetails.deliveryType === "object"
-                ? shippingBillingDetails.deliveryType?.value
-                : shippingBillingDetails.deliveryType,
+              ? shippingBillingDetails.deliveryType?.value
+              : shippingBillingDetails.deliveryType,
           deliveryPriority:
             shippingBillingDetails.deliveryPriority === "" ||
-              shippingBillingDetails.deliveryPriority === null ||
-              shippingBillingDetails.deliveryPriority === undefined
+            shippingBillingDetails.deliveryPriority === null ||
+            shippingBillingDetails.deliveryPriority === undefined
               ? "EMPTY"
               : typeof shippingBillingDetails.deliveryPriority === "object"
-                ? shippingBillingDetails.deliveryPriority?.value
-                : shippingBillingDetails.deliveryPriority,
+              ? shippingBillingDetails.deliveryPriority?.value
+              : shippingBillingDetails.deliveryPriority,
           leadTime: shippingBillingDetails.leadTime,
           serviceRecipentAddress: shippingBillingDetails.serviceRecipentAddress,
           priceDate: quoteBillingData.priceDate,
           priceMethod: "LIST_PRICE",
           currency:
             quoteBillingData.currency === "" ||
-              quoteBillingData.currency === null ||
-              quoteBillingData.currency === undefined
+            quoteBillingData.currency === null ||
+            quoteBillingData.currency === undefined
               ? "INR"
               : typeof quoteBillingData.currency === "object"
-                ? quoteBillingData.currency?.value
-                : quoteBillingData.currency,
+              ? quoteBillingData.currency?.value
+              : quoteBillingData.currency,
           partsPrice: 0,
           servicePrice: 0,
           laborPrice: 0,
@@ -1393,83 +1414,83 @@ export function SolutionServicePortfolio(props) {
           revisedOn: estimateDetails.revisedOn,
           salesOffice:
             estimateDetails.salesOffice === "" ||
-              estimateDetails.salesOffice === null ||
-              estimateDetails.salesOffice === undefined
+            estimateDetails.salesOffice === null ||
+            estimateDetails.salesOffice === undefined
               ? ""
               : typeof estimateDetails.salesOffice === "object"
-                ? estimateDetails.salesOffice?.value
-                : estimateDetails.salesOffice,
+              ? estimateDetails.salesOffice?.value
+              : estimateDetails.salesOffice,
           quoteDate: generalDetails.quoteDate,
           description: generalDetails.description,
           reference: generalDetails.reference,
           validity:
             generalDetails.validity === "" ||
-              generalDetails.validity === null ||
-              generalDetails.validity === undefined
+            generalDetails.validity === null ||
+            generalDetails.validity === undefined
               ? "EMPTY"
               : typeof generalDetails.validity === "object"
-                ? generalDetails.validity?.value
-                : generalDetails.validity,
+              ? generalDetails.validity?.value
+              : generalDetails.validity,
           version:
             generalDetails.version === "" ||
-              generalDetails.version === null ||
-              generalDetails.version === undefined
+            generalDetails.version === null ||
+            generalDetails.version === undefined
               ? "EMPTY"
               : typeof generalDetails.version === "object"
-                ? generalDetails.version?.value
-                : generalDetails.version,
+              ? generalDetails.version?.value
+              : generalDetails.version,
           paymentTerms:
             quoteBillingData.paymentTerms === "" ||
-              quoteBillingData.paymentTerms === null ||
-              quoteBillingData.paymentTerms === undefined
+            quoteBillingData.paymentTerms === null ||
+            quoteBillingData.paymentTerms === undefined
               ? "EMPTY"
               : typeof quoteBillingData.paymentTerms === "object"
-                ? quoteBillingData.paymentTerms?.value
-                : quoteBillingData.paymentTerms,
+              ? quoteBillingData.paymentTerms?.value
+              : quoteBillingData.paymentTerms,
           billingFrequency:
             quoteBillingData.billingFrequency === "" ||
-              quoteBillingData.billingFrequency === null ||
-              quoteBillingData.billingFrequency === undefined
+            quoteBillingData.billingFrequency === null ||
+            quoteBillingData.billingFrequency === undefined
               ? "EMPTY"
               : typeof quoteBillingData.billingFrequency === "object"
-                ? quoteBillingData.billingFrequency?.value
-                : quoteBillingData.billingFrequency,
+              ? quoteBillingData.billingFrequency?.value
+              : quoteBillingData.billingFrequency,
           billingType:
             shippingBillingDetails.billingType === "" ||
-              shippingBillingDetails.billingType === null ||
-              shippingBillingDetails.billingType === undefined
+            shippingBillingDetails.billingType === null ||
+            shippingBillingDetails.billingType === undefined
               ? "EMPTY"
               : typeof shippingBillingDetails.billingType === "object"
-                ? shippingBillingDetails.billingType?.value
-                : shippingBillingDetails.billingType,
+              ? shippingBillingDetails.billingType?.value
+              : shippingBillingDetails.billingType,
           deliveryType:
             shippingBillingDetails.deliveryType === "" ||
-              shippingBillingDetails.deliveryType === null ||
-              shippingBillingDetails.deliveryType === undefined
+            shippingBillingDetails.deliveryType === null ||
+            shippingBillingDetails.deliveryType === undefined
               ? "EMPTY"
               : typeof shippingBillingDetails.deliveryType === "object"
-                ? shippingBillingDetails.deliveryType?.value
-                : shippingBillingDetails.deliveryType,
+              ? shippingBillingDetails.deliveryType?.value
+              : shippingBillingDetails.deliveryType,
           deliveryPriority:
             shippingBillingDetails.deliveryPriority === "" ||
-              shippingBillingDetails.deliveryPriority === null ||
-              shippingBillingDetails.deliveryPriority === undefined
+            shippingBillingDetails.deliveryPriority === null ||
+            shippingBillingDetails.deliveryPriority === undefined
               ? "EMPTY"
               : typeof shippingBillingDetails.deliveryPriority === "object"
-                ? shippingBillingDetails.deliveryPriority?.value
-                : shippingBillingDetails.deliveryPriority,
+              ? shippingBillingDetails.deliveryPriority?.value
+              : shippingBillingDetails.deliveryPriority,
           leadTime: shippingBillingDetails.leadTime,
           serviceRecipentAddress: shippingBillingDetails.serviceRecipentAddress,
           priceDate: quoteBillingData.priceDate,
           priceMethod: "LIST_PRICE",
           currency:
             quoteBillingData.currency === "" ||
-              quoteBillingData.currency === null ||
-              quoteBillingData.currency === undefined
+            quoteBillingData.currency === null ||
+            quoteBillingData.currency === undefined
               ? "INR"
               : typeof quoteBillingData.currency === "object"
-                ? quoteBillingData.currency?.value
-                : quoteBillingData.currency,
+              ? quoteBillingData.currency?.value
+              : quoteBillingData.currency,
           partsPrice: 0,
           servicePrice: 0,
           laborPrice: 0,
@@ -1565,83 +1586,83 @@ export function SolutionServicePortfolio(props) {
           revisedOn: estimateDetails.revisedOn,
           salesOffice:
             estimateDetails.salesOffice === "" ||
-              estimateDetails.salesOffice === null ||
-              estimateDetails.salesOffice === undefined
+            estimateDetails.salesOffice === null ||
+            estimateDetails.salesOffice === undefined
               ? ""
               : typeof estimateDetails.salesOffice === "object"
-                ? estimateDetails.salesOffice?.value
-                : estimateDetails.salesOffice,
+              ? estimateDetails.salesOffice?.value
+              : estimateDetails.salesOffice,
           quoteDate: generalDetails.quoteDate,
           description: generalDetails.description,
           reference: generalDetails.reference,
           validity:
             generalDetails.validity === "" ||
-              generalDetails.validity === null ||
-              generalDetails.validity === undefined
+            generalDetails.validity === null ||
+            generalDetails.validity === undefined
               ? "EMPTY"
               : typeof generalDetails.validity === "object"
-                ? generalDetails.validity?.value
-                : generalDetails.validity,
+              ? generalDetails.validity?.value
+              : generalDetails.validity,
           version:
             generalDetails.version === "" ||
-              generalDetails.version === null ||
-              generalDetails.version === undefined
+            generalDetails.version === null ||
+            generalDetails.version === undefined
               ? "EMPTY"
               : typeof generalDetails.version === "object"
-                ? generalDetails.version?.value
-                : generalDetails.version,
+              ? generalDetails.version?.value
+              : generalDetails.version,
           paymentTerms:
             quoteBillingData.paymentTerms === "" ||
-              quoteBillingData.paymentTerms === null ||
-              quoteBillingData.paymentTerms === undefined
+            quoteBillingData.paymentTerms === null ||
+            quoteBillingData.paymentTerms === undefined
               ? "EMPTY"
               : typeof quoteBillingData.paymentTerms === "object"
-                ? quoteBillingData.paymentTerms?.value
-                : quoteBillingData.paymentTerms,
+              ? quoteBillingData.paymentTerms?.value
+              : quoteBillingData.paymentTerms,
           billingFrequency:
             quoteBillingData.billingFrequency === "" ||
-              quoteBillingData.billingFrequency === null ||
-              quoteBillingData.billingFrequency === undefined
+            quoteBillingData.billingFrequency === null ||
+            quoteBillingData.billingFrequency === undefined
               ? "EMPTY"
               : typeof quoteBillingData.billingFrequency === "object"
-                ? quoteBillingData.billingFrequency?.value
-                : quoteBillingData.billingFrequency,
+              ? quoteBillingData.billingFrequency?.value
+              : quoteBillingData.billingFrequency,
           billingType:
             shippingBillingDetails.billingType === "" ||
-              shippingBillingDetails.billingType === null ||
-              shippingBillingDetails.billingType === undefined
+            shippingBillingDetails.billingType === null ||
+            shippingBillingDetails.billingType === undefined
               ? "EMPTY"
               : typeof shippingBillingDetails.billingType === "object"
-                ? shippingBillingDetails.billingType?.value
-                : shippingBillingDetails.billingType,
+              ? shippingBillingDetails.billingType?.value
+              : shippingBillingDetails.billingType,
           deliveryType:
             shippingBillingDetails.deliveryType === "" ||
-              shippingBillingDetails.deliveryType === null ||
-              shippingBillingDetails.deliveryType === undefined
+            shippingBillingDetails.deliveryType === null ||
+            shippingBillingDetails.deliveryType === undefined
               ? "EMPTY"
               : typeof shippingBillingDetails.deliveryType === "object"
-                ? shippingBillingDetails.deliveryType?.value
-                : shippingBillingDetails.deliveryType,
+              ? shippingBillingDetails.deliveryType?.value
+              : shippingBillingDetails.deliveryType,
           deliveryPriority:
             shippingBillingDetails.deliveryPriority === "" ||
-              shippingBillingDetails.deliveryPriority === null ||
-              shippingBillingDetails.deliveryPriority === undefined
+            shippingBillingDetails.deliveryPriority === null ||
+            shippingBillingDetails.deliveryPriority === undefined
               ? "EMPTY"
               : typeof shippingBillingDetails.deliveryPriority === "object"
-                ? shippingBillingDetails.deliveryPriority?.value
-                : shippingBillingDetails.deliveryPriority,
+              ? shippingBillingDetails.deliveryPriority?.value
+              : shippingBillingDetails.deliveryPriority,
           leadTime: shippingBillingDetails.leadTime,
           serviceRecipentAddress: shippingBillingDetails.serviceRecipentAddress,
           priceDate: quoteBillingData.priceDate,
           priceMethod: "LIST_PRICE",
           currency:
             quoteBillingData.currency === "" ||
-              quoteBillingData.currency === null ||
-              quoteBillingData.currency === undefined
+            quoteBillingData.currency === null ||
+            quoteBillingData.currency === undefined
               ? "INR"
               : typeof quoteBillingData.currency === "object"
-                ? quoteBillingData.currency?.value
-                : quoteBillingData.currency,
+              ? quoteBillingData.currency?.value
+              : quoteBillingData.currency,
           partsPrice: 0,
           servicePrice: 0,
           laborPrice: 0,
@@ -1747,83 +1768,83 @@ export function SolutionServicePortfolio(props) {
           revisedOn: estimateDetails.revisedOn,
           salesOffice:
             estimateDetails.salesOffice === "" ||
-              estimateDetails.salesOffice === null ||
-              estimateDetails.salesOffice === undefined
+            estimateDetails.salesOffice === null ||
+            estimateDetails.salesOffice === undefined
               ? ""
               : typeof estimateDetails.salesOffice === "object"
-                ? estimateDetails.salesOffice?.value
-                : estimateDetails.salesOffice,
+              ? estimateDetails.salesOffice?.value
+              : estimateDetails.salesOffice,
           quoteDate: generalDetails.quoteDate,
           description: generalDetails.description,
           reference: generalDetails.reference,
           validity:
             generalDetails.validity === "" ||
-              generalDetails.validity === null ||
-              generalDetails.validity === undefined
+            generalDetails.validity === null ||
+            generalDetails.validity === undefined
               ? "EMPTY"
               : typeof generalDetails.validity === "object"
-                ? generalDetails.validity?.value
-                : generalDetails.validity,
+              ? generalDetails.validity?.value
+              : generalDetails.validity,
           version:
             generalDetails.version === "" ||
-              generalDetails.version === null ||
-              generalDetails.version === undefined
+            generalDetails.version === null ||
+            generalDetails.version === undefined
               ? "EMPTY"
               : typeof generalDetails.version === "object"
-                ? generalDetails.version?.value
-                : generalDetails.version,
+              ? generalDetails.version?.value
+              : generalDetails.version,
           paymentTerms:
             quoteBillingData.paymentTerms === "" ||
-              quoteBillingData.paymentTerms === null ||
-              quoteBillingData.paymentTerms === undefined
+            quoteBillingData.paymentTerms === null ||
+            quoteBillingData.paymentTerms === undefined
               ? "EMPTY"
               : typeof quoteBillingData.paymentTerms === "object"
-                ? quoteBillingData.paymentTerms?.value
-                : quoteBillingData.paymentTerms,
+              ? quoteBillingData.paymentTerms?.value
+              : quoteBillingData.paymentTerms,
           billingFrequency:
             quoteBillingData.billingFrequency === "" ||
-              quoteBillingData.billingFrequency === null ||
-              quoteBillingData.billingFrequency === undefined
+            quoteBillingData.billingFrequency === null ||
+            quoteBillingData.billingFrequency === undefined
               ? "EMPTY"
               : typeof quoteBillingData.billingFrequency === "object"
-                ? quoteBillingData.billingFrequency?.value
-                : quoteBillingData.billingFrequency,
+              ? quoteBillingData.billingFrequency?.value
+              : quoteBillingData.billingFrequency,
           billingType:
             shippingBillingDetails.billingType === "" ||
-              shippingBillingDetails.billingType === null ||
-              shippingBillingDetails.billingType === undefined
+            shippingBillingDetails.billingType === null ||
+            shippingBillingDetails.billingType === undefined
               ? "EMPTY"
               : typeof shippingBillingDetails.billingType === "object"
-                ? shippingBillingDetails.billingType?.value
-                : shippingBillingDetails.billingType,
+              ? shippingBillingDetails.billingType?.value
+              : shippingBillingDetails.billingType,
           deliveryType:
             shippingBillingDetails.deliveryType === "" ||
-              shippingBillingDetails.deliveryType === null ||
-              shippingBillingDetails.deliveryType === undefined
+            shippingBillingDetails.deliveryType === null ||
+            shippingBillingDetails.deliveryType === undefined
               ? "EMPTY"
               : typeof shippingBillingDetails.deliveryType === "object"
-                ? shippingBillingDetails.deliveryType?.value
-                : shippingBillingDetails.deliveryType,
+              ? shippingBillingDetails.deliveryType?.value
+              : shippingBillingDetails.deliveryType,
           deliveryPriority:
             shippingBillingDetails.deliveryPriority === "" ||
-              shippingBillingDetails.deliveryPriority === null ||
-              shippingBillingDetails.deliveryPriority === undefined
+            shippingBillingDetails.deliveryPriority === null ||
+            shippingBillingDetails.deliveryPriority === undefined
               ? "EMPTY"
               : typeof shippingBillingDetails.deliveryPriority === "object"
-                ? shippingBillingDetails.deliveryPriority?.value
-                : shippingBillingDetails.deliveryPriority,
+              ? shippingBillingDetails.deliveryPriority?.value
+              : shippingBillingDetails.deliveryPriority,
           leadTime: shippingBillingDetails.leadTime,
           serviceRecipentAddress: shippingBillingDetails.serviceRecipentAddress,
           priceDate: quoteBillingData.priceDate,
           priceMethod: "LIST_PRICE",
           currency:
             quoteBillingData.currency === "" ||
-              quoteBillingData.currency === null ||
-              quoteBillingData.currency === undefined
+            quoteBillingData.currency === null ||
+            quoteBillingData.currency === undefined
               ? "INR"
               : typeof quoteBillingData.currency === "object"
-                ? quoteBillingData.currency?.value
-                : quoteBillingData.currency,
+              ? quoteBillingData.currency?.value
+              : quoteBillingData.currency,
           partsPrice: 0,
           servicePrice: 0,
           laborPrice: 0,
@@ -2508,19 +2529,15 @@ export function SolutionServicePortfolio(props) {
   const handleCoveragetable = () => setOpenCoveragetable(false);
   const [subQuoteItems, setSubQuoteItems] = useState([]);
 
-
-
-
   useEffect(() => {
-    getQuoteStatus().then((res) => {
-      if (res.status === 200) {
-        setStatusOptions(res.data);
-        setTimeout(() => {
-          console.log("Status Options: ", statusOptions);
-        }, 5000);
-      }
-
-    })
+    // getQuoteStatus().then((res) => {
+    //   if (res.status === 200) {
+    //     setStatusOptions(res.data);
+    //     setTimeout(() => {
+    //       console.log("Status Options: ", statusOptions);
+    //     }, 5000);
+    //   }
+    // });
   }, []);
 
   useEffect(() => {
@@ -2646,7 +2663,7 @@ export function SolutionServicePortfolio(props) {
     console.log("result ----", result);
 
     setQuoteIdIs(result.quoteId);
-    setPortfolioId(result.sbQuoteItems[0].portfolioId)
+    setPortfolioId(result.sbQuoteItems[0].portfolioId);
     // View Only Tabs Data
     setViewOnlyTab({
       customerViewOnly: true,
@@ -2662,33 +2679,43 @@ export function SolutionServicePortfolio(props) {
       );
     }, 2000);
 
+    setCustomerData({
+      ...customerData,
+      source: result.source,
+      customerID: result.customerId,
+      contactEmail: result.contactEmail,
+      customerGroup: result.customerGroup,
+      customerName: result.customerName,
+      customerAddress: result.serviceRecipentAddress,
+      contactPhone: result.contactPhone,
+    });
 
     var customerAddressAre = "";
     // Set Customer Tab Data
-    await customerSearch("customerId" + ":" + result.customerId)
-      .then((resultData) => {
-        console.log("resultData -----", resultData);
-        setCustomerData({
-          ...customerData,
-          source: result.source,
-          customerID: resultData[0].customerId,
-          contactEmail: resultData[0].email,
-          customerGroup: resultData[0].customerGroup,
-          customerName: resultData[0].fullName,
-          customerAddress: resultData[0].contactAddress,
-          contactPhone: result.contactPhone,
-        });
-        customerAddressAre = resultData[0].contactAddress;
-        // setAddPayerData([{
-        //     id: 1,
-        //     payerName: resultData[0].fullName,
-        //     billingSplit: 100,
-        //     price: "",
-        // }]);
-      })
-      .catch((e) => {
-        handleSnack("error", "Error occurred while searching the customer!");
-      });
+    // await customerSearch("customerId" + ":" + result.customerId)
+    //   .then((resultData) => {
+    //     console.log("resultData -----", resultData);
+    //     setCustomerData({
+    //       ...customerData,
+    //       source: result.source,
+    //       customerID: resultData[0].customerId,
+    //       contactEmail: resultData[0].email,
+    //       customerGroup: resultData[0].customerGroup,
+    //       customerName: resultData[0].fullName,
+    //       customerAddress: resultData[0].contactAddress,
+    //       contactPhone: result.contactPhone,
+    //     });
+    //     customerAddressAre = resultData[0].contactAddress;
+    //     // setAddPayerData([{
+    //     //     id: 1,
+    //     //     payerName: resultData[0].fullName,
+    //     //     billingSplit: 100,
+    //     //     price: "",
+    //     // }]);
+    //   })
+    //   .catch((e) => {
+    //     handleSnack("error", "Error occurred while searching the customer!");
+    //   });
 
     // Set Machine Tab Data
     setMachineData({
@@ -2714,13 +2741,13 @@ export function SolutionServicePortfolio(props) {
       revisedOn: result.revisedOn,
       salesOffice:
         result.salesOffice === null ||
-          result.salesOffice === "" ||
-          result.salesOffice === "EMPTY" ||
-          result.salesOffice === undefined
+        result.salesOffice === "" ||
+        result.salesOffice === "EMPTY" ||
+        result.salesOffice === undefined
           ? ""
           : salesOfficeObj === undefined
-            ? ""
-            : salesOfficeObj,
+          ? ""
+          : salesOfficeObj,
     });
 
     // General Details Tab Data
@@ -2737,22 +2764,22 @@ export function SolutionServicePortfolio(props) {
       reference: result.reference,
       validity:
         result.validity === null ||
-          result.validity === "" ||
-          result.validity === "EMPTY" ||
-          result.validity === undefined
+        result.validity === "" ||
+        result.validity === "EMPTY" ||
+        result.validity === undefined
           ? ""
           : validityObj === undefined
-            ? ""
-            : validityObj,
+          ? ""
+          : validityObj,
       version:
         result.validity === null ||
-          result.validity === "" ||
-          result.validity === "EMPTY" ||
-          result.validity === undefined
+        result.validity === "" ||
+        result.validity === "EMPTY" ||
+        result.validity === undefined
           ? ""
           : versionObj === undefined
-            ? ""
-            : versionObj,
+          ? ""
+          : versionObj,
       // salesOffice: result.,
     });
 
@@ -2832,52 +2859,52 @@ export function SolutionServicePortfolio(props) {
     setShippingBillingDetails({
       deliveryType:
         result.deliveryType === "" ||
-          result.deliveryType === null ||
-          result.deliveryType === undefined ||
-          result.deliveryType === "EMPTY"
+        result.deliveryType === null ||
+        result.deliveryType === undefined ||
+        result.deliveryType === "EMPTY"
           ? ""
           : {
-            label: result.deliveryType,
-            value: result.deliveryType,
-          },
+              label: result.deliveryType,
+              value: result.deliveryType,
+            },
       deliveryPriority:
         result.deliveryPriority === "" ||
-          result.deliveryPriority === null ||
-          result.deliveryPriority === undefined ||
-          result.deliveryPriority === "EMPTY"
+        result.deliveryPriority === null ||
+        result.deliveryPriority === undefined ||
+        result.deliveryPriority === "EMPTY"
           ? ""
           : {
-            label: result.deliveryPriority,
-            value: result.deliveryPriority,
-          },
+              label: result.deliveryPriority,
+              value: result.deliveryPriority,
+            },
       paymentTerms:
         result.paymentTerms === "" ||
-          result.paymentTerms === null ||
-          result.paymentTerms === undefined ||
-          result.paymentTerms === "EMPTY"
+        result.paymentTerms === null ||
+        result.paymentTerms === undefined ||
+        result.paymentTerms === "EMPTY"
           ? ""
           : {
-            label: result.paymentTerms,
-            value: result.paymentTerms,
-          },
+              label: result.paymentTerms,
+              value: result.paymentTerms,
+            },
       billingFrequency:
         result.billingFrequency === "" ||
-          result.billingFrequency === null ||
-          result.billingFrequency === undefined ||
-          result.billingFrequency === "EMPTY"
+        result.billingFrequency === null ||
+        result.billingFrequency === undefined ||
+        result.billingFrequency === "EMPTY"
           ? ""
           : {
-            label: result.billingFrequency,
-            value: result.billingFrequency,
-          },
+              label: result.billingFrequency,
+              value: result.billingFrequency,
+            },
       payer: result.payers,
       split: result.split,
       netPayAble: result.netPayable,
       leadTime: result.leadTime,
       serviceRecipentAddress:
         result.serviceRecipentAddress === "" ||
-          result.serviceRecipentAddress === null ||
-          result.serviceRecipentAddress === undefined
+        result.serviceRecipentAddress === null ||
+        result.serviceRecipentAddress === undefined
           ? customerAddressAre
           : result.serviceRecipentAddress,
     });
@@ -2885,51 +2912,51 @@ export function SolutionServicePortfolio(props) {
     setQuoteBillingData({
       paymentTerms:
         result.paymentTerms === "" ||
-          result.paymentTerms === null ||
-          result.paymentTerms === undefined ||
-          result.paymentTerms === "EMPTY"
+        result.paymentTerms === null ||
+        result.paymentTerms === undefined ||
+        result.paymentTerms === "EMPTY"
           ? ""
           : {
-            label: result.paymentTerms,
-            value: result.paymentTerms,
-          },
+              label: result.paymentTerms,
+              value: result.paymentTerms,
+            },
       currency:
         result.currency === "" ||
-          result.currency === null ||
-          result.currency === undefined ||
-          result.currency === "EMPTY"
+        result.currency === null ||
+        result.currency === undefined ||
+        result.currency === "EMPTY"
           ? ""
           : {
-            label: result.currency,
-            value: result.currency,
-          },
+              label: result.currency,
+              value: result.currency,
+            },
       priceDate:
         result.priceDate === "" ||
-          result.priceDate === null ||
-          result.priceDate === undefined ||
-          result.priceDate == "string"
+        result.priceDate === null ||
+        result.priceDate === undefined ||
+        result.priceDate == "string"
           ? new Date()
           : result.priceDate,
       billingType:
         result.billingType === "" ||
-          result.billingType === null ||
-          result.billingType === undefined ||
-          result.billingType === "EMPTY"
+        result.billingType === null ||
+        result.billingType === undefined ||
+        result.billingType === "EMPTY"
           ? ""
           : {
-            label: result.billingType,
-            value: result.billingType,
-          },
+              label: result.billingType,
+              value: result.billingType,
+            },
       billingFrequency:
         result.billingFrequency === "" ||
-          result.billingFrequency === null ||
-          result.billingFrequency === undefined ||
-          result.billingFrequency === "EMPTY"
+        result.billingFrequency === null ||
+        result.billingFrequency === undefined ||
+        result.billingFrequency === "EMPTY"
           ? ""
           : {
-            label: result.billingFrequency,
-            value: result.billingFrequency,
-          },
+              label: result.billingFrequency,
+              value: result.billingFrequency,
+            },
       netPrice: result.netPrice,
       margin: result.margin,
       discount: result.discount,
@@ -3014,13 +3041,15 @@ export function SolutionServicePortfolio(props) {
       }
     }
     if (result.payers.length == 0) {
-      let defaultPayer = [{
-        payerId: 1,
-        id: 1,
-        payerName: 'Default',
-        billingSplit: 100,
-        price: ""
-      }]
+      let defaultPayer = [
+        {
+          payerId: 1,
+          id: 1,
+          payerName: "Default",
+          billingSplit: 100,
+          price: "",
+        },
+      ];
       setAddPayerData(defaultPayer);
     }
     console.log("_sbQuoteItems ", _sbQuoteItems);
@@ -3610,10 +3639,10 @@ export function SolutionServicePortfolio(props) {
 
   const deleteSolutionQuote = () => {
     setDeleteConfirmation(true);
-  }
+  };
   const deleteCancel = () => {
     setDeleteConfirmation(false);
-  }
+  };
   const deleteOk = () => {
     setDeleteConfirmation(false);
     deleteMasterQuote(quoteIdIs).then((res) => {
@@ -3629,23 +3658,19 @@ export function SolutionServicePortfolio(props) {
         });
         history.push("/solution-quote");
       }
-    })
-  }
+    });
+  };
 
   const copyQuote = () => {
     setCopyConfirmation(true);
-  }
+  };
   const copyCancel = () => {
     setCopyConfirmation(false);
-  }
+  };
   const copyOk = async () => {
     setCopyConfirmation(false);
 
-    await createQuoteVersion(
-      generalDetails.quoteName,
-      quoteVersionIs,
-      null
-    )
+    await createQuoteVersion(generalDetails.quoteName, quoteVersionIs, null)
       .then((result) => {
         setVersionOpen(false);
         setQuoteIdIs(result.quoteId);
@@ -3665,7 +3690,7 @@ export function SolutionServicePortfolio(props) {
           handleSnack("error", "Error occurred while creating builder version");
         // setVersionDescription("");
       });
-  }
+  };
   const createVersion = async () => {
     await createQuoteVersion(
       generalDetails.quoteName,
@@ -3747,7 +3772,7 @@ export function SolutionServicePortfolio(props) {
       selector: (row) => row?.family,
       wrap: true,
       sortable: true,
-      format: (row) => row?.family
+      format: (row) => row?.family,
     },
     {
       name: (
@@ -3772,17 +3797,52 @@ export function SolutionServicePortfolio(props) {
       sortable: true,
       format: (row) => row?.serialNumber,
     },
-
+    // {
+    //   name: <div>Action</div>,
+    //   selector: (row) => row.action,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.action,
+    //   cell: (row, i) => (
+    //     <div>
+    //       <Link
+    //         onClick={() => handleEditQuoteCoverage(row, i)}
+    //         className="btn-svg text-white cursor mx-2 cursor"
+    //         title="Edit"
+    //       >
+    //         <svg
+    //           version="1.1"
+    //           viewBox="0 0 1696.162 1696.143"
+    //           xmlSpace="preserve"
+    //           xmlns="http://www.w3.org/2000/svg"
+    //           xmlnslgink="http://www.w3.org/1999/lgink"
+    //         >
+    //           <g id="pen">
+    //             <path d="M1648.016,305.367L1390.795,48.149C1359.747,17.098,1318.466,0,1274.555,0c-43.907,0-85.188,17.098-116.236,48.148   L81.585,1124.866c-10.22,10.22-16.808,23.511-18.75,37.833L0.601,1621.186c-2.774,20.448,4.161,41.015,18.753,55.605   c12.473,12.473,29.313,19.352,46.714,19.352c2.952,0,5.923-0.197,8.891-0.601l458.488-62.231   c14.324-1.945,27.615-8.529,37.835-18.752L1648.016,537.844c31.049-31.048,48.146-72.33,48.146-116.237   C1696.162,377.696,1679.064,336.415,1648.016,305.367z M493.598,1505.366l-350.381,47.558l47.56-350.376L953.78,439.557   l302.818,302.819L493.598,1505.366z M1554.575,444.404l-204.536,204.533l-302.821-302.818l204.535-204.532   c8.22-8.218,17.814-9.446,22.802-9.446c4.988,0,14.582,1.228,22.803,9.446l257.221,257.218c8.217,8.217,9.443,17.812,9.443,22.799   S1562.795,436.186,1554.575,444.404z" />
+    //           </g>
+    //           <g id="Layer_1" />
+    //         </svg>
+    //       </Link>
+    //     </div>
+    //   ),
+    // },
   ];
 
-  const SolutionExpendItemsData = ({ data }) => (
+  const handleEditQuoteCoverage = (row) => {
+    console.log("row ===== ", row);
+    setCoverageRecordId(row.coverageId);
+    setOpenCoverageDtlModal(true);
+  };
 
+  const SolutionExpendItemsData = ({ data }) => (
     <>
       <div className="p-5 border-bottom">
         <div className="border border-radius-10">
           <div className="d-flex align-items-center justify-content-between p-3">
             <div className="d-flex align-items-center">
-              <h6 className="mb-0 font-weight-600 font-size-14 mr-3">Coverage</h6>
+              <h6 className="mb-0 font-weight-600 font-size-14 mr-3">
+                Coverage
+              </h6>
               <div className="d-flex align-items-center">
                 {/* <a className="mr-2 cursor">
                   <span><ModeEditOutlineOutlinedIcon /></span>
@@ -3801,7 +3861,7 @@ export function SolutionServicePortfolio(props) {
               </a>
             </div> */}
           </div>
-          {data.coverages ?
+          {data.coverages ? (
             <>
               <DataTable
                 title=""
@@ -3817,7 +3877,10 @@ export function SolutionServicePortfolio(props) {
                 // onRowExpandToggled={(bool, row) => setExpendedSolutionSubComponent(row)}
                 pagination
               />
-            </> : <></>}
+            </>
+          ) : (
+            <></>
+          )}
         </div>
       </div>
     </>
@@ -3836,6 +3899,11 @@ export function SolutionServicePortfolio(props) {
       });
   };
 
+  const handleOpenQuoteDetailModal = () => {
+    setOpenQuoteDetailModal(true);
+    // handleSnack("success", "Status has been updated!");
+  };
+
   return (
     <>
       {/* <CommanComponents /> */}
@@ -3849,14 +3917,16 @@ export function SolutionServicePortfolio(props) {
                   <Select
                     // className="customselectbtn"
                     styles={QUOTE_VERSION_SELECT}
-                    onChange={(e) =>
-                      setGeneralDetails({
-                        ...generalDetails,
-                        version: e,
-                      })
-                    }
+                    // onChange={(e) =>
+                    //   setGeneralDetails({
+                    //     ...generalDetails,
+                    //     version: e,
+                    //   })
+                    // }
+                    onChange={(e) => handleVersion(e)}
                     options={generalVersionOptions}
-                    value={generalDetails.version}
+                    // value={generalDetails.version}
+                    value={selectedVersion}
                   />
                 </div>
 
@@ -3901,7 +3971,14 @@ export function SolutionServicePortfolio(props) {
                             </div> */}
 
               <div className="d-flex justify-content-center align-items-center">
-                <button onClick={() => { history.push("/solution-quote") }} className="btn bg-primary text-white cursor">Back</button>
+                <button
+                  onClick={() => {
+                    history.push("/solution-quote");
+                  }}
+                  className="btn bg-primary text-white cursor"
+                >
+                  Back
+                </button>
                 <a
                   href={undefined}
                   className="cursor btn ml-3 font-size-14 bg-primary text-white"
@@ -3918,7 +3995,11 @@ export function SolutionServicePortfolio(props) {
                 <a href="#" className="ml-3 font-size-14">
                   <img src={folderaddIcon}></img>
                 </a>
-                <a href="#" className="ml-3 font-size-14">
+                <a
+                  // href="#"
+                  className="ml-3 font-size-14 cursor"
+                  onClick={handleOpenQuoteDetailModal}
+                >
                   <img src={uploadIcon}></img>
                 </a>
                 <a href="#" className="ml-3 font-size-14">
@@ -3952,7 +4033,7 @@ export function SolutionServicePortfolio(props) {
             centered
           >
             <Modal.Header className="modal-header-border">
-              <Modal.Title >Confirmation</Modal.Title>
+              <Modal.Title>Confirmation</Modal.Title>
             </Modal.Header>
             <Modal.Body className="px-3 bg-white">
               <div>
@@ -3980,7 +4061,6 @@ export function SolutionServicePortfolio(props) {
                     type="button"
                     className="btn text-white bg-primary"
                     onClick={deleteOk}
-
                   >
                     Delete
                   </button>
@@ -3996,7 +4076,7 @@ export function SolutionServicePortfolio(props) {
             centered
           >
             <Modal.Header className="modal-header-border">
-              <Modal.Title >Confirmation</Modal.Title>
+              <Modal.Title>Confirmation</Modal.Title>
             </Modal.Header>
             <Modal.Body className="px-3 bg-white">
               <div>
@@ -4024,7 +4104,6 @@ export function SolutionServicePortfolio(props) {
                     type="button"
                     className="btn text-white bg-primary"
                     onClick={copyOk}
-
                   >
                     Copy
                   </button>
@@ -4268,9 +4347,9 @@ export function SolutionServicePortfolio(props) {
                               </p>
                               <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {customerData.source == "" ||
-                                  customerData.source == null ||
-                                  customerData.source == "string" ||
-                                  customerData.source == undefined
+                                customerData.source == null ||
+                                customerData.source == "string" ||
+                                customerData.source == undefined
                                   ? "NA"
                                   : customerData.source}
                               </h6>
@@ -4283,9 +4362,9 @@ export function SolutionServicePortfolio(props) {
                               </p>
                               <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {customerData.customerID == "" ||
-                                  customerData.customerID == null ||
-                                  customerData.customerID == "string" ||
-                                  customerData.customerID == undefined
+                                customerData.customerID == null ||
+                                customerData.customerID == "string" ||
+                                customerData.customerID == undefined
                                   ? "NA"
                                   : customerData.customerID}
                               </h6>
@@ -4298,9 +4377,9 @@ export function SolutionServicePortfolio(props) {
                               </p>
                               <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {customerData.customerName == "" ||
-                                  customerData.customerName == null ||
-                                  customerData.customerName == "string" ||
-                                  customerData.customerName == undefined
+                                customerData.customerName == null ||
+                                customerData.customerName == "string" ||
+                                customerData.customerName == undefined
                                   ? "NA"
                                   : customerData.customerName}
                               </h6>
@@ -4313,9 +4392,9 @@ export function SolutionServicePortfolio(props) {
                               </p>
                               <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {customerData.contactEmail == "" ||
-                                  customerData.contactEmail == null ||
-                                  customerData.contactEmail == "string" ||
-                                  customerData.contactEmail == undefined
+                                customerData.contactEmail == null ||
+                                customerData.contactEmail == "string" ||
+                                customerData.contactEmail == undefined
                                   ? "NA"
                                   : customerData.contactEmail}
                               </h6>
@@ -4328,9 +4407,9 @@ export function SolutionServicePortfolio(props) {
                               </p>
                               <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {customerData.contactPhone == "" ||
-                                  customerData.contactPhone == null ||
-                                  customerData.contactPhone == "string" ||
-                                  customerData.contactPhone == undefined
+                                customerData.contactPhone == null ||
+                                customerData.contactPhone == "string" ||
+                                customerData.contactPhone == undefined
                                   ? "NA"
                                   : customerData.contactPhone}
                               </h6>
@@ -4343,9 +4422,9 @@ export function SolutionServicePortfolio(props) {
                               </p>
                               <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {customerData.customerGroup == "" ||
-                                  customerData.customerGroup == null ||
-                                  customerData.customerGroup == "string" ||
-                                  customerData.customerGroup == undefined
+                                customerData.customerGroup == null ||
+                                customerData.customerGroup == "string" ||
+                                customerData.customerGroup == undefined
                                   ? "NA"
                                   : customerData.customerGroup}
                               </h6>
@@ -4543,9 +4622,9 @@ export function SolutionServicePortfolio(props) {
                               </p>
                               <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {machineData.model == "" ||
-                                  machineData.model == null ||
-                                  machineData.model == "string" ||
-                                  machineData.model == undefined
+                                machineData.model == null ||
+                                machineData.model == "string" ||
+                                machineData.model == undefined
                                   ? "NA"
                                   : machineData.model}
                               </h6>
@@ -4558,9 +4637,9 @@ export function SolutionServicePortfolio(props) {
                               </p>
                               <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {machineData.serialNo == "" ||
-                                  machineData.serialNo == null ||
-                                  machineData.serialNo == "string" ||
-                                  machineData.serialNo == undefined
+                                machineData.serialNo == null ||
+                                machineData.serialNo == "string" ||
+                                machineData.serialNo == undefined
                                   ? "NA"
                                   : machineData.serialNo}
                               </h6>
@@ -4573,9 +4652,9 @@ export function SolutionServicePortfolio(props) {
                               </p>
                               <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {machineData.smu == "" ||
-                                  machineData.smu == null ||
-                                  machineData.smu == "string" ||
-                                  machineData.smu == undefined
+                                machineData.smu == null ||
+                                machineData.smu == "string" ||
+                                machineData.smu == undefined
                                   ? "NA"
                                   : machineData.smu}
                               </h6>
@@ -4588,9 +4667,9 @@ export function SolutionServicePortfolio(props) {
                               </p>
                               <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {machineData.fleetNo == "" ||
-                                  machineData.fleetNo == null ||
-                                  machineData.fleetNo == "string" ||
-                                  machineData.fleetNo == undefined
+                                machineData.fleetNo == null ||
+                                machineData.fleetNo == "string" ||
+                                machineData.fleetNo == undefined
                                   ? "NA"
                                   : machineData.fleetNo}
                               </h6>
@@ -4603,9 +4682,9 @@ export function SolutionServicePortfolio(props) {
                               </p>
                               <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {machineData.registrationNo == "" ||
-                                  machineData.registrationNo == null ||
-                                  machineData.registrationNo == "string" ||
-                                  machineData.registrationNo == undefined
+                                machineData.registrationNo == null ||
+                                machineData.registrationNo == "string" ||
+                                machineData.registrationNo == undefined
                                   ? "NA"
                                   : machineData.registrationNo}
                               </h6>
@@ -4618,9 +4697,9 @@ export function SolutionServicePortfolio(props) {
                               </p>
                               <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {machineData.chasisNo == "" ||
-                                  machineData.chasisNo == null ||
-                                  machineData.chasisNo == "string" ||
-                                  machineData.chasisNo == undefined
+                                machineData.chasisNo == null ||
+                                machineData.chasisNo == "string" ||
+                                machineData.chasisNo == undefined
                                   ? "NA"
                                   : machineData.chasisNo}
                               </h6>
@@ -4808,9 +4887,9 @@ export function SolutionServicePortfolio(props) {
                               </p>
                               <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {estimateDetails.preparedBy == "" ||
-                                  estimateDetails.preparedBy == null ||
-                                  estimateDetails.preparedBy == "string" ||
-                                  estimateDetails.preparedBy == undefined
+                                estimateDetails.preparedBy == null ||
+                                estimateDetails.preparedBy == "string" ||
+                                estimateDetails.preparedBy == undefined
                                   ? "NA"
                                   : estimateDetails.preparedBy}
                               </h6>
@@ -4823,9 +4902,9 @@ export function SolutionServicePortfolio(props) {
                               </p>
                               <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {estimateDetails.approvedBy == "" ||
-                                  estimateDetails.approvedBy == null ||
-                                  estimateDetails.approvedBy == "string" ||
-                                  estimateDetails.approvedBy == undefined
+                                estimateDetails.approvedBy == null ||
+                                estimateDetails.approvedBy == "string" ||
+                                estimateDetails.approvedBy == undefined
                                   ? "NA"
                                   : estimateDetails.approvedBy}
                               </h6>
@@ -4838,13 +4917,13 @@ export function SolutionServicePortfolio(props) {
                               </p>
                               <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {estimateDetails.preparedOn == "" ||
-                                  estimateDetails.preparedOn == null ||
-                                  estimateDetails.preparedOn == "string" ||
-                                  estimateDetails.preparedOn == undefined
+                                estimateDetails.preparedOn == null ||
+                                estimateDetails.preparedOn == "string" ||
+                                estimateDetails.preparedOn == undefined
                                   ? "NA"
                                   : getFormattedDateTimeByTimeStamp(
-                                    estimateDetails.preparedOn
-                                  )}
+                                      estimateDetails.preparedOn
+                                    )}
                               </h6>
                             </div>
                           </div>
@@ -4855,9 +4934,9 @@ export function SolutionServicePortfolio(props) {
                               </p>
                               <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {estimateDetails.revisedBy == "" ||
-                                  estimateDetails.revisedBy == null ||
-                                  estimateDetails.revisedBy == "string" ||
-                                  estimateDetails.revisedBy == undefined
+                                estimateDetails.revisedBy == null ||
+                                estimateDetails.revisedBy == "string" ||
+                                estimateDetails.revisedBy == undefined
                                   ? "NA"
                                   : estimateDetails.revisedBy}
                               </h6>
@@ -4870,13 +4949,13 @@ export function SolutionServicePortfolio(props) {
                               </p>
                               <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {estimateDetails.revisedOn == "" ||
-                                  estimateDetails.revisedOn == null ||
-                                  estimateDetails.revisedOn == "string" ||
-                                  estimateDetails.revisedOn == undefined
+                                estimateDetails.revisedOn == null ||
+                                estimateDetails.revisedOn == "string" ||
+                                estimateDetails.revisedOn == undefined
                                   ? "NA"
                                   : getFormattedDateTimeByTimeStamp(
-                                    estimateDetails.revisedOn
-                                  )}
+                                      estimateDetails.revisedOn
+                                    )}
                               </h6>
                             </div>
                           </div>
@@ -4887,17 +4966,17 @@ export function SolutionServicePortfolio(props) {
                               </p>
                               <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {estimateDetails.salesOffice == "" ||
-                                  estimateDetails.salesOffice == null ||
-                                  estimateDetails.salesOffice == "string" ||
-                                  estimateDetails.salesOffice == undefined ||
-                                  estimateDetails.salesOffice?.value === null ||
-                                  estimateDetails.salesOffice?.value === "" ||
-                                  estimateDetails.salesOffice?.value === undefined
+                                estimateDetails.salesOffice == null ||
+                                estimateDetails.salesOffice == "string" ||
+                                estimateDetails.salesOffice == undefined ||
+                                estimateDetails.salesOffice?.value === null ||
+                                estimateDetails.salesOffice?.value === "" ||
+                                estimateDetails.salesOffice?.value === undefined
                                   ? "NA"
                                   : typeof estimateDetails.salesOffice ===
                                     "object"
-                                    ? estimateDetails.salesOffice?.value
-                                    : estimateDetails.salesOffice}
+                                  ? estimateDetails.salesOffice?.value
+                                  : estimateDetails.salesOffice}
                               </h6>
                             </div>
                           </div>
@@ -5088,13 +5167,13 @@ export function SolutionServicePortfolio(props) {
                               </p>
                               <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {generalDetails.quoteDate == "" ||
-                                  generalDetails.quoteDate == null ||
-                                  generalDetails.quoteDate == "string" ||
-                                  generalDetails.quoteDate == undefined
+                                generalDetails.quoteDate == null ||
+                                generalDetails.quoteDate == "string" ||
+                                generalDetails.quoteDate == undefined
                                   ? "NA"
                                   : getFormattedDateTimeByTimeStamp(
-                                    generalDetails.quoteDate
-                                  )}
+                                      generalDetails.quoteDate
+                                    )}
                               </h6>
                             </div>
                           </div>
@@ -5105,9 +5184,9 @@ export function SolutionServicePortfolio(props) {
                               </p>
                               <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {generalDetails.quoteName == "" ||
-                                  generalDetails.quoteName == null ||
-                                  generalDetails.quoteName == "string" ||
-                                  generalDetails.quoteName == undefined
+                                generalDetails.quoteName == null ||
+                                generalDetails.quoteName == "string" ||
+                                generalDetails.quoteName == undefined
                                   ? "NA"
                                   : generalDetails.quoteName}
                               </h6>
@@ -5120,9 +5199,9 @@ export function SolutionServicePortfolio(props) {
                               </p>
                               <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {generalDetails.description == "" ||
-                                  generalDetails.description == null ||
-                                  generalDetails.description == "string" ||
-                                  generalDetails.description == undefined
+                                generalDetails.description == null ||
+                                generalDetails.description == "string" ||
+                                generalDetails.description == undefined
                                   ? "NA"
                                   : generalDetails.description}
                               </h6>
@@ -5135,9 +5214,9 @@ export function SolutionServicePortfolio(props) {
                               </p>
                               <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {generalDetails.reference == "" ||
-                                  generalDetails.reference == null ||
-                                  generalDetails.reference == "string" ||
-                                  generalDetails.reference == undefined
+                                generalDetails.reference == null ||
+                                generalDetails.reference == "string" ||
+                                generalDetails.reference == undefined
                                   ? "NA"
                                   : generalDetails.reference}
                               </h6>
@@ -5150,16 +5229,16 @@ export function SolutionServicePortfolio(props) {
                               </p>
                               <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {generalDetails.validity == "" ||
-                                  generalDetails.validity == null ||
-                                  generalDetails.validity == "string" ||
-                                  generalDetails.validity == undefined ||
-                                  generalDetails.validity?.value === null ||
-                                  generalDetails.validity?.value === "" ||
-                                  generalDetails.validity?.value === undefined
+                                generalDetails.validity == null ||
+                                generalDetails.validity == "string" ||
+                                generalDetails.validity == undefined ||
+                                generalDetails.validity?.value === null ||
+                                generalDetails.validity?.value === "" ||
+                                generalDetails.validity?.value === undefined
                                   ? "NA"
                                   : typeof generalDetails.validity === "object"
-                                    ? generalDetails.validity?.value
-                                    : generalDetails.validity}
+                                  ? generalDetails.validity?.value
+                                  : generalDetails.validity}
                               </h6>
                             </div>
                           </div>
@@ -5170,16 +5249,16 @@ export function SolutionServicePortfolio(props) {
                               </p>
                               <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {generalDetails.version == "" ||
-                                  generalDetails.version == null ||
-                                  generalDetails.version == "string" ||
-                                  generalDetails.version == undefined ||
-                                  generalDetails.version?.value === null ||
-                                  generalDetails.version?.value === "" ||
-                                  generalDetails.version?.value === undefined
+                                generalDetails.version == null ||
+                                generalDetails.version == "string" ||
+                                generalDetails.version == undefined ||
+                                generalDetails.version?.value === null ||
+                                generalDetails.version?.value === "" ||
+                                generalDetails.version?.value === undefined
                                   ? "NA"
                                   : typeof generalDetails.version === "object"
-                                    ? generalDetails.version?.value
-                                    : generalDetails.version}
+                                  ? generalDetails.version?.value
+                                  : generalDetails.version}
                               </h6>
                             </div>
                           </div>
@@ -5612,14 +5691,14 @@ export function SolutionServicePortfolio(props) {
                               </p>
                               <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {quoteBillingData.paymentTerms == "" ||
-                                  quoteBillingData.paymentTerms == null ||
-                                  quoteBillingData.paymentTerms == undefined ||
-                                  quoteBillingData.paymentTerms == "string"
+                                quoteBillingData.paymentTerms == null ||
+                                quoteBillingData.paymentTerms == undefined ||
+                                quoteBillingData.paymentTerms == "string"
                                   ? "NA"
                                   : typeof quoteBillingData.paymentTerms ===
                                     "object"
-                                    ? quoteBillingData.paymentTerms?.value
-                                    : quoteBillingData.paymentTerms}
+                                  ? quoteBillingData.paymentTerms?.value
+                                  : quoteBillingData.paymentTerms}
                               </h6>
                             </div>
                           </div>
@@ -5630,14 +5709,14 @@ export function SolutionServicePortfolio(props) {
                               </p>
                               <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {quoteBillingData.currency == "" ||
-                                  quoteBillingData.currency == null ||
-                                  quoteBillingData.currency == undefined ||
-                                  quoteBillingData.currency == "string"
+                                quoteBillingData.currency == null ||
+                                quoteBillingData.currency == undefined ||
+                                quoteBillingData.currency == "string"
                                   ? "NA"
                                   : typeof quoteBillingData.currency ===
                                     "object"
-                                    ? quoteBillingData.currency?.value
-                                    : quoteBillingData.currency}
+                                  ? quoteBillingData.currency?.value
+                                  : quoteBillingData.currency}
                               </h6>
                             </div>
                           </div>
@@ -5648,13 +5727,13 @@ export function SolutionServicePortfolio(props) {
                               </p>
                               <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {quoteBillingData.priceDate == "" ||
-                                  quoteBillingData.priceDate == null ||
-                                  quoteBillingData.priceDate == "string" ||
-                                  quoteBillingData.priceDate == undefined
+                                quoteBillingData.priceDate == null ||
+                                quoteBillingData.priceDate == "string" ||
+                                quoteBillingData.priceDate == undefined
                                   ? "NA"
                                   : getFormattedDateTimeByTimeStamp(
-                                    quoteBillingData.priceDate
-                                  )}
+                                      quoteBillingData.priceDate
+                                    )}
                               </h6>
                             </div>
                           </div>
@@ -5665,9 +5744,9 @@ export function SolutionServicePortfolio(props) {
                               </p>
                               <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {quoteBillingData.billingType == "" ||
-                                  quoteBillingData.billingType == null ||
-                                  quoteBillingData.billingType == undefined ||
-                                  quoteBillingData.billingType == "string"
+                                quoteBillingData.billingType == null ||
+                                quoteBillingData.billingType == undefined ||
+                                quoteBillingData.billingType == "string"
                                   ? "NA"
                                   : quoteBillingData.billingType}
                               </h6>
@@ -5680,15 +5759,15 @@ export function SolutionServicePortfolio(props) {
                               </p>
                               <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {quoteBillingData.billingFrequency == "" ||
-                                  quoteBillingData.billingFrequency == null ||
-                                  quoteBillingData.billingFrequency ==
+                                quoteBillingData.billingFrequency == null ||
+                                quoteBillingData.billingFrequency ==
                                   undefined ||
-                                  quoteBillingData.billingFrequency == "string"
+                                quoteBillingData.billingFrequency == "string"
                                   ? "NA"
                                   : typeof quoteBillingData.billingFrequency ===
                                     "object"
-                                    ? quoteBillingData.billingFrequency?.value
-                                    : quoteBillingData.billingFrequency}
+                                  ? quoteBillingData.billingFrequency?.value
+                                  : quoteBillingData.billingFrequency}
                               </h6>
                             </div>
                           </div>
@@ -5699,9 +5778,9 @@ export function SolutionServicePortfolio(props) {
                               </p>
                               <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {quoteBillingData.netPrice == "" ||
-                                  quoteBillingData.netPrice == null ||
-                                  quoteBillingData.netPrice == undefined ||
-                                  quoteBillingData.netPrice == "string"
+                                quoteBillingData.netPrice == null ||
+                                quoteBillingData.netPrice == undefined ||
+                                quoteBillingData.netPrice == "string"
                                   ? "NA"
                                   : quoteBillingData.netPrice}
                               </h6>
@@ -6015,10 +6094,10 @@ export function SolutionServicePortfolio(props) {
                                   id="priceEscalationSelect"
                                   options={shippingLeadCountUnit}
                                   placeholder="placeholder "
-                                // value={priceCalculator.escalationPriceOptionsValue1}
-                                // onChange={(e) =>
-                                //     handleEscalationPriceValue(e)
-                                // }
+                                  // value={priceCalculator.escalationPriceOptionsValue1}
+                                  // onChange={(e) =>
+                                  //     handleEscalationPriceValue(e)
+                                  // }
                                 />
                               </div>
                             </div>
@@ -6147,22 +6226,22 @@ export function SolutionServicePortfolio(props) {
                               </p>
                               <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {shippingBillingDetails.deliveryType == "" ||
-                                  shippingBillingDetails.deliveryType == null ||
-                                  shippingBillingDetails.deliveryType ==
+                                shippingBillingDetails.deliveryType == null ||
+                                shippingBillingDetails.deliveryType ==
                                   undefined ||
-                                  shippingBillingDetails.deliveryType ==
+                                shippingBillingDetails.deliveryType ==
                                   "string" ||
-                                  shippingBillingDetails.deliveryType?.value ===
+                                shippingBillingDetails.deliveryType?.value ===
                                   "" ||
-                                  shippingBillingDetails.deliveryType?.value ===
+                                shippingBillingDetails.deliveryType?.value ===
                                   null ||
-                                  shippingBillingDetails.deliveryType?.value ===
+                                shippingBillingDetails.deliveryType?.value ===
                                   undefined
                                   ? "NA"
                                   : typeof shippingBillingDetails.deliveryType ===
                                     "object"
-                                    ? shippingBillingDetails.deliveryType?.value
-                                    : shippingBillingDetails.deliveryType}
+                                  ? shippingBillingDetails.deliveryType?.value
+                                  : shippingBillingDetails.deliveryType}
                               </h6>
                             </div>
                           </div>
@@ -6174,24 +6253,24 @@ export function SolutionServicePortfolio(props) {
                               <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {shippingBillingDetails.deliveryPriority ==
                                   "" ||
-                                  shippingBillingDetails.deliveryPriority ==
+                                shippingBillingDetails.deliveryPriority ==
                                   null ||
-                                  shippingBillingDetails.deliveryPriority ==
+                                shippingBillingDetails.deliveryPriority ==
                                   undefined ||
-                                  shippingBillingDetails.deliveryPriority ==
+                                shippingBillingDetails.deliveryPriority ==
                                   "string" ||
-                                  shippingBillingDetails.deliveryPriority
-                                    ?.value === "" ||
-                                  shippingBillingDetails.deliveryPriority
-                                    ?.value === null ||
-                                  shippingBillingDetails.deliveryPriority
-                                    ?.value === undefined
+                                shippingBillingDetails.deliveryPriority
+                                  ?.value === "" ||
+                                shippingBillingDetails.deliveryPriority
+                                  ?.value === null ||
+                                shippingBillingDetails.deliveryPriority
+                                  ?.value === undefined
                                   ? "NA"
                                   : typeof shippingBillingDetails.deliveryPriority ===
                                     "object"
-                                    ? shippingBillingDetails.deliveryPriority
+                                  ? shippingBillingDetails.deliveryPriority
                                       ?.value
-                                    : shippingBillingDetails.deliveryPriority}
+                                  : shippingBillingDetails.deliveryPriority}
                               </h6>
                             </div>
                           </div>
@@ -6202,9 +6281,9 @@ export function SolutionServicePortfolio(props) {
                               </p>
                               <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {shippingBillingDetails.leadTime == "" ||
-                                  shippingBillingDetails.leadTime == null ||
-                                  shippingBillingDetails.leadTime == undefined ||
-                                  shippingBillingDetails.leadTime == "string"
+                                shippingBillingDetails.leadTime == null ||
+                                shippingBillingDetails.leadTime == undefined ||
+                                shippingBillingDetails.leadTime == "string"
                                   ? "NA"
                                   : shippingBillingDetails.leadTime}
                               </h6>
@@ -6218,11 +6297,11 @@ export function SolutionServicePortfolio(props) {
                               <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {shippingBillingDetails.serviceRecipentAddress ==
                                   "" ||
-                                  shippingBillingDetails.serviceRecipentAddress ==
+                                shippingBillingDetails.serviceRecipentAddress ==
                                   null ||
-                                  shippingBillingDetails.serviceRecipentAddress ==
+                                shippingBillingDetails.serviceRecipentAddress ==
                                   undefined ||
-                                  shippingBillingDetails.serviceRecipentAddress ==
+                                shippingBillingDetails.serviceRecipentAddress ==
                                   "string"
                                   ? "NA"
                                   : shippingBillingDetails.serviceRecipentAddress}
@@ -6317,9 +6396,7 @@ export function SolutionServicePortfolio(props) {
                     </div>
                   </div>
                   <div className="col-9">
-                    <div className="d-flex justify-content-between align-items-center w-100 ml-4">
-
-                    </div>
+                    <div className="d-flex justify-content-between align-items-center w-100 ml-4"></div>
                   </div>
                   <div className="col-2">
                     <div className="d-flex align-items-center justify-content-end">
@@ -6356,7 +6433,6 @@ export function SolutionServicePortfolio(props) {
                       onSelectedRowsChange={(state) =>
                         setFilterQuoteItems(state.selectedRows)
                       }
-
                     />
                     <div className="mb-3">
                       <div className="text-right">
@@ -6382,9 +6458,13 @@ export function SolutionServicePortfolio(props) {
                       pagination
                       // onRowClicked={(e) => handleRowClick(e)}
                       // selectableRows
-                      expandableRowExpanded={(row) => (row === expendedSolutionSubComponent)}
+                      expandableRowExpanded={(row) =>
+                        row === expendedSolutionSubComponent
+                      }
                       expandOnRowClicked
-                      onRowClicked={(row) => { setExpendedSolutionSubComponent(row) }}
+                      onRowClicked={(row) => {
+                        setExpendedSolutionSubComponent(row);
+                      }}
                       expandableRows
                       expandableRowsComponent={SolutionExpendItemsData}
                     />
@@ -6948,6 +7028,24 @@ export function SolutionServicePortfolio(props) {
       />
       {showNotes && (
         <NotesAddEdit show={showNotes} hideModal={() => setShowNotes(false)} />
+      )}
+      {openQuoteDetailModal && (
+        <QuoteDetailsModal
+          show={openQuoteDetailModal}
+          hideModal={() => setOpenQuoteDetailModal(false)}
+          handleSnack={handleSnack}
+          quoteItemsMaster={quoteItemsMaster}
+          customerData={customerData}
+          quoteDetails={generalDetails}
+        />
+      )}
+
+      {openCoverageDtlModal && (
+        <QuoteCoverageDetailsModal
+          show={openCoverageDtlModal}
+          hideModal={() => setOpenCoverageDtlModal(false)}
+          recordId={coverageRecordId}
+        />
       )}
     </>
   );
