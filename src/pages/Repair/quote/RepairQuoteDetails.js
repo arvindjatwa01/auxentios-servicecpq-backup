@@ -73,6 +73,7 @@ import {
   WITH_SPARE_PARTS,
 } from "navigation/CONSTANTS";
 import NotesAddEdit from "pages/SolutionModules/NotesAddEdit";
+import QuoteDetailsModal from "pages/SolutionModules/Quote/QuoteDetailsModal";
 
 const RepairQuoteDetails = (props) => {
   const history = useHistory();
@@ -332,8 +333,8 @@ const RepairQuoteDetails = (props) => {
       estViewOnly: result.preparedBy ? true : false,
       priceViewOnly:
         result.billingType !== "EMPTY" &&
-          result.billingType !== null &&
-          result.billingType !== ""
+        result.billingType !== null &&
+        result.billingType !== ""
           ? true
           : false,
       shippingViewOnly: result.leadTime ? true : false,
@@ -422,8 +423,8 @@ const RepairQuoteDetails = (props) => {
       revisedOn: result.revisedOn ? result.revisedOn : new Date(),
       salesOffice: result.salesOffice
         ? salesOfficeOptions.find(
-          (element) => element.value === result.salesOffice
-        )
+            (element) => element.value === result.salesOffice
+          )
         : { label: "", value: "" },
     });
   };
@@ -437,14 +438,14 @@ const RepairQuoteDetails = (props) => {
       billingFrequency:
         result.billingFrequency && result.billingFrequency !== "EMPTY"
           ? billingFreqOptions.find(
-            (element) => element.value === result.billingFrequency
-          )
+              (element) => element.value === result.billingFrequency
+            )
           : { label: "", value: "" },
       billingType:
         result.billingType && result.billingType !== "EMPTY"
           ? billingTypeOptions.find(
-            (element) => element.value === result.billingType
-          )
+              (element) => element.value === result.billingType
+            )
           : { label: "", value: "" },
       currency: result.currency,
       discount: result.discount,
@@ -454,8 +455,8 @@ const RepairQuoteDetails = (props) => {
       paymentTerms:
         result.paymentTerms && result.paymentTerms !== "EMPTY"
           ? paymentTermOptions.find(
-            (element) => element.value === result.paymentTerms
-          )
+              (element) => element.value === result.paymentTerms
+            )
           : { label: "", value: "" },
     });
     // setPricingData({
@@ -492,13 +493,13 @@ const RepairQuoteDetails = (props) => {
     setShippingDetail({
       deliveryPriority: result.deliveryPriority
         ? deliveryPriorityOptions.find(
-          (element) => element.value === result.deliveryPriority
-        )
+            (element) => element.value === result.deliveryPriority
+          )
         : { label: "", value: "" },
       deliveryType: result.deliveryType
         ? deliveryTypeOptions.find(
-          (element) => element.value === result.deliveryType
-        )
+            (element) => element.value === result.deliveryType
+          )
         : { label: "", value: "" },
       leadTime:
         leadTimeandUnit && leadTimeandUnit.length === 2
@@ -507,8 +508,8 @@ const RepairQuoteDetails = (props) => {
       unit:
         leadTimeandUnit && leadTimeandUnit.length === 2
           ? OPTIONS_LEADTIME_UNIT.find(
-            (element) => element.value === leadTimeandUnit[1]
-          )
+              (element) => element.value === leadTimeandUnit[1]
+            )
           : { label: "Day", value: "DAY" },
       serviceRecipientAddress: result.serviceRecipientAddress
         ? result.serviceRecipientAddress
@@ -611,6 +612,9 @@ const RepairQuoteDetails = (props) => {
     }
     setOpenSnack(false);
   };
+
+  const [openQuoteDetailModal, setOpenQuoteDetailModal] = useState(false);
+
   const [severity, setSeverity] = useState("");
   const [openSnack, setOpenSnack] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
@@ -1187,6 +1191,12 @@ const RepairQuoteDetails = (props) => {
       }
     }
   };
+
+  const handleOpenQuoteDetailModal = () => {
+    setOpenQuoteDetailModal(true);
+    // handleSnack("success", "Status has been updated!");
+  };
+
   return (
     <>
       <CustomizedSnackbar
@@ -1240,7 +1250,14 @@ const RepairQuoteDetails = (props) => {
               </div>
             </div>
             <div className="d-flex justify-content-center align-items-center">
-              <button onClick={() => { history.push("/repair-quote") }} className="btn bg-primary text-white cursor">Back</button>
+              <button
+                onClick={() => {
+                  history.push("/repair-quote");
+                }}
+                className="btn bg-primary text-white cursor"
+              >
+                Back
+              </button>
               <a
                 href={undefined}
                 className="cursor btn ml-3 font-size-14 bg-primary text-white"
@@ -1257,7 +1274,11 @@ const RepairQuoteDetails = (props) => {
               <a href="#" className="ml-3 font-size-14" title="Items to review">
                 <img src={folderaddIcon}></img>
               </a>
-              <a href="#" className="ml-3 font-size-14" title="Upload">
+              <a // href="#"
+                className="ml-3 font-size-14 cursor"
+                onClick={handleOpenQuoteDetailModal}
+                title="Upload"
+              >
                 <img src={uploadIcon}></img>
               </a>
               {/* <a href="#" className="ml-3 font-size-14"><img src={cpqIcon}></img></a> */}
@@ -2638,8 +2659,8 @@ const RepairQuoteDetails = (props) => {
                           value={
                             shippingDetail.leadTime &&
                             shippingDetail.leadTime +
-                            " " +
-                            shippingDetail.unit?.label
+                              " " +
+                              shippingDetail.unit?.label
                           }
                           className="col-md-4 col-sm-4"
                         />
@@ -2693,8 +2714,8 @@ const RepairQuoteDetails = (props) => {
               data={quoteItems}
               customStyles={STYLE_QUOTEITEM_TABLE}
               pagination
-            // onRowClicked={(e) => handleRowClick(e)}
-            // selectableRows
+              // onRowClicked={(e) => handleRowClick(e)}
+              // selectableRows
             />
             {/* </div> */}
           </div>
@@ -2702,6 +2723,17 @@ const RepairQuoteDetails = (props) => {
       </div>
       {showNotes && (
         <NotesAddEdit show={showNotes} hideModal={() => setShowNotes(false)} />
+      )}
+
+      {openQuoteDetailModal && (
+        <QuoteDetailsModal
+          show={openQuoteDetailModal}
+          hideModal={() => setOpenQuoteDetailModal(false)}
+          handleSnack={handleSnack}
+          quoteItemsMaster={quoteItems}
+          customerData={customerData}
+          quoteDetails={generalDetails}
+        />
       )}
     </>
   );

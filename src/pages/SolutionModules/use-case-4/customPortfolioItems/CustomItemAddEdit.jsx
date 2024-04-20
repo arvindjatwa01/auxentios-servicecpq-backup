@@ -200,11 +200,20 @@ const CustomItemAddEdit = (props) => {
         });
 
         if (customItemBodyModel.customItemPrices.length !== 0) {
-          handleGetItemPriceDetails(
-            customItemBodyModel.customItemPrices[
-              customItemBodyModel.customItemPrices.length - 1
-            ].customItemPriceDataId
-          ).then((res) => {
+          const itemPriceId = customItemBodyModel.customItemPrices.reduce(
+            (minItemId, currentItem) => {
+              return currentItem.customItemPriceDataId < minItemId
+                ? currentItem.customItemPriceDataId
+                : minItemId;
+            },
+            customItemBodyModel.customItemPrices[0].customItemPriceDataId
+          );
+          // handleGetItemPriceDetails(
+          //   customItemBodyModel.customItemPrices[
+          //     customItemBodyModel.customItemPrices.length - 1
+          //   ].customItemPriceDataId
+          // ).then((res) => {
+          handleGetItemPriceDetails(itemPriceId).then((res) => {
             if (res.apiSuccess) {
               let _frequency = frequencyKeyValuePairs.find(
                 (obj) => obj.value === res.responseData.frequency
@@ -570,7 +579,7 @@ const CustomItemAddEdit = (props) => {
           itemRequestObj,
           itemPriceRequestObj,
           isPortfolioItem,
-          editItemData
+          isEditable
         );
       } else {
         handleAddUpdateItemPrice(false).then((itemPriceResponse) => {
@@ -580,7 +589,7 @@ const CustomItemAddEdit = (props) => {
               itemRequestObj,
               itemPriceResponse.responseData,
               isPortfolioItem,
-              editItemData
+              isEditable
             );
           }
         });

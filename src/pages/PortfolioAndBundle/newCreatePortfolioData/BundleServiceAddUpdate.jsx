@@ -29,14 +29,25 @@ import { getFormatDateTime } from "./utilities/dateUtilities";
 import { FONT_STYLE_SELECT } from "pages/Repair/CONSTANTS";
 
 import { callGetApi, getApiCall } from "services/searchQueryService";
-import { getItemDataById, itemCreation, updateItemData, } from "../../../services/index";
+import {
+  getItemDataById,
+  itemCreation,
+  updateItemData,
+} from "../../../services/index";
 import { updateItemPriceSjRkId } from "./portfolio-item/SJRKIdUpdate";
 import { GET_SEARCH_COVERAGE } from "services/CONSTANTS";
 import LoadingProgress from "pages/Repair/components/Loader";
 
 import {
-  offerValidityKeyValuePairs, salesOfficeKeyValuePairs, serviceTypeKeyValuePairs, additionalPriceKeyValuePair,
-  discountTypeKeyValuePair, usageTypeKeyValuePair, defaultItemHeaderObj, defaultItemBodyObj, defaultItemPriceObj,
+  offerValidityKeyValuePairs,
+  salesOfficeKeyValuePairs,
+  serviceTypeKeyValuePairs,
+  additionalPriceKeyValuePair,
+  discountTypeKeyValuePair,
+  usageTypeKeyValuePair,
+  defaultItemHeaderObj,
+  defaultItemBodyObj,
+  defaultItemPriceObj,
 } from "pages/Common/PortfolioAndSolutionConstants";
 const activityOptions = ["None", "Atria", "Callisto"];
 
@@ -46,20 +57,42 @@ const BundleServiceAddUpdate = (props) => {
   //   itemStatusKeyValuePairs, itemId, setItemId, itemEditModeOn, frequencyKeyValuePairs, unitKeyValuePairs, priceHeadTypeKeyValuePair,
   //   priceTypeKeyValuePair, priceMethodKeyValuePair, currencyKeyValuePair, reviewModeActive = false,
   // } = props;
-  const { show, hideModel, itemFlag, itemId, setItemId, itemEditModeOn, reviewModeActive = false, } = props;
+  const {
+    show,
+    hideModel,
+    itemFlag,
+    itemId,
+    setItemId,
+    itemEditModeOn,
+    reviewModeActive = false,
+  } = props;
 
   const {
-    supportLevelKeyValuePair, portfolioStatusKeyValuePair, customerSegmentKeyValuePair, machineComponentKeyValuePair,
-    priceMethodKeyValuePair, priceTypeKeyValuePair, priceHeadTypeKeyValuePair, currencyKeyValuePair,
-    frequencyKeyValuePairs, unitKeyValuePairs, ...newdataResponse
+    supportLevelKeyValuePair,
+    portfolioStatusKeyValuePair,
+    customerSegmentKeyValuePair,
+    machineComponentKeyValuePair,
+    priceMethodKeyValuePair,
+    priceTypeKeyValuePair,
+    priceHeadTypeKeyValuePair,
+    currencyKeyValuePair,
+    frequencyKeyValuePairs,
+    unitKeyValuePairs,
+    ...newdataResponse
   } = useSelector((state) => state.commonAPIReducer);
 
   const [activeTab, setActiveTab] = useState("bundleServiceHeader");
   const [itemActive, setItemActive] = useState(false);
 
-  const [bundleServiceItemHeader, setBundleServiceItemHeader] = useState({ ...defaultItemHeaderObj, });
-  const [bundleServiceItemBody, setBundleServiceItemBody] = useState({ ...defaultItemBodyObj, });
-  const [bundleServicePriceObj, setBundleServicePriceObj] = useState({ ...defaultItemPriceObj, });
+  const [bundleServiceItemHeader, setBundleServiceItemHeader] = useState({
+    ...defaultItemHeaderObj,
+  });
+  const [bundleServiceItemBody, setBundleServiceItemBody] = useState({
+    ...defaultItemBodyObj,
+  });
+  const [bundleServicePriceObj, setBundleServicePriceObj] = useState({
+    ...defaultItemPriceObj,
+  });
 
   const [bundleServiceEdit, setBundleServiceEdit] = useState({
     bundleServiceHeader: false,
@@ -201,10 +234,20 @@ const BundleServiceAddUpdate = (props) => {
       });
 
       if (itemBodyModel.itemPrices.length !== 0) {
-        setItemPriceDataId(
-          itemBodyModel.itemPrices[itemBodyModel.itemPrices.length - 1]
-            .itemPriceDataId
+        // Use Array.reduce() to find the minimum itemId
+        const _itemPriceDataId = itemBodyModel.itemPrices.reduce(
+          (minItemId, currentItem) => {
+            return currentItem.itemPriceDataId < minItemId
+              ? currentItem.itemPriceDataId
+              : minItemId;
+          },
+          itemBodyModel.itemPrices[0].itemPriceDataId
         );
+        setItemPriceDataId(_itemPriceDataId);
+        // setItemPriceDataId(
+        //   itemBodyModel.itemPrices[itemBodyModel.itemPrices.length - 1]
+        //     .itemPriceDataId
+        // );
       }
       setShowLoader(false);
     } else {
@@ -323,13 +366,13 @@ const BundleServiceAddUpdate = (props) => {
       if (isEmpty(bundleServiceObj.name)) {
         errorMessage(
           (itemFlag === "SERVICE" ? "Service" : "Bundle") +
-          " Name is a required field, you can’t leave it blank"
+            " Name is a required field, you can’t leave it blank"
         );
         return false;
       } else if (isEmpty(bundleServiceObj.description)) {
         errorMessage(
           (itemFlag === "SERVICE" ? "Service" : "Bundle") +
-          " Description is a required field, you can’t leave it blank"
+            " Description is a required field, you can’t leave it blank"
         );
         return false;
       } else if (isEmpty(bundleServiceObj.model)) {
@@ -684,8 +727,8 @@ const BundleServiceAddUpdate = (props) => {
             ...bundleServiceItemBody,
             taskType: [
               bundleServiceItemBody.taskType?.value ||
-              bundleServiceItemBody.taskType[0] ||
-              "EMPTY",
+                bundleServiceItemBody.taskType[0] ||
+                "EMPTY",
             ],
             usageIn:
               bundleServiceItemBody.usageIn?.value ||
@@ -790,7 +833,7 @@ const BundleServiceAddUpdate = (props) => {
                   className="custom-tabs-div"
                   aria-label="lab API tabs example"
                   onChange={(e, tabValue) => setActiveTab(tabValue)}
-                // onChange={(e, newValue) => itemEditModeOn && setActiveTab(newValue)}
+                  // onChange={(e, newValue) => itemEditModeOn && setActiveTab(newValue)}
                 >
                   <Tab
                     label={`${itemFlag} HEADER`}
@@ -826,12 +869,14 @@ const BundleServiceAddUpdate = (props) => {
                     <div className="ml-3 green-custom-btn ">
                       {itemFlag === "SERVICE" && (
                         <Select
-                          className={`customselectbtn1 p-${bundleServiceEdit.bundleServiceHeader ? 0 : 2
-                            } border-radius-10 ${bundleServiceObj.serviceChargable?.value ==
-                              "chargeable"
+                          className={`customselectbtn1 p-${
+                            bundleServiceEdit.bundleServiceHeader ? 0 : 2
+                          } border-radius-10 ${
+                            bundleServiceObj.serviceChargable?.value ==
+                            "chargeable"
                               ? "bg-gray-light"
                               : "bg-green-light"
-                            }`}
+                          }`}
                           onChange={(e) =>
                             handleSelectChange(e, "serviceChargable")
                           }
@@ -898,7 +943,7 @@ const BundleServiceAddUpdate = (props) => {
                           onClick={() =>
                             handleBundleServiceEditFlag("bundleServiceHeader")
                           }
-                        // onClick={makeBundleServiceHeaderEditable}
+                          // onClick={makeBundleServiceHeaderEditable}
                         >
                           <i className="fa fa-pencil" aria-hidden="true" />
                         </a>
@@ -1364,9 +1409,9 @@ const BundleServiceAddUpdate = (props) => {
                             {isEmpty(administrative.preparedOn)
                               ? "NA"
                               : getFormatDateTime(
-                                administrative.preparedOn,
-                                false
-                              )}
+                                  administrative.preparedOn,
+                                  false
+                                )}
                           </h6>
                         </div>
                       </div>
@@ -1391,9 +1436,9 @@ const BundleServiceAddUpdate = (props) => {
                             {isEmpty(administrative.revisedOn)
                               ? "NA"
                               : getFormatDateTime(
-                                administrative.revisedOn,
-                                false
-                              )}
+                                  administrative.revisedOn,
+                                  false
+                                )}
                           </h6>
                         </div>
                       </div>
@@ -1581,7 +1626,7 @@ const BundleServiceAddUpdate = (props) => {
                       type="button"
                       className="btn text-white bg-primary"
                       onClick={handleUpateAdministrativeData}
-                    // onClick={editBundleService ? saveAddNewServiceOrBundle : handleUpdateNewServiceOrBundle}
+                      // onClick={editBundleService ? saveAddNewServiceOrBundle : handleUpdateNewServiceOrBundle}
                     >
                       {" "}
                       {bundleServiceEdit.bundleServiceAdministrative
