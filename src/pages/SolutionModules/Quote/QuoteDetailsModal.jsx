@@ -1,13 +1,16 @@
 import React, { useState } from "react";
 import ReactDOMServer from "react-dom/server";
 
-import jsPDF from "jspdf";
+// import jsPDF from "jspdf";
 
 import SaveAltOutlinedIcon from "@mui/icons-material/SaveAltOutlined";
 
 import Moment from "react-moment";
 import { Modal } from "react-bootstrap";
 import Table from "react-bootstrap/Table";
+import { callPostApi } from "services/ApiCaller";
+import { HTML_TO_PDF_GENERATER_URL } from "services/CONSTANTS";
+import { API_SUCCESS } from "services/ResponseCode";
 
 const QuoteDetailsModal = ({
   show,
@@ -21,7 +24,7 @@ const QuoteDetailsModal = ({
   console.log("customerData ::::: ", customerData);
 
   const generateHTML = () => {
-    const doc = new jsPDF();
+    // const doc = new jsPDF();
     const pdfContent = `<html>
     <head>
       <title>Downloaded PDF</title>
@@ -207,49 +210,49 @@ font-weight: 600;padding-bottom: 0 !important;    margin-bottom: 0 !important;">
 </body>
       </html>`;
 
-    doc.html(pdfContent, {
-      callback: () => {
-        // Save the PDF as a Blob
-        const pdfBlob = doc.output("blob");
+    // Create a Blob from the HTML content
+    const blob = new Blob([pdfContent], { type: "text/html" });
 
-        // Create a URL for the Blob
-        const pdfUrl = URL.createObjectURL(pdfBlob);
+    // Generate a URL for the Blob
+    const url = URL.createObjectURL(blob);
 
-        // Create a temporary anchor element
-        const a = document.createElement("a");
-        a.href = pdfUrl;
-        a.download = "dynamic-pdf.pdf";
-
-        // Append the anchor to the body and trigger the download
-        document.body.appendChild(a);
-        a.click();
-
-        // Clean up by removing the anchor from the body and revoking the URL
-        document.body.removeChild(a);
-        URL.revokeObjectURL(pdfUrl);
-      },
+    callPostApi(null, HTML_TO_PDF_GENERATER_URL, url, (response) => {
+      if (response.status === API_SUCCESS) {
+        console.log("object");
+      }
     });
 
-    // // Create a Blob from the PDF content
-    // const blob = new Blob([pdfContent], { type: "application/pdf" });
+    // Open the URL in a new tab (optional)
+    // window.open(url, "_blank");
 
-    // // Create a URL for the Blob
-    // const url = URL.createObjectURL(blob);
+    // Cleanup by revoking the URL after some time (optional)
+    setTimeout(() => {
+      URL.revokeObjectURL(url);
+    }, 10000);
 
-    // // Create a temporary anchor element
-    // const a = document.createElement("a");
-    // a.href = url;
-    // a.download = "downloaded.pdf";
+    // doc.setFontSize(12);
+    // doc.html(pdfContent, {
+    //   callback: () => {
+    //     // Save the PDF as a Blob
+    //     const pdfBlob = doc.output("blob");
 
-    // // Append the anchor to the body and trigger the download
-    // document.body.appendChild(a);
-    // a.click();
+    //     // Create a URL for the Blob
+    //     const pdfUrl = URL.createObjectURL(pdfBlob);
 
-    // // Clean up by removing the anchor from the body
-    // document.body.removeChild(a);
+    //     // Create a temporary anchor element
+    //     const a = document.createElement("a");
+    //     a.href = pdfUrl;
+    //     a.download = "dynamic-pdf.pdf";
 
-    // // Revoke the URL to release the Blob object
-    // URL.revokeObjectURL(url);
+    //     // Append the anchor to the body and trigger the download
+    //     document.body.appendChild(a);
+    //     a.click();
+
+    //     // Clean up by removing the anchor from the body and revoking the URL
+    //     document.body.removeChild(a);
+    //     URL.revokeObjectURL(pdfUrl);
+    //   },
+    // });
   };
   return (
     <Modal show={show} onHide={hideModal} size="md" id="print-content">
