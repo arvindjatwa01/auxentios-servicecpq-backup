@@ -673,3 +673,5 @@ export const SHIPMENT_HEADER_MASTER_URL = WARRANTY_URI + "shipmentHeader";
 export const CLAIM_ORDER_MASTER_URL = WARRANTY_URI + "claimOrder";
 export const YEARLY_WARRANTY_MASTER_URL = WARRANTY_URI + "yearly-warranty";
 export const WARRANTY_CLAIM_PAYER_MASTER_URL = WARRANTY_URI + "payer";
+
+export const HTML_TO_PDF_GENERATER_URL = COMMON_SERVICE_URI + "pdf/html-to-pdf";
