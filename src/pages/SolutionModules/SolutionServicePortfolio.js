@@ -86,6 +86,7 @@ import axios from "axios";
 import { getQuoteStatus } from "services/solutionQuoteServices";
 import QuoteDetailsModal from "./Quote/QuoteDetailsModal";
 import QuoteCoverageDetailsModal from "./Quote/QuoteCoverageDetailsModal";
+import QuoteShareModal from "./Quote/QuoteShareModal";
 
 const customStyles = {
   rows: {
@@ -139,6 +140,8 @@ export function SolutionServicePortfolio(props) {
   const [openQuoteDetailModal, setOpenQuoteDetailModal] = useState(false);
   const [openCoverageDtlModal, setOpenCoverageDtlModal] = useState(false);
   const [coverageRecordId, setCoverageRecordId] = useState(null);
+
+  const [openQuoteShareModal, setOpenQuoteShareModal] = useState(false);
 
   const [searchModelResults, setSearchModelResults] = useState([]);
   const [searchSerialResults, setSearchSerialResults] = useState([]);
@@ -3989,7 +3992,11 @@ export function SolutionServicePortfolio(props) {
                 <a className="ml-3 cursor" onClick={() => setShowNotes(true)}>
                   <DescriptionOutlinedIcon className="text-grey font-size-28" />
                 </a>
-                <a href="#" className="ml-3 font-size-14">
+                <a
+                  href="#"
+                  className="ml-3 font-size-14"
+                  onClick={() => setOpenQuoteShareModal(true)}
+                >
                   <img src={shareIcon}></img>
                 </a>
                 <a href="#" className="ml-3 font-size-14">
@@ -7047,6 +7054,11 @@ export function SolutionServicePortfolio(props) {
           recordId={coverageRecordId}
         />
       )}
+
+      <QuoteShareModal
+        show={openQuoteShareModal}
+        hideModal={() => setOpenQuoteShareModal(false)}
+      />
     </>
   );
 }
