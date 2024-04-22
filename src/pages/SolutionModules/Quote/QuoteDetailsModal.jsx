@@ -223,7 +223,7 @@ font-weight: 600;padding-bottom: 0 !important;    margin-bottom: 0 !important;">
     });
 
     // Open the URL in a new tab (optional)
-    // window.open(url, "_blank");
+    window.open(url, "_blank");
 
     // Cleanup by revoking the URL after some time (optional)
     setTimeout(() => {
@@ -416,7 +416,7 @@ font-weight: 600;padding-bottom: 0 !important;    margin-bottom: 0 !important;">
           <h5 className="mb-0">123-456-7890</h5>
 
           <div
-            className="d-flex justify-content-between align-items-center mt-3"
+            className="d-flex justify-content-between align-items-center mt-3 mb-0"
             style={{ borderBottom: "2px solid black" }}
           >
             <div>
@@ -428,12 +428,12 @@ font-weight: 600;padding-bottom: 0 !important;    margin-bottom: 0 !important;">
               <h6>Manager</h6>
             </div>
           </div>
-          <div className="d-flex justify-content-end mt-2 align-items-center ">
+          <div className="d-flex justify-content-end mt-0 py-2 align-items-center bg-dark">
             <button className="btn bg-success mx-1">Accept</button>
             <button className="btn bg-danger mx-1">Reject</button>
             <button className="btn bg-warning mx-1">Request for Revison</button>
-            <span className="cursor" onClick={generateHTML}>
-              <SaveAltOutlinedIcon className="text-primary " />
+            <span className="cursor mr-2" onClick={generateHTML}>
+              <SaveAltOutlinedIcon className="text-white " />
             </span>
           </div>
         </Modal.Body>

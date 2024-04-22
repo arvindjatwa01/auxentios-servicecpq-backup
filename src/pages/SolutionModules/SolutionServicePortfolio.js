@@ -41,6 +41,7 @@ import editIcon from "../../assets/icons/svg/edit.svg";
 import folderaddIcon from "../../assets/icons/svg/folder-add.svg";
 import shareIcon from "../../assets/icons/svg/share.svg";
 import uploadIcon from "../../assets/icons/svg/upload.svg";
+import previewIcon from "../../assets/icons/svg/preview-icon.svg";
 import { ERROR_MAX_VERSIONS, FONT_STYLE_SELECT } from "../Repair/CONSTANTS";
 // import SearchBox from "../ /components/SearchBox";
 import SearchBox from "pages/Repair/components/SearchBox";
@@ -254,6 +255,7 @@ export function SolutionServicePortfolio(props) {
     margin: "",
     discount: "",
     priceEstimates: [],
+    sbPriceEstimates: [],
   });
 
   const shippingLeadCountUnit = [
@@ -640,7 +642,8 @@ export function SolutionServicePortfolio(props) {
             payers: payerListArray,
             // priceEstimates: [],
             priceEstimates: billingDetail.priceEstimates,
-            sbPriceEstimates: [],
+            // sbPriceEstimates: [],
+            sbPriceEstimates: billingDetail.sbPriceEstimates,
             otherItemPrice: 0,
           };
 
@@ -851,7 +854,8 @@ export function SolutionServicePortfolio(props) {
             plQuoteItems: [],
             payers: payerListArray,
             priceEstimates: [],
-            sbPriceEstimates: [],
+            // sbPriceEstimates: [],
+            sbPriceEstimates: billingDetail.sbPriceEstimates,
             otherItemPrice: 0,
           };
 
@@ -1071,7 +1075,8 @@ export function SolutionServicePortfolio(props) {
           payers: payerListArray,
           // priceEstimates: [],
           priceEstimates: billingDetail.priceEstimates,
-          sbPriceEstimates: [],
+          // sbPriceEstimates: [],
+          sbPriceEstimates: billingDetail.sbPriceEstimates,
           otherItemPrice: 0,
         };
 
@@ -1295,7 +1300,8 @@ export function SolutionServicePortfolio(props) {
           payers: payerListArray,
           // priceEstimates: [],
           priceEstimates: billingDetail.priceEstimates,
-          sbPriceEstimates: [],
+          // sbPriceEstimates: [],
+          sbPriceEstimates: billingDetail.sbPriceEstimates,
           otherItemPrice: 0,
         };
 
@@ -1514,7 +1520,8 @@ export function SolutionServicePortfolio(props) {
           payers: payerListArray,
           // priceEstimates: [],
           priceEstimates: billingDetail.priceEstimates,
-          sbPriceEstimates: [],
+          // sbPriceEstimates: [],
+          sbPriceEstimates: billingDetail.sbPriceEstimates,
           otherItemPrice: 0,
         };
 
@@ -1549,18 +1556,18 @@ export function SolutionServicePortfolio(props) {
               billingSplit: addPayerData[p].billingSplit,
               price: addPayerData[p].price,
             };
-            const payerCreateResult = await quotePayerCreation(
-              `quote_id=${quoteIdIs}`,
-              reqObj
-            );
-            if (payerCreateResult.status === 200) {
-              createdPayersArray.push({
-                payerId: payerCreateResult.data.payerId,
-              });
-              _payerListArray.push({
-                payerId: payerCreateResult.data.payerId,
-              });
-            }
+            // const payerCreateResult = await quotePayerCreation(
+            //   `quote_id=${quoteIdIs}`,
+            //   reqObj
+            // );
+            // if (payerCreateResult.status === 200) {
+            //   createdPayersArray.push({
+            //     payerId: payerCreateResult.data.payerId,
+            //   });
+            //   _payerListArray.push({
+            //     payerId: payerCreateResult.data.payerId,
+            //   });
+            // }
           }
         }
         setPayerListArray(_payerListArray);
@@ -1686,9 +1693,12 @@ export function SolutionServicePortfolio(props) {
           payers: payerListArray,
           // priceEstimates: [],
           priceEstimates: billingDetail.priceEstimates,
-          sbPriceEstimates: [],
+          // sbPriceEstimates: [],
+          sbPriceEstimates: billingDetail.sbPriceEstimates,
           otherItemPrice: 0,
         };
+
+        console.log("solutionQuoteObj :: ", solutionQuoteObj);
 
         const solutionRes = await updateSolutionQuoteData(
           quoteIdIs,
@@ -1868,7 +1878,8 @@ export function SolutionServicePortfolio(props) {
           payers: payerListArray,
           // priceEstimates: [],
           priceEstimates: billingDetail.priceEstimates,
-          sbPriceEstimates: [],
+          // sbPriceEstimates: [],
+          sbPriceEstimates: billingDetail.sbPriceEstimates,
           otherItemPrice: 0,
         };
         const solutionRes = await updateSolutionQuoteData(
@@ -2633,7 +2644,11 @@ export function SolutionServicePortfolio(props) {
       }
     }
 
-    setBillingDetail({ ...billingDetail, priceEstimates: _priceEstimate });
+    setBillingDetail({
+      ...billingDetail,
+      priceEstimates: _priceEstimate,
+      sbPriceEstimates: result.sbPriceEstimates,
+    });
   };
 
   // payer Details fetch
@@ -4007,7 +4022,8 @@ export function SolutionServicePortfolio(props) {
                   className="ml-3 font-size-14 cursor"
                   onClick={handleOpenQuoteDetailModal}
                 >
-                  <img src={uploadIcon}></img>
+                  {/* <img src={uploadIcon}></img> */}
+                  <img src={previewIcon}></img>
                 </a>
                 <a href="#" className="ml-3 font-size-14">
                   <img src={cpqIcon}></img>
@@ -7058,6 +7074,7 @@ export function SolutionServicePortfolio(props) {
       <QuoteShareModal
         show={openQuoteShareModal}
         hideModal={() => setOpenQuoteShareModal(false)}
+        handleSnack={handleSnack}
       />
     </>
   );

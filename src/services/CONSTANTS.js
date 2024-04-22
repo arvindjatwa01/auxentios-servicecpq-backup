@@ -675,3 +675,4 @@ export const YEARLY_WARRANTY_MASTER_URL = WARRANTY_URI + "yearly-warranty";
 export const WARRANTY_CLAIM_PAYER_MASTER_URL = WARRANTY_URI + "payer";
 
 export const HTML_TO_PDF_GENERATER_URL = COMMON_SERVICE_URI + "pdf/html-to-pdf";
+export const SEND_EMAIL_URL = USER_SERVICE_URI + "email/send-email?";
