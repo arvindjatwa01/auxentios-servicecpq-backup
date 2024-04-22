@@ -2406,10 +2406,10 @@ export function SolutionServicePortfolio(props) {
           <div>Version</div>
         </>
       ),
-      selector: (row) => row?.version,
+      selector: (row) => row?.version || "Version 1",
       wrap: true,
       sortable: true,
-      format: (row) => row?.version,
+      format: (row) => row?.version || "Version 1",
     },
     {
       name: (
@@ -2428,10 +2428,10 @@ export function SolutionServicePortfolio(props) {
           <div>Qty</div>
         </>
       ),
-      selector: (row) => row?.quantity,
+      selector: (row) => row?.quantity || 1,
       wrap: true,
       sortable: true,
-      format: (row) => row?.quantity,
+      format: (row) => row?.quantity || 1,
     },
     {
       name: (
@@ -2439,10 +2439,12 @@ export function SolutionServicePortfolio(props) {
           <div>Valid From</div>
         </>
       ),
-      selector: (row) => row?.validFrom,
+      selector: (row) =>
+        row?.validFrom || getFormattedDateTimeByTimeStamp(new Date()),
       wrap: true,
       sortable: true,
-      format: (row) => row?.validFrom,
+      format: (row) =>
+        row?.validFrom || getFormattedDateTimeByTimeStamp(new Date()),
     },
     {
       name: (
@@ -2450,10 +2452,18 @@ export function SolutionServicePortfolio(props) {
           <div>Valid To</div>
         </>
       ),
-      selector: (row) => row?.validTo,
+      selector: (row) =>
+        row?.validTo ||
+        getFormattedDateTimeByTimeStamp(
+          new Date().setFullYear(new Date().getFullYear() + 1)
+        ),
       wrap: true,
       sortable: true,
-      format: (row) => row?.validTo,
+      format: (row) =>
+        row?.validTo ||
+        getFormattedDateTimeByTimeStamp(
+          new Date().setFullYear(new Date().getFullYear() + 1)
+        ),
     },
     {
       name: (
@@ -2628,6 +2638,23 @@ export function SolutionServicePortfolio(props) {
           break;
       }
     };
+
+    const orderDataByAsendingOrder = (data) => {
+      return data.sort((a, b) => {
+        // Convert priceBreakup to uppercase for proper comparison (e.g., 'A' < 'B' < 'C' < ...)
+        const priceBreakupA = a.priceBreakup.toUpperCase();
+        const priceBreakupB = b.priceBreakup.toUpperCase();
+
+        if (priceBreakupA > priceBreakupB) {
+          return 1; // Return 1 to indicate 'a' comes after 'b' in sorted order
+        } else if (priceBreakupA < priceBreakupB) {
+          return -1; // Return -1 to indicate 'a' comes before 'b' in sorted order
+        } else {
+          return 0; // Return 0 to indicate no change in order (shouldn't happen with unique priceBreakup values)
+        }
+      });
+    };
+
     for (let i = 0; i < result.sbPriceEstimates.length; i++) {
       if (
         result.sbPriceEstimates[i].priceSummaryType !== "ESTIMATED_PARTS" &&
@@ -2646,7 +2673,7 @@ export function SolutionServicePortfolio(props) {
 
     setBillingDetail({
       ...billingDetail,
-      priceEstimates: _priceEstimate,
+      priceEstimates: orderDataByAsendingOrder(_priceEstimate),
       sbPriceEstimates: result.sbPriceEstimates,
     });
   };
@@ -3063,9 +3090,9 @@ export function SolutionServicePortfolio(props) {
         {
           payerId: 1,
           id: 1,
-          payerName: "Default",
+          payerName:  result.customerName,
           billingSplit: 100,
-          price: "",
+          price: result.netPrice,
         },
       ];
       setAddPayerData(defaultPayer);
@@ -4005,34 +4032,46 @@ export function SolutionServicePortfolio(props) {
                   Go to Solution
                 </a>
                 <a className="ml-3 cursor" onClick={() => setShowNotes(true)}>
+                <Tooltip title="Notes">
                   <DescriptionOutlinedIcon className="text-grey font-size-28" />
+                  </Tooltip>
                 </a>
                 <a
                   href="#"
                   className="ml-3 font-size-14"
                   onClick={() => setOpenQuoteShareModal(true)}
                 >
-                  <img src={shareIcon}></img>
+                  <Tooltip title="Share">
+                    <img src={shareIcon}></img>
+                  </Tooltip>
                 </a>
                 <a href="#" className="ml-3 font-size-14">
-                  <img src={folderaddIcon}></img>
+                <Tooltip title="Saved Task">
+                    <img src={folderaddIcon}></img>
+                  </Tooltip>
                 </a>
                 <a
                   // href="#"
                   className="ml-3 font-size-14 cursor"
                   onClick={handleOpenQuoteDetailModal}
                 >
-                  {/* <img src={uploadIcon}></img> */}
-                  <img src={previewIcon}></img>
+                 <Tooltip title="Preview">
+                    {/* <img src={uploadIcon}></img> */}
+                    <img src={previewIcon}></img>
+                  </Tooltip>
                 </a>
                 <a href="#" className="ml-3 font-size-14">
                   <img src={cpqIcon}></img>
                 </a>
                 <a href="#" className="ml-3 font-size-14">
-                  <img src={deleteIcon} onClick={deleteSolutionQuote}></img>
+                <Tooltip title="Delete">
+                    <img src={deleteIcon} onClick={deleteSolutionQuote}></img>
+                  </Tooltip>
                 </a>
                 <a href="#" className="ml-3 font-size-14">
-                  <img src={copyIcon} onClick={copyQuote}></img>
+                <Tooltip title="Copy">
+                    <img src={copyIcon} onClick={copyQuote}></img>
+                  </Tooltip>
                 </a>
                 <DropdownButton
                   className="customDropdown ml-2"
@@ -4144,14 +4183,18 @@ export function SolutionServicePortfolio(props) {
                   Quote Header
                 </span>
                 <a href={undefined} className="btn-sm text-white cursor">
-                  <i
-                    className="fa fa-pencil"
-                    aria-hidden="true"
-                    onClick={makeHeaderEditable}
-                  ></i>
+                <Tooltip title="Edit">
+                    <i
+                      className="fa fa-pencil"
+                      aria-hidden="true"
+                      onClick={makeHeaderEditable}
+                    ></i>
+                  </Tooltip>
                 </a>
                 <a href="#" className="btn-sm text-white">
-                  <i className="fa fa-bookmark-o" aria-hidden="true"></i>
+                <Tooltip title="Review">
+                    <i className="fa fa-bookmark-o" aria-hidden="true"></i>
+                  </Tooltip>
                 </a>
                 {/* <a href="#" className="btn-sm text-white"><img style={{ width: '14px' }} src={folderaddIcon}></img></a> */}
               </div>
