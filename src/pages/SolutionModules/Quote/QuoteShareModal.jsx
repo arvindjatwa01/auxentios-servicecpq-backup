@@ -1,12 +1,34 @@
-import React from "react";
+import React, { useState } from "react";
 import searchIcon from "../../../assets/icons/svg/search.svg";
 
 import Select from "react-select";
 import SwipeableDrawer from "@mui/material/SwipeableDrawer";
 
 import Box from "@mui/material/Box";
+import { callPostApi } from "services/ApiCaller";
+import { API_SUCCESS } from "services/ResponseCode";
+import Validator from "utils/validator";
+import { SEND_EMAIL_URL } from "services/CONSTANTS";
 
-const QuoteShareModal = ({ show, hideModal }) => {
+const QuoteShareModal = ({ show, hideModal, handleSnack }) => {
+  const [toEmail, setToEmail] = useState("");
+
+  const handleSendEmail = () => {
+    const validator = new Validator();
+    if (!validator.emailValidation(toEmail)) {
+      handleSnack("error", "Please enter the email address in correct format");
+      return;
+    }
+    const rObj = `to=${toEmail}&subject=Requested Quote Link&body=Hello,<br> <p>I appreciate your interest in our service. Attached is the quote screen link <a href ="https://dev.servicecpq.com/login">Click Here</a> you requested, including all details and terms. We think our offer matches your requirements. <br><br>Looking forward to hearing from you.</p> <br> Thanks & Regards<br>Auxentios Technology&fromEmail=no-reply@auxentios.com&fromName=Auxentios Technology`;
+    callPostApi(null, SEND_EMAIL_URL + rObj, {}, (response) => {
+      if (response.status === API_SUCCESS) {
+        handleSnack("success", "Email sent successfully, check now!");
+      } else {
+        handleSnack("error", "something went wrong, please try again");
+      }
+    });
+  };
+
   return (
     <>
       <SwipeableDrawer
@@ -55,7 +77,9 @@ const QuoteShareModal = ({ show, hideModal }) => {
                   type="search"
                   className="form-control"
                   placeholder=""
+                  value={toEmail}
                   aria-label="Search Dashboard"
+                  onChange={(e) => setToEmail(e.target.value)}
                 />
                 <div
                   className="customselect d-flex align-items-center"
@@ -72,10 +96,11 @@ const QuoteShareModal = ({ show, hideModal }) => {
               </div>
               <div>
                 <a
-                  href="#"
-                  className="btn bg-primary text-white"
-                  data-toggle="modal"
-                  data-target="#Assingmodal"
+                  //   href="#"
+                  className="btn bg-primary text-white cursor"
+                  //   data-toggle="modal"
+                  //   data-target="#Assingmodal"
+                  onClick={handleSendEmail}
                 >
                   Send
                 </a>
