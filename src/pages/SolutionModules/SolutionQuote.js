@@ -1,77 +1,87 @@
 import React, { useEffect, useState } from "react";
-import { Modal } from 'react-bootstrap';
-import FormGroup from '@mui/material/FormGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import { ToastContainer, toast } from 'react-toastify';
-import Select from 'react-select';
+import { Modal } from "react-bootstrap";
+import FormGroup from "@mui/material/FormGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
+import { ToastContainer, toast } from "react-toastify";
+import Select from "react-select";
 import { FileUploader } from "react-drag-drop-files";
-import { Link, useHistory } from 'react-router-dom'
-import { MuiMenuComponent } from '../Operational/index'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faFileAlt, faFolderPlus, faSearch } from '@fortawesome/free-solid-svg-icons'
-import { faShareAlt } from '@fortawesome/free-solid-svg-icons'
-import { faUpload } from '@fortawesome/free-solid-svg-icons'
-import { faPen } from '@fortawesome/free-solid-svg-icons'
-import { faPlus } from '@fortawesome/free-solid-svg-icons'
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
-import OwlCarousel from 'react-owl-carousel';
-import 'owl.carousel/dist/assets/owl.carousel.css';
-import 'owl.carousel/dist/assets/owl.theme.default.css';
-import Buttonarrow from '../../assets/icons/svg/Button-arrow.svg'
-import { faCloudUploadAlt } from '@fortawesome/free-solid-svg-icons'
-import shareIcon from '../../assets/icons/svg/share.svg'
-import folderaddIcon from '../../assets/icons/svg/folder-add.svg'
-import uploadIcon from '../../assets/icons/svg/upload.svg'
-import cpqIcon from '../../assets/icons/svg/CPQ.svg'
-import deleteIcon from '../../assets/icons/svg/delete.svg'
-import copyIcon from '../../assets/icons/svg/Copy.svg'
+import { Link, useHistory } from "react-router-dom";
+import { MuiMenuComponent } from "../Operational/index";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faFileAlt,
+  faFolderPlus,
+  faSearch,
+} from "@fortawesome/free-solid-svg-icons";
+import { faShareAlt } from "@fortawesome/free-solid-svg-icons";
+import { faUpload } from "@fortawesome/free-solid-svg-icons";
+import { faPen } from "@fortawesome/free-solid-svg-icons";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import Radio from "@mui/material/Radio";
+import RadioGroup from "@mui/material/RadioGroup";
+import OwlCarousel from "react-owl-carousel";
+import "owl.carousel/dist/assets/owl.carousel.css";
+import "owl.carousel/dist/assets/owl.theme.default.css";
+import Buttonarrow from "../../assets/icons/svg/Button-arrow.svg";
+import { faCloudUploadAlt } from "@fortawesome/free-solid-svg-icons";
+import shareIcon from "../../assets/icons/svg/share.svg";
+import folderaddIcon from "../../assets/icons/svg/folder-add.svg";
+import uploadIcon from "../../assets/icons/svg/upload.svg";
+import cpqIcon from "../../assets/icons/svg/CPQ.svg";
+import deleteIcon from "../../assets/icons/svg/delete.svg";
+import copyIcon from "../../assets/icons/svg/Copy.svg";
 import { CommanComponents } from "components";
 import { SolutionBuilderModal, SolutionSelector } from "pages/SolutionModules";
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 import LoadingProgress from "../Repair/components/Loader";
+import { getRecentSolutionQuotes, getRecentQuotes } from "../../services/index";
 import {
-  getRecentSolutionQuotes,
-  getRecentQuotes,
-} from "../../services/index";
-import { SOLUTION_QUOTE_CREATE, SOLUTION_QUOTE_SEARCH } from "navigation/CONSTANTS";
+  SOLUTION_QUOTE_CREATE,
+  SOLUTION_QUOTE_SEARCH,
+} from "navigation/CONSTANTS";
+import { useDispatch } from "react-redux";
+import { repairQuoteActions } from "pages/Repair/dropdowns/quoteRepairSlice";
 
 const SolutionQuote = () => {
+  const history = useHistory();
 
-  const history = useHistory()
-
-  const [value, setValue] = React.useState('1');
-  const [openSolutionSelector, setOpenSolutionSelector] = useState(false)
-  const [solutionBuilderShow, setSolutionBuilderShow] = useState(false)
+  const [value, setValue] = React.useState("1");
+  const [openSolutionSelector, setOpenSolutionSelector] = useState(false);
+  const [solutionBuilderShow, setSolutionBuilderShow] = useState(false);
   const [showExplore, setShowExplore] = useState(false);
-  const [modalComponent, setModalComponent] = useState(null)
-  const [openAddBundleItem, setOpenAddBundleItem] = useState(false)
-  const [createNewBundle, setCreateNewBundle] = useState(false)
-  const [openAddBundleItemHeader, setOpenAddBundleItemHeader] = useState("")
+  const [modalComponent, setModalComponent] = useState(null);
+  const [openAddBundleItem, setOpenAddBundleItem] = useState(false);
+  const [createNewBundle, setCreateNewBundle] = useState(false);
+  const [openAddBundleItemHeader, setOpenAddBundleItemHeader] = useState("");
 
-  const [openSearchSolution, setOpenSearchSolution] = useState(false)
-  const [typeOfSearch, setTypeOfSearch] = useState(null)
-  const [typeOfSolutionSelector, setTypeOfSolutionSelector] = useState(-1)
-  const [typeOfSearchColumn, setTypeOfSearchColumn] = useState(null)
-  const [columnSearchKeyValue, setColumnSearchKeyValue] = useState([{ label: "Bundle", value: 'bundle' }, { label: "Service", value: 'service' }, { label: "Portfolio Item", value: 'portfolioItem' }])
-  const [typeOfSearchColumnKeyValue, setTypeOfSearchColumnKeyValue] = useState([{ label: "Make", value: 'make' }, { label: "Model", value: 'model' }, { label: "Prefix", value: 'prefix' }])
-  const [columnSearchText, setColumnSearchText] = useState('');
-  const [typeOfSolutionBuild, setTypeOfSolutionBuild] = useState(-1)
-  const [buildSolutionValue, setBuildSolutionValue] = useState(-1)
-
+  const [openSearchSolution, setOpenSearchSolution] = useState(false);
+  const [typeOfSearch, setTypeOfSearch] = useState(null);
+  const [typeOfSolutionSelector, setTypeOfSolutionSelector] = useState(-1);
+  const [typeOfSearchColumn, setTypeOfSearchColumn] = useState(null);
+  const [columnSearchKeyValue, setColumnSearchKeyValue] = useState([
+    { label: "Bundle", value: "bundle" },
+    { label: "Service", value: "service" },
+    { label: "Portfolio Item", value: "portfolioItem" },
+  ]);
+  const [typeOfSearchColumnKeyValue, setTypeOfSearchColumnKeyValue] = useState([
+    { label: "Make", value: "make" },
+    { label: "Model", value: "model" },
+    { label: "Prefix", value: "prefix" },
+  ]);
+  const [columnSearchText, setColumnSearchText] = useState("");
+  const [typeOfSolutionBuild, setTypeOfSolutionBuild] = useState(-1);
+  const [buildSolutionValue, setBuildSolutionValue] = useState(-1);
 
   // Solution Quotes States
 
   const [headerLoading, setHeaderLoading] = useState(false);
   const [recentSolutionQuoteData, setRecentSolutionQuoteData] = useState([]);
 
-
-
   const handleBuildSolution = (e) => {
-    setBuildSolutionValue(e.target.value)
-  }
+    setBuildSolutionValue(e.target.value);
+  };
 
   const handleCallbackClose = (data) => {
     if (solutionBuilderShow) {
@@ -79,47 +89,47 @@ const SolutionQuote = () => {
     } else {
       setSolutionBuilderShow(true);
     }
-  }
+  };
 
   const handleContinueCallback = (data) => {
     if (data) {
-      setTypeOfSolutionBuild(0)
-      setOpenSolutionSelector(true)
-      setOpen(false)
+      setTypeOfSolutionBuild(0);
+      setOpenSolutionSelector(true);
+      setOpen(false);
     } else {
-      setTypeOfSolutionBuild(1)
-      setOpenSolutionSelector(false)
-      setOpen(true)
-      setTypeOfSolutionSelector(1)
+      setTypeOfSolutionBuild(1);
+      setOpenSolutionSelector(false);
+      setOpen(true);
+      setTypeOfSolutionSelector(1);
     }
     setSolutionBuilderShow(false);
-    setModalComponent(null)
-    setOpenSearchSolution(false)
-    setShowExplore(false)
-  }
+    setModalComponent(null);
+    setOpenSearchSolution(false);
+    setShowExplore(false);
+  };
 
   const handleNextSolutionSelector = () => {
     if (buildSolutionValue == "0") {
-      window.location.href = "/solutionBuilder/guide"
+      window.location.href = "/solutionBuilder/guide";
     } else {
-      setTypeOfSolutionBuild(0)
-      setOpenSolutionSelector(false)
-      setOpen(true)
+      setTypeOfSolutionBuild(0);
+      setOpenSolutionSelector(false);
+      setOpen(true);
       setSolutionBuilderShow(false);
-      setModalComponent(null)
-      setOpenSearchSolution(false)
-      setShowExplore(false)
-      setTypeOfSolutionSelector(0)
+      setModalComponent(null);
+      setOpenSearchSolution(false);
+      setShowExplore(false);
+      setTypeOfSolutionSelector(0);
     }
-  }
+  };
 
   const handleShowSearchParentCallback = (data) => {
-    setOpenSearchSolution(true)
-    setOpenSolutionSelector(false)
+    setOpenSearchSolution(true);
+    setOpenSolutionSelector(false);
     setSolutionBuilderShow(false);
-    setModalComponent(null)
-    setShowExplore(false)
-  }
+    setModalComponent(null);
+    setShowExplore(false);
+  };
 
   const handleBundleItemSaveAndContinue = () => {
     // toast('👏 Item Added', {
@@ -131,25 +141,38 @@ const SolutionQuote = () => {
     //   draggable: true,
     //   progress: undefined,
     // });
-    setOpenSolutionSelector(false)
+    setOpenSolutionSelector(false);
     setSolutionBuilderShow(false);
-    setModalComponent(null)
-    setOpenSearchSolution(false)
-    setShowExplore(true)
-  }
+    setModalComponent(null);
+    setOpenSearchSolution(false);
+    setShowExplore(true);
+  };
 
   const handleCloseExplore = () => {
     setShowExplore(false);
-  }
+  };
 
   const handleShow = () => {
     if (solutionBuilderShow) {
-      setModalComponent(<SolutionBuilderModal showSearchParentCallback={handleShowSearchParentCallback} continueParentCallback={handleContinueCallback} parentCallback={handleCallbackClose} open={false} />)
+      setModalComponent(
+        <SolutionBuilderModal
+          showSearchParentCallback={handleShowSearchParentCallback}
+          continueParentCallback={handleContinueCallback}
+          parentCallback={handleCallbackClose}
+          open={false}
+        />
+      );
     } else {
-      setModalComponent(<SolutionBuilderModal showSearchParentCallback={handleShowSearchParentCallback} continueParentCallback={handleContinueCallback} parentCallback={handleCallbackClose} open={true} />)
+      setModalComponent(
+        <SolutionBuilderModal
+          showSearchParentCallback={handleShowSearchParentCallback}
+          continueParentCallback={handleContinueCallback}
+          parentCallback={handleCallbackClose}
+          open={true}
+        />
+      );
     }
-  }
-
+  };
 
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
@@ -160,86 +183,90 @@ const SolutionQuote = () => {
   };
   const fileTypes = ["JPG", "PNG", "GIF"];
 
-
-  const activityOptions = [
-    'None',
-    'Atria',
-    'Callisto'
-  ];
-
+  const activityOptions = ["None", "Atria", "Callisto"];
 
   const handleTypeOfSearchChange = (e) => {
-    setTypeOfSearch(e)
+    setTypeOfSearch(e);
     if (e == null) {
-      setColumnSearchText("")
+      setColumnSearchText("");
     }
-  }
+  };
   const handleTypeOfSearchColumnChange = (e) => {
-    setTypeOfSearchColumn(e)
+    setTypeOfSearchColumn(e);
     if (e == null) {
-      setColumnSearchText("")
+      setColumnSearchText("");
     }
-  }
-
-
+  };
 
   const handleCreateNewServiceBundle = () => {
-    if (typeOfSearch.value == 'bundle') {
-      setOpenAddBundleItem(false)
-      setOpenSearchSolution(false)
-      setCreateNewBundle(true)
-      setOpenAddBundleItemHeader("Add New Bundle")
-    } else if (typeOfSearch.value == 'service') {
-      setOpenAddBundleItem(true)
-      setOpenSearchSolution(false)
-      setCreateNewBundle(false)
-      setOpenAddBundleItemHeader("Add New Service")
-    } else if (typeOfSearch.value == 'portfolioItem') {
-      setOpenAddBundleItem(true)
-      setOpenSearchSolution(false)
-      setCreateNewBundle(false)
-      setOpenAddBundleItemHeader("Add New Portfolio Item")
+    if (typeOfSearch.value == "bundle") {
+      setOpenAddBundleItem(false);
+      setOpenSearchSolution(false);
+      setCreateNewBundle(true);
+      setOpenAddBundleItemHeader("Add New Bundle");
+    } else if (typeOfSearch.value == "service") {
+      setOpenAddBundleItem(true);
+      setOpenSearchSolution(false);
+      setCreateNewBundle(false);
+      setOpenAddBundleItemHeader("Add New Service");
+    } else if (typeOfSearch.value == "portfolioItem") {
+      setOpenAddBundleItem(true);
+      setOpenSearchSolution(false);
+      setCreateNewBundle(false);
+      setOpenAddBundleItemHeader("Add New Portfolio Item");
     }
-
-  }
+  };
 
   const makeSolutionQuoteEditable = (data) => {
     let quotesDetails = {
       quoteId: data.quoteId,
       type: "fetch",
-    }
+    };
     history.push({
       pathname: "/SolutionServicePortfolio",
       state: quotesDetails,
     });
-  }
+  };
 
+  let dispatch = useDispatch();
 
   useEffect(() => {
+    dispatch(repairQuoteActions.fetchQuoteDropdowns());
 
-    setHeaderLoading(true)
-    getRecentQuotes("SOLUTION_QUOTE")
-      .then((res) => {
-        // setRecentPortfolioSolution(res);
-        setRecentSolutionQuoteData(res);
-      })
-    setHeaderLoading(false)
-  }, [])
+    setHeaderLoading(true);
+    getRecentQuotes("SOLUTION_QUOTE").then((res) => {
+      // setRecentPortfolioSolution(res);
+      setRecentSolutionQuoteData(res);
+    });
+    setHeaderLoading(false);
+  }, []);
 
   const getFormattedDateTimeByTimeStamp = (timeStamp) => {
-
     var date = new Date(timeStamp);
     var year = date.getFullYear();
     // var m = date.getMonth() + 1;
     var m = date.getMonth();
     // var month = m < 10 ? '0' + m : m;
     var month = m;
-    var day = date.getDate() < 10 ? '0' + date.getDate() : date.getDate();
+    var day = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
     var format = "AM";
     var hour = date.getHours();
     var minutes = date.getMinutes();
 
-    var monthName = ["Jan", "Feb", "Mar", "April", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    var monthName = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "April",
+      "May",
+      "June",
+      "July",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
 
     if (hour > 11) {
       format = "PM";
@@ -259,18 +286,31 @@ const SolutionQuote = () => {
     }
 
     // var finalDateString = day + "-" + month + "-" + year + " " + hour + ":" + minutes + " " + format;
-    var finalDateString = hour + ":" + minutes + "" + format + ", " + day + " " + monthName[month] + " " + year;
+    var finalDateString =
+      hour +
+      ":" +
+      minutes +
+      "" +
+      format +
+      ", " +
+      day +
+      " " +
+      monthName[month] +
+      " " +
+      year;
     return finalDateString;
-  }
+  };
 
   return (
     <>
       {/* <CommanComponents /> */}
-      <div className="content-body" style={{ minHeight: '884px' }}>
+      <div className="content-body" style={{ minHeight: "884px" }}>
         <div class="container-fluid ">
           <div className="d-flex align-items-center justify-content-between mt-2">
-            <h5 className="font-weight-600 mb-0" style={{ fontSize: "18px" }}>Solution Quote</h5>
-            <div >
+            <h5 className="font-weight-600 mb-0" style={{ fontSize: "18px" }}>
+              Solution Quote
+            </h5>
+            <div>
               <Link
                 to={SOLUTION_QUOTE_CREATE}
                 className="btn bg-primary text-white"
@@ -278,7 +318,6 @@ const SolutionQuote = () => {
                 Create New <ChevronRightIcon className="" />
               </Link>
             </div>
-            
           </div>
           <div className="card p-4 mt-5">
             <div className="">
@@ -304,12 +343,15 @@ const SolutionQuote = () => {
                   "No Record Found"
                 ) : (
                   <div className="row">
-                    {recentSolutionQuoteData.map((quoteData, index) =>
+                    {recentSolutionQuoteData.map((quoteData, index) => (
                       <div className="col-md-4">
                         <div className="recent-items mt-3 block-div">
                           <div className="d-flex justify-content-between align-items-center ">
                             <p className="mb-0 overflow-hidden white-space">
-                              <FontAwesomeIcon className=" font-size-14" icon={faFileAlt} />
+                              <FontAwesomeIcon
+                                className=" font-size-14"
+                                icon={faFileAlt}
+                              />
                               <span className="font-weight-500 ml-2">
                                 {quoteData.description}
                               </span>
@@ -333,20 +375,34 @@ const SolutionQuote = () => {
                                   }
                                 ></i>
                               </a>
-                              <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
-                              <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
-                              <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
-                              <a href="#" className="ml-2 p-0 more-icon-div"><MuiMenuComponent className=" p-0 font-size-14" options={activityOptions} /></a>
+                              <a href="#" className="ml-3 font-size-14">
+                                <FontAwesomeIcon icon={faShareAlt} />
+                              </a>
+                              <a href="#" className="ml-3 font-size-14">
+                                <FontAwesomeIcon icon={faFolderPlus} />
+                              </a>
+                              <a href="#" className="ml-3 font-size-14">
+                                <FontAwesomeIcon icon={faUpload} />
+                              </a>
+                              <a href="#" className="ml-2 p-0 more-icon-div">
+                                <MuiMenuComponent
+                                  className=" p-0 font-size-14"
+                                  options={activityOptions}
+                                />
+                              </a>
                             </div>
                           </div>
-
                         </div>
                         <div className="d-flex justify-content-between align-items-center mt-2">
-                          <p className="font-size-12 mb-0">{getFormattedDateTimeByTimeStamp(quoteData.updatedAt)} </p>
+                          <p className="font-size-12 mb-0">
+                            {getFormattedDateTimeByTimeStamp(
+                              quoteData.updatedAt
+                            )}{" "}
+                          </p>
                           <p className="font-size-12 mb-0">Solution Option</p>
                         </div>
                       </div>
-                    )}
+                    ))}
 
                     {/* <div className="col-md-4">
                       <div className="recent-items mt-3 block-div">
@@ -532,17 +588,18 @@ const SolutionQuote = () => {
                         <p className="font-size-12 mb-0">Solution Option</p>
                       </div>
                     </div> */}
-
-
                   </div>
                 )}
-
               </div>
             </div>
           </div>
-          <Modal show={open} onHide={handleClose} size="lg"
+          <Modal
+            show={open}
+            onHide={handleClose}
+            size="lg"
             aria-labelledby="contained-modal-title-vcenter"
-            centered>
+            centered
+          >
             <Modal.Header>
               <Modal.Title>Solution Selector</Modal.Title>
             </Modal.Header>
@@ -551,16 +608,26 @@ const SolutionQuote = () => {
             </Modal.Body>
           </Modal>
 
-          <Modal show={openSolutionSelector} onHide={() => setOpenSolutionSelector(false)} size="lg"
+          <Modal
+            show={openSolutionSelector}
+            onHide={() => setOpenSolutionSelector(false)}
+            size="lg"
             aria-labelledby="contained-modal-title-vcenter"
-            centered>
+            centered
+          >
             <Modal.Header className="bg-white">
               <Modal.Title>Solution Selector</Modal.Title>
             </Modal.Header>
-            <Modal.Body className="p25 pt-4" style={{ backgroundColor: '#F8F8F8 !important' }}>
+            <Modal.Body
+              className="p25 pt-4"
+              style={{ backgroundColor: "#F8F8F8 !important" }}
+            >
               <div>
-                <h5 className='text-black'>How do you want to build the solution ?</h5>
-                <RadioGroup className=''
+                <h5 className="text-black">
+                  How do you want to build the solution ?
+                </h5>
+                <RadioGroup
+                  className=""
                   row
                   aria-labelledby="demo-form-control-label-placement"
                   name="position"
@@ -569,7 +636,6 @@ const SolutionQuote = () => {
                   onChange={handleBuildSolution}
                 >
                   <div className="col-md-6 ">
-
                     <FormControlLabel
                       className="w-100 m-0 mb-3  p-2 card py-4 align-itemsstart"
                       value="0"
@@ -589,15 +655,23 @@ const SolutionQuote = () => {
                   </div>
                 </RadioGroup>
                 <div>
-                  <button onClick={handleNextSolutionSelector} className="btn btn-primary w-100">Next  <img className='ml-2' src={Buttonarrow}></img></button>
+                  <button
+                    onClick={handleNextSolutionSelector}
+                    className="btn btn-primary w-100"
+                  >
+                    Next <img className="ml-2" src={Buttonarrow}></img>
+                  </button>
                 </div>
               </div>
             </Modal.Body>
           </Modal>
 
-
-          <Modal show={openSearchSolution} onHide={() => setOpenSearchSolution(false)} size="xl"
-            aria-labelledby="contained-modal-title-vcenter">
+          <Modal
+            show={openSearchSolution}
+            onHide={() => setOpenSearchSolution(false)}
+            size="xl"
+            aria-labelledby="contained-modal-title-vcenter"
+          >
             <Modal.Body className="">
               Search Solution
               <div className="maintableheader bg-white mt-3 border-radius-10">
@@ -615,11 +689,12 @@ const SolutionQuote = () => {
                         placeholder="Add by"
                       />
                     </div>
-                    {typeOfSearch != null
-                      ?
+                    {typeOfSearch != null ? (
                       <div className="customselect d-flex ml-3">
                         <span>
-                          <a href="#" className="btn-sm">+</a>
+                          <a href="#" className="btn-sm">
+                            +
+                          </a>
                         </span>
                         <Select
                           onChange={handleTypeOfSearchColumnChange}
@@ -628,115 +703,247 @@ const SolutionQuote = () => {
                           options={typeOfSearchColumnKeyValue}
                           placeholder="Select"
                         />
-                        {typeOfSearchColumn != null
-                          ?
+                        {typeOfSearchColumn != null ? (
                           // <></>
-                          <input type="email" class="" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter text" style={{ border: 'none', background: 'transparent', width: '80px', fontWeight: '600', paddingLeft: '10px' }} value={columnSearchText} onChange={(e) => setColumnSearchText(e.target.value)}></input>
-                          : <></>
-                        }
+                          <input
+                            type="email"
+                            class=""
+                            id="exampleInputEmail1"
+                            aria-describedby="emailHelp"
+                            placeholder="Enter text"
+                            style={{
+                              border: "none",
+                              background: "transparent",
+                              width: "80px",
+                              fontWeight: "600",
+                              paddingLeft: "10px",
+                            }}
+                            value={columnSearchText}
+                            onChange={(e) =>
+                              setColumnSearchText(e.target.value)
+                            }
+                          ></input>
+                        ) : (
+                          <></>
+                        )}
                       </div>
-                      : <></>
-                    }
-
+                    ) : (
+                      <></>
+                    )}
                   </div>
                   <div>
                     <div className="">
-                      <a href="#" style={{ cursor: 'pointer' }} className="btn border-left"><span>+</span> Add</a>
-                      <a href="#" className="btn border-left">Cancel</a>
+                      <a
+                        href="#"
+                        style={{ cursor: "pointer" }}
+                        className="btn border-left"
+                      >
+                        <span>+</span> Add
+                      </a>
+                      <a href="#" className="btn border-left">
+                        Cancel
+                      </a>
                     </div>
                   </div>
                 </div>
-                {columnSearchText.trim() != "" && typeOfSearchColumn != null
-                  ?
+                {columnSearchText.trim() != "" && typeOfSearchColumn != null ? (
                   <div className="tableheader">
-                    <ul class="submenu accordion mt-0" style={{ display: 'block' }}>
-                      <li><a className="cursor result">RESULTS</a></li>
-                      <li><a className="cursor" onClick={handleBundleItemSaveAndContinue}>PM125</a></li>
-                      <li><a className="cursor" onClick={handleBundleItemSaveAndContinue}>PM2</a></li>
-                      <li><a className="cursor lastOption text-violet" onClick={handleCreateNewServiceBundle}><span className="mr-2">+</span>Create New {typeOfSearch != null ? typeOfSearch.value == 'bundle' ? "Bundle" : typeOfSearch.value == 'service' ? "Service" : typeOfSearch.value == 'portfolioItem' ? "Portfolio Item" : "" : ""}</a></li>
+                    <ul
+                      class="submenu accordion mt-0"
+                      style={{ display: "block" }}
+                    >
+                      <li>
+                        <a className="cursor result">RESULTS</a>
+                      </li>
+                      <li>
+                        <a
+                          className="cursor"
+                          onClick={handleBundleItemSaveAndContinue}
+                        >
+                          PM125
+                        </a>
+                      </li>
+                      <li>
+                        <a
+                          className="cursor"
+                          onClick={handleBundleItemSaveAndContinue}
+                        >
+                          PM2
+                        </a>
+                      </li>
+                      <li>
+                        <a
+                          className="cursor lastOption text-violet"
+                          onClick={handleCreateNewServiceBundle}
+                        >
+                          <span className="mr-2">+</span>Create New{" "}
+                          {typeOfSearch != null
+                            ? typeOfSearch.value == "bundle"
+                              ? "Bundle"
+                              : typeOfSearch.value == "service"
+                              ? "Service"
+                              : typeOfSearch.value == "portfolioItem"
+                              ? "Portfolio Item"
+                              : ""
+                            : ""}
+                        </a>
+                      </li>
                     </ul>
                   </div>
-                  :
-                  <></>}
+                ) : (
+                  <></>
+                )}
               </div>
             </Modal.Body>
           </Modal>
 
-          <Modal show={showExplore} onHide={handleCloseExplore} size="xl"
+          <Modal
+            show={showExplore}
+            onHide={handleCloseExplore}
+            size="xl"
             aria-labelledby="contained-modal-title-vcenter"
-            centered>
-            <Modal.Body className='p-0'>
-              <div className='bg-white border-bottom'>
-                <div className='d-flex align-items-center justify-content-between'>
+            centered
+          >
+            <Modal.Body className="p-0">
+              <div className="bg-white border-bottom">
+                <div className="d-flex align-items-center justify-content-between">
                   <div></div>
                   <div>
-                    <a href='#' className='btn border-left'>+ Add</a>
-                    <a href='#' className='btn border-left'>Cancel</a>
+                    <a href="#" className="btn border-left">
+                      + Add
+                    </a>
+                    <a href="#" className="btn border-left">
+                      Cancel
+                    </a>
                   </div>
                 </div>
               </div>
-              <div className='bg-white p-2'>
+              <div className="bg-white p-2">
                 <h5>Available portfolios</h5>
-                <h6>Baed on your choosen search criteria following portfolios are available,and you may click on choose to add the portfolio to the solution</h6>
+                <h6>
+                  Baed on your choosen search criteria following portfolios are
+                  available,and you may click on choose to add the portfolio to
+                  the solution
+                </h6>
                 <div>
                   <div class="contain-slider mt-3">
-                    <OwlCarousel items={3} className='owl-theme' loop margin={10} nav>
-                      <div class='item'>
-                        <a href='#' className='bg-yellow text-white btn'>CV agreement</a>
-                        <h4 className='text-red mt-3'><b>$20,000</b></h4>
-                        <ul className='mt-3' style={{ paddingLeft: '20px' }}>
-                          <li className='mt-3' style={{ listStyle: 'disc' }}>Cover for all models of the fleet starting from the base model</li>
-                          <li className='mt-3' style={{ listStyle: 'disc' }}>Periodic maintenace triggered every 3 months</li>
+                    <OwlCarousel
+                      items={3}
+                      className="owl-theme"
+                      loop
+                      margin={10}
+                      nav
+                    >
+                      <div class="item">
+                        <a href="#" className="bg-yellow text-white btn">
+                          CV agreement
+                        </a>
+                        <h4 className="text-red mt-3">
+                          <b>$20,000</b>
+                        </h4>
+                        <ul className="mt-3" style={{ paddingLeft: "20px" }}>
+                          <li className="mt-3" style={{ listStyle: "disc" }}>
+                            Cover for all models of the fleet starting from the
+                            base model
+                          </li>
+                          <li className="mt-3" style={{ listStyle: "disc" }}>
+                            Periodic maintenace triggered every 3 months
+                          </li>
                         </ul>
-                        <a href="#" class="btn bg-primary text-white Choose-btn">Choose</a>
+                        <a
+                          href="#"
+                          class="btn bg-primary text-white Choose-btn"
+                        >
+                          Choose
+                        </a>
                       </div>
-                      <div class='item'>
-                        <a href='#' className='bg-primary  text-white btn'>Repair Service</a>
-                        <h4 className='text-red mt-3'><b>$20,000</b></h4>
-                        <ul className='mt-3' style={{ paddingLeft: '20px' }}>
-                          <li className='mt-3' style={{ listStyle: 'disc' }}>Cover for all models of the fleet starting from the base model</li>
-                          <li className='mt-3' style={{ listStyle: 'disc' }}>Periodic maintenace triggered every 3 months</li>
+                      <div class="item">
+                        <a href="#" className="bg-primary  text-white btn">
+                          Repair Service
+                        </a>
+                        <h4 className="text-red mt-3">
+                          <b>$20,000</b>
+                        </h4>
+                        <ul className="mt-3" style={{ paddingLeft: "20px" }}>
+                          <li className="mt-3" style={{ listStyle: "disc" }}>
+                            Cover for all models of the fleet starting from the
+                            base model
+                          </li>
+                          <li className="mt-3" style={{ listStyle: "disc" }}>
+                            Periodic maintenace triggered every 3 months
+                          </li>
                         </ul>
-                        <a href="#" class="btn bg-primary text-white Choose-btn">Choose</a>
+                        <a
+                          href="#"
+                          class="btn bg-primary text-white Choose-btn"
+                        >
+                          Choose
+                        </a>
                       </div>
-                      <div class='item'>
-                        <a href='#' className='bg-green-light text-white btn'>Maintenence service</a>
-                        <h4 className='text-red mt-3'><b>$20,000</b></h4>
-                        <ul className='mt-3' style={{ paddingLeft: '20px' }}>
-                          <li className='mt-3' style={{ listStyle: 'disc' }}>Cover for all models of the fleet starting from the base model</li>
-                          <li className='mt-3' style={{ listStyle: 'disc' }}>Periodic maintenace triggered every 3 months</li>
+                      <div class="item">
+                        <a href="#" className="bg-green-light text-white btn">
+                          Maintenence service
+                        </a>
+                        <h4 className="text-red mt-3">
+                          <b>$20,000</b>
+                        </h4>
+                        <ul className="mt-3" style={{ paddingLeft: "20px" }}>
+                          <li className="mt-3" style={{ listStyle: "disc" }}>
+                            Cover for all models of the fleet starting from the
+                            base model
+                          </li>
+                          <li className="mt-3" style={{ listStyle: "disc" }}>
+                            Periodic maintenace triggered every 3 months
+                          </li>
                         </ul>
-                        <a href="#" class="btn bg-primary text-white Choose-btn">Choose</a>
+                        <a
+                          href="#"
+                          class="btn bg-primary text-white Choose-btn"
+                        >
+                          Choose
+                        </a>
                       </div>
-                      <div class='item'>
-                        <h4 className='text-light'><b>Repair Service</b></h4>
-                        <h4 className='text-red mt-3'><b>$20,000</b></h4>
-                        <ul className='mt-3' style={{ paddingLeft: '20px' }}>
-                          <li className='mt-3' style={{ listStyle: 'disc' }}>Cover for all models of the fleet starting from the base model</li>
-                          <li className='mt-3' style={{ listStyle: 'disc' }}>Periodic maintenace triggered every 3 months</li>
+                      <div class="item">
+                        <h4 className="text-light">
+                          <b>Repair Service</b>
+                        </h4>
+                        <h4 className="text-red mt-3">
+                          <b>$20,000</b>
+                        </h4>
+                        <ul className="mt-3" style={{ paddingLeft: "20px" }}>
+                          <li className="mt-3" style={{ listStyle: "disc" }}>
+                            Cover for all models of the fleet starting from the
+                            base model
+                          </li>
+                          <li className="mt-3" style={{ listStyle: "disc" }}>
+                            Periodic maintenace triggered every 3 months
+                          </li>
                         </ul>
-                        <a href="#" class="btn bg-primary text-white Choose-btn">Choose</a>
+                        <a
+                          href="#"
+                          class="btn bg-primary text-white Choose-btn"
+                        >
+                          Choose
+                        </a>
                       </div>
-
                     </OwlCarousel>
-
                   </div>
                   <div>
-                    <a href='#' className='btn'>I can't find what i need</a>
+                    <a href="#" className="btn">
+                      I can't find what i need
+                    </a>
                   </div>
                 </div>
               </div>
-
             </Modal.Body>
           </Modal>
-
 
           <ToastContainer />
         </div>
         {modalComponent}
       </div>
     </>
-  )
-}
+  );
+};
 
-export default SolutionQuote
+export default SolutionQuote;
