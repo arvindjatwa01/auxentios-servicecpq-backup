@@ -3090,7 +3090,7 @@ export function SolutionServicePortfolio(props) {
         {
           payerId: 1,
           id: 1,
-          payerName:  result.customerName,
+          payerName: result.customerName,
           billingSplit: 100,
           price: result.netPrice,
         },
@@ -4032,8 +4032,8 @@ export function SolutionServicePortfolio(props) {
                   Go to Solution
                 </a>
                 <a className="ml-3 cursor" onClick={() => setShowNotes(true)}>
-                <Tooltip title="Notes">
-                  <DescriptionOutlinedIcon className="text-grey font-size-28" />
+                  <Tooltip title="Notes">
+                    <DescriptionOutlinedIcon className="text-grey font-size-28" />
                   </Tooltip>
                 </a>
                 <a
@@ -4046,7 +4046,7 @@ export function SolutionServicePortfolio(props) {
                   </Tooltip>
                 </a>
                 <a href="#" className="ml-3 font-size-14">
-                <Tooltip title="Saved Task">
+                  <Tooltip title="Saved Task">
                     <img src={folderaddIcon}></img>
                   </Tooltip>
                 </a>
@@ -4055,7 +4055,7 @@ export function SolutionServicePortfolio(props) {
                   className="ml-3 font-size-14 cursor"
                   onClick={handleOpenQuoteDetailModal}
                 >
-                 <Tooltip title="Preview">
+                  <Tooltip title="Preview">
                     {/* <img src={uploadIcon}></img> */}
                     <img src={previewIcon}></img>
                   </Tooltip>
@@ -4064,12 +4064,12 @@ export function SolutionServicePortfolio(props) {
                   <img src={cpqIcon}></img>
                 </a>
                 <a href="#" className="ml-3 font-size-14">
-                <Tooltip title="Delete">
+                  <Tooltip title="Delete">
                     <img src={deleteIcon} onClick={deleteSolutionQuote}></img>
                   </Tooltip>
                 </a>
                 <a href="#" className="ml-3 font-size-14">
-                <Tooltip title="Copy">
+                  <Tooltip title="Copy">
                     <img src={copyIcon} onClick={copyQuote}></img>
                   </Tooltip>
                 </a>
@@ -4183,7 +4183,7 @@ export function SolutionServicePortfolio(props) {
                   Quote Header
                 </span>
                 <a href={undefined} className="btn-sm text-white cursor">
-                <Tooltip title="Edit">
+                  <Tooltip title="Edit">
                     <i
                       className="fa fa-pencil"
                       aria-hidden="true"
@@ -4192,7 +4192,7 @@ export function SolutionServicePortfolio(props) {
                   </Tooltip>
                 </a>
                 <a href="#" className="btn-sm text-white">
-                <Tooltip title="Review">
+                  <Tooltip title="Review">
                     <i className="fa fa-bookmark-o" aria-hidden="true"></i>
                   </Tooltip>
                 </a>
@@ -7114,11 +7114,13 @@ export function SolutionServicePortfolio(props) {
         />
       )}
 
-      <QuoteShareModal
-        show={openQuoteShareModal}
-        hideModal={() => setOpenQuoteShareModal(false)}
-        handleSnack={handleSnack}
-      />
+      {openQuoteShareModal && (
+        <QuoteShareModal
+          show={openQuoteShareModal}
+          hideModal={() => setOpenQuoteShareModal(false)}
+          handleSnack={handleSnack}
+        />
+      )}
     </>
   );
 }
