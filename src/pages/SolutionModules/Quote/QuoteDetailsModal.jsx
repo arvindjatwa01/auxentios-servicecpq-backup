@@ -230,8 +230,8 @@ font-weight: 600;padding-bottom: 0 !important;    margin-bottom: 0 !important;">
       URL.revokeObjectURL(url);
     }, 10000);
 
-    // doc.setFontSize(12);
-    // doc.html(pdfContent, {
+    // // doc.setFontSize(12);
+   // // doc.html(pdfContent, {
     //   callback: () => {
     //     // Save the PDF as a Blob
     //     const pdfBlob = doc.output("blob");
@@ -252,7 +252,7 @@ font-weight: 600;padding-bottom: 0 !important;    margin-bottom: 0 !important;">
     //     document.body.removeChild(a);
     //     URL.revokeObjectURL(pdfUrl);
     //   },
-    // });
+    // // });
   };
   return (
     <Modal show={show} onHide={hideModal} size="md" id="print-content">
