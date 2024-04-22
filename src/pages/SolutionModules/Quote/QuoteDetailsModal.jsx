@@ -292,7 +292,7 @@ font-weight: 600;padding-bottom: 0 !important;    margin-bottom: 0 !important;">
           <div className="d-flex justify-content-between align-items-center">
             <h6 className="m-0">{customerData?.contactPhone || "NA"}</h6>
             <p className="mb-0 text-right">
-              Validity - {quoteDetails?.validity?.label || "N/A"}
+              Validity - {quoteDetails?.validity?.value || "N/A"}
             </p>
           </div>
           <div className="d-flex justify-content-between align-items-center ">
@@ -428,15 +428,15 @@ font-weight: 600;padding-bottom: 0 !important;    margin-bottom: 0 !important;">
               <h6>Manager</h6>
             </div>
           </div>
+          <div className="d-flex justify-content-end mt-0 py-2 align-items-center bg-dark">
+            <button className="btn bg-success mx-1">Accept</button>
+            <button className="btn bg-danger mx-1">Reject</button>
+            <button className="btn bg-warning mx-1">Request for Revison</button>
+            <span className="cursor mr-2" onClick={generateHTML}>
+              <SaveAltOutlinedIcon className="text-white " />
+            </span>
+          </div>
         </Modal.Body>
-      </div>
-      <div className="d-flex justify-content-end mt-0 py-2 align-items-center bg-dark">
-        <button className="btn bg-success mx-1">Accept</button>
-        <button className="btn bg-danger mx-1">Reject</button>
-        <button className="btn bg-warning mx-1">Request for Revison</button>
-        <span className="cursor mx-3" onClick={generateHTML}>
-          <SaveAltOutlinedIcon className="text-white " />
-        </span>
       </div>
 
       {/* <div dangerouslySetInnerHTML={{ __html: pdfContent }} /> */}
