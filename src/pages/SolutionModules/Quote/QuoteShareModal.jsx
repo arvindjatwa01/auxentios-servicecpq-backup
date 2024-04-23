@@ -19,7 +19,7 @@ const QuoteShareModal = ({ show, hideModal, handleSnack }) => {
       handleSnack("error", "Please enter the email address in correct format");
       return;
     }
-    const rObj = `to=${toEmail}&subject=Requested Quote Link&body=Hello,<br> <p>I appreciate your interest in our service. Attached is the quote screen link <a href ="https://dev.servicecpq.com/login">Click Here</a> you requested, including all details and terms. We think our offer matches your requirements. <br><br>Looking forward to hearing from you.</p> <br> Thanks & Regards<br>Auxentios Technology&fromEmail=no-reply@auxentios.com&fromName=Auxentios Technology`;
+    const rObj = `to=${toEmail}&subject=Requested Quote Link&body=Hello,<br> <p>I appreciate your interest in our service. Attached is the quote screen link <a href ="https://dev.servicecpq.com/quotePrview.html">Click Here</a> you requested, including all details and terms. We think our offer matches your requirements. <br><br>Looking forward to hearing from you.</p> <br> Thanks & Regards<br>Auxentios Technology&fromEmail=no-reply@auxentios.com&fromName=Auxentios Technology`;
     callPostApi(null, SEND_EMAIL_URL + rObj, {}, (response) => {
       if (response.status === API_SUCCESS) {
         handleSnack("success", "Email sent successfully, check now!");

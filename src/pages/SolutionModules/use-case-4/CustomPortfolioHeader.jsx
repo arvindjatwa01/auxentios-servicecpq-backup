@@ -183,7 +183,7 @@ const CustomPortfolioHeader = (props) => {
       <Modal
         show={convertToQuoteModalShow}
         onHide={handleCloseQuoteCreateModal}
-        size="md"
+        // size="md"
         aria-labelledby="contained-modal-title-vcenter"
         centered
       >
@@ -211,6 +211,7 @@ const CustomPortfolioHeader = (props) => {
                       options={quoteOptions}
                       placeholder="Quote Type"
                       value={quoteOptions[0]}
+                      isDisabled
                     />
                   </div>
                 </div>
@@ -252,7 +253,7 @@ const CustomPortfolioHeader = (props) => {
                       class="form-control"
                       id="reference"
                       aria-describedby="emailHelp"
-                      placeholder="Enter email"
+                      // placeholder="Enter email"
                       value={quoteRecord.reference}
                       onChange={handleQuoteRecordChange}
                     />
