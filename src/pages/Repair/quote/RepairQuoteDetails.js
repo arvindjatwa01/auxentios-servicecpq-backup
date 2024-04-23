@@ -28,6 +28,7 @@ import shareIcon from "../../../assets/icons/svg/share.svg";
 import folderaddIcon from "../../../assets/icons/svg/folder-add.svg";
 import uploadIcon from "../../../assets/icons/svg/upload.svg";
 import deleteIcon from "../../../assets/icons/svg/delete.svg";
+import previewIcon from "../../../assets/icons/svg/preview-icon.svg";
 import copyIcon from "../../../assets/icons/svg/Copy.svg";
 import {
   selectQuoteDropdownOption,
@@ -74,6 +75,7 @@ import {
 } from "navigation/CONSTANTS";
 import NotesAddEdit from "pages/SolutionModules/NotesAddEdit";
 import QuoteDetailsModal from "pages/SolutionModules/Quote/QuoteDetailsModal";
+import QuoteShareModal from "pages/SolutionModules/Quote/QuoteShareModal";
 
 const RepairQuoteDetails = (props) => {
   const history = useHistory();
@@ -340,7 +342,11 @@ const RepairQuoteDetails = (props) => {
       shippingViewOnly: result.leadTime ? true : false,
     });
     setQuoteId(result.quoteId);
-    setPayers(result.payers);
+    const _payer = result.payers.map((payer) => {
+      return { ...payer, price: result.netPrice };
+    });
+    setPayers(_payer);
+    // setPayers(result.payers);
     setSelQuoteStatus(
       statusOptions.filter((x) => x.value === result.status)[0]
     );
@@ -451,7 +457,7 @@ const RepairQuoteDetails = (props) => {
       discount: result.discount,
       margin: result.margin,
       netPrice: result.netPrice ? result.netPrice : calculatedNetPrice,
-      priceEstimates: result.priceEstimates,
+      priceEstimates: orderDataByAsendingOrder(result.priceEstimates),
       paymentTerms:
         result.paymentTerms && result.paymentTerms !== "EMPTY"
           ? paymentTermOptions.find(
@@ -614,6 +620,10 @@ const RepairQuoteDetails = (props) => {
   };
 
   const [openQuoteDetailModal, setOpenQuoteDetailModal] = useState(false);
+
+  const [openCoverageDtlModal, setOpenCoverageDtlModal] = useState(false);
+  const [coverageRecordId, setCoverageRecordId] = useState(null);
+  const [openQuoteShareModal, setOpenQuoteShareModal] = useState(false);
 
   const [severity, setSeverity] = useState("");
   const [openSnack, setOpenSnack] = useState(false);
@@ -1038,6 +1048,24 @@ const RepairQuoteDetails = (props) => {
         );
       });
   };
+
+  //
+  const orderDataByAsendingOrder = (data) => {
+    return data.sort((a, b) => {
+      // Convert priceBreakup to uppercase for proper comparison (e.g., 'A' < 'B' < 'C' < ...)
+      const priceBreakupA = a.priceBreakup.toUpperCase();
+      const priceBreakupB = b.priceBreakup.toUpperCase();
+
+      if (priceBreakupA > priceBreakupB) {
+        return 1; // Return 1 to indicate 'a' comes after 'b' in sorted order
+      } else if (priceBreakupA < priceBreakupB) {
+        return -1; // Return -1 to indicate 'a' comes before 'b' in sorted order
+      } else {
+        return 0; // Return 0 to indicate no change in order (shouldn't happen with unique priceBreakup values)
+      }
+    });
+  };
+
   const updateBillingData = () => {
     let data = {
       ...savedQuoteDetails,
@@ -1049,7 +1077,7 @@ const RepairQuoteDetails = (props) => {
       netPrice: billingDetail.netPrice,
       margin: billingDetail.margin,
       discount: billingDetail.discount,
-      priceEstimates: billingDetail.priceEstimates,
+      priceEstimates: orderDataByAsendingOrder(billingDetail.priceEstimates),
     };
     updateQuoteHeader(quoteId, data)
       .then((result) => {
@@ -1194,7 +1222,6 @@ const RepairQuoteDetails = (props) => {
 
   const handleOpenQuoteDetailModal = () => {
     setOpenQuoteDetailModal(true);
-    // handleSnack("success", "Status has been updated!");
   };
 
   return (
@@ -1266,24 +1293,40 @@ const RepairQuoteDetails = (props) => {
                 Go to Source
               </a>
               <a className="ml-3 cursor" onClick={() => setShowNotes(true)}>
-                <DescriptionOutlinedIcon className="text-grey font-size-28" />
+                <Tooltip title="Notes">
+                  <DescriptionOutlinedIcon className="text-grey font-size-28" />
+                </Tooltip>
               </a>
-              <a href="#" className="ml-3 font-size-14" title="Share">
-                <img src={shareIcon}></img>
+              <a
+                href="#"
+                className="ml-3 font-size-14"
+                title="Share"
+                onClick={() => setOpenQuoteShareModal(true)}
+              >
+                <Tooltip title="Share">
+                  <img src={shareIcon}></img>
+                </Tooltip>
               </a>
               <a href="#" className="ml-3 font-size-14" title="Items to review">
-                <img src={folderaddIcon}></img>
+                <Tooltip title="Saved Task">
+                  <img src={folderaddIcon}></img>
+                </Tooltip>
               </a>
               <a // href="#"
                 className="ml-3 font-size-14 cursor"
                 onClick={handleOpenQuoteDetailModal}
                 title="Upload"
               >
-                <img src={uploadIcon}></img>
+                <Tooltip title="Preview">
+                  {/* <img src={uploadIcon}></img> */}
+                  <img src={previewIcon}></img>
+                </Tooltip>
               </a>
               {/* <a href="#" className="ml-3 font-size-14"><img src={cpqIcon}></img></a> */}
               <a href="#" className="ml-3 font-size-14" title="Delete">
-                <img src={deleteIcon}></img>
+                <Tooltip title="Delete">
+                  <img src={deleteIcon}></img>
+                </Tooltip>
               </a>
               <a
                 href={undefined}
@@ -1291,7 +1334,9 @@ const RepairQuoteDetails = (props) => {
                 title="Copy"
                 onClick={() => handleVersionOpen("copy")}
               >
-                <img src={copyIcon}></img>
+                <Tooltip title="Copy">
+                  <img src={copyIcon}></img>
+                </Tooltip>
               </a>
               <DropdownButton
                 className="customDropdown ml-2"
@@ -2733,6 +2778,14 @@ const RepairQuoteDetails = (props) => {
           quoteItemsMaster={quoteItems}
           customerData={customerData}
           quoteDetails={generalDetails}
+        />
+      )}
+
+      {openQuoteShareModal && (
+        <QuoteShareModal
+          show={openQuoteShareModal}
+          hideModal={() => setOpenQuoteShareModal(false)}
+          handleSnack={handleSnack}
         />
       )}
     </>
