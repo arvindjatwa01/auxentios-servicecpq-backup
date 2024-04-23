@@ -21,7 +21,6 @@ import deleteIcon from "../../../assets/icons/svg/delete.svg";
 import folderaddIcon from "../../../assets/icons/svg/folder-add.svg";
 import shareIcon from "../../../assets/icons/svg/share.svg";
 import uploadIcon from "../../../assets/icons/svg/upload.svg";
-import previewIcon from "../../../assets/icons/svg/preview-icon.svg"
 import {
   ERROR_MAX_VERSIONS,
   FONT_STYLE,
@@ -83,8 +82,6 @@ import QuotePriceSummaryTable from "../components/QuotePriceSummaryTable ";
 import LoadingProgress from "../components/Loader";
 import NotesAddEdit from "pages/SolutionModules/NotesAddEdit";
 import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
-import QuoteDetailsModal from "pages/SolutionModules/Quote/QuoteDetailsModal";
-import QuoteShareModal from "pages/SolutionModules/Quote/QuoteShareModal";
 
 export function SparePartsQuoteDetails(props) {
   const history = useHistory();
@@ -107,10 +104,6 @@ export function SparePartsQuoteDetails(props) {
     }
     setOpenSnack(false);
   };
-
-  const [openQuoteDetailModal, setOpenQuoteDetailModal] = useState(false);
-  const [openQuoteShareModal, setOpenQuoteShareModal] = useState(false);
-
   const [searchCustResults, setSearchCustResults] = useState([]);
 
   const [headerLoading, setHeaderLoading] = useState(false);
@@ -357,16 +350,14 @@ export function SparePartsQuoteDetails(props) {
       estViewOnly: result.preparedBy ? true : false,
       priceViewOnly:
         result.billingType !== "EMPTY" &&
-        result.billingType !== null &&
-        result.billingType !== ""
+          result.billingType !== null &&
+          result.billingType !== ""
           ? true
           : false,
       shippingViewOnly: result.leadTime ? true : false,
     });
     setQuoteId(result.quoteId);
-     const _payer = result.payers.map((payer) => {return {...payer, price: result.netPrice}})
-    setPayers(_payer);
-    // setPayers(result.payers);
+    setPayers(result.payers);
     setSelQuoteStatus(
       statusOptions.filter((x) => x.value === result.status)[0]
     );
@@ -449,8 +440,8 @@ export function SparePartsQuoteDetails(props) {
       revisedOn: result.revisedOn ? result.revisedOn : new Date(),
       salesOffice: result.salesOffice
         ? salesOfficeOptions.find(
-            (element) => element.value === result.salesOffice
-          )
+          (element) => element.value === result.salesOffice
+        )
         : { label: "", value: "" },
     });
   };
@@ -460,25 +451,25 @@ export function SparePartsQuoteDetails(props) {
       billingFrequency:
         result.billingFrequency && result.billingFrequency !== "EMPTY"
           ? billingFreqOptions.find(
-              (element) => element.value === result.billingFrequency
-            )
+            (element) => element.value === result.billingFrequency
+          )
           : { label: "", value: "" },
       billingType:
         result.billingType && result.billingType !== "EMPTY"
           ? billingTypeOptions.find(
-              (element) => element.value === result.billingType
-            )
+            (element) => element.value === result.billingType
+          )
           : { label: "", value: "" },
       currency: result.currency,
       discount: result.discount,
       margin: result.margin,
-      priceEstimates: orderDataByAsendingOrder(result.priceEstimates),
+      priceEstimates: result.priceEstimates,
       netPrice: result.netPrice,
       paymentTerms:
         result.paymentTerms && result.paymentTerms !== "EMPTY"
           ? paymentTermOptions.find(
-              (element) => element.value === result.paymentTerms
-            )
+            (element) => element.value === result.paymentTerms
+          )
           : { label: "", value: "" },
     });
   };
@@ -501,13 +492,13 @@ export function SparePartsQuoteDetails(props) {
     setShippingDetail({
       deliveryPriority: result.deliveryPriority
         ? deliveryPriorityOptions.find(
-            (element) => element.value === result.deliveryPriority
-          )
+          (element) => element.value === result.deliveryPriority
+        )
         : { label: "", value: "" },
       deliveryType: result.deliveryType
         ? deliveryTypeOptions.find(
-            (element) => element.value === result.deliveryType
-          )
+          (element) => element.value === result.deliveryType
+        )
         : { label: "", value: "" },
       leadTime:
         leadTimeandUnit && leadTimeandUnit.length === 2
@@ -516,8 +507,8 @@ export function SparePartsQuoteDetails(props) {
       unit:
         leadTimeandUnit && leadTimeandUnit.length === 2
           ? OPTIONS_LEADTIME_UNIT.find(
-              (element) => element.value === leadTimeandUnit[1]
-            )
+            (element) => element.value === leadTimeandUnit[1]
+          )
           : { label: "Day", value: "DAY" },
       serviceRecipientAddress: result.serviceRecipientAddress
         ? result.serviceRecipientAddress
@@ -814,24 +805,6 @@ export function SparePartsQuoteDetails(props) {
         );
       });
   };
-
-  //
-  const orderDataByAsendingOrder = (data) => {
-    return data.sort((a, b) => {
-      // Convert priceBreakup to uppercase for proper comparison (e.g., 'A' < 'B' < 'C' < ...)
-      const priceBreakupA = a.priceBreakup.toUpperCase();
-      const priceBreakupB = b.priceBreakup.toUpperCase();
-
-      if (priceBreakupA > priceBreakupB) {
-        return 1; // Return 1 to indicate 'a' comes after 'b' in sorted order
-      } else if (priceBreakupA < priceBreakupB) {
-        return -1; // Return -1 to indicate 'a' comes before 'b' in sorted order
-      } else {
-        return 0; // Return 0 to indicate no change in order (shouldn't happen with unique priceBreakup values)
-      }
-    });
-  };
-
   const updateBillingData = () => {
     let data = {
       ...savedQuoteDetails,
@@ -843,7 +816,7 @@ export function SparePartsQuoteDetails(props) {
       netPrice: billingDetail.netPrice,
       margin: billingDetail.margin,
       discount: billingDetail.discount,
-      priceEstimates: orderDataByAsendingOrder(billingDetail.priceEstimates),
+      priceEstimates: billingDetail.priceEstimates,
     };
     updateQuoteHeader(quoteId, data)
       .then((result) => {
@@ -1230,11 +1203,6 @@ export function SparePartsQuoteDetails(props) {
       state: builderDetails,
     });
   };
-
-  const handleOpenQuoteDetailModal = () => {
-    setOpenQuoteDetailModal(true);
-  };
-
   return (
     <>
       <CustomizedSnackbar
@@ -1287,14 +1255,7 @@ export function SparePartsQuoteDetails(props) {
               </div>
             </div>
             <div className="d-flex justify-content-center align-items-center">
-              <button
-                onClick={() => {
-                  history.push("/spare-part-quote");
-                }}
-                className="btn bg-primary text-white cursor"
-              >
-                Back
-              </button>
+              <button onClick={() => { history.push("/spare-part-quote") }} className="btn bg-primary text-white cursor">Back</button>
               <a
                 href={undefined}
                 className="cursor btn ml-3 font-size-14 bg-primary text-white"
@@ -1303,42 +1264,22 @@ export function SparePartsQuoteDetails(props) {
                 Go To Source
               </a>
               <a className="ml-3 cursor" onClick={() => setShowNotes(true)}>
-                <Tooltip title="Notes">
-                  <DescriptionOutlinedIcon className="text-grey font-size-28" />
-                </Tooltip>
+                <DescriptionOutlinedIcon className="text-grey font-size-28" />
               </a>
-              <a
-                href="#"
-                className="ml-3 font-size-14"
-                title="Share"
-                onClick={() => setOpenQuoteShareModal(true)}
-              >
-                <Tooltip title="Share">
-                  <img src={shareIcon}></img>
-                </Tooltip>
+              <a href="#" className="ml-3 font-size-14">
+                <img src={shareIcon}></img>
               </a>
-              <a href="#" className="ml-3 font-size-14" title="Items to review">
-                <Tooltip title="Saved Task">
-                  <img src={folderaddIcon}></img>
-                </Tooltip>
+              <a href="#" className="ml-3 font-size-14">
+                <img src={folderaddIcon}></img>
               </a>
-              <a // href="#"
-                className="ml-3 font-size-14 cursor"
-                onClick={handleOpenQuoteDetailModal}
-                title="Upload"
-              >
-                <Tooltip title="Preview">
-                  {/* <img src={uploadIcon}></img> */}
-                  <img src={previewIcon}></img>
-                </Tooltip>
+              <a href="#" className="ml-3 font-size-14">
+                <img src={uploadIcon}></img>
               </a>
               <a href="#" className="ml-3 font-size-14">
                 <img src={cpqIcon}></img>
               </a>
               <a href="#" className="ml-3 font-size-14" title="Delete">
-                <Tooltip title="Delete">
-                  <img src={deleteIcon}></img>
-                </Tooltip>
+                <img src={deleteIcon}></img>
               </a>
               <a
                 href={undefined}
@@ -1346,9 +1287,7 @@ export function SparePartsQuoteDetails(props) {
                 title="Copy"
                 onClick={() => handleVersionOpen("copy")}
               >
-                <Tooltip title="Copy">
-                  <img src={copyIcon}></img>
-                </Tooltip>
+                <img src={copyIcon}></img>
               </a>
               <DropdownButton
                 className="customDropdown ml-2"
@@ -2697,8 +2636,8 @@ export function SparePartsQuoteDetails(props) {
                           value={
                             shippingDetail.leadTime &&
                             shippingDetail.leadTime +
-                              " " +
-                              shippingDetail.unit?.label
+                            " " +
+                            shippingDetail.unit?.label
                           }
                           className="col-md-4 col-sm-4"
                         />
@@ -2749,33 +2688,14 @@ export function SparePartsQuoteDetails(props) {
               data={quoteItems}
               customStyles={STYLE_QUOTEITEM_TABLE}
               pagination
-              // onRowClicked={(e) => handleRowClick(e)}
-              // selectableRows
+            // onRowClicked={(e) => handleRowClick(e)}
+            // selectableRows
             />
           </div>
         </div>
       </div>
       {showNotes && (
         <NotesAddEdit show={showNotes} hideModal={() => setShowNotes(false)} />
-      )}
-
-      {openQuoteDetailModal && (
-        <QuoteDetailsModal
-          show={openQuoteDetailModal}
-          hideModal={() => setOpenQuoteDetailModal(false)}
-          handleSnack={handleSnack}
-          quoteItemsMaster={quoteItems}
-          customerData={customerData}
-          quoteDetails={generalDetails}
-        />
-      )}
-
-      {openQuoteShareModal && (
-        <QuoteShareModal
-          show={openQuoteShareModal}
-          hideModal={() => setOpenQuoteShareModal(false)}
-          handleSnack={handleSnack}
-        />
       )}
     </>
   );

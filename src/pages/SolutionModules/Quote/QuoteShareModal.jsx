@@ -65,23 +65,23 @@ const QuoteShareModal = ({ show, hideModal, handleSnack }) => {
 
             <div className=" d-flex">
               <div className="input-group icons approvesearch mr-3">
-                {/* <div className="input-group-prepend">
+                <div className="input-group-prepend">
                   <span
                     className="input-group-text bg-transparent border-0 pr-0 "
                     id="basic-addon1"
                   >
                     <img src={searchIcon} />
                   </span>
-                </div> */}
+                </div>
                 <input
                   type="search"
                   className="form-control"
-                  placeholder="email address"
+                  placeholder=""
                   value={toEmail}
                   aria-label="Search Dashboard"
                   onChange={(e) => setToEmail(e.target.value)}
                 />
-                {/* <div
+                <div
                   className="customselect d-flex align-items-center"
                   style={{ position: "absolute", right: "10px", top: "10px" }}
                 >
@@ -92,7 +92,7 @@ const QuoteShareModal = ({ show, hideModal, handleSnack }) => {
                     options={[{ label: "One", value: "one" }]}
                     placeholder="Viewer"
                   />
-                </div> */}
+                </div>
               </div>
               <div>
                 <a
