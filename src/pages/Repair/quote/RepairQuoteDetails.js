@@ -2777,6 +2777,7 @@ const RepairQuoteDetails = (props) => {
           handleSnack={handleSnack}
           quoteItemsMaster={quoteItems}
           customerData={customerData}
+          quoteType="REPAIR_QUOTE"
           quoteDetails={generalDetails}
         />
       )}

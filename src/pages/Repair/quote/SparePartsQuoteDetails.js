@@ -2767,6 +2767,7 @@ export function SparePartsQuoteDetails(props) {
           quoteItemsMaster={quoteItems}
           customerData={customerData}
           quoteDetails={generalDetails}
+          quoteType="SPARE_PARTS_QUOTE"
         />
       )}
 
