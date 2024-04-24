@@ -483,7 +483,7 @@ font-weight: 600;padding-bottom: 0 !important;    margin-bottom: 0 !important;">
     
     </html>`;
 
-    // // Create a Blob from the HTML content
+    // Create a Blob from the HTML content
     // const blob = new Blob([pdfContent], { type: "text/html" });
     const blob = new Blob([htmlContent], { type: "text/html" });
 
