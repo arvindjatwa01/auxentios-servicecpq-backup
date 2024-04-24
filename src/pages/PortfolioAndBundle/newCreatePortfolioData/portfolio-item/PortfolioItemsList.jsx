@@ -1715,12 +1715,12 @@ const PortfolioItemsList = (props) => {
       selector: "quantity",
       format: (row) => row.quantity || 1,
     },
-    {
-      id: "recommendedValue",
-      name: <div>Recommended Value</div>,
-      selector: "recommendedValue",
-      format: (row) => row.recommendedValue,
-    },
+    // {
+    //   id: "recommendedValue",
+    //   name: <div>Recommended Value</div>,
+    //   selector: "recommendedValue",
+    //   format: (row) => row.recommendedValue,
+    // },
     {
       id: "servicePrice",
       name: <div>Service Price</div>,
@@ -1746,9 +1746,9 @@ const PortfolioItemsList = (props) => {
       format: (row) => row.comments || "",
     },
     {
-      id: "comments",
+      id: "actions",
       name: <div>Actions</div>,
-      selector: "comments",
+      selector: "actions",
       //   format: (row) => "Actions",
       cell: (row, i) => (
         <div
@@ -1891,24 +1891,42 @@ const PortfolioItemsList = (props) => {
       sortable: false,
       wrap: true,
     },
-    {
-      id: "bundleItemDescription",
-      name: <div>Bundle Description</div>,
-      cell: (row, i) => (
-        <div className="d-flex justify-content-between align-items-baseline py-2 elipsis">
-          <div className="d-flex align-items-center" data-tag="allowRowEvents">
-            {row?.itemDescription}
-          </div>
-          <div className="d-flex align-items-center">
-            <div className="description cursor mr-1"></div>
-          </div>
-        </div>
-      ),
-      wrap: true,
-      sortable: false,
-      minWidth: "150px",
-      maxWidth: "150px",
-    },
+    // // {
+    // //   id: "bundleItemDescription",
+    // //   name: <div>Bundle Description</div>,
+    // //   cell: (row, i) => (
+    // //     <div className="d-flex justify-content-between align-items-baseline py-2 elipsis">
+    // //       <div className="d-flex align-items-center" data-tag="allowRowEvents">
+    // //         {row?.itemDescription}
+    // //       </div>
+    // //       <div className="d-flex align-items-center">
+    // //         <div className="description cursor mr-1"></div>
+    // //       </div>
+    // //     </div>
+    // //   ),
+    // //   wrap: true,
+    // //   sortable: false,
+    // //   minWidth: "150px",
+    // //   maxWidth: "150px",
+    // // },
+    // {
+    //   id: "bundleItemDescription",
+    //   name: <div>Bundle Description</div>,
+    //   cell: (row, i) => (
+    //     <div className="d-flex justify-content-between align-items-baseline py-2 elipsis">
+    //       <div className="d-flex align-items-center" data-tag="allowRowEvents">
+    //         {row?.itemDescription}
+    //       </div>
+    //       <div className="d-flex align-items-center">
+    //         <div className="description cursor mr-1"></div>
+    //       </div>
+    //     </div>
+    //   ),
+    //   wrap: true,
+    //   sortable: false,
+    //   minWidth: "150px",
+    //   maxWidth: "150px",
+    // },
     {
       id: "bundleItemHeaderStrategy",
       name: <div>Strategy</div>,
@@ -1951,10 +1969,13 @@ const PortfolioItemsList = (props) => {
       ),
       wrap: true,
       sortable: false,
+      minWidth: "150px",
+      maxWidth: "150px",
     },
     {
       id: "bundleSjIdOrRkId",
-      name: <div>Standard Job / Repair Option</div>,
+      name: <div>Template</div>,
+      // name: <div>Standard Job / Repair Option</div>,
       cell: (row, i) => (
         <div className="d-flex justify-content-between align-items-baseline py-2 w-100">
           <div className="d-flex " data-tag="allowRowEvents">
@@ -1970,16 +1991,27 @@ const PortfolioItemsList = (props) => {
       sortable: false,
     },
     {
-      id: "bundleFrequency",
-      name: <div>Frequency</div>,
+      id: "bundleRecommendedValue",
+      name: <div>Recommended Value</div>,
       cell: (row) => (
         <div className="d-flex align-items-baseline">
-          {isEmpty(row.frequency) ? "NA" : row.frequency}
+          {isEmpty(row.recommendedValue) ? "NA" : row.recommendedValue}
         </div>
       ),
       wrap: true,
       sortable: false,
     },
+    // {
+    //   id: "bundleFrequency",
+    //   name: <div>Frequency</div>,
+    //   cell: (row) => (
+    //     <div className="d-flex align-items-baseline">
+    //       {isEmpty(row.frequency) ? "NA" : row.frequency}
+    //     </div>
+    //   ),
+    //   wrap: true,
+    //   sortable: false,
+    // },
     {
       id: "bundleNumberOfEvents",
       name: <div>No. of Events</div>,

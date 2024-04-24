@@ -19,10 +19,8 @@ const QuoteDetailsModal = ({
   quoteItemsMaster = [],
   customerData,
   quoteDetails,
-  recordData,
+  quoteType,
 }) => {
-  console.log("customerData ::::: ", customerData);
-
   const generateHTML = () => {
     // const doc = new jsPDF();
     const pdfContent = `<html>
@@ -320,7 +318,13 @@ font-weight: 600;padding-bottom: 0 !important;    margin-bottom: 0 !important;">
                   >
                     <td className="mb-0 pb-0">
                       <div>
-                        <h4 className="mb-0">{quote?.itemName}</h4>
+                        <h5 className="mb-0">
+                          {quoteType === "SPARE_PARTS_QUOTE"
+                            ? `${quote?.partNumber}-${quote?.partType}`
+                            : quoteType === "REPAIR_QUOTE"
+                            ? `${quote?.component}-${quote?.jobDescription}`
+                            : quote?.itemName}
+                        </h5>
                         <ul className="px-2 mb-1">
                           <li>{quote?.description}</li>
                         </ul>
@@ -333,36 +337,10 @@ font-weight: 600;padding-bottom: 0 !important;    margin-bottom: 0 !important;">
                     </td>
                   </tr>
                 ))}
-              {/* <tr className="pb-0" style={{ borderBottom: "2px solid black" }}>
-              <td className="mb-0 pb-0">
-                <div>
-                  <h4 className="mb-0">Web Design</h4>
-                  <ul className="px-2 mb-1">
-                    <li>Lorem ipsum dolor sit amet consectetur.</li>
-                  </ul>
-                </div>
-              </td>
-              <td className="mb-0 pb-0 text-black">$1000</td>
-              <td className="mb-0 pb-0 text-black">1</td>
-              <td className="mb-0 pb-0 text-black">$1000</td>
-            </tr>
-            <tr className="pb-0" style={{ borderBottom: "2px solid black" }}>
-              <td className="mb-0 pb-0">
-                <div>
-                  <h4 className="mb-0">Branding Design</h4>
-                  <ul className="px-2 mb-1">
-                    <li>Lorem ipsum dolor sit amet consectetur.</li>
-                  </ul>
-                </div>
-              </td>
-              <td className="mb-0 pb-0 text-black">$1000</td>
-              <td className="mb-0 pb-0 text-black">1</td>
-              <td className="mb-0 pb-0 text-black">$1000</td>
-            </tr> */}
               <tr className="pb-0 mb-0 pb-0 pt-3">
                 <td className="mb-0 pb-0 pt-3"></td>
                 <td className="mb-0 pb-0 pt-3 text-black" colSpan={2}>
-                  Total
+                  Sub Total
                 </td>
                 <td className="mb-0 pb-0 pt-3 text-black">
                   $
@@ -398,7 +376,7 @@ font-weight: 600;padding-bottom: 0 !important;    margin-bottom: 0 !important;">
               <tr className="mb-0 pb-0 py-0">
                 <td className="mb-0"></td>
                 <td className="mb-0 text-black" colSpan={2}>
-                  Sub Total
+                  Total
                 </td>
                 <td className="mb-0 text-black">
                   $
@@ -429,14 +407,14 @@ font-weight: 600;padding-bottom: 0 !important;    margin-bottom: 0 !important;">
             </div>
           </div>
         </Modal.Body>
-        <div className="d-flex justify-content-end mt-0 py-2 align-items-center bg-dark">
-          <button className="btn bg-success mx-1">Accept</button>
-          <button className="btn bg-danger mx-1">Reject</button>
-          <button className="btn bg-warning mx-1">Request for Revison</button>
-          <span className="cursor mr-2" onClick={generateHTML}>
-            <SaveAltOutlinedIcon className="text-white " />
-          </span>
-        </div>
+      </div>
+      <div className="d-flex justify-content-end mt-0 py-2 align-items-center bg-dark mx-0">
+        <button className="btn bg-success mx-1">Accept</button>
+        <button className="btn bg-danger mx-1">Reject</button>
+        <button className="btn bg-warning mx-1">Request for Revison</button>
+        <span className="cursor mx-3" onClick={generateHTML}>
+          <SaveAltOutlinedIcon className="text-white " />
+        </span>
       </div>
 
       {/* <div dangerouslySetInnerHTML={{ __html: pdfContent }} /> */}
