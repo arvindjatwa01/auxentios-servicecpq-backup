@@ -95,10 +95,21 @@ const ExpendBundleServiceItem = (props) => {
           setBundleServiceItemHeader({ ...itemHeaderModel });
           setBundleServiceItemBody({ ...itemBodyModel });
           if (itemBodyModel.itemPrices.length !== 0) {
-            const itemPriceId =
-              itemBodyModel.itemPrices[itemBodyModel.itemPrices.length - 1]
-                .itemPriceDataId;
-            getBundleServicePriceDetails(itemPriceId);
+            // const itemPriceId =
+            //   itemBodyModel.itemPrices[itemBodyModel.itemPrices.length - 1]
+            //     .itemPriceDataId;
+
+            const _itemPriceId = itemBodyModel.itemPrices.reduce(
+              (minItemId, currentItem) => {
+                  return currentItem.itemPriceDataId > minItemId
+                      ? currentItem.itemPriceDataId
+                      : minItemId;
+              },
+              itemBodyModel.itemPrices[0].itemPriceDataId
+          );
+
+            getBundleServicePriceDetails(_itemPriceId);
+            // getBundleServicePriceDetails(itemPriceId);
           }
           setLoading(false);
         } else {
@@ -110,6 +121,7 @@ const ExpendBundleServiceItem = (props) => {
       }
     );
   }, [bundleServiceRowData]);
+
 
   // get the expended bundle|Service item Price data
   const getBundleServicePriceDetails = async (itemPriceId) => {
