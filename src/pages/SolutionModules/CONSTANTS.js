@@ -496,6 +496,7 @@ export const UPLOAD_OPTIONS = [
  export const TEMPLATE_OPTIONS = [
     { label: 'Maintenance Solutions', value: "ROUTINE_MAINTENANCE_OR_TASK", icon: <img src={Portfoliosicon} width="34px" height="25px" /> },
     { label: 'Repair Solutions', value: 'REPAIR_OR_REPLACE', icon: <img src={contract} width="34px" height="25px" /> },
-    { label: 'Routine Maintenance Tasks', value: 'ROUTINE_MAINTENANCE_OR_TASK', icon: <DesignServicesOutlinedIcon sx={{ mx: 1 }} /> },
+    { label: 'Routine Maintenance', value: 'ROUTINE_MAINTENANCE_OR_TASK', icon: <DesignServicesOutlinedIcon sx={{ mx: 1 }} /> },
+    // { label: 'Routine Maintenance Tasks', value: 'ROUTINE_MAINTENANCE_OR_TASK', icon: <DesignServicesOutlinedIcon sx={{ mx: 1 }} /> },
     { label: 'Equipment Solutions', value: 'NEW_EQUIPMENT_SOLUTION', icon: <DesignServicesOutlinedIcon sx={{ mx: 1 }} /> }]
 
