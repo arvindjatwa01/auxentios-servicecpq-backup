@@ -1,46 +1,46 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from "react";
 
 import Box from "@mui/material/Box";
 import TabContext from "@mui/lab/TabContext";
 import Tab from "@mui/material/Tab";
-import { TabList, TabPanel } from '@mui/lab';
+import { TabList, TabPanel } from "@mui/lab";
 import SellOutlinedIcon from "@mui/icons-material/SellOutlined";
 import FormatListBulletedOutlinedIcon from "@mui/icons-material/FormatListBulletedOutlined";
 import AccessAlarmOutlinedIcon from "@mui/icons-material/AccessAlarmOutlined";
 
-import { Modal } from 'react-bootstrap';
-import Select from 'react-select';
-import DataTable from 'react-data-table-component';
+import { Modal } from "react-bootstrap";
+import Select from "react-select";
+import DataTable from "react-data-table-component";
 
-import ItemAddEdit from './ItemAddEdit';
-import PortfolioCoverageSearch from '../PortfolioCoverageSearch';
+import ItemAddEdit from "./ItemAddEdit";
+import PortfolioCoverageSearch from "../PortfolioCoverageSearch";
 import SearchBox from "../../../Repair/components/SearchBox";
 
-import { getPortfolioAndSolutionCommonConfig } from "../../../../services/index"
-import ItemPriceCalculator from './ItemPriceCalculator';
-import { isEmpty } from '../utilities/textUtilities';
-import { dataTableCustomStyle } from 'pages/Common/PortfolioAndSolutionConstants';
+import { getPortfolioAndSolutionCommonConfig } from "../../../../services/index";
+import ItemPriceCalculator from "./ItemPriceCalculator";
+import { isEmpty } from "../utilities/textUtilities";
+import { dataTableCustomStyle } from "pages/Common/PortfolioAndSolutionConstants";
 
 const PortfolioItemTabsModal = (props) => {
     const { show, hideModal, componentDataTabShow } = props;
     const [activeTab, setActiveTab] = useState(1);
     const [bundleServiceNeed, setBundleServiceNeed] = useState(true);
 
-    const [frequencyKeyValuePairs, setFrequencyKeyValuePairs] = useState([])
-    const [unitKeyValuePairs, setUnitKeyValuePairs] = useState([])
-    const [searchBundleServiceItem, setSearchBundleServiceItem] = useState([])
-    const [selectedSearchedItems, setSelectedSearchedItems] = useState([])
-    const [bundleServiceItemsList, setBundleServiceItemsList] = useState([])
+    const [frequencyKeyValuePairs, setFrequencyKeyValuePairs] = useState([]);
+    const [unitKeyValuePairs, setUnitKeyValuePairs] = useState([]);
+    const [searchBundleServiceItem, setSearchBundleServiceItem] = useState([]);
+    const [selectedSearchedItems, setSelectedSearchedItems] = useState([]);
+    const [bundleServiceItemsList, setBundleServiceItemsList] = useState([]);
 
     useEffect(() => {
         // get frequency key-value pair
         getPortfolioAndSolutionCommonConfig("frequency")
             .then((res) => {
                 if (res.status === 200) {
-                    const options = []
+                    const options = [];
                     res.data.map((d) => {
                         if (d.key !== "EMPTY") {
-                            options.push({ value: d.key, label: d.value, })
+                            options.push({ value: d.key, label: d.value });
                         }
                     });
                     setFrequencyKeyValuePairs(options);
@@ -54,10 +54,10 @@ const PortfolioItemTabsModal = (props) => {
         getPortfolioAndSolutionCommonConfig("unit")
             .then((res) => {
                 if (res.status === 200) {
-                    const options = []
+                    const options = [];
                     res.data.map((d) => {
-                        if ((d.key !== "EMPTY") && (d.key !== "MONTH")) {
-                            options.push({ value: d.key, label: d.value, })
+                        if (d.key !== "EMPTY" && d.key !== "MONTH") {
+                            options.push({ value: d.key, label: d.value });
                         }
                     });
                     setUnitKeyValuePairs(options);
@@ -66,25 +66,27 @@ const PortfolioItemTabsModal = (props) => {
             .catch((err) => {
                 return;
             });
-    }, [])
+    }, []);
 
     const handleAddSearchItems = (items) => {
         setSearchBundleServiceItem(items);
-    }
+    };
 
     const addSelectedSearchedItems = () => {
-        let _portfolioItemsArr = []
+        let _portfolioItemsArr = [];
         const _bundleServiceItemsList = [...bundleServiceItemsList];
         selectedSearchedItems.map((itemRow, i) => {
-            const exist = bundleServiceItemsList.some(item => item.itemId === itemRow.itemId)
+            const exist = bundleServiceItemsList.some(
+                (item) => item.itemId === itemRow.itemId
+            );
             if (!exist) {
-                _portfolioItemsArr.push({ itemId: itemRow.itemId })
-                _bundleServiceItemsList.push(itemRow)
+                _portfolioItemsArr.push({ itemId: itemRow.itemId });
+                _bundleServiceItemsList.push(itemRow);
             }
-        })
+        });
         setBundleServiceItemsList(_bundleServiceItemsList);
-        handleAddSearchItems([])
-    }
+        handleAddSearchItems([]);
+    };
 
     const bundleServiceItemsColumns = [
         {
@@ -118,7 +120,7 @@ const PortfolioItemTabsModal = (props) => {
         {
             id: "quantity",
             name: "Quantity",
-            selector: (row) => isEmpty(row.quantity) ? 1 : row.quantity,
+            selector: (row) => (isEmpty(row.quantity) ? 1 : row.quantity),
             sortable: false,
             wrap: true,
         },
@@ -132,11 +134,16 @@ const PortfolioItemTabsModal = (props) => {
         {
             id: "templateKitId",
             name: "Template/Kit ID",
-            selector: (row) => !isEmpty(row?.standardJobId) ? row?.standardJobId : !isEmpty(row?.repairKitId) ? row?.repairKitId : "NA",
+            selector: (row) =>
+                !isEmpty(row?.standardJobId)
+                    ? row?.standardJobId
+                    : !isEmpty(row?.repairKitId)
+                    ? row?.repairKitId
+                    : "NA",
             sortable: false,
             wrap: true,
         },
-    ]
+    ];
 
     return (
         <Modal show={show} onHide={hideModal} size="xl">
@@ -144,13 +151,22 @@ const PortfolioItemTabsModal = (props) => {
                 <Box sx={{ typography: "body1" }}>
                     <TabContext value={activeTab}>
                         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                            <TabList className="custom-tabs-div"
-                                onChange={(e, tabIndex) => setActiveTab(tabIndex)}
-                            // onChange={(e, newValue) => { portfolioItemDataEditable && setTabs(newValue) }}
+                            <TabList
+                                className="custom-tabs-div"
+                                onChange={(e, tabIndex) =>
+                                    setActiveTab(tabIndex)
+                                }
+                                // onChange={(e, newValue) => { portfolioItemDataEditable && setTabs(newValue) }}
                             >
                                 <Tab label="Portfolio Item" value={1} />
-                                <Tab label="Service/Bundle" value={2} disabled={!bundleServiceNeed} />
-                                {componentDataTabShow && <Tab label="Component Data" value={3} />}
+                                <Tab
+                                    label="Service/Bundle"
+                                    value={2}
+                                    disabled={!bundleServiceNeed}
+                                />
+                                {componentDataTabShow && (
+                                    <Tab label="Component Data" value={3} />
+                                )}
                                 <Tab label="Price Calculator" value={4} />
                                 <Tab label="Review" value={5} />
                             </TabList>
@@ -161,7 +177,9 @@ const PortfolioItemTabsModal = (props) => {
                                 isEditable={false}
                                 isPortfolioItem={true}
                                 bundleServiceNeed={bundleServiceNeed}
-                                handleBundleServiceNeed={() => setBundleServiceNeed(!bundleServiceNeed)}
+                                handleBundleServiceNeed={() =>
+                                    setBundleServiceNeed(!bundleServiceNeed)
+                                }
                                 frequencyKeyValuePairs={frequencyKeyValuePairs}
                                 unitKeyValuePairs={unitKeyValuePairs}
                             />
@@ -171,75 +189,120 @@ const PortfolioItemTabsModal = (props) => {
                                 searchFlag="bundleSearch"
                                 handleAddSearchItem={handleAddSearchItems}
                             />
-                            {searchBundleServiceItem.length !== 0 && <>
-                                <DataTable
-                                    columns={bundleServiceItemsColumns}
-                                    data={searchBundleServiceItem}
-                                    customStyles={dataTableCustomStyle}
-                                    selectableRows
-                                    selectableRowsHighlight
-                                    onSelectedRowsChange={(rows) => setSelectedSearchedItems(rows.selectedRows)}
-                                    pagination
-                                />
-                                <div className="row mb-3 justify-content-end">
-                                    <div className="d-flex">
-                                        <button type="button" className="btn bg-primary text-white mr-3" onClick={() => handleAddSearchItems([])}>
-                                            Cancel
-                                        </button>
-                                        <button type="button" className="btn bg-primary text-white" disabled={selectedSearchedItems.length === 0} onClick={addSelectedSearchedItems}>
-                                            + Add Selected
+                            {searchBundleServiceItem.length !== 0 && (
+                                <>
+                                    <DataTable
+                                        columns={bundleServiceItemsColumns}
+                                        data={searchBundleServiceItem}
+                                        customStyles={dataTableCustomStyle}
+                                        selectableRows
+                                        selectableRowsHighlight
+                                        onSelectedRowsChange={(rows) =>
+                                            setSelectedSearchedItems(
+                                                rows.selectedRows
+                                            )
+                                        }
+                                        pagination
+                                    />
+                                    <div className="row mb-3 justify-content-end">
+                                        <div className="d-flex">
+                                            <button
+                                                type="button"
+                                                className="btn bg-primary text-white mr-3"
+                                                onClick={() =>
+                                                    handleAddSearchItems([])
+                                                }
+                                            >
+                                                Cancel
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className="btn bg-primary text-white"
+                                                disabled={
+                                                    selectedSearchedItems.length ===
+                                                    0
+                                                }
+                                                onClick={
+                                                    addSelectedSearchedItems
+                                                }
+                                            >
+                                                + Add Selected
+                                            </button>
+                                        </div>
+                                    </div>
+                                </>
+                            )}
+                            {bundleServiceItemsList.length !== 0 && (
+                                <>
+                                    <DataTable
+                                        columns={bundleServiceItemsColumns}
+                                        data={bundleServiceItemsList}
+                                        customStyles={dataTableCustomStyle}
+                                        pagination
+                                        expandableRows
+                                        expandOnRowClicked
+                                    />
+                                    <div
+                                        className="row mt-5"
+                                        style={{ justifyContent: "right" }}
+                                    >
+                                        <button
+                                            type="button"
+                                            className="btn bg-primary text-white"
+                                            // onClick={handleContinueOfAddedServiceOrBundle}
+                                        >
+                                            Save & Continue
                                         </button>
                                     </div>
-                                </div>
-                            </>
-                            }
-                            {bundleServiceItemsList.length !== 0 && <>
-                                <DataTable
-                                    columns={bundleServiceItemsColumns}
-                                    data={bundleServiceItemsList}
-                                    customStyles={dataTableCustomStyle}
-                                    pagination
-                                    expandableRows
-                                    expandOnRowClicked
-                                />
-                                <div className="row mt-5" style={{ justifyContent: "right" }}>
-                                    <button type="button" className="btn bg-primary text-white"
-                                    // onClick={handleContinueOfAddedServiceOrBundle}
-                                    >Save & Continue</button>
-                                </div>
-                            </>}
+                                </>
+                            )}
                         </TabPanel>
                         <TabPanel value={3}>
                             <>
                                 <div className="ligt-greey-bg p-3 mb-5">
                                     <div>
                                         <span className="mr-3 cursor">
-                                            <i className="fa fa-pencil font-size-12" aria-hidden="true"></i>
+                                            <i
+                                                className="fa fa-pencil font-size-12"
+                                                aria-hidden="true"
+                                            ></i>
                                             <span className="ml-2">Edit</span>
                                         </span>
                                         <span className="mr-3">
                                             <SellOutlinedIcon className=" font-size-16" />
-                                            <span className="ml-2">Related repair option</span>
+                                            <span className="ml-2">
+                                                Related repair option
+                                            </span>
                                         </span>
                                         <span className="mr-3">
                                             <FormatListBulletedOutlinedIcon className=" font-size-16" />
-                                            <span className="ml-2">Related Standard Job</span>
+                                            <span className="ml-2">
+                                                Related Standard Job
+                                            </span>
                                         </span>
                                         <span className="mr-3">
                                             <AccessAlarmOutlinedIcon className=" font-size-16" />
-                                            <span className="ml-2">Related Kit</span>
+                                            <span className="ml-2">
+                                                Related Kit
+                                            </span>
                                         </span>
                                     </div>
                                 </div>
                                 <div className="row input-fields">
                                     <div className="col-md-6 col-sm-6">
                                         <div className="form-group">
-                                            <label className="text-light-dark font-size-14 font-weight-500"> Component Code</label>
+                                            <label className="text-light-dark font-size-14 font-weight-500">
+                                                {" "}
+                                                Component Code
+                                            </label>
                                             <div className="customselectsearch">
-                                                <input className="form-control border-radius-10 text-primary" type="text"
-                                                    name="componentCode" autoComplete="off"
-                                                // value={componentData.componentCode}
-                                                // onChange={handleComponentChange}
+                                                <input
+                                                    className="form-control border-radius-10 text-primary"
+                                                    type="text"
+                                                    name="componentCode"
+                                                    autoComplete="off"
+                                                    // value={componentData.componentCode}
+                                                    // onChange={handleComponentChange}
                                                 />
                                                 {/* {<ul className={`list-group customselectsearch-list scrollbar scrolbarCode style`}>
                                                     {componentData.codeSuggestions.map(
@@ -256,27 +319,42 @@ const PortfolioItemTabsModal = (props) => {
                                     </div>
                                     <div className="col-md-6 col-sm-6">
                                         <div className="form-group">
-                                            <label className="text-light-dark font-size-14 font-weight-500">Component Description</label>
-                                            <input className="form-control border-radius-10 text-primary" type="text" name="description"
-                                                placeholder="Optional" disabled
-                                            // value={componentData.description}
-                                            // onChange={handleComponentChange}
+                                            <label className="text-light-dark font-size-14 font-weight-500">
+                                                Component Description
+                                            </label>
+                                            <input
+                                                className="form-control border-radius-10 text-primary"
+                                                type="text"
+                                                name="description"
+                                                placeholder="Optional"
+                                                disabled
+                                                // value={componentData.description}
+                                                // onChange={handleComponentChange}
                                             />
                                         </div>
                                     </div>
                                     <div className="col-md-6 col-sm-6">
                                         <div className="form-group">
-                                            <label className="text-light-dark font-size-12 font-weight-500">Make</label>
-                                            <input className="form-control border-radius-10 text-primary" type="text" placeholder="Auto Filled"
-                                                id="make-id" name="make" disabled
-                                            // value={componentData.make}
-                                            // onChange={handleMachineDataChange}
+                                            <label className="text-light-dark font-size-12 font-weight-500">
+                                                Make
+                                            </label>
+                                            <input
+                                                className="form-control border-radius-10 text-primary"
+                                                type="text"
+                                                placeholder="Auto Filled"
+                                                id="make-id"
+                                                name="make"
+                                                disabled
+                                                // value={componentData.make}
+                                                // onChange={handleMachineDataChange}
                                             />
                                         </div>
                                     </div>
                                     <div className="col-md-6 col-sm-6">
                                         <div className="form-group">
-                                            <label className="text-light-dark font-size-12 font-weight-500">MODEL</label>
+                                            <label className="text-light-dark font-size-12 font-weight-500">
+                                                MODEL
+                                            </label>
                                             <SearchBox
                                             // value={componentData.model}
                                             // onChange={(e) =>
@@ -294,7 +372,9 @@ const PortfolioItemTabsModal = (props) => {
                                     </div>
                                     <div className="col-md-6 col-sm-6">
                                         <div className="form-group">
-                                            <label className="text-light-dark font-size-12 font-weight-500">SERIAL #</label>
+                                            <label className="text-light-dark font-size-12 font-weight-500">
+                                                SERIAL #
+                                            </label>
                                             <SearchBox
                                             // value={componentData.serialNo}
                                             // onChange={(e) =>
@@ -314,7 +394,10 @@ const PortfolioItemTabsModal = (props) => {
                                 <div className="row mt-3 input-fields">
                                     <div className="col-md-6 col-sm-6">
                                         <div className="form-group">
-                                            <label className="text-light-dark font-size-12 font-weight-500"> PRICE METHOD</label>
+                                            <label className="text-light-dark font-size-12 font-weight-500">
+                                                {" "}
+                                                PRICE METHOD
+                                            </label>
                                             <Select
                                                 // options={priceMethodKeyValue}
                                                 className="text-primary"
@@ -329,7 +412,9 @@ const PortfolioItemTabsModal = (props) => {
                                     </div>
                                     <div className="col-md-6 col-sm-6">
                                         <div className="form-group date-box">
-                                            <label className="text-light-dark font-size-12 font-weight-500">ADDITIONAL</label>
+                                            <label className="text-light-dark font-size-12 font-weight-500">
+                                                ADDITIONAL
+                                            </label>
                                             <div className=" d-flex form-control-date">
                                                 <div className="">
                                                     <Select
@@ -347,104 +432,132 @@ const PortfolioItemTabsModal = (props) => {
                                                         placeholder="Select"
                                                     />
                                                 </div>
-                                                <input type="text" className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
-                                                // placeholder="10%"
-                                                // defaultValue={props?.priceCalculator?.priceAdditionalInput}
-                                                // value={priceCalculator.priceAdditionalInput}
-                                                // name="priceAdditionalInput"
-                                                // onChange={(e) =>
-                                                //     setPriceCalculator({
-                                                //         ...priceCalculator,
-                                                //         priceAdditionalInput: e.target.value,
-                                                //     })
-                                                // }
+                                                <input
+                                                    type="text"
+                                                    className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
+                                                    // placeholder="10%"
+                                                    // defaultValue={props?.priceCalculator?.priceAdditionalInput}
+                                                    // value={priceCalculator.priceAdditionalInput}
+                                                    // name="priceAdditionalInput"
+                                                    // onChange={(e) =>
+                                                    //     setPriceCalculator({
+                                                    //         ...priceCalculator,
+                                                    //         priceAdditionalInput: e.target.value,
+                                                    //     })
+                                                    // }
                                                 />
                                             </div>
                                         </div>
                                     </div>
                                     <div className="col-md-6 col-sm-6">
                                         <div className="form-group date-box">
-                                            <label className="text-light-dark font-size-12 font-weight-500"> PRICE ESCALATION </label>
+                                            <label className="text-light-dark font-size-12 font-weight-500">
+                                                {" "}
+                                                PRICE ESCALATION{" "}
+                                            </label>
                                             <div className=" d-flex align-items-center form-control-date">
                                                 <Select
                                                     className="select-input text-primary"
                                                     id="priceEscalationSelect"
-                                                // options={priceHeadTypeKeyValue}
-                                                // placeholder="placeholder "
-                                                // value={priceCalculator.escalationPriceOptionsValue1}
-                                                // onChange={(e) =>
-                                                //     handleEscalationPriceValue(e)
-                                                // }
+                                                    // options={priceHeadTypeKeyValue}
+                                                    // placeholder="placeholder "
+                                                    // value={priceCalculator.escalationPriceOptionsValue1}
+                                                    // onChange={(e) =>
+                                                    //     handleEscalationPriceValue(e)
+                                                    // }
                                                 />
-                                                <input type="text" className="form-control rounded-top-left-0 rounded-bottom-left-0" placeholder="20%"
+                                                <input
+                                                    type="text"
+                                                    className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                                                    placeholder="20%"
                                                     id="priceEscalationInput"
-                                                // value={priceCalculator.escalationPriceInputValue}
-                                                // onChange={(e) =>
-                                                //     setPriceCalculator({
-                                                //         ...priceCalculator,
-                                                //         escalationPriceInputValue: e.target.value,
-                                                //     })
-                                                // }
+                                                    // value={priceCalculator.escalationPriceInputValue}
+                                                    // onChange={(e) =>
+                                                    //     setPriceCalculator({
+                                                    //         ...priceCalculator,
+                                                    //         escalationPriceInputValue: e.target.value,
+                                                    //     })
+                                                    // }
                                                 />
                                             </div>
                                         </div>
                                     </div>
                                     <div className="col-md-6 col-sm-6">
                                         <div className="form-group">
-                                            <label className="text-light-dark font-size-12 font-weight-500"> CALCULATED PRICE</label>
-                                            <input className="form-control border-radius-10 text-primary" type="text" name="calculatedPrice"
-                                                placeholder="$100" disabled
-                                            // value={priceCalculator.calculatedPrice}
-                                            // onChange={(e) =>
-                                            //     setPriceCalculator({
-                                            //         ...priceCalculator,
-                                            //         calculatedPrice: e.target.value,
-                                            //     })
-                                            // }
+                                            <label className="text-light-dark font-size-12 font-weight-500">
+                                                {" "}
+                                                CALCULATED PRICE
+                                            </label>
+                                            <input
+                                                className="form-control border-radius-10 text-primary"
+                                                type="text"
+                                                name="calculatedPrice"
+                                                placeholder="$100"
+                                                disabled
+                                                // value={priceCalculator.calculatedPrice}
+                                                // onChange={(e) =>
+                                                //     setPriceCalculator({
+                                                //         ...priceCalculator,
+                                                //         calculatedPrice: e.target.value,
+                                                //     })
+                                                // }
                                             />
                                         </div>
                                     </div>
                                     <div className="col-md-6 col-sm-6">
                                         <div className="form-group">
-                                            <label className="text-light-dark font-size-12 font-weight-500">FLAT PRICE / ADJUSTED PRICE</label>
-                                            <input className="form-control border-radius-10 text-primary" type="text" name="flatPrice"
+                                            <label className="text-light-dark font-size-12 font-weight-500">
+                                                FLAT PRICE / ADJUSTED PRICE
+                                            </label>
+                                            <input
+                                                className="form-control border-radius-10 text-primary"
+                                                type="text"
+                                                name="flatPrice"
                                                 placeholder="0"
-                                            // value={priceCalculator.flatPrice}
-                                            // onChange={(e) =>
-                                            //     setPriceCalculator({
-                                            //         ...priceCalculator,
-                                            //         flatPrice: e.target.value,
-                                            //     })
-                                            // }
+                                                // value={priceCalculator.flatPrice}
+                                                // onChange={(e) =>
+                                                //     setPriceCalculator({
+                                                //         ...priceCalculator,
+                                                //         flatPrice: e.target.value,
+                                                //     })
+                                                // }
                                             />
                                         </div>
                                     </div>
                                     <div className="col-md-6 col-sm-6">
                                         <div className="form-group date-box">
-                                            <label className="text-light-dark font-size-12 font-weight-500">DISCOUNT TYPE</label>
+                                            <label className="text-light-dark font-size-12 font-weight-500">
+                                                DISCOUNT TYPE
+                                            </label>
                                             <div className=" d-flex form-control-date">
                                                 <div className="">
-                                                    <Select className="text-primary" name="discountTypeSelect" placeholder="Select"
-                                                    // value={priceCalculator.discountTypeSelect}
+                                                    <Select
+                                                        className="text-primary"
+                                                        name="discountTypeSelect"
+                                                        placeholder="Select"
+                                                        // value={priceCalculator.discountTypeSelect}
+                                                        // onChange={(e) =>
+                                                        //     setPriceCalculator({
+                                                        //         ...priceCalculator,
+                                                        //         discountTypeSelect: e,
+                                                        //     })
+                                                        // }
+                                                        // isClearable={true}
+                                                        // options={discountTypeOptions}
+                                                    />
+                                                </div>
+                                                <input
+                                                    className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
+                                                    type="text"
+                                                    name="discountTypeInput"
+                                                    placeholder="10%"
+                                                    // value={priceCalculator.discountTypeInput}
                                                     // onChange={(e) =>
                                                     //     setPriceCalculator({
                                                     //         ...priceCalculator,
-                                                    //         discountTypeSelect: e,
+                                                    //         discountTypeInput: e.target.value,
                                                     //     })
                                                     // }
-                                                    // isClearable={true}
-                                                    // options={discountTypeOptions}
-                                                    />
-                                                </div>
-                                                <input className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0" type="text"
-                                                    name="discountTypeInput" placeholder="10%"
-                                                // value={priceCalculator.discountTypeInput}
-                                                // onChange={(e) =>
-                                                //     setPriceCalculator({
-                                                //         ...priceCalculator,
-                                                //         discountTypeInput: e.target.value,
-                                                //     })
-                                                // }
                                                 />
                                             </div>
                                         </div>
@@ -453,10 +566,13 @@ const PortfolioItemTabsModal = (props) => {
                             </>
                         </TabPanel>
                         <TabPanel value={4}>
-                            <ItemPriceCalculator />
+                            <ItemPriceCalculator itemType="portfolioItem" />
                         </TabPanel>
                         <TabPanel value={5}>
-                            <div className="custom-table portfolioItems-expandable-data-table card expand-last-child" style={{ height: 400, width: "100%" }}>
+                            <div
+                                className="custom-table portfolioItems-expandable-data-table card expand-last-child"
+                                style={{ height: 400, width: "100%" }}
+                            >
                                 <DataTable
                                 // title=""
                                 // columns={tempBundleItemColumns}
@@ -477,7 +593,7 @@ const PortfolioItemTabsModal = (props) => {
                 </Box>
             </Modal.Body>
         </Modal>
-    )
-}
+    );
+};
 
-export default PortfolioItemTabsModal
+export default PortfolioItemTabsModal;
