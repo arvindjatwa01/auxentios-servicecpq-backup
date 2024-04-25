@@ -72,6 +72,7 @@ import {
     defaultItemBodyObj,
 } from "pages/Common/PortfolioAndSolutionConstants";
 import PortfolioComponentCodeAddEdit from "../common/PortfolioComponentCodeAddEdit";
+import { getItemDataById } from "services";
 
 const fileTypes = ["JPG", "PNG", "GIF"];
 const menuComponentOptions = ["Create Versions", "Show Errors", "Review"];
@@ -250,6 +251,7 @@ const PortfolioItemsList = (props) => {
         checkSelectedBundleServiceUpateOrNot,
         setCheckSelectedBundleServiceUpateOrNot,
     ] = useState([]);
+    const [expndedBunleApiCall, setExpndedBunleApiCall] = useState(false);
 
     const [reviewTabItemList, setReviewTabItemList] = useState([]);
 
@@ -1493,6 +1495,7 @@ const PortfolioItemsList = (props) => {
 
     // Remove Bundle|Service item after update
     const handleRemoveUpdatedBundelServiceItem = (itemId) => {
+        setExpndedBunleApiCall(false);
         const _checkSelectedBundleServiceUpateOrNot = [
             ...checkSelectedBundleServiceUpateOrNot,
         ];
@@ -1505,7 +1508,22 @@ const PortfolioItemsList = (props) => {
         setCheckSelectedBundleServiceUpateOrNot([
             ..._checkSelectedBundleServiceUpateOrNot,
         ]);
+
+        // handleGetAndUpdatePortfolioItem(recorItemId);
     };
+
+
+    const handleGetAndUpdatePortfolioItem= async (itemId) => {
+        await getItemDataById(itemId).then((res) => {
+            if(res.status === API_SUCCESS){
+                callPutApi(null, `${CREATE_PORTFOLIO_ITEM()}/${itemId}`, res.data, (response) => {
+                    if(response.status === API_SUCCESS){
+                        console.log("updated")
+                    }
+                })
+            }
+        })
+    }
 
     const handleExpendableRowExpanded = (row) => {
         if (checkSelectedBundleServiceUpateOrNot.length !== 0) {
@@ -1626,7 +1644,7 @@ const PortfolioItemsList = (props) => {
                                             customStyles={dataTableCustomStyle}
                                             pagination
                                             expandableRows
-                                            expandableRowsComponent={(row) => (
+                                            expandableRowsComponent={(row, index, expanded) => (
                                                 <ExpendBundleServiceItem
                                                     bundleServiceRowData={
                                                         row.data
@@ -1658,6 +1676,7 @@ const PortfolioItemsList = (props) => {
                                                     handleUpdateItem={
                                                         handleRemoveUpdatedBundelServiceItem
                                                     }
+                                                    expndedBunleApiCall={expndedBunleApiCall}
                                                 />
                                             )}
                                             expandOnRowClicked
@@ -1669,6 +1688,7 @@ const PortfolioItemsList = (props) => {
                                             // expandableRowExpanded={(row) =>
                                             //   handleExpendableRowExpanded(row)
                                             // }
+                                            onRowExpandToggled={(bool) => setExpndedBunleApiCall(true)}
                                             expandableRowExpanded={
                                                 handleExpendableRowExpanded
                                             }
