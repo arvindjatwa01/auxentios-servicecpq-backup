@@ -2471,10 +2471,10 @@ export function SolutionServicePortfolio(props) {
           <div>Unit Price</div>
         </>
       ),
-      selector: (row) => row?.unitPrice,
+      selector: (row) => row?.unitPrice && row?.unitPrice.toFixed(2) || 0.00,
       wrap: true,
       sortable: true,
-      format: (row) => row?.unitPrice,
+      format: (row) => row?.unitPrice && row?.unitPrice.toFixed(2) || 0.00,
     },
     {
       name: (
@@ -2482,10 +2482,10 @@ export function SolutionServicePortfolio(props) {
           <div>Extended Price</div>
         </>
       ),
-      selector: (row) => row?.extendedPrice,
+      selector: (row) => row?.extendedPrice && row?.extendedPrice.toFixed(2) || 0.00,
       wrap: true,
       sortable: true,
-      format: (row) => row?.extendedPrice,
+      format: (row) => row?.extendedPrice && row?.extendedPrice.toFixed(2) || 0.00,
     },
     {
       name: (
@@ -2493,10 +2493,10 @@ export function SolutionServicePortfolio(props) {
           <div>Discount</div>
         </>
       ),
-      selector: (row) => row?.discount,
+      selector: (row) => row?.discount && row?.discount.toFixed(2) || 0.00,
       wrap: true,
       sortable: true,
-      format: (row) => row?.discount,
+      format: (row) => row?.discount && row?.discount.toFixed(2) || 0.00,
     },
     {
       name: (
@@ -2504,10 +2504,10 @@ export function SolutionServicePortfolio(props) {
           <div>Total Price</div>
         </>
       ),
-      selector: (row) => row?.totalPrice,
+      selector: (row) =>  row?.totalPrice && row?.totalPrice.toFixed(2) || 0.00,
       wrap: true,
       sortable: true,
-      format: (row) => row?.totalPrice,
+      format: (row) =>  row?.totalPrice && row?.totalPrice.toFixed(2) || 0.00,
     },
     // {
     //     name: (

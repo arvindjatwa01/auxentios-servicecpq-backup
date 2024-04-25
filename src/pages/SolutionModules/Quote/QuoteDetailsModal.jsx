@@ -20,10 +20,11 @@ const QuoteDetailsModal = ({
     customerData,
     quoteDetails,
     quoteType,
-    priceEstimates,
+    priceEstimates = [],
 }) => {
+    console.log("quoteItemsMaster :::: ", quoteItemsMaster);
     const [taxAmount, setTaxAmount] = useState(null);
-    const [discounAmt, setDiscounAmt] = useState(null)
+    const [discounAmt, setDiscounAmt] = useState(null);
 
     useEffect(() => {
         if (show) {
@@ -31,8 +32,10 @@ const QuoteDetailsModal = ({
                 const taxes = priceEstimates.find(
                     (obj) => obj.priceSummaryType === "TAX"
                 );
-                setTaxAmount(taxes.price);
-                setDiscounAmt(taxes.fixedDiscount);
+                if (taxes) {
+                    setTaxAmount(taxes.price);
+                    setDiscounAmt(taxes.fixedDiscount);
+                }
             }
         }
     }, [show]);
@@ -638,13 +641,34 @@ font-weight: 600;padding-bottom: 0 !important;    margin-bottom: 0 !important;">
                                             </div>
                                         </td>
                                         <td className="mb-0 pb-0 text-black">
-                                            ${quote?.netPrice}
+                                            $
+                                            {quoteType === "SPARE_PARTS_QUOTE"
+                                                ? (quote?.listPrice &&
+                                                      (quote?.listPrice).toFixed(
+                                                          2
+                                                      )) ||
+                                                  0.0
+                                                : quoteType === "REPAIR_QUOTE"
+                                                ? (quote?.totalPrice &&
+                                                      (quote?.totalPrice).toFixed(
+                                                          2
+                                                      )) ||
+                                                  0.0
+                                                : (
+                                                      quote?.netPrice &&
+                                                      quote?.netPrice
+                                                  ).toFixed(2) || 0.0}
                                         </td>
                                         <td className="mb-0 pb-0 text-black">
                                             1
                                         </td>
                                         <td className="mb-0 pb-0 text-black">
-                                            ${quote?.totalPrice}
+                                            $
+                                            {(quote?.totalPrice &&
+                                                (quote?.totalPrice).toFixed(
+                                                    2
+                                                )) ||
+                                                0.0}
                                         </td>
                                     </tr>
                                 ))}
@@ -658,11 +682,13 @@ font-weight: 600;padding-bottom: 0 !important;    margin-bottom: 0 !important;">
                                 </td>
                                 <td className="mb-0 pb-0 pt-3 text-black">
                                     $
-                                    {quoteItemsMaster.reduce(
-                                        (total, item) =>
-                                            total + item.totalPrice,
-                                        0
-                                    )}
+                                    {quoteItemsMaster
+                                        .reduce(
+                                            (total, item) =>
+                                                total + item.totalPrice,
+                                            0
+                                        )
+                                        .toFixed(2) || 0.0}
                                 </td>
                             </tr>
                             <tr className="mb-0 pb-0 py-0">
@@ -673,7 +699,9 @@ font-weight: 600;padding-bottom: 0 !important;    margin-bottom: 0 !important;">
                                 >
                                     Tax
                                 </td>
-                                <td className="text-black py-0">{taxAmount || "-"}</td>
+                                <td className="text-black py-0">
+                                    {taxAmount || "-"}
+                                </td>
                             </tr>
                             <tr className="mb-0 pb-0 py-2">
                                 <td className="mb-0 py-0"></td>
@@ -698,11 +726,13 @@ font-weight: 600;padding-bottom: 0 !important;    margin-bottom: 0 !important;">
                                 </td>
                                 <td className="mb-0 text-black">
                                     $
-                                    {quoteItemsMaster.reduce(
-                                        (total, item) =>
-                                            total + item.totalPrice,
-                                        0
-                                    )}
+                                    {quoteItemsMaster
+                                        .reduce(
+                                            (total, item) =>
+                                                total + item.totalPrice,
+                                            0
+                                        )
+                                        .toFixed(2) || 0.0}
                                 </td>
                             </tr>
                         </tbody>

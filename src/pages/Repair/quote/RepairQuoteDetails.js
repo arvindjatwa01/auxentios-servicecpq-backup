@@ -222,45 +222,45 @@ const RepairQuoteDetails = (props) => {
     },
     {
       name: <div>Parts $</div>,
-      selector: (row) => row.partsPrice,
+      selector: (row) => row.partsPrice && row.partsPrice.toFixed(2) || 0.00,
       wrap: true,
       sortable: true,
-      format: (row) => row.partsPrice,
+      format: (row) => row.partsPrice && row.partsPrice.toFixed(2) || 0.00 ,
     },
     {
       name: <div>Labor $</div>,
-      selector: (row) => row.labourPrice,
+      selector: (row) =>row.labourPrice && row.labourPrice.toFixed(2) || 0.00,
       wrap: true,
       sortable: true,
-      format: (row) => row.labourPrice,
+      format: (row) => row.labourPrice && row.labourPrice.toFixed(2) || 0.00,
     },
     {
       name: <div>Misc $</div>,
-      selector: (row) => row.miscPrice,
+      selector: (row) => row.miscPrice && row.miscPrice.toFixed(2) || 0.00 ,
       wrap: true,
       sortable: true,
-      format: (row) => row.miscPrice,
+      format: (row) => row.miscPrice && row.miscPrice.toFixed(2) || 0.00,
     },
     {
       name: <div>Net Price</div>,
-      selector: (row) => row.totalPrice,
+      selector: (row) => row.totalPrice && row.totalPrice.toFixed(2) || 0.00,
       wrap: true,
       sortable: true,
-      format: (row) => row.totalPrice,
+      format: (row) => row.totalPrice && row.totalPrice.toFixed(2) || 0.00,
     },
     {
       name: <div>Net Adjusted $</div>,
-      selector: (row) => row.adjustedPrice,
+      selector: (row) => row.adjustedPrice && row.adjustedPrice.toFixed(2) || 0.00,
       wrap: true,
       sortable: true,
-      format: (row) => row.adjustedPrice,
+      format: (row) => row.adjustedPrice && row.adjustedPrice.toFixed(2) || 0.00,
     },
     {
       name: <div>Discount</div>,
-      selector: (row) => row.discount,
+      selector: (row) => row.discount && row.discount.toFixed(2)  || 0.00,
       wrap: true,
       sortable: true,
-      format: (row) => row.discount,
+      format: (row) => row.discount && row.discount.toFixed(2) || 0.00,
     },
     {
       name: <div>Margin</div>,
@@ -271,10 +271,10 @@ const RepairQuoteDetails = (props) => {
     },
     {
       name: <div>Total Price</div>,
-      selector: (row) => row.totalPrice,
+      selector: (row) => row.totalPrice && row.totalPrice.toFixed(2) || 0.00,
       wrap: true,
       sortable: true,
-      format: (row) => row.totalPrice,
+      format: (row) => row.totalPrice && row.totalPrice.toFixed(2) || 0.00,
     },
     // {
     //   name: (
@@ -2777,8 +2777,9 @@ const RepairQuoteDetails = (props) => {
           handleSnack={handleSnack}
           quoteItemsMaster={quoteItems}
           customerData={customerData}
-          quoteType="REPAIR_QUOTE"
           quoteDetails={generalDetails}
+          quoteType="REPAIR_QUOTE"
+          priceEstimates={billingDetail.priceEstimates}
         />
       )}
 
