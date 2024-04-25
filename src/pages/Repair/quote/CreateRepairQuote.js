@@ -401,6 +401,34 @@ export const CreateRepairQuote = (props) => {
       setSelectedQuoteOption("upload_excel");
     }
   };
+
+  const createNewRepairBuilder = () => {
+    let builderDetails = {
+      builderId: "",
+      bId: "",
+      type: "new",
+      builderType: WITH_PARTS
+    };
+    createBuilder({
+      builderType: WITH_PARTS,
+      activeVersion: true,
+      versionNumber: 1,
+      status: "DRAFT",
+    })
+      .then((result) => {
+        builderDetails.builderId = result.builderId;
+        builderDetails.bId = result.id;
+
+        history.push({
+          pathname: WITH_SPARE_PARTS,
+          state: builderDetails,
+        });
+      })
+      .catch((err) => {
+        console.log("Error Occurred", err);
+        handleSnack("error", "Error occurred while creating builder!");
+      });
+  }
   return (
     <>
       <CustomizedSnackbar
@@ -451,6 +479,7 @@ export const CreateRepairQuote = (props) => {
                           alignItems: "center",
                           justifyContent: "center",
                         }}
+                        onClick={createNewRepairBuilder}
                       >
                         <Grid container>
                           <Grid

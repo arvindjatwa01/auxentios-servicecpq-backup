@@ -7103,6 +7103,7 @@ export function SolutionServicePortfolio(props) {
           quoteItemsMaster={quoteItemsMaster}
           customerData={customerData}
           quoteDetails={generalDetails}
+          priceEstimates={billingDetail.priceEstimates}
         />
       )}
 

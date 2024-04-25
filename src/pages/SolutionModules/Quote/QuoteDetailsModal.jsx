@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReactDOMServer from "react-dom/server";
 
 // import jsPDF from "jspdf";
@@ -13,17 +13,32 @@ import { HTML_TO_PDF_GENERATER_URL } from "services/CONSTANTS";
 import { API_SUCCESS } from "services/ResponseCode";
 
 const QuoteDetailsModal = ({
-  show,
-  hideModal,
-  handleSnack,
-  quoteItemsMaster = [],
-  customerData,
-  quoteDetails,
-  quoteType,
+    show,
+    hideModal,
+    handleSnack,
+    quoteItemsMaster = [],
+    customerData,
+    quoteDetails,
+    quoteType,
+    priceEstimates,
 }) => {
-  const generateHTML = () => {
-    // const doc = new jsPDF();
-    const pdfContent = `<html>
+    const [taxAmount, setTaxAmount] = useState(null);
+    const [discounAmt, setDiscounAmt] = useState(null)
+
+    useEffect(() => {
+        if (show) {
+            if (priceEstimates.length !== 0) {
+                const taxes = priceEstimates.find(
+                    (obj) => obj.priceSummaryType === "TAX"
+                );
+                setTaxAmount(taxes.price);
+                setDiscounAmt(taxes.fixedDiscount);
+            }
+        }
+    }, [show]);
+    const generateHTML = () => {
+        // const doc = new jsPDF();
+        const pdfContent = `<html>
     <head>
       <title>Downloaded PDF</title>
     </head>
@@ -208,7 +223,7 @@ font-weight: 600;padding-bottom: 0 !important;    margin-bottom: 0 !important;">
 </body>
       </html>`;
 
-    const htmlContent = `<!DOCTYPE html>
+        const htmlContent = `<!DOCTYPE html>
     <html lang="en">
     
     <head>
@@ -483,219 +498,249 @@ font-weight: 600;padding-bottom: 0 !important;    margin-bottom: 0 !important;">
     
     </html>`;
 
-    // Create a Blob from the HTML content
-    // const blob = new Blob([pdfContent], { type: "text/html" });
-    const blob = new Blob([htmlContent], { type: "text/html" });
+        // Create a Blob from the HTML content
+        // const blob = new Blob([pdfContent], { type: "text/html" });
+        const blob = new Blob([htmlContent], { type: "text/html" });
 
-    // Generate a URL for the Blob
-    const url = URL.createObjectURL(blob);
+        // Generate a URL for the Blob
+        const url = URL.createObjectURL(blob);
 
-    callPostApi(null, HTML_TO_PDF_GENERATER_URL, url, (response) => {
-      if (response.status === API_SUCCESS) {
-        console.log("object");
-      }
-    });
+        callPostApi(null, HTML_TO_PDF_GENERATER_URL, url, (response) => {
+            if (response.status === API_SUCCESS) {
+                console.log("object");
+            }
+        });
 
-    // Open the URL in a new tab (optional)
-    window.open(url, "_blank");
+        // Open the URL in a new tab (optional)
+        window.open(url, "_blank");
 
-    // Cleanup by revoking the URL after some time (optional)
-    setTimeout(() => {
-      URL.revokeObjectURL(url);
-    }, 10000);
+        // Cleanup by revoking the URL after some time (optional)
+        setTimeout(() => {
+            URL.revokeObjectURL(url);
+        }, 10000);
 
-    // // doc.setFontSize(12);
-    // // doc.html(pdfContent, {
-    //   callback: () => {
-    //     // Save the PDF as a Blob
-    //     const pdfBlob = doc.output("blob");
+        // // doc.setFontSize(12);
+        // // doc.html(pdfContent, {
+        //   callback: () => {
+        //     // Save the PDF as a Blob
+        //     const pdfBlob = doc.output("blob");
 
-    //     // Create a URL for the Blob
-    //     const pdfUrl = URL.createObjectURL(pdfBlob);
+        //     // Create a URL for the Blob
+        //     const pdfUrl = URL.createObjectURL(pdfBlob);
 
-    //     // Create a temporary anchor element
-    //     const a = document.createElement("a");
-    //     a.href = pdfUrl;
-    //     a.download = "dynamic-pdf.pdf";
+        //     // Create a temporary anchor element
+        //     const a = document.createElement("a");
+        //     a.href = pdfUrl;
+        //     a.download = "dynamic-pdf.pdf";
 
-    //     // Append the anchor to the body and trigger the download
-    //     document.body.appendChild(a);
-    //     a.click();
+        //     // Append the anchor to the body and trigger the download
+        //     document.body.appendChild(a);
+        //     a.click();
 
-    //     // Clean up by removing the anchor from the body and revoking the URL
-    //     document.body.removeChild(a);
-    //     URL.revokeObjectURL(pdfUrl);
-    //   },
-    // // });
-  };
-  return (
-    <Modal show={show} onHide={hideModal} size="md" id="print-content">
-      <div
-        className="card border mx-3 my-3"
-        style={{ borderColor: "#872ff7 !important" }}
-      >
-        <div className="d-flex justify-content-between align-items-center ml-2 mr-0 mt-3 mb-3">
-          <div className="px-2">
-            <h3 className="mb-0">{customerData?.customerName}</h3>
-            <p className="mb-0 w-50">{customerData?.customerAddress || "NA"}</p>
-            <p className="mb-0">{customerData?.contactPhone || "NA"}</p>
-          </div>
-          <div
-            className="bg-primary text-white px-4 d-flex align-items-center "
-            style={{ borderRadius: "10px 0px 0px 10px" }}
-          >
-            <h2 className="my-1">Quote</h2>
-          </div>
-        </div>
-        <Modal.Body>
-          <h4>Account:</h4>
-          <div className="d-flex justify-content-between align-items-center">
-            <h6 className="m-0">{customerData?.customerName || "NA"}</h6>
-            <p className="mb-0 text-right">
-              Invoice Number. #{quoteDetails?.quoteName}
-            </p>
-          </div>
-          <div className="d-flex justify-content-between align-items-baseline">
-            <h6 className="m-0 my-1 w-50">
-              {customerData?.customerAddress || "NA"}
-            </h6>
-            <p className="mb-0 text-right">
-              <Moment format="MMMM DD, YYYY">{quoteDetails?.quoteDate}</Moment>
-            </p>
-          </div>
-          <div className="d-flex justify-content-between align-items-center">
-            <h6 className="m-0">{customerData?.contactPhone || "NA"}</h6>
-            <p className="mb-0 text-right">
-              Validity - {quoteDetails?.validity?.value || "N/A"}
-            </p>
-          </div>
-          <div className="d-flex justify-content-between align-items-center ">
-            <div></div>
-            {/* <div className="align-content-end align-items-end"></div> */}
-          </div>
-          <Table responsive borderless className="px-2 my-4">
-            <thead>
-              <tr
-                className="text-black"
-                style={{ borderBottom: "2px solid black" }}
-              >
-                <th>ITEM DESCRIPTION</th>
-                <th>PRICE</th>
-                <th>QTY</th>
-                <th>TOTAL</th>
-              </tr>
-            </thead>
-            <tbody>
-              {quoteItemsMaster.length !== 0 &&
-                quoteItemsMaster.map((quote, i) => (
-                  <tr
-                    className="pb-0"
-                    style={{ borderBottom: "2px solid black" }}
-                  >
-                    <td className="mb-0 pb-0">
-                      <div>
-                        <h5 className="mb-0">
-                          {quoteType === "SPARE_PARTS_QUOTE"
-                            ? `${quote?.partNumber}-${quote?.partType}`
-                            : quoteType === "REPAIR_QUOTE"
-                            ? `${quote?.component}-${quote?.jobDescription}`
-                            : quote?.itemName}
-                        </h5>
-                        <ul className="px-2 mb-1">
-                          <li>{quote?.description}</li>
-                        </ul>
-                      </div>
-                    </td>
-                    <td className="mb-0 pb-0 text-black">${quote?.netPrice}</td>
-                    <td className="mb-0 pb-0 text-black">1</td>
-                    <td className="mb-0 pb-0 text-black">
-                      ${quote?.totalPrice}
-                    </td>
-                  </tr>
-                ))}
-              <tr className="pb-0 mb-0 pb-0 pt-3">
-                <td className="mb-0 pb-0 pt-3"></td>
-                <td className="mb-0 pb-0 pt-3 text-black" colSpan={2}>
-                  Sub Total
-                </td>
-                <td className="mb-0 pb-0 pt-3 text-black">
-                  $
-                  {quoteItemsMaster.reduce(
-                    (total, item) => total + item.totalPrice,
-                    0
-                  )}
-                </td>
-              </tr>
-              <tr className="mb-0 pb-0 py-0">
-                <td className="mb-0 py-0"></td>
-                <td className="mb-0 py-1 text-black" colSpan={2}>
-                  Tax
-                </td>
-                <td className="text-black py-0">-</td>
-              </tr>
-              <tr className="mb-0 pb-0 py-2">
-                <td className="mb-0 py-0"></td>
-                <td
-                  className="mb-0 text-black py-0"
-                  colSpan={2}
-                  style={{ borderBottom: "2px solid black" }}
-                >
-                  Discount
-                </td>
-                <td
-                  className="mb-0 text-black py-0"
-                  style={{ borderBottom: "2px solid black" }}
-                >
-                  -
-                </td>
-              </tr>
-              <tr className="mb-0 pb-0 py-0">
-                <td className="mb-0"></td>
-                <td className="mb-0 text-black" colSpan={2}>
-                  Total
-                </td>
-                <td className="mb-0 text-black">
-                  $
-                  {quoteItemsMaster.reduce(
-                    (total, item) => total + item.totalPrice,
-                    0
-                  )}
-                </td>
-              </tr>
-            </tbody>
-          </Table>
-          <h4>Payment Method:</h4>
-          <h5 className="mb-0">Central Bank</h5>
-          <h5 className="mb-0">Samira Hadid</h5>
-          <h5 className="mb-0">123-456-7890</h5>
+        //     // Clean up by removing the anchor from the body and revoking the URL
+        //     document.body.removeChild(a);
+        //     URL.revokeObjectURL(pdfUrl);
+        //   },
+        // // });
+    };
+    return (
+        <Modal show={show} onHide={hideModal} size="md" id="print-content">
+            <div
+                className="card border mx-3 my-3"
+                style={{ borderColor: "#872ff7 !important" }}
+            >
+                <div className="d-flex justify-content-between align-items-center ml-2 mr-0 mt-3 mb-3">
+                    <div className="px-2">
+                        <h3 className="mb-0">{customerData?.customerName}</h3>
+                        <p className="mb-0 w-50">
+                            {customerData?.customerAddress || "NA"}
+                        </p>
+                        <p className="mb-0">
+                            {customerData?.contactPhone || "NA"}
+                        </p>
+                    </div>
+                    <div
+                        className="bg-primary text-white px-4 d-flex align-items-center "
+                        style={{ borderRadius: "10px 0px 0px 10px" }}
+                    >
+                        <h2 className="my-1">Quote</h2>
+                    </div>
+                </div>
+                <Modal.Body>
+                    <h4>Account:</h4>
+                    <div className="d-flex justify-content-between align-items-center">
+                        <h6 className="m-0">
+                            {customerData?.customerName || "NA"}
+                        </h6>
+                        <p className="mb-0 text-right">
+                            Invoice Number. #{quoteDetails?.quoteName}
+                        </p>
+                    </div>
+                    <div className="d-flex justify-content-between align-items-baseline">
+                        <h6 className="m-0 my-1 w-50">
+                            {customerData?.customerAddress || "NA"}
+                        </h6>
+                        <p className="mb-0 text-right">
+                            <Moment format="MMMM DD, YYYY">
+                                {quoteDetails?.quoteDate}
+                            </Moment>
+                        </p>
+                    </div>
+                    <div className="d-flex justify-content-between align-items-center">
+                        <h6 className="m-0">
+                            {customerData?.contactPhone || "NA"}
+                        </h6>
+                        <p className="mb-0 text-right">
+                            Validity - {quoteDetails?.validity?.value || "N/A"}
+                        </p>
+                    </div>
+                    <div className="d-flex justify-content-between align-items-center ">
+                        <div></div>
+                        {/* <div className="align-content-end align-items-end"></div> */}
+                    </div>
+                    <Table responsive borderless className="px-2 my-4">
+                        <thead>
+                            <tr
+                                className="text-black"
+                                style={{ borderBottom: "2px solid black" }}
+                            >
+                                <th>ITEM DESCRIPTION</th>
+                                <th>PRICE</th>
+                                <th>QTY</th>
+                                <th>TOTAL</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {quoteItemsMaster.length !== 0 &&
+                                quoteItemsMaster.map((quote, i) => (
+                                    <tr
+                                        className="pb-0"
+                                        style={{
+                                            borderBottom: "2px solid black",
+                                        }}
+                                    >
+                                        <td className="mb-0 pb-0">
+                                            <div>
+                                                <h5 className="mb-0">
+                                                    {quoteType ===
+                                                    "SPARE_PARTS_QUOTE"
+                                                        ? `${quote?.partNumber}-${quote?.partType}`
+                                                        : quoteType ===
+                                                          "REPAIR_QUOTE"
+                                                        ? `${quote?.component}-${quote?.jobDescription}`
+                                                        : quote?.itemName}
+                                                </h5>
+                                                <ul className="px-2 mb-1">
+                                                    <li>
+                                                        {quote?.description}
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                        <td className="mb-0 pb-0 text-black">
+                                            ${quote?.netPrice}
+                                        </td>
+                                        <td className="mb-0 pb-0 text-black">
+                                            1
+                                        </td>
+                                        <td className="mb-0 pb-0 text-black">
+                                            ${quote?.totalPrice}
+                                        </td>
+                                    </tr>
+                                ))}
+                            <tr className="pb-0 mb-0 pb-0 pt-3">
+                                <td className="mb-0 pb-0 pt-3"></td>
+                                <td
+                                    className="mb-0 pb-0 pt-3 text-black"
+                                    colSpan={2}
+                                >
+                                    Sub Total
+                                </td>
+                                <td className="mb-0 pb-0 pt-3 text-black">
+                                    $
+                                    {quoteItemsMaster.reduce(
+                                        (total, item) =>
+                                            total + item.totalPrice,
+                                        0
+                                    )}
+                                </td>
+                            </tr>
+                            <tr className="mb-0 pb-0 py-0">
+                                <td className="mb-0 py-0"></td>
+                                <td
+                                    className="mb-0 py-1 text-black"
+                                    colSpan={2}
+                                >
+                                    Tax
+                                </td>
+                                <td className="text-black py-0">{taxAmount || "-"}</td>
+                            </tr>
+                            <tr className="mb-0 pb-0 py-2">
+                                <td className="mb-0 py-0"></td>
+                                <td
+                                    className="mb-0 text-black py-0"
+                                    colSpan={2}
+                                    style={{ borderBottom: "2px solid black" }}
+                                >
+                                    Discount
+                                </td>
+                                <td
+                                    className="mb-0 text-black py-0"
+                                    style={{ borderBottom: "2px solid black" }}
+                                >
+                                    {discounAmt || "-"}
+                                </td>
+                            </tr>
+                            <tr className="mb-0 pb-0 py-0">
+                                <td className="mb-0"></td>
+                                <td className="mb-0 text-black" colSpan={2}>
+                                    Total
+                                </td>
+                                <td className="mb-0 text-black">
+                                    $
+                                    {quoteItemsMaster.reduce(
+                                        (total, item) =>
+                                            total + item.totalPrice,
+                                        0
+                                    )}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </Table>
+                    <h4>Payment Method:</h4>
+                    <h5 className="mb-0">Central Bank</h5>
+                    <h5 className="mb-0">Samira Hadid</h5>
+                    <h5 className="mb-0">123-456-7890</h5>
 
-          <div
-            className="d-flex justify-content-between align-items-center mt-3 mb-0"
-            style={{ borderBottom: "2px solid black" }}
-          >
-            <div>
-              <h4 className="mb-0">Term and Conditions:</h4>
-              <p className="mb-0">Lorem ipsum dolor sit</p>
+                    <div
+                        className="d-flex justify-content-between align-items-center mt-3 mb-0"
+                        style={{ borderBottom: "2px solid black" }}
+                    >
+                        <div>
+                            <h4 className="mb-0">Term and Conditions:</h4>
+                            <p className="mb-0">Lorem ipsum dolor sit</p>
+                        </div>
+                        <div>
+                            <h4 className="mb-0">Ashok Mohanty</h4>
+                            <h6>Manager</h6>
+                        </div>
+                    </div>
+                </Modal.Body>
             </div>
-            <div>
-              <h4 className="mb-0">Ashok Mohanty</h4>
-              <h6>Manager</h6>
+            <div className="d-flex justify-content-end mt-0 py-2 align-items-center bg-dark mx-0">
+                <button className="btn bg-success mx-1">Accept</button>
+                <button className="btn bg-danger mx-1">Reject</button>
+                <button className="btn bg-warning mx-1">
+                    Request for Revison
+                </button>
+                <span className="cursor mx-3" onClick={generateHTML}>
+                    <SaveAltOutlinedIcon className="text-white " />
+                </span>
             </div>
-          </div>
-        </Modal.Body>
-      </div>
-      <div className="d-flex justify-content-end mt-0 py-2 align-items-center bg-dark mx-0">
-        <button className="btn bg-success mx-1">Accept</button>
-        <button className="btn bg-danger mx-1">Reject</button>
-        <button className="btn bg-warning mx-1">Request for Revison</button>
-        <span className="cursor mx-3" onClick={generateHTML}>
-          <SaveAltOutlinedIcon className="text-white " />
-        </span>
-      </div>
 
-      {/* <div dangerouslySetInnerHTML={{ __html: pdfContent }} /> */}
-    </Modal>
-  );
+            {/* <div dangerouslySetInnerHTML={{ __html: pdfContent }} /> */}
+        </Modal>
+    );
 };
 
 export default QuoteDetailsModal;
