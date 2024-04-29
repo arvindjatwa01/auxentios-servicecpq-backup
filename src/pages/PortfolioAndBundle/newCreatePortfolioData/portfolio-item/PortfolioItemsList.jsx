@@ -1688,7 +1688,7 @@ const PortfolioItemsList = (props) => {
                                             // expandableRowExpanded={(row) =>
                                             //   handleExpendableRowExpanded(row)
                                             // }
-                                            onRowExpandToggled={(bool) => setExpndedBunleApiCall(true)}
+                                            onRowExpandToggled={(bool) => setExpndedBunleApiCall(bool)}
                                             expandableRowExpanded={
                                                 handleExpendableRowExpanded
                                             }

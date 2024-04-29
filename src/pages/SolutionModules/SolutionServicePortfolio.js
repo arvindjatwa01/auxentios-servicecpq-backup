@@ -7104,6 +7104,7 @@ export function SolutionServicePortfolio(props) {
           customerData={customerData}
           quoteDetails={generalDetails}
           priceEstimates={billingDetail.priceEstimates}
+          quoteId={quoteIdIs}
         />
       )}
 
