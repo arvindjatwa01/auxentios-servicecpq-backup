@@ -147,7 +147,7 @@ const ItemAddEdit = (props) => {
     const [loader, setLoader] = useState(false);
 
     useEffect(() => {
-        dispatch(taskActions.fetchTaskList());
+        // dispatch(taskActions.fetchTaskList());
     }, [dispatch]);
 
     useEffect(() => {
@@ -170,9 +170,7 @@ const ItemAddEdit = (props) => {
                                 itemHeaderModel.itemHeaderStrategy
                             )
                         );
-                        setTimeout(() => {
-                            handlemapItemDetails(response.data);
-                        }, 3000);
+                        handlemapItemDetails(response.data);
                     } else {
                         setLoader(false);
                     }
