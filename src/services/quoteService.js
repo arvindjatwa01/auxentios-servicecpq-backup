@@ -10,6 +10,8 @@ var CookiesSetData = Cookies.get("loginTenantDtl");
 var getCookiesJsonData;
 if (CookiesSetData != undefined) {
     getCookiesJsonData = JSON.parse(CookiesSetData);
+
+    console.log("getCookiesJsonData ::::: ", getCookiesJsonData);
 }
 //  else {
 //   getCookiesJsonData = {

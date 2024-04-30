@@ -1,0 +1,61 @@
+.input-number {
+    width: 70px;
+    display: flex;
+    height: 25px;
+    align-content: center;
+    justify-content: space-between;
+    outline: 1px #872ff7 solid;
+    border-radius: 4px;
+}
+.input-number > * {
+    margin: 0;
+    border: 0;
+    padding: 0;
+    height: inherit;
+}
+.input-number button {
+    width: 20px;
+    color: #fff;
+    cursor: pointer;
+    border-width: 1px;
+    background: #872ff7;
+}
+.input-number button:hover {
+    color: #fff;
+    background: #872ff7;
+}
+.input-number button:active {
+    color: white;
+    background: #138496;
+}
+.input-number button:focus, .input-number input:focus {
+    border: none;
+    box-shadow: none;
+    outline: none !important;
+}
+.input-number input {
+    border: 0;
+    padding: 0;
+    width: 30px;
+    margin: 0 2px;
+    font-size: 12px;
+    text-align: center;
+    height: 25px;
+   /* Chrome, Safari, Edge, Opera */
+   /* Firefox */
+}
+.input-number input::-webkit-outer-spin-button, .input-number input::-webkit-inner-spin-button {
+    margin: 0;
+    -webkit-appearance: none;
+}
+.input-number input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+.input-number button:disabled,
+.input-number button[disabled]{
+  border: 1px solid #999999;
+  background-color: #cccccc;
+  color: #666666;
+  cursor: default;
+}
