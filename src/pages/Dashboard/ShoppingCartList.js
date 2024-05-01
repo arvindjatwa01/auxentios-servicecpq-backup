@@ -1,23 +1,83 @@
 import React, { useEffect, useState } from "react";
-import { Modal } from "react-bootstrap";
+
+import deleteIcon from "../../assets/icons/svg/delete.svg";
+
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
+import DragHandleIcon from "@mui/icons-material/DragHandle";
+import ControlPointIcon from "@mui/icons-material/ControlPoint";
+import AddLocationAltIcon from "@mui/icons-material/AddLocationAlt";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+
+import Checkbox from "@mui/material/Checkbox";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import Switch from "@mui/material/Switch";
-import deleteIcon from "../../assets/icons/svg/delete.svg";
 import Box from "@mui/material/Box";
 import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
 import StepLabel from "@mui/material/StepLabel";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import Checkbox from "@mui/material/Checkbox";
-import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
-import AddIcon from "@mui/icons-material/Add";
-import RemoveIcon from "@mui/icons-material/Remove";
-import DragHandleIcon from "@mui/icons-material/DragHandle";
+
+import { Modal } from "react-bootstrap";
+import CustomerOrderAddress from "../order/CustomerOrderAddress";
+import CustomerOrderPayment from "pages/order/CustomerOrderPayment";
+import "../../app/numberSpinner.css";
+import { Tooltip } from "@mui/material";
+import { getQuoteCommonConfig } from "services";
+
 const ShoppingCartList = () => {
     const [age, setAge] = React.useState("5");
     const [age1, setAge1] = React.useState("5");
     const [age2, setAge2] = React.useState("5");
+
+    const [openNewAddressAddModal, setOpenNewAddressAddModal] = useState(false);
+    const [openNewPaymentAddModal, setOpenNewPaymentAddModal] = useState(false);
+
+    const [quoteCurrencyOptions, setQuoteCurrencyOptions] = useState([]);
+    const [billingTypeOptions, setBillingTypeOptions] = useState([]);
+    const [billingFrequencyOptions, setBillingFrequencyOptions] = useState([]);
+
+    useEffect(() => {
+        // Billing-Type
+        getQuoteCommonConfig("billing-type")
+            .then((res) => {
+                const options = res.map((d) => ({
+                    value: d.key,
+                    label: d.value,
+                }));
+                setBillingTypeOptions(options);
+            })
+            .catch((err) => {
+                alert(err);
+            });
+
+        // quote-Currency
+        getQuoteCommonConfig("currency")
+            .then((res) => {
+                const options = res.map((d) => ({
+                    value: d,
+                    label: d,
+                }));
+                setQuoteCurrencyOptions(options);
+            })
+            .catch((err) => {
+                alert(err);
+            });
+
+        // Billing-Frequency
+        getQuoteCommonConfig("billing-frequency")
+            .then((res) => {
+                const options = res.map((d) => ({
+                    value: d.key,
+                    label: d.value,
+                }));
+                setBillingFrequencyOptions(options);
+            })
+            .catch((err) => {
+                alert(err);
+            });
+    }, []);
 
     const handleChangedrop = (event) => {
         setAge(event.target.value);
@@ -85,13 +145,88 @@ const ShoppingCartList = () => {
                                                                             "flex",
                                                                     }}
                                                                 >
-                                                                    <a
+                                                                    {/* <a
                                                                         href="#"
                                                                         className="btn-sm bg-primary text-white mr-3"
                                                                     >
                                                                         Quantity{" "}
                                                                         <KeyboardArrowDownIcon />
-                                                                    </a>
+                                                                    </a> */}
+                                                                    <div className="input-number mr-2">
+                                                                        <button
+                                                                        // onClick={(
+                                                                        //     e
+                                                                        // ) => {
+                                                                        //     handleButtonChange(
+                                                                        //         "down",
+                                                                        //         row
+                                                                        //     );
+                                                                        // }}
+                                                                        // onMouseDown={() =>
+                                                                        //     setMouseDownDirection(
+                                                                        //         "down",
+                                                                        //         row
+                                                                        //     )
+                                                                        // }
+                                                                        // onMouseOut={() =>
+                                                                        //     setMouseDownDirection(
+                                                                        //         null
+                                                                        //     )
+                                                                        // }
+                                                                        // onMouseUp={() =>
+                                                                        //     setMouseDownDirection(
+                                                                        //         null
+                                                                        //     )
+                                                                        // }
+                                                                        // disabled={
+                                                                        //     row.quantity ===
+                                                                        //     0
+                                                                        // }
+                                                                        >
+                                                                            -
+                                                                        </button>
+                                                                        <input
+                                                                            type="number"
+                                                                            step={
+                                                                                1
+                                                                            }
+                                                                            value={
+                                                                                1
+                                                                            }
+                                                                            // value={
+                                                                            //     row.quantity
+                                                                            // }
+                                                                            readOnly
+                                                                        />
+                                                                        <button
+                                                                        // onClick={(
+                                                                        //     e
+                                                                        // ) => {
+                                                                        //     handleButtonChange(
+                                                                        //         "up",
+                                                                        //         row
+                                                                        //     );
+                                                                        // }}
+                                                                        // onMouseDown={() =>
+                                                                        //     setMouseDownDirection(
+                                                                        //         "up",
+                                                                        //         row
+                                                                        //     )
+                                                                        // }
+                                                                        // onMouseUp={() =>
+                                                                        //     setMouseDownDirection(
+                                                                        //         null
+                                                                        //     )
+                                                                        // }
+                                                                        // onMouseOut={() =>
+                                                                        //     setMouseDownDirection(
+                                                                        //         null
+                                                                        //     )
+                                                                        // }
+                                                                        >
+                                                                            +
+                                                                        </button>
+                                                                    </div>
                                                                     <a
                                                                         href="#"
                                                                         className="btn-sm text-primary mr-3"
@@ -155,13 +290,88 @@ const ShoppingCartList = () => {
                                                                             "flex",
                                                                     }}
                                                                 >
-                                                                    <a
+                                                                    {/* <a
                                                                         href="#"
                                                                         className="btn-sm bg-primary text-white mr-3"
                                                                     >
                                                                         Quantity{" "}
                                                                         <KeyboardArrowDownIcon />
-                                                                    </a>
+                                                                    </a> */}
+                                                                    <div className="input-number mr-2">
+                                                                        <button
+                                                                        // onClick={(
+                                                                        //     e
+                                                                        // ) => {
+                                                                        //     handleButtonChange(
+                                                                        //         "down",
+                                                                        //         row
+                                                                        //     );
+                                                                        // }}
+                                                                        // onMouseDown={() =>
+                                                                        //     setMouseDownDirection(
+                                                                        //         "down",
+                                                                        //         row
+                                                                        //     )
+                                                                        // }
+                                                                        // onMouseOut={() =>
+                                                                        //     setMouseDownDirection(
+                                                                        //         null
+                                                                        //     )
+                                                                        // }
+                                                                        // onMouseUp={() =>
+                                                                        //     setMouseDownDirection(
+                                                                        //         null
+                                                                        //     )
+                                                                        // }
+                                                                        // disabled={
+                                                                        //     row.quantity ===
+                                                                        //     0
+                                                                        // }
+                                                                        >
+                                                                            -
+                                                                        </button>
+                                                                        <input
+                                                                            type="number"
+                                                                            step={
+                                                                                1
+                                                                            }
+                                                                            value={
+                                                                                1
+                                                                            }
+                                                                            // value={
+                                                                            //     row.quantity
+                                                                            // }
+                                                                            readOnly
+                                                                        />
+                                                                        <button
+                                                                        // onClick={(
+                                                                        //     e
+                                                                        // ) => {
+                                                                        //     handleButtonChange(
+                                                                        //         "up",
+                                                                        //         row
+                                                                        //     );
+                                                                        // }}
+                                                                        // onMouseDown={() =>
+                                                                        //     setMouseDownDirection(
+                                                                        //         "up",
+                                                                        //         row
+                                                                        //     )
+                                                                        // }
+                                                                        // onMouseUp={() =>
+                                                                        //     setMouseDownDirection(
+                                                                        //         null
+                                                                        //     )
+                                                                        // }
+                                                                        // onMouseOut={() =>
+                                                                        //     setMouseDownDirection(
+                                                                        //         null
+                                                                        //     )
+                                                                        // }
+                                                                        >
+                                                                            +
+                                                                        </button>
+                                                                    </div>
                                                                     <a
                                                                         href="#"
                                                                         className="btn-sm text-primary mr-3"
@@ -225,13 +435,88 @@ const ShoppingCartList = () => {
                                                                             "flex",
                                                                     }}
                                                                 >
-                                                                    <a
+                                                                    {/* <a
                                                                         href="#"
                                                                         className="btn-sm bg-primary text-white mr-3"
                                                                     >
                                                                         Quantity{" "}
                                                                         <KeyboardArrowDownIcon />
-                                                                    </a>
+                                                                    </a> */}
+                                                                    <div className="input-number mr-2">
+                                                                        <button
+                                                                        // onClick={(
+                                                                        //     e
+                                                                        // ) => {
+                                                                        //     handleButtonChange(
+                                                                        //         "down",
+                                                                        //         row
+                                                                        //     );
+                                                                        // }}
+                                                                        // onMouseDown={() =>
+                                                                        //     setMouseDownDirection(
+                                                                        //         "down",
+                                                                        //         row
+                                                                        //     )
+                                                                        // }
+                                                                        // onMouseOut={() =>
+                                                                        //     setMouseDownDirection(
+                                                                        //         null
+                                                                        //     )
+                                                                        // }
+                                                                        // onMouseUp={() =>
+                                                                        //     setMouseDownDirection(
+                                                                        //         null
+                                                                        //     )
+                                                                        // }
+                                                                        // disabled={
+                                                                        //     row.quantity ===
+                                                                        //     0
+                                                                        // }
+                                                                        >
+                                                                            -
+                                                                        </button>
+                                                                        <input
+                                                                            type="number"
+                                                                            step={
+                                                                                1
+                                                                            }
+                                                                            value={
+                                                                                1
+                                                                            }
+                                                                            // value={
+                                                                            //     row.quantity
+                                                                            // }
+                                                                            readOnly
+                                                                        />
+                                                                        <button
+                                                                        // onClick={(
+                                                                        //     e
+                                                                        // ) => {
+                                                                        //     handleButtonChange(
+                                                                        //         "up",
+                                                                        //         row
+                                                                        //     );
+                                                                        // }}
+                                                                        // onMouseDown={() =>
+                                                                        //     setMouseDownDirection(
+                                                                        //         "up",
+                                                                        //         row
+                                                                        //     )
+                                                                        // }
+                                                                        // onMouseUp={() =>
+                                                                        //     setMouseDownDirection(
+                                                                        //         null
+                                                                        //     )
+                                                                        // }
+                                                                        // onMouseOut={() =>
+                                                                        //     setMouseDownDirection(
+                                                                        //         null
+                                                                        //     )
+                                                                        // }
+                                                                        >
+                                                                            +
+                                                                        </button>
+                                                                    </div>
                                                                     <a
                                                                         href="#"
                                                                         className="btn-sm text-primary mr-3"
@@ -295,13 +580,88 @@ const ShoppingCartList = () => {
                                                                             "flex",
                                                                     }}
                                                                 >
-                                                                    <a
+                                                                    {/* <a
                                                                         href="#"
                                                                         className="btn-sm bg-primary text-white mr-3"
                                                                     >
                                                                         Quantity{" "}
                                                                         <KeyboardArrowDownIcon />
-                                                                    </a>
+                                                                    </a> */}
+                                                                    <div className="input-number mr-2">
+                                                                        <button
+                                                                        // onClick={(
+                                                                        //     e
+                                                                        // ) => {
+                                                                        //     handleButtonChange(
+                                                                        //         "down",
+                                                                        //         row
+                                                                        //     );
+                                                                        // }}
+                                                                        // onMouseDown={() =>
+                                                                        //     setMouseDownDirection(
+                                                                        //         "down",
+                                                                        //         row
+                                                                        //     )
+                                                                        // }
+                                                                        // onMouseOut={() =>
+                                                                        //     setMouseDownDirection(
+                                                                        //         null
+                                                                        //     )
+                                                                        // }
+                                                                        // onMouseUp={() =>
+                                                                        //     setMouseDownDirection(
+                                                                        //         null
+                                                                        //     )
+                                                                        // }
+                                                                        // disabled={
+                                                                        //     row.quantity ===
+                                                                        //     0
+                                                                        // }
+                                                                        >
+                                                                            -
+                                                                        </button>
+                                                                        <input
+                                                                            type="number"
+                                                                            step={
+                                                                                1
+                                                                            }
+                                                                            value={
+                                                                                1
+                                                                            }
+                                                                            // value={
+                                                                            //     row.quantity
+                                                                            // }
+                                                                            readOnly
+                                                                        />
+                                                                        <button
+                                                                        // onClick={(
+                                                                        //     e
+                                                                        // ) => {
+                                                                        //     handleButtonChange(
+                                                                        //         "up",
+                                                                        //         row
+                                                                        //     );
+                                                                        // }}
+                                                                        // onMouseDown={() =>
+                                                                        //     setMouseDownDirection(
+                                                                        //         "up",
+                                                                        //         row
+                                                                        //     )
+                                                                        // }
+                                                                        // onMouseUp={() =>
+                                                                        //     setMouseDownDirection(
+                                                                        //         null
+                                                                        //     )
+                                                                        // }
+                                                                        // onMouseOut={() =>
+                                                                        //     setMouseDownDirection(
+                                                                        //         null
+                                                                        //     )
+                                                                        // }
+                                                                        >
+                                                                            +
+                                                                        </button>
+                                                                    </div>
                                                                     <a
                                                                         href="#"
                                                                         className="btn-sm text-primary mr-3"
@@ -365,13 +725,88 @@ const ShoppingCartList = () => {
                                                                             "flex",
                                                                     }}
                                                                 >
-                                                                    <a
+                                                                    {/* <a
                                                                         href="#"
                                                                         className="btn-sm bg-primary text-white mr-3"
                                                                     >
                                                                         Quantity{" "}
                                                                         <KeyboardArrowDownIcon />
-                                                                    </a>
+                                                                    </a> */}
+                                                                    <div className="input-number mr-2">
+                                                                        <button
+                                                                        // onClick={(
+                                                                        //     e
+                                                                        // ) => {
+                                                                        //     handleButtonChange(
+                                                                        //         "down",
+                                                                        //         row
+                                                                        //     );
+                                                                        // }}
+                                                                        // onMouseDown={() =>
+                                                                        //     setMouseDownDirection(
+                                                                        //         "down",
+                                                                        //         row
+                                                                        //     )
+                                                                        // }
+                                                                        // onMouseOut={() =>
+                                                                        //     setMouseDownDirection(
+                                                                        //         null
+                                                                        //     )
+                                                                        // }
+                                                                        // onMouseUp={() =>
+                                                                        //     setMouseDownDirection(
+                                                                        //         null
+                                                                        //     )
+                                                                        // }
+                                                                        // disabled={
+                                                                        //     row.quantity ===
+                                                                        //     0
+                                                                        // }
+                                                                        >
+                                                                            -
+                                                                        </button>
+                                                                        <input
+                                                                            type="number"
+                                                                            step={
+                                                                                1
+                                                                            }
+                                                                            value={
+                                                                                1
+                                                                            }
+                                                                            // value={
+                                                                            //     row.quantity
+                                                                            // }
+                                                                            readOnly
+                                                                        />
+                                                                        <button
+                                                                        // onClick={(
+                                                                        //     e
+                                                                        // ) => {
+                                                                        //     handleButtonChange(
+                                                                        //         "up",
+                                                                        //         row
+                                                                        //     );
+                                                                        // }}
+                                                                        // onMouseDown={() =>
+                                                                        //     setMouseDownDirection(
+                                                                        //         "up",
+                                                                        //         row
+                                                                        //     )
+                                                                        // }
+                                                                        // onMouseUp={() =>
+                                                                        //     setMouseDownDirection(
+                                                                        //         null
+                                                                        //     )
+                                                                        // }
+                                                                        // onMouseOut={() =>
+                                                                        //     setMouseDownDirection(
+                                                                        //         null
+                                                                        //     )
+                                                                        // }
+                                                                        >
+                                                                            +
+                                                                        </button>
+                                                                    </div>
                                                                     <a
                                                                         href="#"
                                                                         className="btn-sm text-primary mr-3"
@@ -435,13 +870,88 @@ const ShoppingCartList = () => {
                                                                             "flex",
                                                                     }}
                                                                 >
-                                                                    <a
+                                                                    {/* <a
                                                                         href="#"
                                                                         className="btn-sm bg-primary text-white mr-3"
                                                                     >
                                                                         Quantity{" "}
                                                                         <KeyboardArrowDownIcon />
-                                                                    </a>
+                                                                    </a> */}
+                                                                    <div className="input-number mr-2">
+                                                                        <button
+                                                                        // onClick={(
+                                                                        //     e
+                                                                        // ) => {
+                                                                        //     handleButtonChange(
+                                                                        //         "down",
+                                                                        //         row
+                                                                        //     );
+                                                                        // }}
+                                                                        // onMouseDown={() =>
+                                                                        //     setMouseDownDirection(
+                                                                        //         "down",
+                                                                        //         row
+                                                                        //     )
+                                                                        // }
+                                                                        // onMouseOut={() =>
+                                                                        //     setMouseDownDirection(
+                                                                        //         null
+                                                                        //     )
+                                                                        // }
+                                                                        // onMouseUp={() =>
+                                                                        //     setMouseDownDirection(
+                                                                        //         null
+                                                                        //     )
+                                                                        // }
+                                                                        // disabled={
+                                                                        //     row.quantity ===
+                                                                        //     0
+                                                                        // }
+                                                                        >
+                                                                            -
+                                                                        </button>
+                                                                        <input
+                                                                            type="number"
+                                                                            step={
+                                                                                1
+                                                                            }
+                                                                            value={
+                                                                                1
+                                                                            }
+                                                                            // value={
+                                                                            //     row.quantity
+                                                                            // }
+                                                                            readOnly
+                                                                        />
+                                                                        <button
+                                                                        // onClick={(
+                                                                        //     e
+                                                                        // ) => {
+                                                                        //     handleButtonChange(
+                                                                        //         "up",
+                                                                        //         row
+                                                                        //     );
+                                                                        // }}
+                                                                        // onMouseDown={() =>
+                                                                        //     setMouseDownDirection(
+                                                                        //         "up",
+                                                                        //         row
+                                                                        //     )
+                                                                        // }
+                                                                        // onMouseUp={() =>
+                                                                        //     setMouseDownDirection(
+                                                                        //         null
+                                                                        //     )
+                                                                        // }
+                                                                        // onMouseOut={() =>
+                                                                        //     setMouseDownDirection(
+                                                                        //         null
+                                                                        //     )
+                                                                        // }
+                                                                        >
+                                                                            +
+                                                                        </button>
+                                                                    </div>
                                                                     <a
                                                                         href="#"
                                                                         className="btn-sm text-primary mr-3"
@@ -890,34 +1400,58 @@ const ShoppingCartList = () => {
                                                 $138
                                             </h6>
                                         </div>
-                                        <div className="p-4">
-                                            <div className="d-flex justify-content-between">
+                                        <div className="px-4 py-2">
+                                            <div className="d-flex justify-content-between py-2">
                                                 <p className="mb-0">Currency</p>
                                                 <h6 className="mb-0">
                                                     <b>USD</b>
                                                 </h6>
                                             </div>
-                                            <div className="hr"></div>
-                                            <div className="d-flex justify-content-between">
-                                                <p className="mb-0">Price</p>
+                                            <div className="hr my-0"></div>
+                                            <div className="d-flex justify-content-between py-2">
+                                                <p className="mb-0">
+                                                    Spare Parts
+                                                </p>
                                                 <h6 className="mb-0">
-                                                    <b>$2023.00</b>
+                                                    <b>$1400.00</b>
                                                 </h6>
                                             </div>
-                                            <div className="hr"></div>
-                                            <div className="py-2 d-flex justify-content-between">
+                                            <div className="hr my-0"></div>
+                                            <div className="d-flex justify-content-between py-2">
+                                                <p className="mb-0">
+                                                    Labor Charge
+                                                </p>
+                                                <h6 className="mb-0">
+                                                    <b>$600.00</b>
+                                                </h6>
+                                            </div>
+                                            <div className="hr my-0"></div>
+                                            <div className="d-flex justify-content-between py-2">
+                                                <p className="mb-0">Misc.</p>
+                                                <h6 className="mb-0">
+                                                    <b>$23.00</b>
+                                                </h6>
+                                            </div>
+                                            <div className="hr my-0"></div>
+                                            <div className="d-flex justify-content-between py-2">
                                                 <p className="mb-0">Tax</p>
                                                 <h6 className="mb-0">
-                                                    <b>$360</b>
+                                                    <b>$360.00</b>
                                                 </h6>
                                             </div>
-                                            <div className="py-2 d-flex align-items-center">
-                                                <p className="mb-0 mr-3">
-                                                    Redeem Promo Code
-                                                </p>
-                                                <a className="btn-sm border">
-                                                    <b>DWIJVWDOQW</b>
-                                                </a>
+                                            <div className="hr my-0"></div>
+                                            <div className="d-flex justify-content-between py-2">
+                                                <p className="mb-0">Discount</p>
+                                                <h6 className="mb-0">
+                                                    <b>- $80.00</b>
+                                                </h6>
+                                            </div>
+                                            <div className="hr my-0"></div>
+                                            <div className="d-flex justify-content-between py-2">
+                                                <p className="mb-0">Total</p>
+                                                <h6 className="mb-0">
+                                                    <b>$1400.00</b>
+                                                </h6>
                                             </div>
                                         </div>
                                     </div>
@@ -925,10 +1459,57 @@ const ShoppingCartList = () => {
                                         className="card"
                                         style={{ overflow: "hidden" }}
                                     >
-                                        <h6 className="bg-green px-4 py-2 text-white mb-0">
-                                            Choice of Spare Parts
-                                        </h6>
-                                        <div className="p-4 checkbox-custom2">
+                                        <div className="d-flex justify-content-between bg-green px-4 py-2 text-white mb-0">
+                                            <h6 className="bg-green text-white mb-0">
+                                                Shipping Details
+                                            </h6>
+                                            <Tooltip title="Add New Address">
+                                                <AddLocationAltIcon
+                                                    className="cursor"
+                                                    onClick={() =>
+                                                        setOpenNewAddressAddModal(
+                                                            true
+                                                        )
+                                                    }
+                                                />
+                                            </Tooltip>
+                                        </div>
+                                        <div className="px-4 py-2">
+                                            <div className="d-flex justify-content-between py-2">
+                                                <p className="mb-0">
+                                                    Delivery Type
+                                                </p>
+                                                <h6 className="mb-0">
+                                                    <b>Standard</b>
+                                                </h6>
+                                            </div>
+                                            <div className="hr my-0"></div>
+                                            <div className="d-flex justify-content-between py-2">
+                                                <p className="mb-0">
+                                                    Delivery Priority
+                                                </p>
+                                                <h6 className="mb-0">
+                                                    <b>-</b>
+                                                </h6>
+                                            </div>
+                                            <div className="hr my-0"></div>
+                                            <div className="d-flex justify-content-between py-2">
+                                                <p className="mb-0">
+                                                    Lead Time
+                                                </p>
+                                                <h6 className="mb-0">
+                                                    <b>-</b>
+                                                </h6>
+                                            </div>
+                                            <div className="hr my-0"></div>
+                                            <div className="d-block py-2">
+                                                <p className="mb-0">Address</p>
+                                                <h6 className="mb-0">
+                                                    <b>ABC, 123-456-789</b>
+                                                </h6>
+                                            </div>
+                                        </div>
+                                        {/* <div className="p-4 checkbox-custom2">
                                             <FormGroup>
                                                 <FormControlLabel
                                                     control={
@@ -955,9 +1536,93 @@ const ShoppingCartList = () => {
                                                     label="Only Spare Parts"
                                                 />
                                             </FormGroup>
-                                        </div>
+                                        </div> */}
                                     </div>
                                     <div
+                                        className="card"
+                                        style={{ overflow: "hidden" }}
+                                    >
+                                        <div className="d-flex justify-content-between bg-green px-4 py-2 text-white mb-0">
+                                            <h6 className="bg-green text-white mb-0">
+                                                Billing Details
+                                            </h6>
+
+                                            <Tooltip title="Add New Payment Method">
+                                                <ControlPointIcon
+                                                    className="cursor"
+                                                    onClick={() =>
+                                                        setOpenNewPaymentAddModal(
+                                                            true
+                                                        )
+                                                    }
+                                                />
+                                            </Tooltip>
+                                        </div>
+                                        <div className="px-4 py-2">
+                                            <div className="d-flex justify-content-between py-2">
+                                                <p className="mb-0">
+                                                    Payment Terms
+                                                </p>
+                                                <h6 className="mb-0">
+                                                    <b>Standard</b>
+                                                </h6>
+                                            </div>
+                                            <div className="hr my-0"></div>
+                                            <div className="d-flex justify-content-between py-2">
+                                                <p className="mb-0">Currency</p>
+                                                <h6 className="mb-0">
+                                                    <b>USD</b>
+                                                </h6>
+                                            </div>
+                                            <div className="hr my-0"></div>
+                                            <div className="d-flex justify-content-between py-2">
+                                                <p className="mb-0">
+                                                    Billing Type
+                                                </p>
+                                                <h6 className="mb-0">
+                                                    <b>Normal</b>
+                                                </h6>
+                                            </div>
+                                            <div className="hr my-0"></div>
+                                            <div className="d-flex justify-content-between py-2">
+                                                <p className="mb-0">
+                                                    Billing Frequency
+                                                </p>
+                                                <h6 className="mb-0">
+                                                    <b>ABC</b>
+                                                </h6>
+                                            </div>
+                                        </div>
+                                        {/* <div className="p-4 checkbox-custom2">
+                                            <FormGroup>
+                                                <FormControlLabel
+                                                    control={
+                                                        <Checkbox
+                                                            defaultChecked
+                                                        />
+                                                    }
+                                                    label="With Spare Parts"
+                                                />
+                                                <FormControlLabel
+                                                    control={
+                                                        <Checkbox
+                                                            defaultUnchecked
+                                                        />
+                                                    }
+                                                    label="Without Spare Parts"
+                                                />
+                                                <FormControlLabel
+                                                    control={
+                                                        <Checkbox
+                                                            defaultUnchecked
+                                                        />
+                                                    }
+                                                    label="Only Spare Parts"
+                                                />
+                                            </FormGroup>
+                                        </div> */}
+                                    </div>
+                                    {/* <div
                                         className="card"
                                         style={{ overflow: "hidden" }}
                                     >
@@ -976,7 +1641,7 @@ const ShoppingCartList = () => {
                                                 />
                                             </FormGroup>
                                         </div>
-                                    </div>
+                                    </div> */}
                                     <h5 className="mb-2">Optional Services</h5>
                                     <FormGroup>
                                         <FormControlLabel
@@ -1163,6 +1828,21 @@ const ShoppingCartList = () => {
                     </footer>
                 </div>
             </div>
+            {openNewAddressAddModal && (
+                <CustomerOrderAddress
+                    show={openNewAddressAddModal}
+                    hideModal={() => setOpenNewAddressAddModal(false)}
+                />
+            )}
+            {openNewPaymentAddModal && (
+                <CustomerOrderPayment
+                    show={openNewPaymentAddModal}
+                    hideModal={() => setOpenNewPaymentAddModal(false)}
+                    currencyOptions={quoteCurrencyOptions}
+                    billingTypeOptions={billingTypeOptions}
+                    billingFrequencyOptions={billingFrequencyOptions}
+                />
+            )}
         </>
     );
 };

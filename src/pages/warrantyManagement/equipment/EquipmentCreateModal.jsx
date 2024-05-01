@@ -3,10 +3,10 @@ import React, { useState } from "react";
 import { Modal } from "react-bootstrap";
 import Select from "react-select";
 
-import { FONT_STYLE_SELECT } from "../../common/constants";
-import { callPostApi } from "../../../services/ApiCaller";
-import { API_SUCCESS } from "../../../services/ResponseCode";
-import { CLAIM_MASTER_URL } from "../../../services/CONSTANTS";
+import { FONT_STYLE_SELECT } from "pages/Common/constants";
+import { callPostApi } from "services/ApiCaller";
+import { API_SUCCESS } from "services/ResponseCode";
+import { CLAIM_MASTER_URL } from "services/CONSTANTS";
 import { claimRequestObj } from "../warrantyManagementConstants";
 
 const requestTypeOptions = [
