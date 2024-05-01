@@ -23,7 +23,7 @@ const CustomerOrderPayment = ({
     return (
         <Modal show={show} size="md">
             <Modal.Header>
-                <Modal.Title>Order Payment</Modal.Title>
+                <Modal.Title>Billing Details</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <div className="row input-fields">

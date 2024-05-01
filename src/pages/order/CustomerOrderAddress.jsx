@@ -4,6 +4,7 @@ import { Modal } from "react-bootstrap";
 import Select from "react-select";
 
 import { FONT_STYLE_SELECT } from "pages/Common/constants";
+import { FormControlLabel, FormGroup, Radio, RadioGroup } from "@mui/material";
 
 const shippingLeadCountUnit = [
     { value: "per Hr", label: "per Hr" },
@@ -124,6 +125,36 @@ const CustomerOrderAddress = ({ show, hideModal }) => {
                         </div>
                     </div>
                 </div>
+                <h5>Select Alternate Address</h5>
+                <div className="hr my-0"></div>
+                <FormGroup>
+                    <RadioGroup>
+                        <FormControlLabel
+                            value="L 12, Kings Park Rd, West Perth, WESTERN AUSTRALIA, 6005 Australia"
+                            control={<Radio />}
+                            label="L 12, Kings Park Rd, West Perth, WESTERN AUSTRALIA, 6005 Australia"
+                            className="mb-0"
+                        />
+                        <FormControlLabel
+                            value="1 Alan St, Rydalmere NSW 2116, Australia"
+                            control={<Radio />}
+                            label="1 Alan St, Rydalmere NSW 2116, Australia"
+                            className="mb-0"
+                        />
+                        <FormControlLabel
+                            value="8501 Willow Avenue, Los Angeles, CA 90037"
+                            control={<Radio />}
+                            label="8501 Willow Avenue, Los Angeles, CA 90037"
+                            className="mb-0"
+                        />
+                        <FormControlLabel
+                            value="9653 Richardson Circle, Compton, CA 90221"
+                            control={<Radio />}
+                            label="9653 Richardson Circle, Compton, CA 90221"
+                            className="mb-0"
+                        />
+                    </RadioGroup>
+                </FormGroup>
             </Modal.Body>
             <Modal.Footer>
                 <button
