@@ -13,7 +13,8 @@ export function HttpService<T>(
     const options: AxiosRequestConfig = {
         headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
+            Authorization: `${accessToken}`,
+            // Authorization: `Bearer ${accessToken}`,
         },
         method: method,
         url: path,
