@@ -32,15 +32,15 @@ const CustomToolbar = ({ setColumnButtonEl }) => {
 // ];
 
 const propensityMatrix = [
-  ["low", "low", "#ff6493"],
-  ["medium", "low", "#00b8b0"],
-  ["high", "low", "#00b8b0"],
-  ["low", "medium", "#ff6493"],
-  ["medium", "medium", "#872ff7"],
-  ["high", "medium", "#00b8b0"],
   ["low", "high", "#872ff7"],
   ["medium", "high", "#872ff7"],
   ["high", "high", "#00b8b0"],
+  ["low", "medium", "#ff6493"],
+  ["medium", "medium", "#872ff7"],
+  ["high", "medium", "#00b8b0"],
+  ["low", "low", "#ff6493"],
+  ["medium", "low", "#00b8b0"],
+  ["high", "low", "#00b8b0"],
 ];
 
 export default function Propensity(props) {
@@ -179,7 +179,7 @@ export default function Propensity(props) {
                   justifyContent="center"
                   alignItems="center"
                 >
-                  $ Value of Transaction
+                  <span className="font-size-14 font-weight-600"> $ Value of Transaction</span>
                 </Grid>
                 <Grid
                   item
@@ -205,7 +205,7 @@ export default function Propensity(props) {
                     justifyContent="center"
                     alignItems="center"
                   >
-                    Low
+                     <span className="font-size-14 font-weight-500">High</span>
                   </Grid>
                   <Grid
                     item
@@ -215,7 +215,7 @@ export default function Propensity(props) {
                     justifyContent="center"
                     alignItems="center"
                   >
-                    Medium
+                     <span className="font-size-14 font-weight-500">Medium</span>
                   </Grid>
                   <Grid
                     item
@@ -225,12 +225,12 @@ export default function Propensity(props) {
                     justifyContent="center"
                     alignItems="center"
                   >
-                    High
+                     <span className="font-size-14 font-weight-500">Low</span>
                   </Grid>
                 </Grid>
               </Grid>
               <Grid item xs={6} lg={4}>
-                <Grid container columnSpacing={2} rowSpacing={2}>
+                <Grid container columnSpacing={1} rowSpacing={1}>
                   {propensityMatrix.map((indArray) => (
                     <Grid item container xs={4} justifyContent={'center'} alignItems={'center'}>
                       <Tooltip title="Click here to know the details" >
@@ -306,7 +306,7 @@ export default function Propensity(props) {
                     direction="row"
                     justifyContent={"center"}
                   >
-                    Low
+                     <span className="font-size-14 font-weight-500">Low</span>
                   </Grid>
                   <Grid
                     item
@@ -315,7 +315,7 @@ export default function Propensity(props) {
                     direction="row"
                     justifyContent={"center"}
                   >
-                    Medium
+                     <span className="font-size-14 font-weight-500">Medium</span>
                   </Grid>
                   <Grid
                     item
@@ -324,7 +324,7 @@ export default function Propensity(props) {
                     direction="row"
                     justifyContent={"center"}
                   >
-                    High
+                    <span className="font-size-14 font-weight-500">High</span>
                   </Grid>
                 </Grid>
                 <Divider sx={{ marginBlock: 3 }} />
@@ -336,7 +336,8 @@ export default function Propensity(props) {
                     direction="row"
                     justifyContent={"center"}
                   >
-                    Propensity-to-buy score
+                    <span className="font-size-14 font-weight-600"> Propensity-to-buy score</span>
+
                   </Grid>
                 </Grid>
               </Grid>
@@ -396,7 +397,7 @@ export default function Propensity(props) {
                 pageSize={pageSize}
                 onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
                 rowsPerPageOptions={[10, 20, 50]}
-                checkboxSelection
+                // checkboxSelection
                 // keepNonExistentRowsSelected
                 onSelectionModelChange={(newRowSelectionModel) => {
                   console.log(newRowSelectionModel)
