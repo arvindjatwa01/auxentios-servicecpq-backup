@@ -32,15 +32,15 @@ const CustomToolbar = ({ setColumnButtonEl }) => {
 // ];
 
 const propensityMatrix = [
-  ["low", "low", "#ff6493"],
-  ["medium", "low", "#00b8b0"],
-  ["high", "low", "#00b8b0"],
-  ["low", "medium", "#ff6493"],
-  ["medium", "medium", "#872ff7"],
-  ["high", "medium", "#00b8b0"],
   ["low", "high", "#872ff7"],
   ["medium", "high", "#872ff7"],
   ["high", "high", "#00b8b0"],
+  ["low", "medium", "#ff6493"],
+  ["medium", "medium", "#872ff7"],
+  ["high", "medium", "#00b8b0"],
+  ["low", "low", "#ff6493"],
+  ["medium", "low", "#00b8b0"],
+  ["high", "low", "#00b8b0"],
 ];
 
 export default function Propensity(props) {
@@ -179,7 +179,7 @@ export default function Propensity(props) {
                   justifyContent="center"
                   alignItems="center"
                 >
-                  $ Value of Transaction
+                  <span className="font-size-14 font-weight-600"> $ Value Of Transaction</span>
                 </Grid>
                 <Grid
                   item
@@ -188,7 +188,7 @@ export default function Propensity(props) {
                   direction="row"
                   justifyContent={"end"}
                 >
-                  <Divider orientation="vertical" flexItem />
+                  <Divider orientation="vertical" flexItem sx={{ backgroundColor: 'rgba(0, 0, 0, 0.8)' }} />
                 </Grid>
                 <Grid
                   item
@@ -205,7 +205,7 @@ export default function Propensity(props) {
                     justifyContent="center"
                     alignItems="center"
                   >
-                    Low
+                    <span className="font-size-14 font-weight-500">High</span>
                   </Grid>
                   <Grid
                     item
@@ -215,7 +215,7 @@ export default function Propensity(props) {
                     justifyContent="center"
                     alignItems="center"
                   >
-                    Medium
+                    <span className="font-size-14 font-weight-500">Medium</span>
                   </Grid>
                   <Grid
                     item
@@ -225,15 +225,24 @@ export default function Propensity(props) {
                     justifyContent="center"
                     alignItems="center"
                   >
-                    High
+                    <span className="font-size-14 font-weight-500">Low</span>
                   </Grid>
                 </Grid>
               </Grid>
               <Grid item xs={6} lg={4}>
-                <Grid container columnSpacing={2} rowSpacing={2}>
+                <Grid container columnSpacing={1} rowSpacing={1}>
                   {propensityMatrix.map((indArray) => (
                     <Grid item container xs={4} justifyContent={'center'} alignItems={'center'}>
-                      <Tooltip title="Click here to know the details" >
+                      {/* <Tooltip title="Click here to know the details" > */}
+                      <Tooltip title={<Typography>
+                        {`${propensityData.filter(
+                          (object) =>
+                            object.propensity_level === indArray[0] &&
+                            object.transaction_level === indArray[1]
+                        )[0]?.percentage_value} % of Total Customers`} <br />
+                        Propensity To Buy Score: {indArray[0].charAt(0).toUpperCase() + indArray[0].slice(1)} <br />
+                        Value Of Transaction: {indArray[1].charAt(0).toUpperCase() + indArray[1].slice(1)}
+                      </Typography>} >
                         <Card
                           variant="outlined"
                           sx={{
@@ -306,7 +315,7 @@ export default function Propensity(props) {
                     direction="row"
                     justifyContent={"center"}
                   >
-                    Low
+                    <span className="font-size-14 font-weight-500">Low</span>
                   </Grid>
                   <Grid
                     item
@@ -315,7 +324,7 @@ export default function Propensity(props) {
                     direction="row"
                     justifyContent={"center"}
                   >
-                    Medium
+                    <span className="font-size-14 font-weight-500">Medium</span>
                   </Grid>
                   <Grid
                     item
@@ -324,10 +333,10 @@ export default function Propensity(props) {
                     direction="row"
                     justifyContent={"center"}
                   >
-                    High
+                    <span className="font-size-14 font-weight-500">High</span>
                   </Grid>
                 </Grid>
-                <Divider sx={{ marginBlock: 3 }} />
+                <Divider sx={{ marginBlock: 3, backgroundColor: 'rgba(0, 0, 0, 0.8)' }} />
                 <Grid container>
                   <Grid
                     item
@@ -336,7 +345,8 @@ export default function Propensity(props) {
                     direction="row"
                     justifyContent={"center"}
                   >
-                    Propensity-to-buy score
+                    <span className="font-size-14 font-weight-600"> Propensity-To-Buy Score</span>
+
                   </Grid>
                 </Grid>
               </Grid>
@@ -344,94 +354,96 @@ export default function Propensity(props) {
             </Grid>}
         </Card>
         {/* </div> */}
-        {showCustomerDetail && (
-          <Card sx={{
-            width: "100%",
-            paddingInline: 3, backgroundColor: '#ffffff', borderRadius: 4, margin: 2
-          }}>
-            <Grid container marginY={3}>
-              <Grid item xs={9} container direction={'row'} alignItems={'center'}>
-                <Typography sx={{ fontSize: 16, fontWeight: 600, mr: 1 }}>
-                  Propensity to Buy Details
-                </Typography>
-                (
-                <Typography sx={{ fontSize: 12, marginRight: 2 }}>
-                  <strong>Propensity Level : </strong> {selPropensityLevel}
-                </Typography>
-                <Typography sx={{ fontSize: 12 }}>
-                  <strong>Transaction Level : </strong> {selTransactionLevel}
-                </Typography>)
+        {
+          showCustomerDetail && (
+            <Card sx={{
+              width: "100%",
+              paddingInline: 3, backgroundColor: '#ffffff', borderRadius: 4, margin: 2
+            }}>
+              <Grid container marginY={3}>
+                <Grid item xs={9} container direction={'row'} alignItems={'center'}>
+                  <Typography sx={{ fontSize: 16, fontWeight: 600, mr: 1 }}>
+                    Propensity to Buy Details
+                  </Typography>
+                  (
+                  <Typography sx={{ fontSize: 12, marginRight: 2 }}>
+                    <strong>Propensity Level : </strong> {selPropensityLevel}
+                  </Typography>
+                  <Typography sx={{ fontSize: 12 }}>
+                    <strong>Transaction Level : </strong> {selTransactionLevel}
+                  </Typography>)
 
+                </Grid>
+                <Grid item container xs={3} justifyContent={'end'}>
+                  <button
+                    class="btn bg-primary text-white"
+                    onClick={() => console.log(rowSelectionModel)}
+                  >
+                    Create CRM Leads
+                  </button>
+                </Grid>
               </Grid>
-              <Grid item container xs={3} justifyContent={'end'}>
+              <Grid Container >
+                <Grid item container xs={12} columnSpacing={1}>
+                  <Grid item xs={4} container justifyContent={'start'} alignItems={'center'}>
+                    <FilterOptions name={'Transaction $'} sliderRange={transValueRange} setSliderRange={setTransValueRange} min={minTransValue} max={maxTransValue} />
+                  </Grid>
+                  <Grid item xs={4} container justifyContent={'start'} alignItems={'center'}>
+                    <FilterOptions name='Propensity' sliderRange={propensityScoreRange} setSliderRange={setPropensityScoreRange} min={minPropScore} max={maxPropScore} />
+                  </Grid>
+                </Grid>
+              </Grid>
+              <Box sx={{ height: 500 }}>
+                <DataGrid
+                  loading={isLoadingTable}
+                  getRowId={(row) => row.customer_id + row.equipment_no}
+                  sx={GRID_STYLE}
+                  rows={propensityDetails}
+                  columns={customerDetailColumns}
+                  columnVisibilityModel={columnVisibilityModel}
+                  onColumnVisibilityModelChange={(newModel) =>
+                    setColumnVisibilityModel(newModel)
+                  }
+                  pageSize={pageSize}
+                  onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+                  rowsPerPageOptions={[10, 20, 50]}
+                  // checkboxSelection
+                  // keepNonExistentRowsSelected
+                  onSelectionModelChange={(newRowSelectionModel) => {
+                    console.log(newRowSelectionModel)
+                    setRowSelectionModel(newRowSelectionModel);
+                  }}
+                  selectionModel={rowSelectionModel}
+                  components={{
+                    Toolbar: CustomToolbar,
+                  }}
+                  componentsProps={{
+                    panel: {
+                      anchorEl: columnButtonEl,
+                      placement: "bottom-end"
+                    },
+                    toolbar: {
+                      setColumnButtonEl
+                    }
+                  }}
+                  localeText={{ toolbarColumns: "Select Columns" }}
+                // autoHeight
+                /></Box>
+              <div
+                className="row"
+                style={{ justifyContent: "right", marginInline: 9, marginBlock: 7 }}
+              >
                 <button
                   class="btn bg-primary text-white"
-                  onClick={() => console.log(rowSelectionModel)}
+                  onClick={() => setShowCustomerDetail(false)}
                 >
-                  Create CRM Leads
+                  Back
                 </button>
-              </Grid>
-            </Grid>
-            <Grid Container >
-              <Grid item container xs={12} columnSpacing={1}>
-                <Grid item xs={4} container justifyContent={'start'} alignItems={'center'}>
-                  <FilterOptions name={'Transaction $'} sliderRange={transValueRange} setSliderRange={setTransValueRange} min={minTransValue} max={maxTransValue} />
-                </Grid>
-                <Grid item xs={4} container justifyContent={'start'} alignItems={'center'}>
-                  <FilterOptions name='Propensity' sliderRange={propensityScoreRange} setSliderRange={setPropensityScoreRange} min={minPropScore} max={maxPropScore} />
-                </Grid>
-              </Grid>
-            </Grid>
-            <Box sx={{ height: 500 }}>
-              <DataGrid
-                loading={isLoadingTable}
-                getRowId={(row) => row.customer_id + row.equipment_no}
-                sx={GRID_STYLE}
-                rows={propensityDetails}
-                columns={customerDetailColumns}
-                columnVisibilityModel={columnVisibilityModel}
-                onColumnVisibilityModelChange={(newModel) =>
-                  setColumnVisibilityModel(newModel)
-                }
-                pageSize={pageSize}
-                onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
-                rowsPerPageOptions={[10, 20, 50]}
-                checkboxSelection
-                // keepNonExistentRowsSelected
-                onSelectionModelChange={(newRowSelectionModel) => {
-                  console.log(newRowSelectionModel)
-                  setRowSelectionModel(newRowSelectionModel);
-                }}
-                selectionModel={rowSelectionModel}
-                components={{
-                  Toolbar: CustomToolbar,
-                }}
-                componentsProps={{
-                  panel: {
-                    anchorEl: columnButtonEl,
-                    placement: "bottom-end"
-                  },
-                  toolbar: {
-                    setColumnButtonEl
-                  }
-                }}
-                localeText={{ toolbarColumns: "Select Columns" }}
-              // autoHeight
-              /></Box>
-            <div
-              className="row"
-              style={{ justifyContent: "right", marginInline: 9, marginBlock: 7 }}
-            >
-              <button
-                class="btn bg-primary text-white"
-                onClick={() => setShowCustomerDetail(false)}
-              >
-                Back
-              </button>
-            </div>
-          </Card>
-        )}
-      </Grid>
-    </div>
+              </div>
+            </Card>
+          )
+        }
+      </Grid >
+    </div >
   );
 }
