@@ -159,8 +159,8 @@ export const claimRequestTypeOptions = [
 ];
 
 export const supplierVendorSearchOptions = [
-  { label: "customer Id", value: "customerId" },
-  { label: "customer Name", value: "fullName" },
+  { label: "Supplier Id", value: "customerId" },
+  { label: "Supplier Name", value: "fullName" },
 ];
 
 export const failedPartsRecord = [
