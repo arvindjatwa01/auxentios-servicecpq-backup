@@ -664,6 +664,7 @@ export const RELATED_HOURS_EXPENSES_MASTER_URL =
 export const SETTLEMENT_VALUE_MASTER_URL = WARRANTY_URI + "settlement_value";
 export const RELATED_PARTS_MASTER_URL = WARRANTY_URI + "relatedParts";
 export const EVALUATION_PARTS_MASTER_URL = WARRANTY_URI + "evaluation/parts";
+export const WARRANTY_EVALUATION_MASTER_URL= WARRANTY_URI + "evaluation";
 export const WARRANTY_EQUIPMENT_MASTER_URL = WARRANTY_URI + "equipment";
 export const WARRANTY_RETURN_MASTER_URL = WARRANTY_URI + "warrantyReturn";
 export const SHIPMENT_PARTS_MASTER_URL = WARRANTY_URI + "shipment/parts";
@@ -673,6 +674,15 @@ export const SHIPMENT_HEADER_MASTER_URL = WARRANTY_URI + "shipmentHeader";
 export const CLAIM_ORDER_MASTER_URL = WARRANTY_URI + "claimOrder";
 export const YEARLY_WARRANTY_MASTER_URL = WARRANTY_URI + "yearly-warranty";
 export const WARRANTY_CLAIM_PAYER_MASTER_URL = WARRANTY_URI + "payer";
+
+export const WARRANTY_ASSESSMENT_MASTER_URL = WARRANTY_URI + "assessment";
+export const WARRANTY_EVALUATION_QUESTIONS_MASTER_URL =  WARRANTY_URI + "evaluation/question";
+export const EVALUTAION_QUESTION_ANSWER_URL = WARRANTY_EVALUATION_QUESTIONS_MASTER_URL + "/question-answer";
+
+// Claim Master
+export const CLIAM_SEARCH_BY_FIELDS_URL = (query) => CLAIM_MASTER_URL + "/search-by-fields?" + query;
+export const CLAIM_BY_AUTH_CODE_GET = CLAIM_MASTER_URL + "/claim-by-auth-code/";
+
 
 export const HTML_TO_PDF_GENERATER_URL = COMMON_SERVICE_URI + "pdf/html-to-pdf";
 export const SEND_EMAIL_URL = USER_SERVICE_URI + "email/send-email?";
