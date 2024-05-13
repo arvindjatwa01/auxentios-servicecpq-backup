@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Select from 'react-select'
 
 import Typography from "@mui/material/Typography";
 import { Box, Card, Grid, LinearProgress } from "@mui/material";
@@ -22,13 +23,13 @@ const CustomToolbar = ({ setColumnButtonEl }) => {
     <GridToolbarContainer sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
       {/* Legend */}
       <Box sx={{ display: 'flex' }}>
-        <Box sx={{ padding: '10px', marginRight: '10px'}}>
+        <Box sx={{ padding: '10px', marginRight: '10px' }}>
           <Box display="flex" alignItems="center">
             <Box mr={1} bgcolor="#D06FFF" width={20} height={20} borderRadius={1}></Box>
             <Typography variant="body2">Low</Typography>
           </Box>
         </Box>
-        <Box sx={{ padding: '10px', marginRight: '10px'}}>
+        <Box sx={{ padding: '10px', marginRight: '10px' }}>
           <Box display="flex" alignItems="center">
             <Box mr={1} bgcolor="#6C70FE" width={20} height={20} borderRadius={1}></Box>
             <Typography variant="body2">High</Typography>
@@ -135,6 +136,7 @@ export default function GapToEntitlement(props) {
 
   const [currentService, setCurrentService] = useState(null);
   const [currentCustomer, setCurrentCustomer] = useState(null);
+  const [currentSelectedService, setCurrentSelectedService] = useState(null);
 
   const serviceRow = [
     {
@@ -206,8 +208,25 @@ export default function GapToEntitlement(props) {
     serviceRow[6].progress = find_in_perc(params.row.services);
     serviceRow[7].progress = find_in_perc(params.row.assessments);
     setCurrentService({ progress: serviceRow[0].progress, service: '250 hr PM1' });
+    setCurrentSelectedService({ value: 0, label: '250 hr PM1' });
     setCurrentCustomerServices(serviceRow);
   }
+
+  const handleSelectService = (selectedOptions) => {
+    setCurrentService({ progress: currentCustomerServices[selectedOptions.value].progress, service: selectedOptions.label });
+    setCurrentSelectedService({ value: selectedOptions.value, label: selectedOptions.label });
+  }
+
+  const options = [
+    { value: 0, label: '250 hr PM1' },
+    { value: 1, label: '250 hr PM1 Kits' },
+    { value: 2, label: '500 hr PM2' },
+    { value: 3, label: '500 hr PM2 Kits' },
+    { value: 4, label: '1000 hr PM3' },
+    { value: 5, label: '2000 hr PM4' },
+    { value: 6, label: 'General Services' },
+    { value: 7, label: 'Technical Assessments' },
+  ];
 
   return (
     <div>
@@ -280,26 +299,88 @@ export default function GapToEntitlement(props) {
             />
           </Box>
         </Card>
-        {currentCustomer && <Card sx={{
+        {currentCustomer && (
+          <Card
+            sx={{
+              borderRadius: 4,
+              height: 'auto',
+              width: "100%",
+              margin: 2,
+            }}
+            variant="outlined"
+          >
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: { xs: 'column', md: 'row' }, 
+                marginBottom: 3,
+                marginInline: 2,
+              }}
+            >
+              <div style={{ flex: "60%", marginRight: { xs: 0, md: "10px" } }}> 
+                <div className="text-light font-size-18 font-weight-600 my-3">
+                  {currentCustomer.customer_id}: {currentCustomer.customer_name}
+                </div>
+                <ServiceTable
+                  setCurrentService={setCurrentService}
+                  serviceRow={currentCustomerServices}
+                  setCurrentSelectedService={setCurrentSelectedService}
+                />
+              </div>
+              <div style={{ flex: "40%", marginLeft: { xs: 0, md: "10px" } }}>
+                <Card sx={{ borderRadius: 4, margin: 2, width: "100%" }} variant="outlined">
+                  <div className="d-flex justify-content-between align-items-center">
+                    <div className="text-light font-size-18 font-weight-600 my-2">Chances of Buying</div>
+                    <div className="my-2">
+                      <Select
+                        options={options}
+                        value={currentSelectedService}
+                        onChange={handleSelectService}
+                        placeholder="Select Option"
+                      />
+                    </div>
+                  </div>
+                  <div className="d-flex justify-content-center">
+                    <ChanceToBuyChart percentage={currentService.progress} />
+                  </div>
+                  <div className="d-flex justify-content-center font-size-18 text-light font-weight-600">{currentService.service}</div>
+                </Card>
+              </div>
+            </Box>
+          </Card>
+        )}
+
+        {/* {currentCustomer && <Card sx={{
           borderRadius: 4,
-          height: 400,
+          height: 420,
           width: "100%",
           margin: 2,
         }} variant="outlined">
           <Box sx={{ display: 'flex', marginBottom: 5, marginInline: 2 }}>
-            <div style={{ flex: "60%", marginRight: "10px" }}> {/* Adjusted flex and added margin */}
+            <div style={{ flex: "60%", marginRight: "10px" }}>
               <div className="text-light font-size-18 font-weight-600 my-3">{currentCustomer.customer_id}: {currentCustomer.customer_name}</div>
-              <ServiceTable setCurrentService={setCurrentService} serviceRow={currentCustomerServices} />
+              <ServiceTable setCurrentService={setCurrentService} serviceRow={currentCustomerServices} setCurrentSelectedService={setCurrentSelectedService} />
             </div>
-            <div style={{ flex: "40%", marginLeft: "10px" }}> {/* Adjusted flex and added margin */}
+            <div style={{ flex: "40%", marginLeft: "10px" }}> 
               <Card sx={{ borderRadius: 4, margin: 2, width: "100%" }} variant="outlined">
-                <div className="text-light font-size-18 font-weight-600 my-2">Chances of Buying</div>
+                <div className="d-flex justify-content-between align-items-center">
+                  <div className="text-light font-size-18 font-weight-600 my-2">Chances of Buying</div>
+                  <div className="my-2">
+                    <Select
+                      options={options}
+                      // defaultValue={options[0]}
+                      value={currentSelectedService} 
+                      onChange={handleSelectService}
+                      placeholder="Select Option"
+                    />
+                  </div>
+                </div>
                 <div className="d-flex justify-content-center"><ChanceToBuyChart percentage={currentService.progress} /></div>
                 <div className="d-flex justify-content-center font-size-18 text-light font-weight-600">{currentService.service}</div>
               </Card>
             </div>
           </Box>
-        </Card>}
+        </Card>} */}
       </Grid>
     </div >
   );
