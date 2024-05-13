@@ -4783,6 +4783,7 @@ const ClaimRequestModal = ({
                                         setCoverageTypeValue={
                                             setCoverageTypeValue
                                         }
+                                        handleViewSettlement={handleChangeUpperTabs}
                                     />
                                 )}
 
@@ -4821,6 +4822,7 @@ const ClaimRequestModal = ({
                                         coverageTypeValue={coverageTypeValue}
                                         relatedPartsId={relatedPartsId}
                                         setRelatedPartsId={setRelatedPartsId}
+                                        handleViewClaimValue={handleChangeUpperTabs}
                                     />
                                 )}
 
@@ -4834,6 +4836,7 @@ const ClaimRequestModal = ({
                                         }
                                         claimOrderId={claimOrderId}
                                         claimNumber={claimNumber}
+                                        handleViewAndAddNotes={handleChangeUpperTabs}
                                     />
                                 )}
                                 {activeUpperTabs === "addNotes" && (
