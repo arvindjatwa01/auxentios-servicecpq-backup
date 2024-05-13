@@ -124,7 +124,8 @@ export default function SparepartSegment(props) {
                                     justifyContent="center"
                                     alignItems="center"
                                 >
-                                    Historical $ transaction value / % of total products
+                                    <span className="font-size-14 font-weight-600">  Historical $ transaction value / % of total products</span>
+
                                 </Grid>
                                 <Grid
                                     item
@@ -133,7 +134,7 @@ export default function SparepartSegment(props) {
                                     direction="row"
                                     justifyContent={"end"}
                                 >
-                                    <Divider orientation="vertical" flexItem />
+                                    <Divider orientation="vertical" flexItem sx={{ backgroundColor: 'rgba(0, 0, 0, 0.8)' }} />
                                 </Grid>
                                 <Grid
                                     item
@@ -150,7 +151,7 @@ export default function SparepartSegment(props) {
                                         justifyContent="center"
                                         alignItems="center"
                                     >
-                                        High
+                                        <span className="font-size-14 font-weight-500">High</span>
                                     </Grid>
                                     <Grid
                                         item
@@ -160,7 +161,7 @@ export default function SparepartSegment(props) {
                                         justifyContent="center"
                                         alignItems="center"
                                     >
-                                        Medium
+                                        <span className="font-size-14 font-weight-500">Medium</span>
                                     </Grid>
                                     <Grid
                                         item
@@ -170,12 +171,12 @@ export default function SparepartSegment(props) {
                                         justifyContent="center"
                                         alignItems="center"
                                     >
-                                        Low
+                                        <span className="font-size-14 font-weight-500">Low</span>
                                     </Grid>
                                 </Grid>
                             </Grid>
                             <Grid item xs={6} lg={4}>
-                                <Grid container columnSpacing={2} rowSpacing={2}>
+                                <Grid container columnSpacing={1} rowSpacing={1}>
                                     {partsSegmentMatrix.map((indArray) => (
                                         <Grid item container xs={4} justifyContent={'center'} alignItems={'center'}>
                                             <Card
@@ -224,7 +225,7 @@ export default function SparepartSegment(props) {
                                         direction="row"
                                         justifyContent={"center"}
                                     >
-                                        Low
+                                        <span className="font-size-14 font-weight-500">Low</span>
                                     </Grid>
                                     <Grid
                                         item
@@ -233,7 +234,7 @@ export default function SparepartSegment(props) {
                                         direction="row"
                                         justifyContent={"center"}
                                     >
-                                        Medium
+                                        <span className="font-size-14 font-weight-500">Medium</span>
                                     </Grid>
                                     <Grid
                                         item
@@ -242,10 +243,10 @@ export default function SparepartSegment(props) {
                                         direction="row"
                                         justifyContent={"center"}
                                     >
-                                        High
+                                        <span className="font-size-14 font-weight-500">High</span>
                                     </Grid>
                                 </Grid>
-                                <Divider sx={{ marginBlock: 3 }} />
+                                <Divider sx={{ marginBlock: 3, backgroundColor: 'rgba(0, 0, 0, 0.8)' }} />
                                 <Grid container>
                                     <Grid
                                         item
@@ -254,7 +255,7 @@ export default function SparepartSegment(props) {
                                         direction="row"
                                         justifyContent={"center"}
                                     >
-                                        Buying Frequency
+                                         <span className="font-size-14 font-weight-600"> Buying Frequency</span>
                                     </Grid>
                                 </Grid>
                             </Grid>

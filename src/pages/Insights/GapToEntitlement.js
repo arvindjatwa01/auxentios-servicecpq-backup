@@ -1,15 +1,47 @@
 import { useEffect, useState } from "react";
+
 import Typography from "@mui/material/Typography";
-import { Box, Card, Grid } from "@mui/material";
-import { GRID_STYLE } from "pages/Repair/CONSTANTS";
+import { Box, Card, Grid, LinearProgress } from "@mui/material";
 import { DataGrid, GridToolbarColumnsButton, GridToolbarContainer } from "@mui/x-data-grid";
+
+import { GRID_STYLE } from "pages/Repair/CONSTANTS";
 import {
   getGapToEntitlement,
 } from "services/dashboardServices";
+import ChanceToBuyChart from "./ChanceToBuyChart";
+import ServiceTable from "./ServiceTable";
+
+
+
 
 const CustomToolbar = ({ setColumnButtonEl }) => {
   return (
-    <GridToolbarContainer sx={{ justifyContent: 'end' }}>
+    // <GridToolbarContainer sx={{ justifyContent: 'end' }}>
+    //   <GridToolbarColumnsButton ref={setColumnButtonEl} />
+    // </GridToolbarContainer>
+    <GridToolbarContainer sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+      {/* Legend */}
+      <Box sx={{ display: 'flex' }}>
+        <Box sx={{ padding: '10px', marginRight: '10px'}}>
+          <Box display="flex" alignItems="center">
+            <Box mr={1} bgcolor="#D06FFF" width={20} height={20} borderRadius={1}></Box>
+            <Typography variant="body2">Low</Typography>
+          </Box>
+        </Box>
+        <Box sx={{ padding: '10px', marginRight: '10px'}}>
+          <Box display="flex" alignItems="center">
+            <Box mr={1} bgcolor="#6C70FE" width={20} height={20} borderRadius={1}></Box>
+            <Typography variant="body2">High</Typography>
+          </Box>
+        </Box>
+        <Box sx={{ padding: '10px' }}>
+          <Box display="flex" alignItems="center">
+            <Box mr={1} bgcolor="#6FD4FF" width={20} height={20} borderRadius={1}></Box>
+            <Typography variant="body2">Already Bought</Typography>
+          </Box>
+        </Box>
+      </Box>
+      {/* Column selection button */}
       <GridToolbarColumnsButton ref={setColumnButtonEl} />
     </GridToolbarContainer>
   );
@@ -101,9 +133,84 @@ export default function GapToEntitlement(props) {
       </span>)
   }
 
+  const [currentService, setCurrentService] = useState(null);
+  const [currentCustomer, setCurrentCustomer] = useState(null);
+
+  const serviceRow = [
+    {
+      id: 0,
+      service: "250 hr PM1",
+      progress: 71,
+      chances: null
+    },
+    {
+      id: 1,
+      service: "250 hr PM1 Kits",
+      progress: 100,
+      chances: null
+    },
+    {
+      id: 2,
+      service: "500 hr PM2",
+      progress: 99,
+      chances: null
+    },
+    {
+      id: 3,
+      service: "500 hr PM2 Kits",
+      progress: 44,
+      chances: null
+    },
+    {
+      id: 4,
+      service: "1000 hr PM3",
+      progress: 100,
+      chances: null
+    },
+    {
+      id: 5,
+      service: "2000 hr PM4",
+      progress: 100,
+      chances: null
+    },
+    {
+      id: 6,
+      service: "General Services",
+      progress: 69,
+      chances: null
+    },
+    {
+      id: 7,
+      service: "Technical Assessments",
+      progress: 2,
+      chances: null
+    },
+  ];
+
+  const [currentCustomerServices, setCurrentCustomerServices] = useState([...serviceRow]);
+  const find_in_perc = (val) => {
+    let perc = Math.round(val * 10000) / 100;
+    perc = perc.toFixed(2);
+    return parseFloat(perc);
+  }
+
+  const handleCustomer = (params) => {
+    console.log(params.row);
+    setCurrentCustomer(params.row);
+    serviceRow[0].progress = find_in_perc(params.row.pm1);
+    serviceRow[1].progress = find_in_perc(params.row.pm1_parts);
+    serviceRow[2].progress = find_in_perc(params.row.pm2);
+    serviceRow[3].progress = find_in_perc(params.row.pm2_parts);
+    serviceRow[4].progress = find_in_perc(params.row.pm3);
+    serviceRow[5].progress = find_in_perc(params.row.pm4);
+    serviceRow[6].progress = find_in_perc(params.row.services);
+    serviceRow[7].progress = find_in_perc(params.row.assessments);
+    setCurrentService({ progress: serviceRow[0].progress, service: '250 hr PM1' });
+    setCurrentCustomerServices(serviceRow);
+  }
+
   return (
     <div>
-
       <Grid
         container
         sx={{
@@ -163,16 +270,41 @@ export default function GapToEntitlement(props) {
                 }
               }}
               localeText={{ toolbarColumns: "Select Columns" }}
-              checkboxSelection={true}
+              // checkboxSelection={true}
               keepNonExistentRowsSelected
               onSelectionModelChange={(newRowSelectionModel) => {
                 setRowSelectionModel(newRowSelectionModel);
               }}
               selectionModel={rowSelectionModel}
+              onRowClick={handleCustomer}
             />
           </Box>
         </Card>
+        {currentCustomer && <Card sx={{
+          borderRadius: 4,
+          height: 400,
+          width: "100%",
+          margin: 2,
+        }} variant="outlined">
+          <Box sx={{ display: 'flex', marginBottom: 5, marginInline: 2 }}>
+            <div style={{ flex: "60%", marginRight: "10px" }}> {/* Adjusted flex and added margin */}
+              <div className="text-light font-size-18 font-weight-600 my-3">{currentCustomer.customer_id}: {currentCustomer.customer_name}</div>
+              <ServiceTable setCurrentService={setCurrentService} serviceRow={currentCustomerServices} />
+            </div>
+            <div style={{ flex: "40%", marginLeft: "10px" }}> {/* Adjusted flex and added margin */}
+              <Card sx={{ borderRadius: 4, margin: 2, width: "100%" }} variant="outlined">
+                <div className="text-light font-size-18 font-weight-600 my-2">Chances of Buying</div>
+                <div className="d-flex justify-content-center"><ChanceToBuyChart percentage={currentService.progress} /></div>
+                <div className="d-flex justify-content-center font-size-18 text-light font-weight-600">{currentService.service}</div>
+              </Card>
+            </div>
+          </Box>
+        </Card>}
       </Grid>
     </div >
   );
 }
+
+
+
+

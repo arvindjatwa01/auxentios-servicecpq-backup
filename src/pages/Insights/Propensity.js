@@ -32,15 +32,15 @@ const CustomToolbar = ({ setColumnButtonEl }) => {
 // ];
 
 const propensityMatrix = [
-  ["low", "high", "#872ff7"],
-  ["medium", "high", "#872ff7"],
-  ["high", "high", "#00b8b0"],
-  ["low", "medium", "#ff6493"],
-  ["medium", "medium", "#872ff7"],
-  ["high", "medium", "#00b8b0"],
-  ["low", "low", "#ff6493"],
-  ["medium", "low", "#00b8b0"],
-  ["high", "low", "#00b8b0"],
+  ["low", "high", "#81ebe6"],
+  ["medium", "high", "#81ebe6"],
+  ["high", "high", "#cd9dfe"],
+  ["low", "medium", "#bf6f7d"],
+  ["medium", "medium", "#81ebe6"],
+  ["high", "medium", "#cd9dfe"],
+  ["low", "low", "#bf6f7d"],
+  ["medium", "low", "#cd9dfe"],
+  ["high", "low", "#cd9dfe"],
 ];
 
 export default function Propensity(props) {
@@ -177,9 +177,10 @@ export default function Propensity(props) {
                   xs={6}
                   direction="row"
                   justifyContent="center"
-                  alignItems="center"
+                  // alignItems="center"
                 >
-                  <span className="font-size-14 font-weight-600"> $ Value Of Transaction</span>
+                  <span className="font-size-14 font-weight-600 text-secondary mt-5"> Share of <br/> Customers in <br/>each Category<br/>(total=100%)</span>
+                  <span className="font-size-14 font-weight-600"> $ Value Of <br/> Transaction</span>
                 </Grid>
                 <Grid
                   item
@@ -282,23 +283,23 @@ export default function Propensity(props) {
               </Grid>
               <Grid item container xs={12} lg={4} sx={{ marginTop: 8, marginInline: 5, justifyContent: 'center' }}>
                 <Grid item xs={12} display="flex">
-                  <StopIcon sx={{ color: "#00b8b0", marginInline: 1 }} />
+                  <StopIcon sx={{ color: "#81ebe6", marginInline: 1 }} />
                   <Typography variant="body2">
-                    <strong>Focus Sales Efforts</strong>: On the fence of buying, but win rates and values are higher
+                    <strong>Focus Sales Efforts</strong>: On the fence of buying, <span className="d-block">but win rates and values are higher</span>
                   </Typography>
                 </Grid>
                 <Grid item xs={12} display="flex">
-                  <StopIcon sx={{ color: "#872ff7", marginInline: 1 }} />
+                  <StopIcon sx={{ color: "#cd9dfe", marginInline: 1 }} />
                   <Typography variant="body2">
                     <strong>Avoid Overinvesting Effort</strong>: Propensity to
-                    buy is already high or value is low
+                    buy <span className="d-block">is already high or value is low</span>
                   </Typography>
                 </Grid>
                 <Grid item xs={12} display="flex">
-                  <StopIcon sx={{ color: "#ff6493", marginInline: 1 }} />
+                  <StopIcon sx={{ color: "#bf6f7d", marginInline: 1 }} />
                   <Typography variant="body2">
-                    <strong>Invest only minimum Effort</strong>: Win rate,
-                    propensity-to-buy and value are all lower
+                    <strong>Invest only minimum Effort</strong>:The  Win rate,
+                    <span className="d-block">propensity-to-buy and value are all lower</span>
                   </Typography>
                 </Grid>
                 <Grid item xs={12}></Grid>
