@@ -16,17 +16,30 @@ import $ from "jquery";
 import Select from "react-select";
 import Moment from "react-moment";
 
-import { FONT_STYLE, FONT_STYLE_SELECT, GRID_STYLE } from "pages/Common/constants";
+import {
+    FONT_STYLE,
+    FONT_STYLE_SELECT,
+    GRID_STYLE,
+} from "pages/Common/constants";
 import { claimRelatedHERequestObj } from "../warrantyManagementConstants";
-import { callDeleteApi, callGetApi, callPostApi, callPutApi } from "services/ApiCaller";
+import {
+    callDeleteApi,
+    callGetApi,
+    callPostApi,
+    callPutApi,
+} from "services/ApiCaller";
 import { API_SUCCESS } from "services/ResponseCode";
-import { RELATED_HOURS_EXPENSES_MASTER_URL, RELATED_PARTS_MASTER_URL } from "services/CONSTANTS";
+import {
+    RELATED_HOURS_EXPENSES_MASTER_URL,
+    RELATED_PARTS_MASTER_URL,
+} from "services/CONSTANTS";
 import { ReadOnlyField } from "pages/Common/ReadOnlyField";
 import { sparePartSearch } from "services/searchServices";
 import SearchComponent from "pages/components/SearchComponent";
 import { SPAREPART_SEARCH_Q_OPTIONS } from "pages/Repair/CONSTANTS";
 import SearchPartListModal from "./SearchPartListModal";
 import SupplierClaimSummaryModal from "./SupplierClaimSummaryModal";
+import { useAuth } from "navigation/Auth/ProvideAuth";
 
 const typeOptions = [
     { label: "OEM", value: "OEM" },
@@ -61,7 +74,11 @@ const ClaimRelatedHoursAndExpenses = ({
     coverageTypeValue,
     relatedPartsRecords = [],
     setRelatedPartsRecords,
+    handleViewClaimValue,
 }) => {
+    const { user } = useAuth();
+
+    console.log("usser ::: ", user);
     const [querySearchSelector, setQuerySearchSelector] = useState([
         {
             id: 0,
@@ -102,10 +119,10 @@ const ClaimRelatedHoursAndExpenses = ({
                             (obj) => obj.value === responseData.code
                         );
 
-                        // set alternate code value
-                        const _alternateCode = codeOptions.find(
-                            (obj) => obj.value === responseData.alternateCode
-                        );
+                        // // set alternate code value
+                        // const _alternateCode = codeOptions.find(
+                        //     (obj) => obj.value === responseData.alternateCode
+                        // );
 
                         // set alternate code value
                         const _coverageType = coverageTypeOptions.find(
@@ -116,7 +133,7 @@ const ClaimRelatedHoursAndExpenses = ({
                             ...responseData,
                             type: climentOpt[0],
                             code: _code || "",
-                            alternateCode: _alternateCode || "",
+                            // alternateCode: _alternateCode || "",
                             coverageType: _coverageType || "",
                         });
                     }
@@ -315,8 +332,9 @@ const ClaimRelatedHoursAndExpenses = ({
             ...claimRelateHERecordData,
             type: claimRelateHERecordData.type?.value || "CHANNEL_PARTNER",
             code: claimRelateHERecordData.code?.value || "USER_DRIVED",
-            alternateCode:
-                claimRelateHERecordData.alternateCode?.value || "USER_DRIVED",
+            alternateCode: claimRelateHERecordData.alternateCode || "NA",
+            // alternateCode:
+            //     claimRelateHERecordData.alternateCode?.value || "USER_DRIVED",
             coverageType:
                 claimRelateHERecordData.coverageType?.value || "CT_04",
         };
@@ -534,16 +552,14 @@ const ClaimRelatedHoursAndExpenses = ({
                                 value={claimRelateHERecordData.name}
                                 className="col-md-3 col-sm-3"
                             />
-                            <ReadOnlyField
+                            {/* <ReadOnlyField
                                 label="CODE"
                                 value={claimRelateHERecordData.code?.label}
                                 className="col-md-3 col-sm-3"
-                            />
+                            /> */}
                             <ReadOnlyField
                                 label="ALTERNATE CODE"
-                                value={
-                                    claimRelateHERecordData.alternateCode?.label
-                                }
+                                value={claimRelateHERecordData.alternateCode}
                                 className="col-md-3 col-sm-3"
                             />
                             <ReadOnlyField
@@ -653,7 +669,7 @@ const ClaimRelatedHoursAndExpenses = ({
             /> */}
                                 </div>
                             </div>
-                            <div className="col-lg-3 col-md-3 col-sm-3 col-12">
+                            {/* <div className="col-lg-3 col-md-3 col-sm-3 col-12">
                                 <div className="form-group">
                                     <label className="text-light-dark font-size-14 font-weight-500">
                                         CODE
@@ -668,13 +684,22 @@ const ClaimRelatedHoursAndExpenses = ({
                                         styles={FONT_STYLE_SELECT}
                                     />
                                 </div>
-                            </div>
+                            </div> */}
                             <div className="col-lg-3 col-md-3 col-sm-3 col-12">
                                 <div className="form-group">
                                     <label className="text-light-dark font-size-14 font-weight-500">
                                         ALTERNATE CODE
                                     </label>
-                                    <Select
+                                    <input
+                                        type="text"
+                                        class="form-control border-radius-10 text-primary"
+                                        name="alternateCode"
+                                        value={
+                                            claimRelateHERecordData.alternateCode
+                                        }
+                                        onChange={handleInputFieldChange}
+                                    />
+                                    {/* <Select
                                         className="text-primary"
                                         options={codeOptions}
                                         onChange={(e) =>
@@ -687,7 +712,7 @@ const ClaimRelatedHoursAndExpenses = ({
                                             claimRelateHERecordData.alternateCode
                                         }
                                         styles={FONT_STYLE_SELECT}
-                                    />
+                                    /> */}
                                 </div>
                             </div>
                             <div className="col-lg-3 col-md-3 col-sm-3 col-12">
@@ -931,13 +956,23 @@ const ClaimRelatedHoursAndExpenses = ({
                 />
             </div>
             <div className="row mb-2 mx-0" style={{ justifyContent: "right" }}>
-                <button
-                    type="button"
-                    className="btn btn-ligh save the parts hours datat bg-primary text-white mx-0"
-                    onClick={handleSavePartHoursData}
-                >
-                    Save & Close
-                </button>
+                {viewOnly ? (
+                    <button
+                        type="button"
+                        className="btn btn-ligh save the parts hours datat bg-primary text-white mx-0"
+                        onClick={() => handleViewClaimValue("adjustPrice")}
+                    >
+                        View Claim Value
+                    </button>
+                ) : (
+                    <button
+                        type="button"
+                        className="btn btn-ligh save the parts hours datat bg-primary text-white mx-0"
+                        onClick={handleSavePartHoursData}
+                    >
+                        Submit Claim
+                    </button>
+                )}
             </div>
             {searchResultOpen && (
                 <SearchPartListModal
