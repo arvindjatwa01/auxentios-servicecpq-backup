@@ -1,22 +1,32 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import DeleteIcon from "@mui/icons-material/DeleteOutlined";
+import SaveIcon from "@mui/icons-material/Save";
+import CancelIcon from "@mui/icons-material/Close";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { TextField } from "@mui/material";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+
+import { TextField, Tooltip } from "@mui/material";
 import { MobileDatePicker } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { DataGrid, GridActionsCellItem, GridRowModes } from "@mui/x-data-grid";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 
 import $ from "jquery";
 import Select from "react-select";
-
-import { FONT_STYLE, FONT_STYLE_SELECT } from "pages/Common/constants";
-import { claimRelatedHERequestObj } from "../warrantyManagementConstants";
-import { callGetApi, callPostApi, callPutApi } from "services/ApiCaller";
-import { API_SUCCESS } from "services/ResponseCode";
-import { RELATED_HOURS_EXPENSES_MASTER_URL } from "services/CONSTANTS";
-import { ReadOnlyField } from "pages/Common/ReadOnlyField";
 import Moment from "react-moment";
+
+import { FONT_STYLE, FONT_STYLE_SELECT, GRID_STYLE } from "pages/Common/constants";
+import { claimRelatedHERequestObj } from "../warrantyManagementConstants";
+import { callDeleteApi, callGetApi, callPostApi, callPutApi } from "services/ApiCaller";
+import { API_SUCCESS } from "services/ResponseCode";
+import { RELATED_HOURS_EXPENSES_MASTER_URL, RELATED_PARTS_MASTER_URL } from "services/CONSTANTS";
+import { ReadOnlyField } from "pages/Common/ReadOnlyField";
 import { sparePartSearch } from "services/searchServices";
+import SearchComponent from "pages/components/SearchComponent";
+import { SPAREPART_SEARCH_Q_OPTIONS } from "pages/Repair/CONSTANTS";
+import SearchPartListModal from "./SearchPartListModal";
+import SupplierClaimSummaryModal from "./SupplierClaimSummaryModal";
 
 const typeOptions = [
     { label: "OEM", value: "OEM" },
@@ -941,7 +951,7 @@ const ClaimRelatedHoursAndExpenses = ({
                 />
             )}
             {openClaimSuplierModal && (
-                <SupplierClaimModal
+                <SupplierClaimSummaryModal
                     claimSupplierShow={openClaimSuplierModal}
                     handleClaimSupplierClose={handleClaimSupplierClose}
                     claimSupplierRecord={claimSupplierRecord}
