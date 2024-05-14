@@ -106,6 +106,9 @@ const ClaimRequestModal = ({
     const [requestTab, setRequestTab] = useState("returnDetails");
     const [returnDetailsTab, setReturnDetailsTab] = useState("general");
 
+    const [claimWarrantyId, setClaimWarrantyId] = useState(null);
+    // const [claimNumber, setClaimNumber] = useState(null);
+
     const [showValidateWarnMsg, setShowValidateWarnMsg] = useState(false);
     const [openValidateClaimErrModal, setOpenValidateClaimErrModal] =
         useState(false);
@@ -188,7 +191,8 @@ const ClaimRequestModal = ({
     const [searchSerialResults, setSearchSerialResults] = useState([]);
     const [assesstementData, setAssesstementData] = useState({
         ...claimAssessmentRequestObj,
-        warrantyId: claimRecordDetail?.warrantyId || 0,
+        // warrantyId: claimRecordDetail?.warrantyId || 0,
+        warrantyId: claimWarrantyId || 0,
         warrantyTitle: "STD-18",
         // warrantyEndDate: new Date("2026-01-11"),
         // warrantyRequestDate: new Date("2024-03-05"),
@@ -222,7 +226,7 @@ const ClaimRequestModal = ({
                     const responseData = response.data;
                     getClaimDetails(responseData.claimId);
                     setActiveClaim(true);
-                    setClaimNumber(responseData.claimNumber);
+                    // setClaimNumber(responseData.claimNumber);
 
                     // rma type value set
                     const _rmaType = rmaTypeOptions.find(
@@ -351,6 +355,9 @@ const ClaimRequestModal = ({
             callGetApi(rUrlClaim, (response) => {
                 if (response.status === API_SUCCESS) {
                     const responseData = response.data;
+
+                    setClaimWarrantyId(responseData.warrantyId);
+                    setClaimNumber(responseData.claimId);
 
                     // claim status
                     const _claimStatus = claimStatusOptions.find(
@@ -1678,10 +1685,12 @@ const ClaimRequestModal = ({
                                                                                     disabled
                                                                                     className="form-control border-radius-10 text-primary"
                                                                                     id="warrantyId"
+                                                                                    // value={
+                                                                                    //     claimRecordDetail?.warrantyId
+                                                                                    // }
                                                                                     value={
-                                                                                        claimRecordDetail?.warrantyId
+                                                                                        claimWarrantyId
                                                                                     }
-                                                                                    // value={claimRecordDetail?.claimNumber}
                                                                                 />
                                                                             </div>
                                                                         </div>
@@ -1896,8 +1905,11 @@ const ClaimRequestModal = ({
                                                                 <div className="row mt-3">
                                                                     <ReadOnlyField
                                                                         label="WARRANTY ID"
+                                                                        // value={
+                                                                        //     claimRecordDetail?.warrantyId
+                                                                        // }
                                                                         value={
-                                                                            claimRecordDetail?.warrantyId
+                                                                            claimWarrantyId
                                                                         }
                                                                         className="col-md-4 col-sm-4"
                                                                     />
@@ -2592,8 +2604,11 @@ const ClaimRequestModal = ({
                                                                     <input
                                                                         type="text"
                                                                         className="form-control border-radius-10 text-primary"
+                                                                        // value={
+                                                                        //     assesstementData.warrantyId
+                                                                        // }
                                                                         value={
-                                                                            assesstementData.warrantyId
+                                                                            claimWarrantyId
                                                                         }
                                                                         name="warrantyId"
                                                                         placeholder="Warranty ID"
@@ -2640,8 +2655,11 @@ const ClaimRequestModal = ({
                                                                     <input
                                                                         type="text"
                                                                         className="form-control border-radius-10 text-primary"
+                                                                        // value={
+                                                                        //     claimRecordData.claimNumber
+                                                                        // }
                                                                         value={
-                                                                            claimRecordData.claimNumber
+                                                                            claimNumber
                                                                         }
                                                                         name="claimNumber"
                                                                         placeholder="Claim Number"
@@ -3059,8 +3077,11 @@ const ClaimRequestModal = ({
                                                         <div className="row mt-3">
                                                             <ReadOnlyField
                                                                 label="WARRANTY ID"
+                                                                // value={
+                                                                //     claimRecordDetail?.warrantyId
+                                                                // }
                                                                 value={
-                                                                    claimRecordDetail?.warrantyId
+                                                                    claimWarrantyId
                                                                 }
                                                                 className="col-md-4 col-sm-4"
                                                             />
@@ -3074,8 +3095,11 @@ const ClaimRequestModal = ({
                                                             />
                                                             <ReadOnlyField
                                                                 label="CLAIM NUMBER"
+                                                                // value={
+                                                                //     claimRecordData.claimNumber
+                                                                // }
                                                                 value={
-                                                                    claimRecordData.claimNumber
+                                                                    claimNumber
                                                                 }
                                                                 className="col-md-4 col-sm-4"
                                                             />
@@ -3996,9 +4020,13 @@ const ClaimRequestModal = ({
                                                                     <input
                                                                         type="text"
                                                                         className="form-control border-radius-10 text-primary"
+                                                                        // value={
+                                                                        //     claimRecordData.claimNumber
+                                                                        // }
                                                                         value={
-                                                                            claimRecordData.claimNumber
+                                                                            claimNumber
                                                                         }
+                                                                        disabled
                                                                         name="claimNumber"
                                                                         placeholder="Claim Number"
                                                                         onChange={
@@ -4623,8 +4651,11 @@ const ClaimRequestModal = ({
                                                             />
                                                             <ReadOnlyField
                                                                 label="CLAIM NUMBER"
+                                                                // value={
+                                                                //     claimRecordData.claimNumber
+                                                                // }
                                                                 value={
-                                                                    claimRecordData.claimNumber
+                                                                    claimNumber
                                                                 }
                                                                 className="col-md-3 col-sm-3"
                                                             />
@@ -4905,6 +4936,16 @@ const ClaimRequestModal = ({
                                         coverageTypeValue={coverageTypeValue}
                                         relatedPartsId={relatedPartsId}
                                         setRelatedPartsId={setRelatedPartsId}
+                                        relatedPartsRecords={
+                                            relatedPartsRecords
+                                        }
+                                        setRelatedPartsRecords={
+                                            setRelatedPartsRecords
+                                        }
+                                        records={[
+                                            ...partsFailedRecord,
+                                            ...partsCausalRecord,
+                                        ]}
                                         handleViewClaimValue={
                                             handleChangeUpperTabs
                                         }
