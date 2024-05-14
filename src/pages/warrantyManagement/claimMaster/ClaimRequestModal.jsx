@@ -681,9 +681,9 @@ const ClaimRequestModal = ({
             machineData.serialNo = searchText;
             searchQueryMachine = searchText
                 ? machineData.model
-                    ? `model:${machineData.model} AND equipmentNumber~` +
+                    ? `model:${machineData.model} AND makerSerialNumber~` +
                       searchText
-                    : "equipmentNumber~" + searchText
+                    : "makerSerialNumber~" + searchText
                 : "";
         }
         if (searchQueryMachine) {

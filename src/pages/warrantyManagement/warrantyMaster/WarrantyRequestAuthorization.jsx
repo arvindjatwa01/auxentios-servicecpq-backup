@@ -36,8 +36,10 @@ const WarrantyRequestAuthorization = ({
     hideModal,
     handleSnack,
     pwaNumber,
+    setPwaNumber,
     warrantyRequestType = "",
     claimRecordId,
+    setClaimRecordId,
     handleGoBackToQurestionsModal,
     autoReqObj,
 }) => {
@@ -65,8 +67,10 @@ const WarrantyRequestAuthorization = ({
     const [searchCustResults, setSearchCustResults] = useState([]);
     const [noOptionsCust, setNoOptionsCust] = useState(false);
 
+    const [isNewCreated, setIsNewCreated] = useState(false);
+
     useEffect(() => {
-        if (claimRecordId) {
+        if (claimRecordId && !isNewCreated) {
             const rUrl = `${CLAIM_MASTER_URL}/${claimRecordId}`;
             callGetApi(rUrl, (response) => {
                 if (response.status === API_SUCCESS) {
@@ -114,9 +118,9 @@ const WarrantyRequestAuthorization = ({
             recordData.serialNumber = searchText;
             searchQueryMachine = searchText
                 ? recordData.modelNumber
-                    ? `model:${recordData.modelNumber} AND equipmentNumber~` +
+                    ? `model:${recordData.modelNumber} AND makerSerialNumber~` +
                       searchText
-                    : "equipmentNumber~" + searchText
+                    : "makerSerialNumber~" + searchText
                 : "";
         }
         if (searchQueryMachine) {
@@ -229,29 +233,42 @@ const WarrantyRequestAuthorization = ({
 
     // check general request tab input validation
     const checkMachineInputValidation = (recordObj) => {
-        if (!recordObj.modelNumber) {
-            handleSnack("error", "Model must not be empty");
-            return false;
-        } else if (recordObj.modelNumber && searchModelResults.length !== 0) {
-            handleSnack("error", "Select model from search results.");
-            return false;
-        } else if (recordObj.modelNumber && noOptionsModel) {
-            handleSnack("error", "Model must be valid");
-            return false;
-        } else if (!recordObj.modelNumber) {
-            handleSnack("error", "Model must not be empty");
-            return false;
-        } else if (recordObj.modelNumber && searchModelResults.length !== 0) {
-            handleSnack("error", "Select model from search results.");
-            return false;
-        } else if (recordObj.modelNumber && noOptionsModel) {
-            handleSnack("error", "Model must be valid");
-            return false;
-        }
+        // if (!recordObj.modelNumber) {
+        //     handleSnack("error", "Model must not be empty");
+        //     return false;
+        // } else if (recordObj.modelNumber && searchModelResults.length !== 0) {
+        //     handleSnack("error", "Select model from search results.");
+        //     return false;
+        // } else if (recordObj.modelNumber && noOptionsModel) {
+        //     handleSnack("error", "Model must be valid");
+        //     return false;
+        // } else if (!recordObj.modelNumber) {
+        //     handleSnack("error", "Model must not be empty");
+        //     return false;
+        // } else if (recordObj.modelNumber && searchModelResults.length !== 0) {
+        //     handleSnack("error", "Select model from search results.");
+        //     return false;
+        // } else if (recordObj.modelNumber && noOptionsModel) {
+        //     handleSnack("error", "Model must be valid");
+        //     return false;
+        // }
+        return true;
     };
 
     // check general request tab input validation
-    const checkCustomerInputValidation = () => {};
+    const checkCustomerInputValidation = () => {
+        // if (!recordObj.customerNumber) {
+        //     handleSnack("error", "Customer Number must not be empty");
+        //     return false;
+        // } else if (recordObj.customerNumber && searchCustResults.length !== 0) {
+        //     handleSnack("error", "Select Customer Number from search results.");
+        //     return false;
+        // } else if (recordObj.customerNumber && noOptionsCust) {
+        //     handleSnack("error", "Customer Number must be valid");
+        //     return false;
+        // }
+        return true;
+    };
 
     // click on Save and Next button
     const handleClickSaveBtn = (e) => {
@@ -299,10 +316,13 @@ const WarrantyRequestAuthorization = ({
             callPostApi(null, rUrl, rObj, (response) => {
                 if (response.status === API_SUCCESS) {
                     const responseData = response.data;
+                    setIsNewCreated(true);
+                    setPwaNumber(responseData?.authorizationCode);
                     handleSnack(
                         "success",
                         `Authorization code ${responseData.authorizationCode} created successfully.`
                     );
+                    setClaimRecordId(responseData.claimId);
                     if (id === "generalRequest") {
                         setTabValue("machine");
                     } else if (id === "machine") {
@@ -341,14 +361,22 @@ const WarrantyRequestAuthorization = ({
                                 <label className="text-light-dark font-size-12 font-weight-500">
                                     CLAIMENT
                                 </label>
-                                <Select
+                                <input
+                                    type="text"
+                                    className="form-control border-radius-10 text-primary"
+                                    name="claiment"
+                                    placeholder="claiment"
+                                    value={recordData.claiment}
+                                    onChange={handleInputTextChange}
+                                />
+                                {/* <Select
                                     onChange={(e) =>
                                         handleSelectChange(e, "claiment")
                                     }
                                     options={claimRequestTypeOptions}
                                     value={recordData.claiment}
                                     styles={FONT_STYLE_SELECT}
-                                />
+                                /> */}
                             </div>
                         </div>
                         <div className="col-lg-4 col-md-4 col-sm-4 col-12">
@@ -588,7 +616,7 @@ const WarrantyRequestAuthorization = ({
                                     onSelect={handleModelSelect}
                                     noOptions={noOptionsModel}
                                 />
-                                <div className="css-w8dmq8">*Mandatory</div>
+                                {/* <div className="css-w8dmq8">*Mandatory</div> */}
                             </div>
                         </div>
                         <div className="col-md-4 col-sm-4">
@@ -610,7 +638,7 @@ const WarrantyRequestAuthorization = ({
                                     noOptions={noOptionsSerial}
                                     placeholder="Search Serial Number"
                                 />
-                                <div className="css-w8dmq8">*Mandatory</div>
+                                {/* <div className="css-w8dmq8">*Mandatory</div> */}
                             </div>
                         </div>
                         <div className="col-lg-4 col-md-4 col-sm-4 col-12">
@@ -618,7 +646,15 @@ const WarrantyRequestAuthorization = ({
                                 <label className="text-light-dark font-size-12 font-weight-500">
                                     USED FOR
                                 </label>
-                                <Select
+                                <input
+                                    type="text"
+                                    className="form-control border-radius-10 text-primary"
+                                    name="usedFor"
+                                    placeholder="Used For"
+                                    // value={recordData.claiment}
+                                    // onChange={handleInputTextChange}
+                                />
+                                {/* <Select
                                     // onChange={(e) =>
                                     //   setRecordData({
                                     //     ...recordData,
@@ -628,7 +664,7 @@ const WarrantyRequestAuthorization = ({
                                     options={claimRequestTypeOptions}
                                     // value={recordData.claimType}
                                     styles={FONT_STYLE_SELECT}
-                                />
+                                /> */}
                             </div>
                         </div>
                         <div className="col-lg-4 col-md-4 col-sm-4 col-12">
@@ -636,7 +672,15 @@ const WarrantyRequestAuthorization = ({
                                 <label className="text-light-dark font-size-12 font-weight-500">
                                     USAGE CONDITION
                                 </label>
-                                <Select
+                                <input
+                                    type="text"
+                                    className="form-control border-radius-10 text-primary"
+                                    name="usageCondition"
+                                    placeholder="Usage Condition"
+                                    // value={recordData.claiment}
+                                    // onChange={handleInputTextChange}
+                                />
+                                {/* <Select
                                     // onChange={(e) =>
                                     //   setRecordData({
                                     //     ...recordData,
@@ -646,7 +690,7 @@ const WarrantyRequestAuthorization = ({
                                     options={claimRequestTypeOptions}
                                     // value={recordData.claimType}
                                     styles={FONT_STYLE_SELECT}
-                                />
+                                /> */}
                             </div>
                         </div>
                     </div>
