@@ -25,6 +25,7 @@ const CreateWarrantyRequest = ({
     handleOpenQuestionsModal,
     setClaimRecordId,
     setClaimRecordDetail,
+    setAutorizationPreReqObj,
     // handleShowAutorizationModal,
 }) => {
     const [recordData, setRecordData] = useState({
@@ -108,24 +109,33 @@ const CreateWarrantyRequest = ({
         if (!checkInputValidation(rObj)) {
             return;
         }
-        callPostApi(null, CLAIM_MASTER_URL, rObj, (response) => {
-            if (response.status === API_SUCCESS) {
-                const responseData = response.data;
-                setClaimRecordDetail({ ...responseData });
-                setClaimRecordId(responseData.claimId);
-                // const pwaNumber = `AC${Math.floor(Math.random() * 90000) + 100000}`;
-                handleSnack(
-                    "success",
-                    `Authorization code ${responseData.authorizationCode} created successfully.`
-                );
-                // handleSnack(
-                //     "success",
-                //     `Authorization code ${pwaNumber} created successfully.`
-                // );
-                setPwaNumber(responseData.authorizationCode);
-                handleOpenQuestionsModal();
-            }
-        });
+
+        setAutorizationPreReqObj((pre) => ({
+            ...pre,
+            requestType: recordData?.claimType,
+            customerNumber: recordData?.customerNumber,
+            customerName: recordData?.customerName,
+        }));
+
+        // callPostApi(null, CLAIM_MASTER_URL, rObj, (response) => {
+        //     if (response.status === API_SUCCESS) {
+        //         const responseData = response.data;
+        //         setClaimRecordDetail({ ...responseData });
+        //         setClaimRecordId(responseData.claimId);
+        //         // const pwaNumber = `AC${Math.floor(Math.random() * 90000) + 100000}`;
+        //         handleSnack(
+        //             "success",
+        //             `Authorization code ${responseData.authorizationCode} created successfully.`
+        //         );
+        //         // handleSnack(
+        //         //     "success",
+        //         //     `Authorization code ${pwaNumber} created successfully.`
+        //         // );
+        //         setPwaNumber(responseData.authorizationCode);
+        //         handleOpenQuestionsModal();
+        //     }
+        // });
+        handleOpenQuestionsModal();
     };
 
     return (
