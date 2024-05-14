@@ -72,6 +72,7 @@ const ClaimRelatedHoursAndExpenses = ({
     claimOrderId,
     claimNumber,
     coverageTypeValue,
+    records,
     relatedPartsRecords = [],
     setRelatedPartsRecords,
     handleViewClaimValue,

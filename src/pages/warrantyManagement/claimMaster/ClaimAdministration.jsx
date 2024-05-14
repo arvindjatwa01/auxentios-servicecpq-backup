@@ -165,7 +165,8 @@ const ClaimAdministration = () => {
 
     // get recent activities (claim)
     const getRecentClaimRecord = () => {
-        const rUrl = `${CLAIM_ORDER_MASTER_URL}?pageSize=${5}&sortColumn=updatedAt&orderBY=DESC`;
+        const rUrl = `${CLAIM_MASTER_URL}?pageSize=${5}&sortColumn=updatedAt&orderBY=DESC`;
+        // const rUrl = `${CLAIM_ORDER_MASTER_URL}?pageSize=${5}&sortColumn=updatedAt&orderBY=DESC`;
         callGetApi(rUrl, (response) => {
             if (response.status === API_SUCCESS) {
                 const responseData = response.data;
@@ -480,9 +481,10 @@ const ClaimAdministration = () => {
                                                                 <div>
                                                                     <h6 className="mb-1 text-primary">
                                                                         Claim{" "}
-                                                                        {
+                                                                        {`${claimRow?.claimId}-${claimRow?.authorizationCode}`}
+                                                                        {/* {
                                                                             claimRow?.claimNumber
-                                                                        }
+                                                                        } */}
                                                                     </h6>
                                                                     <span
                                                                         className="cursor"
@@ -674,7 +676,8 @@ const ClaimAdministration = () => {
                                     <DataGrid
                                         // loading={isLoading}
                                         sx={GRID_STYLE}
-                                        getRowId={(row) => row.claimId}
+                                        getRowId={(row) => row.claimOrderId}
+                                        // getRowId={(row) => row.claimId}
                                         rows={claimRecordData}
                                         columns={claimColumn}
                                         pageSize={pageSize}

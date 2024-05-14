@@ -105,7 +105,7 @@ const ClaimSettlement = ({
     return (
         <>
             <div className="row d-flex justify-content-between align-items-center py-2 ">
-                <h4 className="mx-3">Adjust Claim Value</h4>
+                <h4 className="mx-3">Settlement</h4>
                 <div className="d-flex">
                     {!isEmpty(settlementValueId) && (
                         <button
@@ -176,7 +176,17 @@ const ClaimSettlement = ({
                                     <label className="text-light-dark font-size-12 font-weight-500">
                                         TYPE
                                     </label>
-                                    <Select
+                                    <input
+                                        type="text"
+                                        className="form-control border-radius-10 text-primary"
+                                        value={
+                                            claimSettlementRecord.type?.label
+                                        }
+                                        name={"type"}
+                                        disabled
+                                        // onChange={handleInputFiledChange}
+                                    />
+                                    {/* <Select
                                         onChange={(e) =>
                                             setClaimSettlementRecord({
                                                 ...claimSettlementRecord,
@@ -186,7 +196,7 @@ const ClaimSettlement = ({
                                         options={priceTypeOptions}
                                         value={claimSettlementRecord.type}
                                         styles={FONT_STYLE_SELECT}
-                                    />
+                                    /> */}
                                 </div>
                             </div>
                             <div className="col-md-3 col-sm-3">

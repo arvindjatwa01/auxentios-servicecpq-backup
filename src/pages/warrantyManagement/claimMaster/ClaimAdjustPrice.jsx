@@ -48,6 +48,7 @@ const ClaimAdjustPrice = ({
             .reduce((total, item) => total + item.totalPrice * item.quantity, 0)
             .toFixed(2),
         coverageType: coverageTypeOptions[0],
+        type: priceTypeOptions[0],
     });
     const [editPriceData, setEditPriceData] = useState(false);
     const [currency, setCurrency] = useState("");
@@ -196,7 +197,15 @@ const ClaimAdjustPrice = ({
                                     <label className="text-light-dark font-size-12 font-weight-500 text-uppercase">
                                         TYPE
                                     </label>
-                                    <Select
+                                    <input
+                                        type="text"
+                                        className="form-control border-radius-10 text-primary"
+                                        disabled
+                                        value={claimValurRecordData.type?.label}
+                                        name={"type"}
+                                        // onChange={handleInputFiledChange}
+                                    />
+                                    {/* <Select
                                         onChange={(e) =>
                                             setClaimValurRecordData({
                                                 ...claimValurRecordData,
@@ -206,8 +215,9 @@ const ClaimAdjustPrice = ({
                                         options={priceTypeOptions}
                                         value={claimValurRecordData.type}
                                         styles={FONT_STYLE_SELECT}
-                                    />
-                                    <div className="css-w8dmq8">*Mandatory</div>
+                                        isDisabled
+                                    /> */}
+                                    {/* <div className="css-w8dmq8">*Mandatory</div> */}
                                 </div>
                             </div>
                             <div className="col-md-3 col-sm-3">
