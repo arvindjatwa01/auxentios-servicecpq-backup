@@ -39,6 +39,7 @@ import {
 } from "pages/Common/constants";
 import {
     CLAIM_MASTER_URL,
+    CLAIM_ORDER_MASTER_URL,
     Get_Customer_Master_Details_By_Id_GET,
     Get_Equipment_Datails_By_Id_GET,
     WARRANTY_EQUIPMENT_MASTER_URL,
@@ -73,7 +74,7 @@ const WarrantyOverviewModal = ({
     isReportModal = false,
     openClaimQuestionModal,
     handleOpenCloseClaimQuestions,
-    handleOpenClaimRequestToQuestionModal
+    handleOpenClaimRequestToQuestionModal,
 }) => {
     const [tabValue, setTabValue] = useState("overview");
     const [warrantyRecord, setWarrantyRecord] = useState({
@@ -187,7 +188,8 @@ const WarrantyOverviewModal = ({
     }, [warrantyRecordId]);
 
     useEffect(() => {
-        const rUrl = `${CLAIM_MASTER_URL}/search-by-fields?pageNumber=${0}&pageSize=${25}`;
+        const rUrl = `${CLAIM_ORDER_MASTER_URL}?pageNumber=${0}&pageSize=${25}&sortColumn=updatedAt&orderBY=DESC`;
+        // const rUrl = `${CLAIM_MASTER_URL}/search-by-fields?pageNumber=${0}&pageSize=${25}`;
         callGetApi(rUrl, (response) => {
             if (response.status === API_SUCCESS) {
                 const responseData = response.data;
@@ -2288,14 +2290,16 @@ const WarrantyOverviewModal = ({
 
     const claimColumns = [
         {
-            field: "claimNumber",
+            // field: "claimNumber",
+            field: "claimOrderId",
             headerName: "Claim Number",
             flex: 1,
         },
         {
-            field: "claimStatus",
+            field: "claimOrderStatus",
             headerName: "Claim Status",
             flex: 1,
+            renderCell: ({ row }) => "REGISTERED",
         },
         {
             field: "claimType",
@@ -2303,7 +2307,8 @@ const WarrantyOverviewModal = ({
             flex: 1,
         },
         {
-            field: "createdOn",
+            // field: "createdOn",
+            field: "claimRequestDate",
             headerName: "Claim Date",
             flex: 1,
         },
@@ -2323,7 +2328,7 @@ const WarrantyOverviewModal = ({
             headerName: "Action",
             flex: 1,
             cellClassName: "actions",
-            getActions: (params) => {
+            getActions: ({ row }) => {
                 return [
                     <GridActionsCellItem
                         icon={
@@ -2331,7 +2336,7 @@ const WarrantyOverviewModal = ({
                                 <Tooltip title="Edit">
                                     <EditOutlinedIcon
                                         onClick={() =>
-                                            handleEditClaimDetails(params)
+                                            handleEditClaimDetails(row)
                                         }
                                     />
                                 </Tooltip>
