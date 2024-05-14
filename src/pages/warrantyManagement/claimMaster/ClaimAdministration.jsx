@@ -144,7 +144,17 @@ const ClaimAdministration = () => {
         if (!openReturnRequsterModal) {
             setPartsRecords([]);
         }
-    }, [openClaimRequestModal, openPartCreateModal, openReturnRequsterModal]);
+
+        if (!openQuestionsModal && !showAuthorizationModal) {
+            setClaimRecordId(null);
+        }
+    }, [
+        openClaimRequestModal,
+        openPartCreateModal,
+        openReturnRequsterModal,
+        openQuestionsModal,
+        showAuthorizationModal,
+    ]);
 
     useEffect(() => {
         getRecentClaimRecord();
@@ -782,8 +792,10 @@ const ClaimAdministration = () => {
                     hideModal={() => setShowAuthorizationModal(false)}
                     handleSnack={handleSnack}
                     pwaNumber={pwaNumber}
+                    setPwaNumber={setPwaNumber}
                     warrantyRequestType={warrantyRequestType}
                     claimRecordId={claimRecordId}
+                    setClaimRecordId={setClaimRecordId}
                     handleGoBackToQurestionsModal={
                         handleGoBackToQurestionsModal
                     }

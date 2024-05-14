@@ -270,8 +270,8 @@ const EquipmentEnrollModal = ({
       equipmentData.serialNo = searchText;
       searchQueryMachine = searchText
         ? equipmentData.model
-          ? `model:${equipmentData.model} AND equipmentNumber~` + searchText
-          : "equipmentNumber~" + searchText
+          ? `model:${equipmentData.model} AND makerSerialNumber~` + searchText
+          : "makerSerialNumber~" + searchText
         : "";
     }
     if (searchQueryMachine) {

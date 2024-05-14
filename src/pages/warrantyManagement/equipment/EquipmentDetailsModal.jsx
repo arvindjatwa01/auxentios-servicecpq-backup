@@ -209,8 +209,8 @@ const EquipmentDetailsModal = ({
       machineData.serialNo = searchText;
       searchQueryMachine = searchText
         ? machineData.model
-          ? `model:${machineData.model} AND equipmentNumber~` + searchText
-          : "equipmentNumber~" + searchText
+          ? `model:${machineData.model} AND makerSerialNumber~` + searchText
+          : "makerSerialNumber~" + searchText
         : "";
     }
     if (searchQueryMachine) {
