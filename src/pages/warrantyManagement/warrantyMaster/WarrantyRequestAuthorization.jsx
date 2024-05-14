@@ -277,6 +277,8 @@ const WarrantyRequestAuthorization = ({
             ...recordData,
             claimType:
                 recordData.claimType?.value || recordData.claimType || "EMPTY",
+            claimStatus: "REGISTERED",
+            payer: "CUSTOMER",
             claiment:
                 recordData.claiment?.value || recordData.claiment || "EMPTY",
             usedFor: recordData.usedFor?.value || recordData.usedFor || "EMPTY",
