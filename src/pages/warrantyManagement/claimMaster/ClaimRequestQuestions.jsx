@@ -183,8 +183,13 @@ const ClaimRequestQuestions = ({
             if (!selectValue.question1) {
                 handleSnack("error", "Please select answer first.");
                 return;
+            } else {
+                if (selectValue.question1 === "yes") {
+                    setQuestionNoCounter(questionNoCounter + 1);
+                } else {
+                    handleOpenClaimRequestModal();
+                }
             }
-            setQuestionNoCounter(questionNoCounter + 1);
         }
         if (currentCounter == 1) {
             if (!selectValue.question2) {
