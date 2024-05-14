@@ -12,7 +12,7 @@ const ChanceToBuyChart = ({ percentage }) => {
     const getLabel = (percentage) => {
         if (percentage == 100) {
             COLORS[0]='#6FD4FF'
-            return 'Already Bought';
+            return 'Bought   ';
         } else if (percentage >= 50) {
             COLORS[0]='#6C70FE'
             return 'High';
@@ -25,23 +25,23 @@ const ChanceToBuyChart = ({ percentage }) => {
     // Determine label text and style based on percentage
     const labelValue = `${percentage===100?'':percentage+'%'}`;
     const labelText = getLabel(percentage);
-    let labelFill = 'green';
+    let labelFill = '#6FD4FF';
     if (labelText === 'High') {
-        labelFill = '#4E7ECE'; // or any other color
+        labelFill = '#6C70FE'; // or any other color
     } else if (labelText === 'Low') {
-        labelFill = 'red'; // or any other color
+        labelFill = '#D06FFF'; // or any other color
     }
 
     return (
-        <PieChart width={400} height={300}>
+        <PieChart width={400} height={250}>
             <Pie
                 data={data}
                 cx={200}
-                cy={200}
+                cy={160}
                 startAngle={180}
                 endAngle={0}
-                innerRadius={115}
-                outerRadius={130}
+                innerRadius={100}
+                outerRadius={115}
                 fill="#8884d8"
                 paddingAngle={0}
                 dataKey="value"
