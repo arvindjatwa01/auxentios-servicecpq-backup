@@ -31,6 +31,7 @@ import WarrantyRequestModal from "../returnMaster/WarrantyRequestModal";
 import CreateWarrantyRequest from "../warrantyMaster/CreateWarrantyRequest";
 import WarrantyQuestions from "../warrantyMaster/WarrantyQuestions";
 import WarrantyRequestAuthorization from "../warrantyMaster/WarrantyRequestAuthorization";
+import ReplacementModal from "../returnMaster/ReplacementModal";
 
 const DataGridContainer = (props) => (
     <Box
@@ -98,6 +99,7 @@ const ClaimAdministration = () => {
     const [questionNo, setQuestionNo] = useState(0);
     const [showAuthorizationModal, setShowAuthorizationModal] = useState(false);
     const [showClaimRequestModal, setShowClaimRequestModal] = useState(false);
+    const [openReplacementModal, setOpenReplacementModal] = useState(false);
 
     const [
         showWarrantyRequestWithPwaModal,
@@ -106,6 +108,12 @@ const ClaimAdministration = () => {
 
     const [pwaNumber, setPwaNumber] = useState(null);
     const [warrantyRequestType, setWarrantyRequestType] = useState("");
+    const [autorizationPreReqObj, setAutorizationPreReqObj] = useState({
+        requestType: "",
+        customerNumber: "",
+        customerName: "",
+    });
+    const [warrantyRequestFor, setWarrantyRequestFor] = useState("");
 
     const [warrantyReturnId, setWarrantyReturnId] = useState(null);
 
@@ -324,9 +332,15 @@ const ClaimAdministration = () => {
 
     // go back to Authorization create model to Quesctions Scrren
     const handleGoBackToQurestionsModal = () => {
-        setQuestionNo(2);
-        setShowAuthorizationModal(false);
-        setOpenQuestionsModal(true);
+        if (warrantyRequestFor === "replacement") {
+            setShowAuthorizationModal(false);
+            setOpenReplacementModal(true);
+        } else {
+            setShowAuthorizationModal(false);
+        }
+        // setQuestionNo(2);
+        // setShowAuthorizationModal(false);
+        // setOpenQuestionsModal(true);
     };
 
     const claimColumn = [
@@ -735,6 +749,7 @@ const ClaimAdministration = () => {
                     handleOpenQuestionsModal={handleOpenQuestionsModal}
                     setClaimRecordId={setClaimRecordId}
                     setClaimRecordDetail={setClaimRecordDetail}
+                    setAutorizationPreReqObj={setAutorizationPreReqObj}
                     // handleShowAutorizationModal={handleShowAutorizationModal}
                 />
             )}
@@ -756,6 +771,7 @@ const ClaimAdministration = () => {
                     claimRecordId={claimRecordId}
                     claimRecordDetail={claimRecordDetail}
                     setClaimRecordDetail={setClaimRecordDetail}
+                    setAutorizationPreReqObj={setAutorizationPreReqObj}
                 />
             )}
 
@@ -772,6 +788,7 @@ const ClaimAdministration = () => {
                         handleGoBackToQurestionsModal
                     }
                     claimRecordDetail={claimRecordDetail}
+                    autoReqObj={autorizationPreReqObj}
                 />
             )}
 
@@ -782,6 +799,14 @@ const ClaimAdministration = () => {
                     handleSnack={handleSnack}
                     pwaNumber={pwaNumber}
                     warrantyRequestType={warrantyRequestType}
+                />
+            )}
+
+            {openReplacementModal && (
+                <ReplacementModal
+                    show={openReplacementModal}
+                    hideModal={() => setOpenReplacementModal(false)}
+                    handleSnack={handleSnack}
                 />
             )}
         </>

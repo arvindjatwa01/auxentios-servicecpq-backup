@@ -45,7 +45,7 @@ import {
     claimAssessmentRequestObj,
     claimRequestObj,
     claimStatusOptions,
-    claimTypeOptions,
+    claimRequestTypeOptions,
     evaluationRequestObj,
     failedPartsRecord,
     partsAnalysisOption,
@@ -149,6 +149,8 @@ const ClaimRequestModal = ({
         warrantyClaimStatus: "",
     });
 
+    const [warrantyRequestStatus, setWarrantyRequestStatus] = useState("");
+
     const [estimationData, setEstimationData] = useState({
         preparedBy: "user1",
         approvedBy: "user1",
@@ -173,6 +175,7 @@ const ClaimRequestModal = ({
         serialNo: "",
         smu: "",
         fleetNo: "",
+        equipmentNumber: "",
     });
 
     const [warrantyData, setWarrantyData] = useState({
@@ -217,7 +220,7 @@ const ClaimRequestModal = ({
             callGetApi(rUrl, (response) => {
                 if (response.status === API_SUCCESS) {
                     const responseData = response.data;
-
+                    getClaimDetails(responseData.claimId);
                     setActiveClaim(true);
                     setClaimNumber(responseData.claimNumber);
 
@@ -241,6 +244,7 @@ const ClaimRequestModal = ({
                     const _claimStatus = claimStatusOptions.find(
                         (obj) => obj.value === claimRecordDetail?.claimStatus
                     );
+                    setWarrantyRequestStatus(_claimStatus);
 
                     setGeneralData({
                         ...generalData,
@@ -248,6 +252,7 @@ const ClaimRequestModal = ({
                         description: responseData.description,
                         reference: responseData.reference,
                         warrantyClaimStatus: _claimStatus,
+                        estimationDate: claimRecordDetail?.createdDate,
                     });
 
                     setClaimValueId(responseData.claimValueId);
@@ -294,9 +299,55 @@ const ClaimRequestModal = ({
                     });
                 }
             });
+        } else {
+            if (claimRecordId) {
+                getClaimDetails(claimRecordId);
+                // const rUrlClaim = `${CLAIM_MASTER_URL}/${claimRecordId}`;
+                // callGetApi(rUrlClaim, (response) => {
+                //     if (response.status === API_SUCCESS) {
+                //         const responseData = response.data;
+
+                //         // claim status
+                //         const _claimStatus = claimStatusOptions.find(
+                //             (obj) => obj.value === responseData.claimStatus
+                //         );
+
+                //         // claim status
+                //         const _claimType = claimRequestTypeOptions.find(
+                //             (obj) => obj.value === responseData.claimType
+                //         );
+
+                //         setClaimRecordData({
+                //             ...responseData,
+                //             claimStatus: _claimStatus,
+                //             claimType: _claimType,
+                //         });
+
+                //         // get assessment details
+                //         if (responseData.assessmentId) {
+                //             getAssessmentDetails(responseData.assessmentId);
+                //             setAssesstmentId(responseData.assessmentId);
+                //         }
+
+                //         // get evalaution details
+                //         if (responseData.evaluationId) {
+                //             getEvaluationDetails(responseData.evaluationId);
+                //             setEvaluationId(responseData.evaluationId);
+                //         }
+
+                //         if (responseData.warrantyId) {
+                //             getWarrantyDetails(responseData.warrantyId);
+                //         }
+                //     }
+                // });
+            }
         }
-        if (claimRecordId) {
-            const rUrlClaim = `${CLAIM_MASTER_URL}/${claimRecordId}`;
+    }, [claimRecordDetail]);
+
+    // get Claim ID details
+    const getClaimDetails = (claimId) => {
+        if (claimId) {
+            const rUrlClaim = `${CLAIM_MASTER_URL}/${claimId}`;
             callGetApi(rUrlClaim, (response) => {
                 if (response.status === API_SUCCESS) {
                     const responseData = response.data;
@@ -307,9 +358,25 @@ const ClaimRequestModal = ({
                     );
 
                     // claim status
-                    const _claimType = claimTypeOptions.find(
+                    const _claimType = claimRequestTypeOptions.find(
                         (obj) => obj.value === responseData.claimType
                     );
+
+                    setCustomerData({
+                        customerID: responseData.customerNumber,
+                        customerName: responseData.customerName,
+                        contactEmail: responseData.emailId,
+                        contactPhone: responseData.contactNumber,
+                    });
+
+                    setMachineData({
+                        make: responseData.make,
+                        model: responseData.model,
+                        serialNo: responseData.serialNumber,
+                        smu: responseData.smu,
+                        fleetNo: responseData.unitNumber,
+                        equipmentNumber: responseData.equipmentNumber,
+                    });
 
                     setClaimRecordData({
                         ...responseData,
@@ -335,7 +402,7 @@ const ClaimRequestModal = ({
                 }
             });
         }
-    }, [claimRecordDetail]);
+    };
 
     // get warranty details
     const getWarrantyDetails = (warrantyId) => {
@@ -1293,6 +1360,8 @@ const ClaimRequestModal = ({
     // Save Claim Order changes >> Claim Tab
     const handleSvaeClaiOrderChanges = () => {
         const reqObj = {
+            authorizationCode: claimOrderData?.authorizationCode,
+            equipmentNumber: machineData?.equipmentNumber || "",
             customerNumber: customerData.customerID,
             customerName: customerData.customerName || "",
             emailId: customerData.contactEmail || "",
@@ -1415,6 +1484,24 @@ const ClaimRequestModal = ({
                                         <span
                                             className={`mr-3 cursor ${
                                                 activeUpperTabs ===
+                                                "realtedServiceEstimate"
+                                                    ? "active-span"
+                                                    : ""
+                                            }`}
+                                            onClick={() =>
+                                                handleChangeUpperTabs(
+                                                    "realtedServiceEstimate"
+                                                )
+                                            }
+                                        >
+                                            <AccessAlarmOutlinedIcon className=" font-size-16" />
+                                            <span className="ml-2">
+                                                Related Parts & Expenses
+                                            </span>
+                                        </span>
+                                        <span
+                                            className={`mr-3 cursor ${
+                                                activeUpperTabs ===
                                                 "adjustPrice"
                                                     ? "active-span"
                                                     : ""
@@ -1442,24 +1529,6 @@ const ClaimRequestModal = ({
                     <FormatListBulletedOutlinedIcon className=" font-size-16" />
                     <span className="ml-2">Related part list(s)</span>
                   </span> */}
-                                        <span
-                                            className={`mr-3 cursor ${
-                                                activeUpperTabs ===
-                                                "realtedServiceEstimate"
-                                                    ? "active-span"
-                                                    : ""
-                                            }`}
-                                            onClick={() =>
-                                                handleChangeUpperTabs(
-                                                    "realtedServiceEstimate"
-                                                )
-                                            }
-                                        >
-                                            <AccessAlarmOutlinedIcon className=" font-size-16" />
-                                            <span className="ml-2">
-                                                Related Parts & Expenses
-                                            </span>
-                                        </span>
                                         <span
                                             className={`mr-3 cursor ${
                                                 activeUpperTabs === "splitPrice"
@@ -1530,7 +1599,10 @@ const ClaimRequestModal = ({
                                                 <Tab
                                                     label="CLAIM"
                                                     value="claim"
-                                                    //  disabled={!evaluationId && !assesstmentId}
+                                                    disabled={
+                                                        !evaluationId &&
+                                                        !assesstmentId
+                                                    }
                                                     //  disabled={!activeClaim}
                                                 />
                                             </TabList>
@@ -1768,20 +1840,26 @@ const ClaimRequestModal = ({
                                                                                     // defaultValue={selectedOption}
                                                                                     onChange={(
                                                                                         e
-                                                                                    ) =>
+                                                                                    ) => {
                                                                                         setGeneralData(
                                                                                             {
                                                                                                 ...generalData,
                                                                                                 warrantyClaimStatus:
                                                                                                     e,
                                                                                             }
-                                                                                        )
-                                                                                    }
+                                                                                        );
+                                                                                        setWarrantyRequestStatus(
+                                                                                            e
+                                                                                        );
+                                                                                    }}
                                                                                     options={
                                                                                         claimStatusOptions
                                                                                     }
+                                                                                    // value={
+                                                                                    //     generalData.warrantyClaimStatus
+                                                                                    // }
                                                                                     value={
-                                                                                        generalData.warrantyClaimStatus
+                                                                                        warrantyRequestStatus
                                                                                     }
                                                                                     styles={
                                                                                         FONT_STYLE_SELECT
@@ -1858,10 +1936,13 @@ const ClaimRequestModal = ({
                                                                     />
                                                                     <ReadOnlyField
                                                                         label="WARRANTY REQUEST STATUS"
+                                                                        // value={
+                                                                        //     generalData
+                                                                        //         .warrantyClaimStatus
+                                                                        //         ?.label
+                                                                        // }
                                                                         value={
-                                                                            generalData
-                                                                                .warrantyClaimStatus
-                                                                                ?.label
+                                                                            warrantyRequestStatus?.label
                                                                         }
                                                                         className="col-md-4 col-sm-4"
                                                                     />
@@ -4124,7 +4205,7 @@ const ClaimRequestModal = ({
                                                                     <Select
                                                                         className="text-primary"
                                                                         options={
-                                                                            claimTypeOptions
+                                                                            claimRequestTypeOptions
                                                                         }
                                                                         onChange={(
                                                                             e
@@ -4783,7 +4864,9 @@ const ClaimRequestModal = ({
                                         setCoverageTypeValue={
                                             setCoverageTypeValue
                                         }
-                                        handleViewSettlement={handleChangeUpperTabs}
+                                        handleViewSettlement={
+                                            handleChangeUpperTabs
+                                        }
                                     />
                                 )}
 
@@ -4822,7 +4905,9 @@ const ClaimRequestModal = ({
                                         coverageTypeValue={coverageTypeValue}
                                         relatedPartsId={relatedPartsId}
                                         setRelatedPartsId={setRelatedPartsId}
-                                        handleViewClaimValue={handleChangeUpperTabs}
+                                        handleViewClaimValue={
+                                            handleChangeUpperTabs
+                                        }
                                     />
                                 )}
 
@@ -4836,7 +4921,9 @@ const ClaimRequestModal = ({
                                         }
                                         claimOrderId={claimOrderId}
                                         claimNumber={claimNumber}
-                                        handleViewAndAddNotes={handleChangeUpperTabs}
+                                        handleViewAndAddNotes={
+                                            handleChangeUpperTabs
+                                        }
                                     />
                                 )}
                                 {activeUpperTabs === "addNotes" && (

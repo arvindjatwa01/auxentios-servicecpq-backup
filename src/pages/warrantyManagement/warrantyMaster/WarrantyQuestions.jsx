@@ -81,11 +81,12 @@ const WarrantyQuestions = ({
                 handleSnack("error", "Please select answer first.");
                 return;
             } else {
-                if (selectValue.question2 === "yes") {
-                    setQuestionNoCounter(questionNoCounter + 1);
-                } else {
-                    openAutorizationCreateModal();
-                }
+                // if (selectValue.question2 === "yes") {
+                //     setQuestionNoCounter(questionNoCounter + 1);
+                // } else {
+                //     openAutorizationCreateModal();
+                // }
+                openAutorizationCreateModal();
             }
         }
         if (currentCounter == 2) {

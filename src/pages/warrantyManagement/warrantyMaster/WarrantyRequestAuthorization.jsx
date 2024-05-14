@@ -29,6 +29,7 @@ import { customerSearch, machineSearch } from "services/searchServices";
 import { callGetApi, callPostApi, callPutApi } from "services/ApiCaller";
 import { API_SUCCESS } from "services/ResponseCode";
 import { CLAIM_MASTER_URL } from "services/CONSTANTS";
+import { isEmptySelect } from "pages/Common/textUtilities";
 
 const WarrantyRequestAuthorization = ({
     show,
@@ -38,12 +39,16 @@ const WarrantyRequestAuthorization = ({
     warrantyRequestType = "",
     claimRecordId,
     handleGoBackToQurestionsModal,
+    autoReqObj,
 }) => {
     const [tabValue, setTabValue] = useState("generalRequest");
 
     const [recordData, setRecordData] = useState({
         ...claimRequestObj,
-        claimType: warrantyRequestType || "",
+        // claimType: warrantyRequestType || "",
+        claimType: autoReqObj?.requestType || "",
+        customerNumber: autoReqObj?.customerNumber || "",
+        customerName: autoReqObj?.customerName || "",
         claiment: "",
         climentDetails: "",
         requestDescription: "",
@@ -161,8 +166,13 @@ const WarrantyRequestAuthorization = ({
         } else if (type === "equipmentNumber") {
             setRecordData({
                 ...recordData,
-                serialNumber: currentItem.equipmentNumber,
-                // equipmentId: currentItem.id,
+                serialNumber: currentItem.makerSerialNumber,
+                warrantyId: currentItem.warrantyId,
+                equipmentNumber: currentItem.equipmentNumber,
+                smu: currentItem.sensorId,
+                fleetNo: currentItem.stockNumber,
+                customerNumber: currentItem.customerId,
+                customerName: currentItem.customer,
             });
             setSearchSerialResults([]);
         }
@@ -208,6 +218,41 @@ const WarrantyRequestAuthorization = ({
         setSearchCustResults([]);
     };
 
+    // check general request tab input validation
+    const checkGeneralRequestInputValidation = (recordObj) => {
+        if (isEmptySelect(recordObj.claimType)) {
+            handleSnack("error", "Request Type must not be empty.");
+            return false;
+        }
+        return true;
+    };
+
+    // check general request tab input validation
+    const checkMachineInputValidation = (recordObj) => {
+        if (!recordObj.modelNumber) {
+            handleSnack("error", "Model must not be empty");
+            return false;
+        } else if (recordObj.modelNumber && searchModelResults.length !== 0) {
+            handleSnack("error", "Select model from search results.");
+            return false;
+        } else if (recordObj.modelNumber && noOptionsModel) {
+            handleSnack("error", "Model must be valid");
+            return false;
+        } else if (!recordObj.modelNumber) {
+            handleSnack("error", "Model must not be empty");
+            return false;
+        } else if (recordObj.modelNumber && searchModelResults.length !== 0) {
+            handleSnack("error", "Select model from search results.");
+            return false;
+        } else if (recordObj.modelNumber && noOptionsModel) {
+            handleSnack("error", "Model must be valid");
+            return false;
+        }
+    };
+
+    // check general request tab input validation
+    const checkCustomerInputValidation = () => {};
+
     // click on Save and Next button
     const handleClickSaveBtn = (e) => {
         const { id } = e.target;
@@ -223,6 +268,18 @@ const WarrantyRequestAuthorization = ({
                 recordData.usageCondition ||
                 "EMPTY",
         };
+
+        if (
+            id === "generalRequest" &&
+            !checkGeneralRequestInputValidation(rObj)
+        ) {
+            return;
+        } else if (id === "machine" && !checkMachineInputValidation(rObj)) {
+            return;
+        } else if (id === "customer" && !checkCustomerInputValidation(rObj)) {
+            return;
+        }
+
         if (claimRecordId) {
             const rUrl = `${CLAIM_MASTER_URL}/${claimRecordId}`;
             callPutApi(null, rUrl, rObj, (response) => {
@@ -490,7 +547,7 @@ const WarrantyRequestAuthorization = ({
                                     type="text"
                                     className="form-control border-radius-10 text-primary"
                                     name="reference"
-                                    placeholder="Reference"
+                                    placeholder="Auto Fill Search Model"
                                     value={recordData.make}
                                     disabled={true}
                                     //   onChange={handleInputFieldsChange}
@@ -531,7 +588,7 @@ const WarrantyRequestAuthorization = ({
                                     onSelect={handleModelSelect}
                                     noOptions={noOptionsModel}
                                 />
-                                {/* <div className="css-w8dmq8">*Mandatory</div> */}
+                                <div className="css-w8dmq8">*Mandatory</div>
                             </div>
                         </div>
                         <div className="col-md-4 col-sm-4">
@@ -553,7 +610,7 @@ const WarrantyRequestAuthorization = ({
                                     noOptions={noOptionsSerial}
                                     placeholder="Search Serial Number"
                                 />
-                                {/* <div className="css-w8dmq8">*Mandatory</div> */}
+                                <div className="css-w8dmq8">*Mandatory</div>
                             </div>
                         </div>
                         <div className="col-lg-4 col-md-4 col-sm-4 col-12">
