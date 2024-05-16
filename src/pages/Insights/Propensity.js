@@ -175,11 +175,11 @@ export default function Propensity(props) {
                   item
                   container
                   xs={6}
-                  direction="row"
-                  justifyContent="center"
-                  // alignItems="center"
+                  direction="column"
+                  justifyContent="space-evenly"
+                  alignItems="center"
                 >
-                  <span className="font-size-14 font-weight-600 text-secondary mt-5"> Share of <br/> Customers in <br/>each Category<br/>(total=100%)</span>
+                  <span className="font-size-14 font-weight-600 text-secondary"> Share of <br/> Customers in <br/>each Category<br/>(total=100%)</span>
                   <span className="font-size-14 font-weight-600"> $ Value Of <br/> Transaction</span>
                 </Grid>
                 <Grid

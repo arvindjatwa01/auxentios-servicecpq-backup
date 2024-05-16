@@ -317,7 +317,7 @@ export default function GapToEntitlement(props) {
                 marginInline: 2,
               }}
             >
-              <div style={{ flex: "60%", marginRight: { xs: 0, md: "10px" } }}> 
+              <div style={{ flex: "65%", marginRight: { xs: 0, md: "10px" } }}> 
                 <div className="text-light font-size-18 font-weight-600 my-3">
                   {currentCustomer.customer_id}: {currentCustomer.customer_name}
                 </div>
@@ -327,8 +327,8 @@ export default function GapToEntitlement(props) {
                   setCurrentSelectedService={setCurrentSelectedService}
                 />
               </div>
-              <div style={{ flex: "40%", marginLeft: { xs: 0, md: "10px" } }}>
-                <Card sx={{ borderRadius: 4, margin: 2, width: "100%" }} variant="outlined">
+              <div style={{ flex: "35%", marginLeft: { xs: 0, md: "10px" },marginTop :"25px" }}>
+                <Card sx={{ borderRadius: 4, margin: 2, width: "100%",backgroundColor:"#F6F6F6" }} variant="outlined">
                   <div className="d-flex justify-content-between align-items-center">
                     <div className="text-light font-size-18 font-weight-600 my-2">Chances of Buying</div>
                     <div className="my-2">

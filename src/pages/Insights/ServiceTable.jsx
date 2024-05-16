@@ -36,14 +36,14 @@ const columns = [
             let chanceLabel = '';
             let color = '';
             if (params.row.progress === 100) {
-                chanceLabel = 'Already Bought';
-                color = 'green';
+                chanceLabel = 'Bought';
+                color = '#6FD4FF';
             } else if (params.row.progress >= 50) {
                 chanceLabel = 'High';
-                color = 'purple';
+                color = '#6C70FE';
             } else {
                 chanceLabel = 'Low';
-                color = 'red';
+                color = '#D06FFF';
             }
             return (
                 <div style={{ width: '100%', display: 'flex', alignItems: 'center' }}>
@@ -59,7 +59,7 @@ const columns = [
 
 const ServiceTable = ({setCurrentService,serviceRow,setCurrentSelectedService}) => {
     return (
-        <div style={{ height: '100%', width: '100%' }}>
+        <div style={{ height: '100%', width: '90%' }}>
             <DataGrid
                 rows={serviceRow}
                 columns={columns}
