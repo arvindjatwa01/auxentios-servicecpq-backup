@@ -20,6 +20,7 @@ import {
 } from "../warrantyManagementConstants";
 import ClaimEditModal from "../claimMaster/ClaimEditModal";
 import ClaimRequestModal from "../claimMaster/ClaimRequestModal";
+import ClaimOrderRequestModal from "../claimOrderManagement/ClaimOrderRequestModal";
 
 const ClaimReportModal = ({
   show,
@@ -245,8 +246,26 @@ const ClaimReportModal = ({
           handleOpenClaimRequestModal={handleOpenClaimRequestModal}
         />
       )}
-      {isReportModal && openClaimRequestModal && (
+      {/* {isReportModal && openClaimRequestModal && (
         <ClaimRequestModal
+          show={openClaimRequestModal}
+          hideModal={handleCloseClaimRequestModal}
+          handleSnack={handleSnack}
+          claimRecordDetail={claimRecordDetail}
+          claimOrderId={claimOrderId}
+          setClaimOrderId={setClaimOrderId}
+          claimRecordId={claimRecordId}
+          assesstmentId={assesstmentId}
+          setAssesstmentId={setAssesstmentId}
+          evaluationId={evaluationId}
+          setEvaluationId={setEvaluationId}
+          // openPartCreateModal={openPartCreateModal}
+          // handleShowPartCreateModal={handleShowPartCreateModal}
+          // handleShowReturnRequetrModal={handleShowReturnRequetrModal}
+        />
+      )} */}
+      {isReportModal && openClaimRequestModal && (
+        <ClaimOrderRequestModal
           show={openClaimRequestModal}
           hideModal={handleCloseClaimRequestModal}
           handleSnack={handleSnack}

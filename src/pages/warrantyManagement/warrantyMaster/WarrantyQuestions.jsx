@@ -18,6 +18,7 @@ import ClaimRequestModal from "../claimMaster/ClaimRequestModal";
 import { callGetApi } from "services/ApiCaller";
 import { CLAIM_BY_AUTH_CODE_GET } from "services/CONSTANTS";
 import { API_SUCCESS } from "services/ResponseCode";
+import ClaimOrderRequestModal from "../claimOrderManagement/ClaimOrderRequestModal";
 
 
 const steps = ["Register", "Stop/configure", "Add to cart", "payment"];
@@ -474,7 +475,7 @@ const WarrantyQuestions = ({
                 </Modal.Body>
             </Modal>
             {openClaimRequestModal && (
-                <ClaimRequestModal
+                <ClaimOrderRequestModal
                     show={openClaimRequestModal}
                     hideModal={handleCloseRequestModal}
                     handleSnack={handleSnack}
@@ -491,6 +492,24 @@ const WarrantyQuestions = ({
                     // handleShowReturnRequetrModal={handleShowReturnRequetrModal}
                 />
             )}
+            {/* {openClaimRequestModal && (
+                <ClaimRequestModal
+                    show={openClaimRequestModal}
+                    hideModal={handleCloseRequestModal}
+                    handleSnack={handleSnack}
+                    claimRecordDetail={claimRecordDetail}
+                    claimOrderId={claimOrderId}
+                    setClaimOrderId={setClaimOrderId}
+                    claimRecordId={claimRecordId}
+                    assesstmentId={assesstmentId}
+                    setAssesstmentId={setAssesstmentId}
+                    evaluationId={evaluationId}
+                    setEvaluationId={setEvaluationId}
+                    // openPartCreateModal={openPartCreateModal}
+                    // handleShowPartCreateModal={handleShowPartCreateModal}
+                    // handleShowReturnRequetrModal={handleShowReturnRequetrModal}
+                />
+            )} */}
         </>
     );
 };

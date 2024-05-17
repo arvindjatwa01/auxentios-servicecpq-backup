@@ -54,6 +54,7 @@ import ClaimEditModal from "../claimMaster/ClaimEditModal";
 import ClaimRequestModal from "../claimMaster/ClaimRequestModal";
 import UploadFilesModal from "../UploadFilesModal";
 import ClaimRequestQuestions from "../claimMaster/ClaimRequestQuestions";
+import ClaimOrderRequestModal from "../claimOrderManagement/ClaimOrderRequestModal";
 
 const WarrantyOverviewModal = ({
     show,
@@ -2653,7 +2654,7 @@ const WarrantyOverviewModal = ({
                 />
             )}
 
-            {(openClaimRequestModal || openPartCreateModal) && (
+            {/* {(openClaimRequestModal || openPartCreateModal) && (
                 <ClaimRequestModal
                     show={openClaimRequestModal}
                     hideModal={handleCloseClaimRequestModal}
@@ -2668,6 +2669,25 @@ const WarrantyOverviewModal = ({
                     setEvaluationId={setEvaluationId}
                     openPartCreateModal={openPartCreateModal}
                     handleShowPartCreateModal={handleShowPartCreateModal}
+                    // handleShowReturnRequetrModal={handleShowReturnRequetrModal}
+                />
+            )} */}
+            {(openClaimRequestModal || openPartCreateModal) && (
+                <ClaimOrderRequestModal
+                    show={openClaimRequestModal}
+                    hideModal={handleCloseClaimRequestModal}
+                    handleSnack={handleSnack}
+                    claimRecordDetail={claimRecordDetail}
+                    claimOrderId={claimOrderId}
+                    setClaimOrderId={setClaimOrderId}
+                    claimRecordId={claimRecordId}
+                    assesstmentId={assesstmentId}
+                    setAssesstmentId={setAssesstmentId}
+                    evaluationId={evaluationId}
+                    setEvaluationId={setEvaluationId}
+                    openPartCreateModal={openPartCreateModal}
+                    handleShowPartCreateModal={handleShowPartCreateModal}
+                    byAuthCode={true}
                     // handleShowReturnRequetrModal={handleShowReturnRequetrModal}
                 />
             )}
