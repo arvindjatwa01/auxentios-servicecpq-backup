@@ -247,7 +247,7 @@ const ClaimOrderRequestModal = (props) => {
 
     useEffect(() => {
         setClaimValueRecordData({
-            ...claimValueRequestObj,
+            ...claimValueRecordData,
             claimOrderId: claimOrderId,
             totalPartsClaimed: relatedPartsRecords
                 .reduce(
@@ -1051,6 +1051,7 @@ const ClaimOrderRequestModal = (props) => {
                                             className="btn bg-primary text-white font-size-14 pr-0 ml-2"
                                             style={{ borderRadius: "5px" }}
                                             onClick={handleOpenActionMenu}
+                                            disabled={activeTopTab !== "settlement"}
                                             size="small"
                                             aria-controls={
                                                 openActionMenu
