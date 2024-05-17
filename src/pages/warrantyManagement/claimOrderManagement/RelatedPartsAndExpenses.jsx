@@ -499,8 +499,6 @@ const RelatedPartsAndExpenses = (props) => {
         }
     };
 
-    console.log("relatedPartsRecords :::: ", relatedPartsRecords);
-
     return (
         <>
             <div

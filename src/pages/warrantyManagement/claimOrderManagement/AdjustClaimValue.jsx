@@ -84,12 +84,23 @@ const AdjustClaimValue = (props) => {
         }
     }, [claimValueId]);
 
+    // get price data in decimal
+    const getFlotingValue = (value) => {
+        if (value) {
+            let priceValue = parseFloat(Number(value));
+            const priceWitDecimal = priceValue.toFixed(2);
+            return priceWitDecimal;
+        }
+        return "";
+    };
+
     // change value of input fields
     const handleInputFiledChange = (e) => {
         const { name, value } = e.target;
         setClaimValueRecordData({ ...claimValueRecordData, [name]: value });
     };
 
+    // save claim values
     const handleSave = () => {
         const rUrl = CLAIM_VALUE_MASTER_URL;
 
@@ -173,6 +184,7 @@ const AdjustClaimValue = (props) => {
                     });
                     handleUpdateClaimOrder({
                         claimOrderStatus: "CLAIM_SUBMITTED",
+                        claimValueId: responseData.claimValueId,
                     });
                     handleSnack("success", "Claim Value Created Successfully.");
                 } else {
@@ -239,39 +251,51 @@ const AdjustClaimValue = (props) => {
                             />
                             <ReadOnlyField
                                 label="TOTAL AMOUNT CLAIMED"
-                                value={claimValueRecordData.totalAmountClaimed}
+                                value={getFlotingValue(
+                                    claimValueRecordData.totalAmountClaimed
+                                )}
                                 className="col-md-3 col-sm-3"
                             />
                             <ReadOnlyField
                                 label="TOTAL PARTS CLAIMED"
-                                value={claimValueRecordData.totalPartsClaimed}
+                                value={getFlotingValue(
+                                    claimValueRecordData.totalPartsClaimed
+                                )}
                                 className="col-md-3 col-sm-3"
                             />
                             <ReadOnlyField
                                 label="TOTAL HOURS CLAIMED"
-                                value={claimValueRecordData.totalHoursClaimed}
+                                value={getFlotingValue(
+                                    claimValueRecordData.totalHoursClaimed
+                                )}
                                 className="col-md-3 col-sm-3"
                             />
                             <ReadOnlyField
                                 label="TOTAL LABOUR AMOUNT CLAIMED"
-                                value={
+                                value={getFlotingValue(
                                     claimValueRecordData.totalLaborAmountClaimed
-                                }
+                                )}
                                 className="col-md-3 col-sm-3"
                             />
                             <ReadOnlyField
                                 label="TRAVEL CLAIMED"
-                                value={claimValueRecordData.travelClaimed}
+                                value={getFlotingValue(
+                                    claimValueRecordData.travelClaimed
+                                )}
                                 className="col-md-3 col-sm-3"
                             />
                             <ReadOnlyField
                                 label="MISC. CLAIMED"
-                                value={claimValueRecordData.miscClaimed}
+                                value={getFlotingValue(
+                                    claimValueRecordData.miscClaimed
+                                )}
                                 className="col-md-3 col-sm-3"
                             />
                             <ReadOnlyField
                                 label="VEHICLE KM CLAIMED"
-                                value={claimValueRecordData.vehicleKMClaimed}
+                                value={getFlotingValue(
+                                    claimValueRecordData.vehicleKMClaimed
+                                )}
                                 className="col-md-3 col-sm-3"
                             />
                         </div>
@@ -339,72 +363,76 @@ const AdjustClaimValue = (props) => {
                                     <input
                                         type="number"
                                         className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
-                                        value={(claimValueRecordData
-                                            .coverageType?.value === "CT_02"
-                                            ? parseFloat(
-                                                  claimValueRecordData.totalPartsClaimed ||
-                                                      0
-                                              )
-                                            : claimValueRecordData.coverageType
-                                                  ?.value === "CT_01"
-                                            ? parseFloat(
-                                                  claimValueRecordData.totalPartsClaimed ||
-                                                      0
-                                              ) +
-                                              //   parseFloat(
-                                              //       claimValueRecordData.totalHoursClaimed ||
-                                              //           0
-                                              //   ) +
-                                              parseFloat(
-                                                  claimValueRecordData.totalLaborAmountClaimed ||
-                                                      0
-                                              )
-                                            : claimValueRecordData.coverageType
-                                                  ?.value === "CT_03"
-                                            ? parseFloat(
-                                                  claimValueRecordData.totalPartsClaimed ||
-                                                      0
-                                              ) +
-                                              //   parseFloat(
-                                              //       claimValueRecordData.totalHoursClaimed ||
-                                              //           0
-                                              //   ) +
-                                              parseFloat(
-                                                  claimValueRecordData.totalLaborAmountClaimed ||
-                                                      0
-                                              ) +
-                                              parseFloat(
-                                                  claimValueRecordData.miscClaimed ||
-                                                      0
-                                              )
-                                            : claimValueRecordData.coverageType
-                                                  ?.value === "CT_04"
-                                            ? parseFloat(
-                                                  claimValueRecordData.totalPartsClaimed ||
-                                                      0
-                                              ) +
-                                              //   parseFloat(
-                                              //       claimValueRecordData.totalHoursClaimed ||
-                                              //           0
-                                              //   ) +
-                                              parseFloat(
-                                                  claimValueRecordData.totalLaborAmountClaimed ||
-                                                      0
-                                              ) +
-                                              parseFloat(
-                                                  claimValueRecordData.miscClaimed ||
-                                                      0
-                                              ) +
-                                              parseFloat(
-                                                  claimValueRecordData.travelClaimed ||
-                                                      0
-                                                  //   ) +
+                                        value={getFlotingValue(
+                                            claimValueRecordData.coverageType
+                                                ?.value === "CT_02"
+                                                ? parseFloat(
+                                                      claimValueRecordData.totalPartsClaimed ||
+                                                          0
+                                                  )
+                                                : claimValueRecordData
+                                                      .coverageType?.value ===
+                                                  "CT_01"
+                                                ? parseFloat(
+                                                      claimValueRecordData.totalPartsClaimed ||
+                                                          0
+                                                  ) +
                                                   //   parseFloat(
-                                                  //       claimValueRecordData.vehicleKMClaimed ||
+                                                  //       claimValueRecordData.totalHoursClaimed ||
                                                   //           0
-                                              )
-                                            : 0
-                                        ).toFixed(2)}
+                                                  //   ) +
+                                                  parseFloat(
+                                                      claimValueRecordData.totalLaborAmountClaimed ||
+                                                          0
+                                                  )
+                                                : claimValueRecordData
+                                                      .coverageType?.value ===
+                                                  "CT_03"
+                                                ? parseFloat(
+                                                      claimValueRecordData.totalPartsClaimed ||
+                                                          0
+                                                  ) +
+                                                  //   parseFloat(
+                                                  //       claimValueRecordData.totalHoursClaimed ||
+                                                  //           0
+                                                  //   ) +
+                                                  parseFloat(
+                                                      claimValueRecordData.totalLaborAmountClaimed ||
+                                                          0
+                                                  ) +
+                                                  parseFloat(
+                                                      claimValueRecordData.miscClaimed ||
+                                                          0
+                                                  )
+                                                : claimValueRecordData
+                                                      .coverageType?.value ===
+                                                  "CT_04"
+                                                ? parseFloat(
+                                                      claimValueRecordData.totalPartsClaimed ||
+                                                          0
+                                                  ) +
+                                                  //   parseFloat(
+                                                  //       claimValueRecordData.totalHoursClaimed ||
+                                                  //           0
+                                                  //   ) +
+                                                  parseFloat(
+                                                      claimValueRecordData.totalLaborAmountClaimed ||
+                                                          0
+                                                  ) +
+                                                  parseFloat(
+                                                      claimValueRecordData.miscClaimed ||
+                                                          0
+                                                  ) +
+                                                  parseFloat(
+                                                      claimValueRecordData.travelClaimed ||
+                                                          0
+                                                      //   ) +
+                                                      //   parseFloat(
+                                                      //       claimValueRecordData.vehicleKMClaimed ||
+                                                      //           0
+                                                  )
+                                                : 0
+                                        )}
                                         name={"totalAmountClaimed"}
                                         onChange={handleInputFiledChange}
                                         disabled={true}
@@ -429,9 +457,9 @@ const AdjustClaimValue = (props) => {
                                     <input
                                         type="number"
                                         className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
-                                        value={
+                                        value={getFlotingValue(
                                             claimValueRecordData.totalPartsClaimed
-                                        }
+                                        )}
                                         name={"totalPartsClaimed"}
                                         onChange={handleInputFiledChange}
                                         disabled={true}
@@ -584,6 +612,10 @@ const AdjustClaimValue = (props) => {
                         type="button"
                         className="btn btn-light bg-primary text-white mr-1"
                         onClick={() => handleViewSettlement("settlement")}
+                        disabled={
+                            claimStatus?.value === "SETTLED" ||
+                            claimStatus?.value === "CONTESTED"
+                        }
                     >
                         View Settlement
                     </button>
