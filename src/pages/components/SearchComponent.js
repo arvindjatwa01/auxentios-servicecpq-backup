@@ -39,6 +39,7 @@ const SearchComponent = (props) => {
     let obj = tempArray[id];
     obj.selectCategory = e;
     obj.inputSearch = "";
+    obj.selectOptions = [];
     tempArray[id] = obj;
     console.log(obj.selectCategory);
     props.setQuerySearchSelector([...tempArray]);

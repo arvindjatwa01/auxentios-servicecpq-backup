@@ -32,6 +32,7 @@ import CreateWarrantyRequest from "../warrantyMaster/CreateWarrantyRequest";
 import WarrantyQuestions from "../warrantyMaster/WarrantyQuestions";
 import WarrantyRequestAuthorization from "../warrantyMaster/WarrantyRequestAuthorization";
 import ReplacementModal from "../returnMaster/ReplacementModal";
+import ClaimOrderRequestModal from "../claimOrderManagement/ClaimOrderRequestModal";
 
 const DataGridContainer = (props) => (
     <Box
@@ -701,7 +702,7 @@ const ClaimAdministration = () => {
                     handleOpenClaimRequestModal={handleOpenClaimRequestModal}
                 />
             )}
-            {(openClaimRequestModal || openPartCreateModal) && (
+            {/* {(openClaimRequestModal || openPartCreateModal) && (
                 <ClaimRequestModal
                     show={openClaimRequestModal}
                     hideModal={() => setOpenClaimRequestModal(false)}
@@ -718,6 +719,26 @@ const ClaimAdministration = () => {
                     openPartCreateModal={openPartCreateModal}
                     handleShowPartCreateModal={handleShowPartCreateModal}
                     handleShowReturnRequetrModal={handleShowReturnRequetrModal}
+                />
+            )} */}
+            {(openClaimRequestModal || openPartCreateModal) && (
+                <ClaimOrderRequestModal
+                    show={openClaimRequestModal}
+                    hideModal={() => setOpenClaimRequestModal(false)}
+                    handleSnack={handleSnack}
+                    claimRecordDetail={claimRecordDetail}
+                    warrantyRecordId={warrantyRecordId}
+                    claimOrderId={claimOrderId}
+                    setClaimOrderId={setClaimOrderId}
+                    claimRecordId={claimRecordId}
+                    assesstmentId={assesstmentId}
+                    setAssesstmentId={setAssesstmentId}
+                    evaluationId={evaluationId}
+                    setEvaluationId={setEvaluationId}
+                    openPartCreateModal={openPartCreateModal}
+                    handleShowPartCreateModal={handleShowPartCreateModal}
+                    handleShowReturnRequetrModal={handleShowReturnRequetrModal}
+                    byAuthCode={false}
                 />
             )}
 
